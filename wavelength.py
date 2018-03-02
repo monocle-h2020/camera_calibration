@@ -31,7 +31,7 @@ for D in (thick, thin):
     plt.imshow(D)
     plt.show()
 
-def gauss_filter(D, sigma=5, *args, **kwargs):
+def gauss_filter(D, sigma=7, *args, **kwargs):
     """
     Apply a 1-D Gaussian kernel along the wavelength axis
     """
@@ -41,17 +41,19 @@ thickF = gauss_filter(thick)
 thinF  = gauss_filter(thin )
 
 for D in (thickF, thinF):
-    plt.imshow(D)
+    plt.imshow(D.astype("uint8"))
     plt.show()
 
-for j in (0,1,2):
-    plt.plot(thick[:, 175, j], c=RGB[j])
-plt.xlim(0, thick.shape[0])
-plt.ylim(0,255)
-plt.show()
+for D, DF in zip([thick, thin], [thickF, thinF]):
+    for j in (0,1,2):
+        plt.plot(D[:, 175, j], c=RGB[j])
+    plt.xlim(0, D.shape[0])
+    plt.ylim(0,255)
+    plt.show()
 
-for j in (0,1,2):
-    plt.plot(thickF[:, 175, j], c=RGB[j])
-plt.xlim(0, thickF.shape[0])
-plt.ylim(0,255)
-plt.show()
+    for j in (0,1,2):
+        plt.plot(DF[:, 175, j], c=RGB[j])
+    plt.xlim(0, DF.shape[0])
+    plt.ylim(0,255)
+    plt.show()
+
