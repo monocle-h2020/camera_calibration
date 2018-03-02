@@ -45,15 +45,9 @@ for D in (thickF, thinF):
     plt.show()
 
 for D, DF in zip([thick, thin], [thickF, thinF]):
-    for j in (0,1,2):
-        plt.plot(D[:, 175, j], c=RGB[j])
-    plt.xlim(0, D.shape[0])
-    plt.ylim(0,255)
-    plt.show()
-
-    for j in (0,1,2):
-        plt.plot(DF[:, 175, j], c=RGB[j])
-    plt.xlim(0, DF.shape[0])
-    plt.ylim(0,255)
-    plt.show()
-
+    for d in (D, DF):
+        for j in (0,1,2):
+            plt.plot(d[:, 175, j], c=RGB[j])
+        plt.xlim(0, d.shape[0])
+        plt.ylim(0,255)
+        plt.show()
