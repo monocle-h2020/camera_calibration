@@ -10,6 +10,8 @@ filename = argv[1]
 
 TLpeaks = np.array([436.6, 487.7, 544.45, 611.6])
 
+degree = 2
+
 col0 = 1530
 col1 = 1911
 col2 = 1970
@@ -42,10 +44,10 @@ for D, ex in zip([thickF, thinF], [(col0, col1), (col2, col3)]):
     plt.imshow(D.astype("uint8"), extent=(*ex, row1, row0))
     plt.show()
 
-def rgbplot(x, y, func=plt.plot):
+def rgbplot(x, y, func=plt.plot, **kwargs):
     RGB = ["R", "G", "B"]
     for j in (0,1,2):
-        func(x, y[..., j], c=RGB[j])
+        func(x, y[..., j], c=RGB[j], **kwargs)
 
 for D, DF in zip([thick, thin], [thickF, thinF]):
     for d in (D, DF):
@@ -74,41 +76,38 @@ plt.show()
 p_diff = p - p_fit
 print(f"Mean difference {p_diff.mean():.1f}, STD {p_diff.std():.1f}")
 
-coeffarr = np.tile(np.nan, (y.shape[0], 2))
+coeffarr = np.tile(np.nan, (y.shape[0], degree+1))
 wvlfit = np.tile(np.nan, (y.shape[0], 3))
 for i, col in enumerate(y):
-    coeffarr[i] = np.polyfit(p_fit[i], TLpeaks[[3,2,0]], 1)
+    coeffarr[i] = np.polyfit(p_fit[i], TLpeaks[[3,2,0]], degree)
     wvlfit[i] = np.polyval(coeffarr[i], p_fit[i])
 
-x2 = (TLpeaks[2]-coeffarr[:,1])/coeffarr[:,0]
-x3 = (TLpeaks[3]-coeffarr[:,1])/coeffarr[:,0]
-for D, ex in zip([thick, thin], [(col0, col1), (col2, col3)]):
-    plt.imshow(D.astype("uint8"), extent=(*ex, row1, row0))
-    plt.plot(y, x2, ls="--", c="w")
-    plt.plot(y, x3, ls="--", c="w")
-    plt.xlim(*ex)
+rgbplot(y, wvlfit-TLpeaks[[3,2,0]],func=plt.scatter)
+
+#x2 = (TLpeaks[2]-coeffarr[:,1])/coeffarr[:,0]
+#x3 = (TLpeaks[3]-coeffarr[:,1])/coeffarr[:,0]
+#for D, ex in zip([thick, thin], [(col0, col1), (col2, col3)]):
+#    plt.imshow(D.astype("uint8"), extent=(*ex, row1, row0))
+#    plt.plot(y, x2, ls="--", c="w")
+#    plt.plot(y, x3, ls="--", c="w")
+#    plt.xlim(*ex)
+#    plt.show()
+
+coeff_coeff = np.array([np.polyfit(y, coeffarr[:, i], 2) for i in range(degree+1)])
+coeff_fit = np.array([np.polyval(coeff, y) for coeff in coeff_coeff]).T
+for i in range(degree+1):
+    plt.scatter(y, coeffarr[:,i], c='r')
+    plt.plot(y, coeff_fit[:,i], c='k', lw=3)
     plt.show()
 
-aco = np.polyfit(y, coeffarr[:,0], 2)
-afit = np.polyval(aco, y)
-bco = np.polyfit(y, coeffarr[:,1], 2)
-bfit = np.polyval(bco, y)
-plt.plot(y, coeffarr[:,0], c='r')
-plt.plot(y, afit, c='k')
-plt.show()
-plt.plot(y, coeffarr[:,1], c='r')
-plt.plot(y, bfit, c='k')
-plt.show()
-
-def wavelength_fit(y, a_coeff, b_coeff):
-    a = np.polyval(a_coeff, y)
-    b = np.polyval(b_coeff, y)
+def wavelength_fit(y, *coeff_coeff):
+    coeff = [np.polyval(co, y) for co in coeff_coeff]
     def wavelength(x):
-        return a*x + b
+        return np.polyval(coeff, x)
     return wavelength
 
 column = 1700
-lam = wavelength_fit(column, aco, bco)(x)
+lam = wavelength_fit(column, *coeff_coeff)(x)
 rgbplot(lam, thickF[:, column-col0])
 plt.xlim(370, 740)
 plt.ylim(0, 255)
@@ -118,14 +117,14 @@ def interpolate(wavelengths, rgb, lamrange):
     interpolated = np.vstack([np.interp(lamrange, wavelengths, rgb[:,j]) for j in (0,1,2)]).T
     return interpolated
 
-def stack(column0, rgb, a_coeff, b_coeff, lamrange = np.arange(370, 740, 0.25)):
-    wavelength_funcs = [wavelength_fit(c, a_coeff, b_coeff) for c in range(column0, column0+rgb.shape[1])]
+def stack(column0, rgb, *coeff_coeff, lamrange = np.arange(370, 740, 0.25)):
+    wavelength_funcs = [wavelength_fit(c, *coeff_coeff) for c in range(column0, column0+rgb.shape[1])]
     interpolated = np.array([interpolate(wavelength_funcs[i](x), rgb[:,i], lamrange) for i in range(rgb.shape[1])])
     mean = interpolated.mean(axis=0)
     return lamrange, mean
 
 for D, c in zip([thickF, thinF], [col0, col2]):
-    wavelength, intensity = stack(c, D, aco, bco)
+    wavelength, intensity = stack(c, D, *coeff_coeff)
     rgbplot(wavelength, intensity)
     plt.xlim(370, 740)
     plt.ylim(0,255)
