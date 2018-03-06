@@ -17,9 +17,12 @@ col1 = 1911
 col2 = 1970
 col3 = 2315
 
-row0 = 2200
-row1 = 3700
+row0 = 2150
+row1 = 3900
 x = np.arange(row0, row1)
+
+lam0 = 350
+lam1 = 750
 
 img = rawpy.imread(filename)
 data = img.postprocess(use_camera_wb=True, gamma=(1,1), output_bps=8)
@@ -52,6 +55,7 @@ def rgbplot(x, y, func=plt.plot, **kwargs):
 for D, DF in zip([thick, thin], [thickF, thinF]):
     for d in (D, DF):
         rgbplot(x, d[:, 100])
+#        plt.plot(x, d[:,100,2]*d[:,100,1]/7, c='k')
         plt.xlim(row0, row1)
         plt.ylim(0,255)
         plt.show()
@@ -68,9 +72,8 @@ for j in (0,1,2):
     coeff = np.polyfit(y, p[:,j], 2)
     p_fit[:,j] = np.polyval(coeff, y)
 
-rgbplot(y, p)
-plt.show()
-rgbplot(y, p_fit)
+rgbplot(y, p, func=plt.scatter, alpha=0.03)
+rgbplot(y, p_fit, ls="--")
 plt.show()
 
 p_diff = p - p_fit
@@ -109,7 +112,7 @@ def wavelength_fit(y, *coeff_coeff):
 column = 1700
 lam = wavelength_fit(column, *coeff_coeff)(x)
 rgbplot(lam, thickF[:, column-col0])
-plt.xlim(370, 740)
+plt.xlim(lam0, lam1)
 plt.ylim(0, 255)
 plt.show()
 
@@ -117,15 +120,28 @@ def interpolate(wavelengths, rgb, lamrange):
     interpolated = np.vstack([np.interp(lamrange, wavelengths, rgb[:,j]) for j in (0,1,2)]).T
     return interpolated
 
-def stack(column0, rgb, *coeff_coeff, lamrange = np.arange(370, 740, 0.25)):
+def stack(column0, rgb, *coeff_coeff, lamrange = np.arange(lam0, lam1, 0.25)):
     wavelength_funcs = [wavelength_fit(c, *coeff_coeff) for c in range(column0, column0+rgb.shape[1])]
     interpolated = np.array([interpolate(wavelength_funcs[i](x), rgb[:,i], lamrange) for i in range(rgb.shape[1])])
     mean = interpolated.mean(axis=0)
     return lamrange, mean
 
-for D, c in zip([thickF, thinF], [col0, col2]):
-    wavelength, intensity = stack(c, D, *coeff_coeff)
-    rgbplot(wavelength, intensity)
-    plt.xlim(370, 740)
-    plt.ylim(0,255)
+wavelength, intensity_thick = stack(col0, thickF, *coeff_coeff)
+wavelength, intensity_thin  = stack(col2, thinF , *coeff_coeff)
+
+for i in (intensity_thick, intensity_thin):
+    rgbplot(wavelength, i)
+    plt.xlim(lam0, lam1)
+    plt.ylim(0, 255)
     plt.show()
+
+def resolution(wavelength, intensity):
+    max_px = intensity.argmax()
+    max_in = intensity.max()
+    half_right = np.where(intensity[max_px:] < max_in/2.)[0][0] + max_px
+    half_left  = max_px - np.where(intensity[max_px::-1] < max_in/2.)[0][0]
+    return wavelength[half_right] - wavelength[half_left]
+
+for profile in [*intensity_thick.T, *intensity_thin.T]:
+    res = resolution(wavelength, profile)
+    print(f"{res:.1f} nm")
