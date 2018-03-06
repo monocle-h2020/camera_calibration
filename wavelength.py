@@ -8,12 +8,11 @@ from scipy.optimize import curve_fit
 
 filename = argv[1]
 
-RGB = ["r", "g", "b"]
 TLpeaks = np.array([436.6, 487.7, 544.45, 611.6])
 
-col0 = 1501
+col0 = 1530
 col1 = 1911
-col2 = 1949
+col2 = 1970
 col3 = 2315
 
 row0 = 2200
@@ -111,20 +110,22 @@ def wavelength_fit(y, a_coeff, b_coeff):
 column = 1700
 lam = wavelength_fit(column, aco, bco)(x)
 rgbplot(lam, thickF[:, column-col0])
+plt.xlim(370, 740)
+plt.ylim(0, 255)
 plt.show()
 
 def interpolate(wavelengths, rgb, lamrange):
     interpolated = np.vstack([np.interp(lamrange, wavelengths, rgb[:,j]) for j in (0,1,2)]).T
     return interpolated
 
-def stack(column0, rgb, lamrange = np.arange(370, 740)):
-    wavelength_funcs = [wavelength_fit(c, aco, bco) for c in range(column0, column0+rgb.shape[1])]
+def stack(column0, rgb, a_coeff, b_coeff, lamrange = np.arange(370, 740, 0.25)):
+    wavelength_funcs = [wavelength_fit(c, a_coeff, b_coeff) for c in range(column0, column0+rgb.shape[1])]
     interpolated = np.array([interpolate(wavelength_funcs[i](x), rgb[:,i], lamrange) for i in range(rgb.shape[1])])
     mean = interpolated.mean(axis=0)
     return lamrange, mean
 
 for D, c in zip([thickF, thinF], [col0, col2]):
-    wavelength, intensity = stack(c, D)
+    wavelength, intensity = stack(c, D, aco, bco)
     rgbplot(wavelength, intensity)
     plt.xlim(370, 740)
     plt.ylim(0,255)
