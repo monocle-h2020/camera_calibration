@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import rawpy
-from cv2 import resize
 from scipy.ndimage.filters import gaussian_filter1d as gauss
 from sys import argv
 from scipy.optimize import curve_fit
+from exifread import process_file
 
 filename = argv[1]
 
@@ -26,6 +26,9 @@ lam1 = 750
 
 img = rawpy.imread(filename)
 data = img.postprocess(use_camera_wb=True, gamma=(1,1), output_bps=8)
+
+with open(filename, "rb") as f:
+    exif = process_file(f)
 
 thick = data[row0:row1, col0:col1]
 thin  = data[row0:row1, col2:col3]
