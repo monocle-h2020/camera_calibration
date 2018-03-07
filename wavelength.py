@@ -48,6 +48,8 @@ thinF  = gauss_filter(thin )
 
 for D, ex in zip([thickF, thinF], [(col0, col1), (col2, col3)]):
     plt.imshow(D.astype("uint8"), extent=(*ex, row1, row0))
+    plt.xlabel("$y$")
+    plt.ylabel("$x$")
     plt.show()
 
 def rgbplot(x, y, func=plt.plot, **kwargs):
@@ -55,12 +57,17 @@ def rgbplot(x, y, func=plt.plot, **kwargs):
     for j in (0,1,2):
         func(x, y[..., j], c=RGB[j], **kwargs)
 
+x_example = 100
 for D, DF in zip([thick, thin], [thickF, thinF]):
     for d in (D, DF):
-        rgbplot(x, d[:, 100])
+        rgbplot(x, d[:, x_example])
 #        plt.plot(x, d[:,100,2]*d[:,100,1]/7, c='k')
         plt.xlim(row0, row1)
         plt.ylim(0,255)
+        # adjust title to absolute column value!
+        plt.title(f"RGB values at $x = {x_example}$")
+        plt.xlabel("$y$")
+        plt.ylabel("$C$")
         plt.show()
 
 def find_3peaks(D, start=0):
@@ -77,10 +84,13 @@ for j in (0,1,2):
 
 rgbplot(y, p, func=plt.scatter, alpha=0.03)
 rgbplot(y, p_fit, ls="--")
+plt.title("Locations of RGB maxima")
+plt.xlabel("$y$")
+plt.ylabel("$x_{peak}$%")
 plt.show()
 
 p_diff = p - p_fit
-print(f"Mean difference {p_diff.mean():.1f}, STD {p_diff.std():.1f}")
+print(f"Mean difference in peak location: {p_diff.mean():.1f}, STD {p_diff.std():.1f}")
 
 coeffarr = np.tile(np.nan, (y.shape[0], degree+1))
 wvlfit = np.tile(np.nan, (y.shape[0], 3))
@@ -104,6 +114,11 @@ coeff_fit = np.array([np.polyval(coeff, y) for coeff in coeff_coeff]).T
 for i in range(degree+1):
     plt.scatter(y, coeffarr[:,i], c='r')
     plt.plot(y, coeff_fit[:,i], c='k', lw=3)
+    plt.xlim(y[0], y[-1])
+    plt.ylim(coeffarr[:,i].min(), coeffarr[:,i].max())
+    plt.title(f"Coefficient {i} of wavelength fit")
+    plt.xlabel("$y$")
+    plt.ylabel(f"$p_{i}$")
     plt.show()
 
 def wavelength_fit(y, *coeff_coeff):
@@ -111,13 +126,6 @@ def wavelength_fit(y, *coeff_coeff):
     def wavelength(x):
         return np.polyval(coeff, x)
     return wavelength
-
-column = 1700
-lam = wavelength_fit(column, *coeff_coeff)(x)
-rgbplot(lam, thickF[:, column-col0])
-plt.xlim(lam0, lam1)
-plt.ylim(0, 255)
-plt.show()
 
 def interpolate(wavelengths, rgb, lamrange):
     interpolated = np.vstack([np.interp(lamrange, wavelengths, rgb[:,j]) for j in (0,1,2)]).T
@@ -137,7 +145,10 @@ wavelength, intensity_thin  = stack(col2, thinF , *coeff_coeff)
 for i in (intensity_thick, intensity_thin):
     rgbplot(wavelength, i)
     plt.xlim(lam0, lam1)
-    plt.ylim(0, 255)
+    plt.ylim(ymin=0)
+    plt.title("Stacked RGB spectrum")
+    plt.xlabel("$\lambda$ (nm)")
+    plt.ylabel("C (a.u.)")
     plt.show()
 
 def resolution(wavelength, intensity):
@@ -149,4 +160,4 @@ def resolution(wavelength, intensity):
 
 for profile in [*intensity_thick.T, *intensity_thin.T]:
     res = resolution(wavelength, profile)
-    print(f"{res:.1f} nm")
+    print(f"Resolution: {res:.1f} nm")
