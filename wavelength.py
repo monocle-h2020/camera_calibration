@@ -125,7 +125,8 @@ def interpolate(wavelengths, rgb, lamrange):
 
 def stack(column0, rgb, *coeff_coeff, lamrange = np.arange(lam0, lam1, 0.25)):
     wavelength_funcs = [wavelength_fit(c, *coeff_coeff) for c in range(column0, column0+rgb.shape[1])]
-    interpolated = np.array([interpolate(wavelength_funcs[i](x), rgb[:,i], lamrange) for i in range(rgb.shape[1])])
+    wavelengths = np.array([f(x) for f in wavelength_funcs])
+    interpolated = np.array([interpolate(wavelengths[i], rgb[:,i], lamrange) for i in range(rgb.shape[1])])
     mean = interpolated.mean(axis=0)
     return lamrange, mean
 
