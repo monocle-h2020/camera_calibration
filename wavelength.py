@@ -161,3 +161,13 @@ def resolution(wavelength, intensity):
 for profile in [*intensity_thick.T, *intensity_thin.T]:
     res = resolution(wavelength, profile)
     print(f"Resolution: {res:.1f} nm")
+
+wb = data[row0:row1, :col0-100].mean(axis=(0,1))
+for i in (intensity_thick, intensity_thin):
+    rgbplot(wavelength, i/wb)
+    plt.xlim(lam0, lam1)
+    plt.ylim(ymin=0)
+    plt.title("Stacked RGB spectrum (post-WB)")
+    plt.xlabel("$\lambda$ (nm)")
+    plt.ylabel("C (a.u.)")
+    plt.show()
