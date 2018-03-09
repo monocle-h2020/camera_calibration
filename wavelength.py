@@ -1,10 +1,11 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import rawpy
-from scipy.ndimage.filters import gaussian_filter1d as gauss
 from sys import argv
 from scipy.optimize import curve_fit
 from exifread import process_file
+
+from ispex import general, io, plot
 
 filename = argv[1]
 
@@ -24,43 +25,26 @@ x = np.arange(row0, row1)
 lam0 = 350
 lam1 = 750
 
-img = rawpy.imread(filename)
-data = img.postprocess(use_camera_wb=True, gamma=(1,1), output_bps=8)
+data = io.load_dng(filename)
 
-with open(filename, "rb") as f:
-    exif = process_file(f)
+exif = io.load_exif(filename)
 
 thick = data[row0:row1, col0:col1]
 thin  = data[row0:row1, col2:col3]
 
-for D, ex in zip([thick, thin], [(col0, col1), (col2, col3)]):
-    plt.imshow(D, extent=(*ex, row1, row0))
-    plt.show()
+plot.plot_photo(thick, extent=(col0, col1, row1, row0))
+plot.plot_photo(thin , extent=(col2, col3, row1, row0))
 
-def gauss_filter(D, sigma=7, *args, **kwargs):
-    """
-    Apply a 1-D Gaussian kernel along the wavelength axis
-    """
-    return gauss(D.astype(float), sigma, *args, axis=0, **kwargs)
+thickF = general.gauss_filter(thick)
+thinF  = general.gauss_filter(thin )
 
-thickF = gauss_filter(thick)
-thinF  = gauss_filter(thin )
-
-for D, ex in zip([thickF, thinF], [(col0, col1), (col2, col3)]):
-    plt.imshow(D.astype("uint8"), extent=(*ex, row1, row0))
-    plt.xlabel("$y$")
-    plt.ylabel("$x$")
-    plt.show()
-
-def rgbplot(x, y, func=plt.plot, **kwargs):
-    RGB = ["R", "G", "B"]
-    for j in (0,1,2):
-        func(x, y[..., j], c=RGB[j], **kwargs)
+plot.plot_photo(thickF, extent=(col0, col1, row1, row0))
+plot.plot_photo(thinF , extent=(col2, col3, row1, row0))
 
 x_example = 100
 for D, DF in zip([thick, thin], [thickF, thinF]):
     for d in (D, DF):
-        rgbplot(x, d[:, x_example])
+        plot._rgbplot(x, d[:, x_example])
 #        plt.plot(x, d[:,100,2]*d[:,100,1]/7, c='k')
         plt.xlim(row0, row1)
         plt.ylim(0,255)
@@ -82,8 +66,8 @@ for j in (0,1,2):
     coeff = np.polyfit(y, p[:,j], 2)
     p_fit[:,j] = np.polyval(coeff, y)
 
-rgbplot(y, p, func=plt.scatter, alpha=0.03)
-rgbplot(y, p_fit, ls="--")
+plot._rgbplot(y, p, func=plt.scatter, alpha=0.03)
+plot._rgbplot(y, p_fit, ls="--")
 plt.title("Locations of RGB maxima")
 plt.xlabel("$y$")
 plt.ylabel("$x_{peak}$%")
@@ -98,7 +82,7 @@ for i, col in enumerate(y):
     coeffarr[i] = np.polyfit(p_fit[i], TLpeaks[[3,2,0]], degree)
     wvlfit[i] = np.polyval(coeffarr[i], p_fit[i])
 
-rgbplot(y, wvlfit-TLpeaks[[3,2,0]],func=plt.scatter)
+plot._rgbplot(y, wvlfit-TLpeaks[[3,2,0]],func=plt.scatter)
 
 #x2 = (TLpeaks[2]-coeffarr[:,1])/coeffarr[:,0]
 #x3 = (TLpeaks[3]-coeffarr[:,1])/coeffarr[:,0]
@@ -143,7 +127,7 @@ wavelength, intensity_thick = stack(col0, thickF, *coeff_coeff)
 wavelength, intensity_thin  = stack(col2, thinF , *coeff_coeff)
 
 for i in (intensity_thick, intensity_thin):
-    rgbplot(wavelength, i)
+    plot._rgbplot(wavelength, i)
     plt.xlim(lam0, lam1)
     plt.ylim(ymin=0)
     plt.title("Stacked RGB spectrum")
@@ -164,7 +148,7 @@ for profile in [*intensity_thick.T, *intensity_thin.T]:
 
 wb = data[row0:row1, :col0-100].mean(axis=(0,1))
 for i in (intensity_thick, intensity_thin):
-    rgbplot(wavelength, i/wb)
+    plot._rgbplot(wavelength, i/wb)
     plt.xlim(lam0, lam1)
     plt.ylim(ymin=0)
     plt.title("Stacked RGB spectrum (post-WB)")
