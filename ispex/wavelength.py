@@ -63,3 +63,10 @@ def resolution(wavelengths, intensity):
     half_right = np.where(intensity[max_px:] < max_in/2.)[0][0] + max_px
     half_left  = max_px - np.where(intensity[max_px::-1] < max_in/2.)[0][0]
     return wavelengths[half_right] - wavelengths[half_left]
+
+def save_coefficients(coefficients, saveto="wavelength.npy"):
+    np.save(saveto, coefficients)
+
+def load_coefficients(filename="wavelength.npy"):
+    coefficients = np.load(filename)
+    return coefficients
