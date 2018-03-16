@@ -55,6 +55,6 @@ for profile in [*intensity_thick.T, *intensity_thin.T]:
     res = wavelength.resolution(wavelengths, profile)
     print(f"Resolution: {res:.1f} nm")
 
-wb = general.white_balance(data, (row0, row1), col0)
+wb = general.find_white_balance(data, (row0, row1), col0)
 plot.plot_spectrum(wavelengths, intensity_thick/wb, title="Stacked thick RGB spectrum (post-WB)", ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
 plot.plot_spectrum(wavelengths, intensity_thin/wb , title="Stacked thin RGB spectrum (post-WB)" , ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)

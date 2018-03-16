@@ -13,6 +13,7 @@ def _rgbplot(x, y, func=plt.plot, **kwargs):
         func(x, y[..., j], c=RGB[j], **kwargs)
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
+    plt.figure(figsize=(10, 5))
     _rgbplot(x, y)
     plt.axis("tight")
     plt.xlabel(xlabel)
