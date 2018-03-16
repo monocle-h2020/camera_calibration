@@ -1,3 +1,5 @@
+from .general import x_spectrum, y_thick, y_thin, y
+
 import numpy as np
 
 fluorescent_lines = np.array([611.6, 544.45, 436.6])
@@ -9,17 +11,16 @@ wavelength_limits = (350, 750)
 def find_RGB_lines(image, offset=0):
     return image.argmax(axis=0) + offset
 
-def find_fluorescent_lines(thick, thin, columns, offset=0):
+def find_fluorescent_lines(thick, thin, offset=x_spectrum[0]):
     lines_thick = find_RGB_lines(thick, offset=offset)
     lines_thin  = find_RGB_lines(thin , offset=offset)
-    y = np.concatenate((np.arange(columns[0], columns[1]), np.arange(columns[2], columns[3])))
     l = np.concatenate((lines_thick, lines_thin))
     l_fit = l.copy()
     for j in (0,1,2):  # fit separately for R, G, B
         coeff = np.polyfit(y, l[:,j], degree_of_spectral_line_fit)
         l_fit[:,j] = np.polyval(coeff, y)
 
-    return y, l, l_fit
+    return l, l_fit
 
 def fit_single_wavelength_relation(lines):
     coeffs = np.polyfit(lines, fluorescent_lines, degree_of_wavelength_fit)
@@ -47,7 +48,7 @@ def interpolate(wavelengths, rgb, lambdarange):
     interpolated = np.vstack([np.interp(lambdarange, wavelengths, rgb[:,j]) for j in (0,1,2)]).T
     return interpolated
 
-def stack(x, rgb, coeff, yoffset=0, lambdarange = np.arange(*wavelength_limits, 0.25)):
+def stack(x, rgb, coeff, yoffset=0, lambdarange = np.arange(*wavelength_limits, 0.5)):
     wavelength_funcs = [wavelength_fit(c, *coeff) for c in range(yoffset, yoffset+rgb.shape[1])]
     wavelengths = np.array([f(x) for f in wavelength_funcs])
     # divide by nm/px to get intensity per nm
