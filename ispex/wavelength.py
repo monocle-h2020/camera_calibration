@@ -57,11 +57,11 @@ def stack(x, rgb, coeff, yoffset=0, lambdarange = np.arange(*wavelength_limits, 
     means = interpolated.mean(axis=0)
     return lambdarange, means
 
-def resolution(wavelengths, intensity):
+def resolution(wavelengths, intensity, limit=0.5):
     max_px = intensity.argmax()
     max_in = intensity.max()
-    half_right = np.where(intensity[max_px:] < max_in/2.)[0][0] + max_px
-    half_left  = max_px - np.where(intensity[max_px::-1] < max_in/2.)[0][0]
+    half_right = np.where(intensity[max_px:] < max_in*limit)[0][0] + max_px
+    half_left  = max_px - np.where(intensity[max_px::-1] < max_in*limit)[0][0]
     return wavelengths[half_right] - wavelengths[half_left]
 
 def save_coefficients(coefficients, saveto="wavelength.npy"):
