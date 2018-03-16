@@ -40,3 +40,9 @@ intensity_thick /= wb
 intensity_thin  /= wb
 plot.plot_spectrum(wavelengths, intensity_thick, title="Stacked thick RGB spectrum (post-WB)", ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
 plot.plot_spectrum(wavelengths, intensity_thin , title="Stacked thin RGB spectrum (post-WB)" , ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
+
+filter_curves = np.load("filtercurves.npy")
+intensity_thick /= filter_curves
+intensity_thin  /= filter_curves
+plot.plot_spectrum(wavelengths, intensity_thick, title="Stacked thick RGB spectrum (post-FC)", ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
+plot.plot_spectrum(wavelengths, intensity_thin , title="Stacked thin RGB spectrum (post-FC)" , ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)

@@ -37,8 +37,20 @@ plot.plot_spectrum(wavelengths, intensity_thin , title="Stacked thin RGB spectru
 
 for profile in [*intensity_thick.T, *intensity_thin.T]:
     res = wavelength.resolution(wavelengths, profile)
-    print(f"Resolution: {res:.1f} nm")
+    print(f"Width: {res:.1f} nm")
+
+bb = general.blackbody(wavelengths)
+intensity_thick /= bb[:,np.newaxis]
+intensity_thin  /= bb[:,np.newaxis]
 
 wb = general.find_white_balance(data)
-plot.plot_spectrum(wavelengths, intensity_thick/wb, title="Stacked thick RGB spectrum (post-WB)", ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
-plot.plot_spectrum(wavelengths, intensity_thin/wb , title="Stacked thin RGB spectrum (post-WB)" , ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
+intensity_thick /= wb
+intensity_thin  /= wb
+plot.plot_spectrum(wavelengths, intensity_thick, title="Stacked thick RGB spectrum (post-WB)", ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
+plot.plot_spectrum(wavelengths, intensity_thin , title="Stacked thin RGB spectrum (post-WB)" , ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
+
+filter_curves = intensity_thick + 2.35*intensity_thin
+filter_curves = filter_curves / filter_curves.max()
+filter_curves[filter_curves < 0.1] = np.nan
+plot.plot_spectrum(wavelengths, filter_curves, title="Filter curves", ylabel="C (au)", ylim=(0, None), xlim=wavelength.wavelength_limits)
+np.save("filtercurves.npy", filter_curves)
