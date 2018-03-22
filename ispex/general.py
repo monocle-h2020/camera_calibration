@@ -8,7 +8,7 @@ y = np.concatenate((np.arange(*y_thick), np.arange(*y_thin)))
 x_spectrum = (2150, 3900)
 x = np.arange(*x_spectrum)
 
-def gauss_filter(D, sigma=7, *args, **kwargs):
+def gauss_filter(D, sigma=5, *args, **kwargs):
     """
     Apply a 1-D Gaussian kernel along one axis
     """

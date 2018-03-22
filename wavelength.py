@@ -15,8 +15,8 @@ thick, thin = general.split_spectrum(data)
 plot.plot_photo(thick, extent=(*y_thick, *x_spectrum[::-1]))
 plot.plot_photo(thin , extent=(*y_thin , *x_spectrum[::-1]))
 
-thickF = general.gauss_filter(thick)
-thinF  = general.gauss_filter(thin )
+thickF = general.gauss_filter(thick, sigma=9)
+thinF  = general.gauss_filter(thin , sigma=9)
 
 plot.plot_photo(thickF, extent=(*y_thick, *x_spectrum[::-1]))
 plot.plot_photo(thinF , extent=(*y_thin , *x_spectrum[::-1]))
