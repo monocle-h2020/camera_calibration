@@ -39,7 +39,7 @@ for profile in [*intensity_thick.T, *intensity_thin.T]:
     res = wavelength.resolution(wavelengths, profile)
     print(f"Width: {res:.1f} nm")
 
-bb = general.blackbody(wavelengths)
+bb = general.blackbody(wavelengths, norm=1)
 intensity_thick /= bb[:,np.newaxis]
 intensity_thin  /= bb[:,np.newaxis]
 

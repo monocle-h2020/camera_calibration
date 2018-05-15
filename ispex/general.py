@@ -25,5 +25,7 @@ def find_white_balance(data):
 def correct_white_balance(data, white_balance):
     return data/white_balance
 
-def blackbody(wavelengths, temperature=5777):
-    return blackbody_lambda(wavelengths*10, temperature).value
+def blackbody(wavelengths, temperature=5777, norm=1):
+    bb = blackbody_lambda(wavelengths*10, temperature).value
+    bb = bb / bb.max() * norm
+    return bb
