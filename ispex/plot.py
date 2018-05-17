@@ -51,3 +51,14 @@ def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, sav
 def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
     for j in range(coefficients_fit.shape[1]):
         _wavelength_coefficients_single(y, coefficients[:,j], coefficients_fit[:,j], nr=j, saveto=saveto)
+
+def histogram(data, saveto=None, **kwargs):
+    counts = np.bincount(data.flatten())
+    plt.scatter(np.arange(len(counts)), counts, **kwargs)
+    plt.yscale("log")
+    plt.ylim(ymin=0.9)
+    plt.xlim(0, len(counts)*1.01)
+    plt.xlabel("RGB value")
+    plt.ylabel("Number of pixels")
+    plt.tight_layout(True)
+    _saveshow(saveto)
