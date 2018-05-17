@@ -1,11 +1,13 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-def _saveshow(saveto=None):
+def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
         plt.show()
     else:
-        plt.savefig(saveto)
+        plt.savefig(saveto, **kwargs)
+    if close:
+        plt.close()
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
     RGB = ["R", "G", "B"]
@@ -62,3 +64,14 @@ def histogram(data, saveto=None, **kwargs):
     plt.ylabel("Number of pixels")
     plt.tight_layout(True)
     _saveshow(saveto)
+
+def RGBG(R, G, B, G2, saveto=None, size=13, **kwargs):
+    fig, axs = plt.subplots(2,2,sharex=True,sharey=True,figsize=(size,size*0.77))
+    axs[0,0].imshow(B,  cmap=plt.cm.Blues_r , **kwargs)
+    axs[0,1].imshow(G,  cmap=plt.cm.Greens_r, **kwargs)
+    axs[1,0].imshow(G2, cmap=plt.cm.Greens_r, **kwargs)
+    axs[1,1].imshow(R,  cmap=plt.cm.Reds_r  , **kwargs)
+    for ax in axs.ravel():
+        ax.axis("off")
+    fig.subplots_adjust(hspace=.001, wspace=.001)
+    _saveshow(saveto, transparent=True)

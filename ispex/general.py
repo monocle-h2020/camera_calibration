@@ -12,7 +12,7 @@ def gauss_filter(D, sigma=5, *args, **kwargs):
     """
     Apply a 1-D Gaussian kernel along one axis
     """
-    return gauss(D.astype(float), sigma, *args, axis=0, **kwargs)
+    return gauss(D.astype(float), sigma, *args, axis=1, **kwargs)
 
 def split_spectrum(data):
     thick = data[x_spectrum[0]:x_spectrum[1], y_thick[0]:y_thick[1]]
