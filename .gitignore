@@ -1,4 +1,5 @@
 *.avi
+*.png
 spectra/*
 
 # Byte-compiled / optimized / DLL files
