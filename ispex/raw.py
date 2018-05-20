@@ -2,7 +2,7 @@ import numpy as np
 
 range_x = (1150, 1750)
 range_y = (550, 735)
-
+x = np.arange(*range_x)
 
 def _find_offset(color_pattern, colour):
     pos = np.array(np.where(color_pattern == colour)).T[0]
