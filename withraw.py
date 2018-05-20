@@ -3,6 +3,7 @@ import rawpy
 from sys import argv
 from matplotlib import pyplot as plt, patheffects as pe
 from ispex.general import gauss_filter
+from ispex.raw import pull_apart, put_together, split_RGBG
 from ispex import plot
 
 filename = argv[1]
