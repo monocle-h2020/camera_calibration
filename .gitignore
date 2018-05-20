@@ -1,6 +1,7 @@
 *.avi
 *.png
 spectra/*
+reference_spectra/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
