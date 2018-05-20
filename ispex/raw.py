@@ -1,5 +1,8 @@
 import numpy as np
 
+range_x = (1150, 1750)
+range_y = (550, 735)
+
 
 def _find_offset(color_pattern, colour):
     pos = np.array(np.where(color_pattern == colour)).T[0]
@@ -29,3 +32,8 @@ def split_RGBG(RGBG):
     R, G, B, G2 = RGBG.T
     R, G, B, G2 = R.T, G.T, B.T, G2.T
     return R, G, B, G2
+
+
+def cut_out_spectrum(RGBG):
+    cut = RGBG[range_y[0]:range_y[1], range_x[0]:range_x[1], :]
+    return cut
