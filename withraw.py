@@ -9,7 +9,7 @@ from ispex import plot, io
 filename = argv[1]
 handle = filename.split()
 
-img = rawpy.imread(filename)
+img = io.load_dng_raw(filename)
 imgarray = img.raw_image.astype(np.int16)
 RGBG, offsets = raw.pull_apart(imgarray, img.raw_pattern)
 
