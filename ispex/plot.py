@@ -39,11 +39,15 @@ def plot_photo(data, saveto=None, **kwargs):
     _saveshow(saveto)
 
 def fluorescent_lines(y, lines, lines_fit, saveto=None):
-    _rgbplot(y, lines, func=plt.scatter, alpha=0.03)
-    _rgbplot(y, lines_fit, ls="--")
+    plt.figure(figsize=(13, 10))
+    _rgbplot(y, lines, func=plt.scatter, s=25)
+    p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
+    _rgbplot(y, lines_fit, path_effects=p_eff)
     plt.title("Locations of RGB maxima")
     plt.xlabel("$y$")
     plt.ylabel("$x_{peak}$")
+    plt.axis("tight")
+    plt.tight_layout()
     _saveshow(saveto)
 
 def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, saveto=None):
@@ -87,6 +91,7 @@ def _to_8_bit(data, maxvalue=4096, boost=1):
     converted = (data / maxvalue * 255).astype(np.uint8)
     converted = boost * converted - (boost-1) * 30
     converted[converted > 255] = 255
+    converted[converted < 0]   = 0
     return converted
 
 def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=1, show_axes=False, **kwargs):
@@ -96,8 +101,8 @@ def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=1, show_axes=F
     plt.figure(figsize=(size,size))
     to_plot = _to_8_bit(RGBG[:,:,:3], maxvalue=maxvalue, boost=boost)
     plt.imshow(to_plot, **kwargs)
-    plt.xlabel("Pixel")
-    plt.ylabel("Pixel")
+    plt.xlabel("Pixel $x$")
+    plt.ylabel("Pixel $y$")
     if not show_axes:
         plt.axis("off")
     _saveshow(saveto, transparent=True)
@@ -109,8 +114,8 @@ def RGBG_stacked_with_graph(RGBG, x=x_raw, yrange=range_y, maxvalue=4096, boost=
 
     fig, ax1 = plt.subplots(figsize=(17,5))
     ax1.imshow(stacked_8_bit, extent=(x[0], x[-1], yrange[1], yrange[0]))
-    ax1.set_xlabel("Pixel")
-    ax1.set_ylabel("Pixel")
+    ax1.set_xlabel("Pixel $x$")
+    ax1.set_ylabel("Pixel $y$")
     ax1.set_ylim(yrange[1], yrange[0])
 
     ax2 = ax1.twinx()
@@ -124,8 +129,8 @@ def RGBG_stacked_with_graph(RGBG, x=x_raw, yrange=range_y, maxvalue=4096, boost=
     fig.tight_layout()
     _saveshow(saveto, transparent=True)
 
-def Bayer(RGB_array, size=40.32, saveto=None, **kwargs):
-    plt.figure(figsize=(size, size*0.75))
+def Bayer(RGB_array, size=10, saveto=None, **kwargs):
+    plt.figure(figsize=(size, size))
     plt.imshow(RGB_array, aspect="equal", interpolation="none", **kwargs)
     plt.axis("off")
-    _saveshow(saveto, transparent=True)
+    _saveshow(saveto, transparent=True, dpi=900)
