@@ -77,20 +77,21 @@ def histogram(data, saveto=None, **kwargs):
 
 def RGBG(RGBG, saveto=None, size=13, **kwargs):
     R, G, B, G2 = raw.split_RGBG(RGBG)
-    fig, axs = plt.subplots(2,2,sharex=True,sharey=True,figsize=(size,size*0.77))
-    axs[0,0].imshow(B,  cmap=plt.cm.Blues_r , **kwargs)
-    axs[0,1].imshow(G,  cmap=plt.cm.Greens_r, **kwargs)
-    axs[1,0].imshow(G2, cmap=plt.cm.Greens_r, **kwargs)
-    axs[1,1].imshow(R,  cmap=plt.cm.Reds_r  , **kwargs)
+    frac = RGBG.shape[0]/RGBG.shape[1]
+    fig, axs = plt.subplots(2,2,sharex=True,sharey=True,figsize=(size,size*frac))
+    axs[0,0].imshow(B,  cmap=plt.cm.Blues_r , aspect="equal", **kwargs)
+    axs[0,1].imshow(G,  cmap=plt.cm.Greens_r, aspect="equal", **kwargs)
+    axs[1,0].imshow(G2, cmap=plt.cm.Greens_r, aspect="equal", **kwargs)
+    axs[1,1].imshow(R,  cmap=plt.cm.Reds_r  , aspect="equal", **kwargs)
     for ax in axs.ravel():
         ax.axis("off")
     fig.subplots_adjust(hspace=.001, wspace=.001)
     _saveshow(saveto, transparent=True)
 
 def _to_8_bit(data, maxvalue=4096, boost=1):
-    converted = (data / maxvalue * 255).astype(np.float)
+    converted = data.astype(np.float) / maxvalue * 255
     converted = boost * converted - (boost-1) * 30
-    converted[converted > 255] = 255
+    converted[converted > 255] = 255  # -> np.clip
     converted[converted < 0]   = 0
     converted = converted.astype(np.uint8)
     return converted
