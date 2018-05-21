@@ -1,8 +1,13 @@
 import numpy as np
 
-range_x = (1150, 1750)
-range_y = (380, 735)  # change 380 to 550 for thick-only
-x = np.arange(*range_x)
+xmin = 2150
+xmax = 3900
+ymin = 760
+ymax = 1470
+x = np.arange(xmin, xmax)
+y = np.arange(ymin, ymax)
+x_small = np.arange(xmin/2, xmax/2)
+y_small = np.arange(ymin/2, ymax/2)
 
 def _find_offset(color_pattern, colour):
     pos = np.array(np.where(color_pattern == colour)).T[0]
@@ -45,6 +50,6 @@ def to_RGB_array(raw_image, color_pattern):
     return RGB
 
 
-def cut_out_spectrum(RGBG):
-    cut = RGBG[range_y[0]:range_y[1], range_x[0]:range_x[1], :]
+def cut_out_spectrum(raw_image):
+    cut = raw_image[ymin:ymax, xmin:xmax]
     return cut

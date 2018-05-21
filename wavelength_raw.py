@@ -6,12 +6,14 @@ from ispex import general, io, plot, wavelength_raw as wavelength, raw
 
 filename = argv[1]
 
+boost=2.5
+
 img = io.load_dng_raw(filename)
 image_cut  = raw.cut_out_spectrum(img.raw_image)
 colors_cut = raw.cut_out_spectrum(img.raw_colors)
 
 RGBG, offsets = raw.pull_apart(image_cut, colors_cut)
-plot.RGBG_stacked(RGBG, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True)
+plot.RGBG_stacked(RGBG, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True, saveto="TL_cutout.png", boost=boost)
 
 RGB = raw.to_RGB_array(image_cut, colors_cut)
 RGB = plot._to_8_bit(RGB)
@@ -38,24 +40,27 @@ for j in (0,1,2):  # fit separately for R, G, B
     coeff = np.polyfit(raw.y[idx], lines[j][idx], wavelength.degree_of_spectral_line_fit)
     lines_fit[j] = np.polyval(coeff, raw.y)
 
-plot.fluorescent_lines(raw.y, lines.T, lines_fit.T, saveto="line_locations.png")
+plot.fluorescent_lines(raw.y, lines.T, lines_fit.T, saveto="TL_lines.png")
 
-wavelength_fits = wavelength.fit_many_wavelength_relations(RGBG_y, lines_fit.T)
-coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(RGBG_y, wavelength_fits)
+wavelength_fits = wavelength.fit_many_wavelength_relations(raw.y, lines_fit.T)
+coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(raw.y, wavelength_fits)
 
-plot.wavelength_coefficients(RGBG_y, wavelength_fits, coefficients_fit)
+plot.wavelength_coefficients(raw.y, wavelength_fits, coefficients_fit)
 
+wavelengths_cut = np.array([np.polyval(c, raw.x) for c in coefficients_fit])
+wavelengths_split, offsets = raw.pull_apart(wavelengths_cut, colors_cut)
+#nm_diff = np.diff(wavelengths_split, axis=1)/2
+#nm_width = nm_diff[:,1:,:] + nm_diff[:,:-1,:]
+#wavelengths_split = wavelengths_split[:,1:-1,:]
+#RGBG = RGBG[:,1:-1,:] / nm_width
+lambdarange = np.arange(340, 760, 0.5)
 
+def interpolate(wavelength_array, color_value_array, lambdarange):
+    interpolated = np.array([np.interp(lambdarange, wavelengths, color_values)
+    for wavelengths, color_values in zip(wavelength_array, color_value_array)])
+    return interpolated
 
-raise Exception
-
-def stack(x, RGBG, offsets, coeff, yoffset=0, lambdarange = np.arange(*wavelength_limits, 0.5)):
-    wavelength_funcs = [wavelength_fit(c, *coeff) for c in range(yoffset, yoffset+rgb.shape[1])]
-    wavelengths = np.array([f(x) for f in wavelength_funcs])
-    # divide by nm/px to get intensity per nm
-    rgb_new = rgb[:-1,:,:] / np.diff(wavelengths, axis=1).T[:,:,np.newaxis]
-    interpolated = np.array([interpolate(wavelengths[i,:-1], rgb_new[:,i], lambdarange) for i in range(rgb.shape[1])])
-    means = interpolated.mean(axis=0)
-    return lambdarange, means
-
-wavelengths, intensity_thick = wavelength.stack(x, thickF, coefficients, yoffset=y_thick[0])
+all_interpolated = np.array([interpolate(wavelengths_split[:,:,c], RGBG[:,:,c], lambdarange) for c in range(4)])
+all_interpolated = all_interpolated.T.swapaxes(0,1)
+plot.RGBG_stacked(all_interpolated, extent=(lambdarange[0], lambdarange[-1], raw.ymax, raw.ymin), show_axes=True, xlabel="$\lambda$ (nm)", aspect=0.5 * len(lambdarange) / len(raw.x), saveto="TL_cutout_corrected.png", boost=boost)
+plot.RGBG_stacked_with_graph(all_interpolated, x=lambdarange, extent=(lambdarange[0], lambdarange[-1], raw.ymax, raw.ymin), xlabel="$\lambda$ (nm)", aspect=0.5 * len(lambdarange) / len(raw.x), saveto="TL_cutout_corrected_spectrum.png", boost=boost)
