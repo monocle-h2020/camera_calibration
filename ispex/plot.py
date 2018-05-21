@@ -11,6 +11,11 @@ def _saveshow(saveto=None, close=True, **kwargs):
         plt.close()
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
+    RGB = ["R", "G", "B"]
+    for j in range(3):
+        func(x, y[..., j], c=RGB[j], **kwargs)
+
+def _rgbgplot(x, y, func=plt.plot, **kwargs):
     RGBY = ["R", "G", "B", "Y"]
     for j in range(4):
         func(x, y[..., j], c=RGBY[j], **kwargs)
@@ -80,18 +85,21 @@ def RGBG(RGBG, saveto=None, size=13, **kwargs):
 
 def _to_8_bit(data, maxvalue=4096, boost=1):
     converted = (data / maxvalue * 255).astype(np.uint8)
-    converted = boost * (converted - 30)
+    converted = boost * converted - (boost-1) * 30
     converted[converted > 255] = 255
     return converted
 
-def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=1, **kwargs):
+def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=1, show_axes=False, **kwargs):
     """
     Ignore G2 for now
     """
     plt.figure(figsize=(size,size))
     to_plot = _to_8_bit(RGBG[:,:,:3], maxvalue=maxvalue, boost=boost)
     plt.imshow(to_plot, **kwargs)
-    plt.axis("off")
+    plt.xlabel("Pixel")
+    plt.ylabel("Pixel")
+    if not show_axes:
+        plt.axis("off")
     _saveshow(saveto, transparent=True)
 
 def RGBG_stacked_with_graph(RGBG, x=x_raw, yrange=range_y, maxvalue=4096, boost=5, saveto=None, **kwargs):
@@ -114,4 +122,10 @@ def RGBG_stacked_with_graph(RGBG, x=x_raw, yrange=range_y, maxvalue=4096, boost=
     ax2.set_ylim(meaned.min()*0.99, meaned.max()*1.01)
 
     fig.tight_layout()
+    _saveshow(saveto, transparent=True)
+
+def Bayer(RGB_array, size=40.32, saveto=None, **kwargs):
+    plt.figure(figsize=(size, size*0.75))
+    plt.imshow(RGB_array, aspect="equal", interpolation="none", **kwargs)
+    plt.axis("off")
     _saveshow(saveto, transparent=True)
