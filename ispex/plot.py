@@ -64,7 +64,7 @@ def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
     for j in range(coefficients_fit.shape[1]):
         try:
             saveto1 = saveto.split(".")
-            saveto1 = saveto1[0] + "_" + str(j) + saveto1[1]
+            saveto1 = saveto1[0] + "_" + str(j) + "." + saveto1[1]
         except AttributeError:
             saveto1 = saveto
         _wavelength_coefficients_single(y, coefficients[:,j], coefficients_fit[:,j], nr=j, saveto=saveto1)
