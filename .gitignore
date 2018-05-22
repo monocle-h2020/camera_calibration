@@ -2,6 +2,7 @@
 *.png
 spectra/*
 reference_spectra/*
+test_files/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
