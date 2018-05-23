@@ -106,6 +106,13 @@ def stack_old(x, rgb, coeff, yoffset=0, lambdarange = np.arange(*wavelength_limi
     means = interpolated.mean(axis=0)
     return lambdarange, means
 
+def per_wavelength(wavelengths_split, RGBG):
+    nm_diff = np.diff(wavelengths_split, axis=1)/2
+    nm_width = nm_diff[:,1:,:] + nm_diff[:,:-1,:]
+    wavelengths_split_new = wavelengths_split[:,1:-1,:]
+    RGBG_new = RGBG[:,1:-1,:] / nm_width
+    return wavelengths_split_new, RGBG_new
+
 def resolution(wavelengths, intensity, limit=0.5):
     max_px = intensity.argmax()
     max_in = intensity.max()
