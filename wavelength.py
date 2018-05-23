@@ -15,11 +15,6 @@ colors_cut = raw.cut_out_spectrum(img.raw_colors)
 RGBG, offsets = raw.pull_apart(image_cut, colors_cut)
 plot.RGBG_stacked(RGBG, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True, saveto="TL_cutout.png", boost=boost)
 
-RGB = raw.to_RGB_array(image_cut, colors_cut)
-RGB = plot._to_8_bit(RGB, boost=boost)
-plot.Bayer(RGB, saveto="RGBG_Bayer.png")
-del RGB  # conserve memory
-
 lines = wavelength.find_fluorescent_lines(RGBG, offsets)
 
 lines_fit = lines.copy()
