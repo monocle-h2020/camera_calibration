@@ -1,5 +1,6 @@
 from .general import x_spectrum, y_thick, y_thin, y
 from . import raw
+from astropy.stats import sigma_clip
 
 import numpy as np
 
@@ -34,6 +35,18 @@ def find_fluorescent_lines(RGBG, offsets):
     lines[1, offsets[3,0]::2] = maxes[:,3]  # G2
     lines[2, offsets[2,0]::2] = maxes[:,2]  # B
     return lines
+
+def fit_fluorescent_lines(lines):
+    lines_fit = lines.copy()
+    for j in (0,1,2):  # fit separately for R, G, B
+        idx = np.isfinite(lines[j])
+        new_y = raw.y[idx] ; new_line = lines[j][idx]
+        clipped = sigma_clip(new_line)  # generates a masked array
+        idx = ~clipped.mask  # get the non-masked items
+        new_y = new_y[idx] ; new_line = new_line[idx]
+        coeff = np.polyfit(new_y, new_line, degree_of_spectral_line_fit)
+        lines_fit[j] = np.polyval(coeff, raw.y)
+    return lines_fit
 
 def fit_single_wavelength_relation(lines):
     coeffs = np.polyfit(lines, fluorescent_lines, degree_of_wavelength_fit)

@@ -15,13 +15,12 @@ colors_cut = raw.cut_out_spectrum(img.raw_colors)
 RGBG, offsets = raw.pull_apart(image_cut, colors_cut)
 plot.RGBG_stacked(RGBG, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True, saveto="TL_cutout.png", boost=boost)
 
-lines = wavelength.find_fluorescent_lines(RGBG, offsets)
+RGBG_gauss = general.gauss_filter(RGBG, sigma=5)
+plot.RGBG_stacked(RGBG_gauss, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True, saveto="TL_cutout_gauss.png", boost=boost)
 
-lines_fit = lines.copy()
-for j in (0,1,2):  # fit separately for R, G, B
-    idx = np.isfinite(lines[j])
-    coeff = np.polyfit(raw.y[idx], lines[j][idx], wavelength.degree_of_spectral_line_fit)
-    lines_fit[j] = np.polyval(coeff, raw.y)
+lines = wavelength.find_fluorescent_lines(RGBG_gauss, offsets)
+
+lines_fit = wavelength.fit_fluorescent_lines(lines)
 
 plot.fluorescent_lines(raw.y, lines.T, lines_fit.T, saveto="TL_lines.png")
 
