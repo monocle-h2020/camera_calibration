@@ -8,11 +8,11 @@ y = np.concatenate((np.arange(*y_thick), np.arange(*y_thin)))
 x_spectrum = (2150, 3900)
 x = np.arange(*x_spectrum)
 
-def gauss_filter(D, sigma=5, *args, **kwargs):
+def gauss_filter(D, sigma=5, **kwargs):
     """
     Apply a 1-D Gaussian kernel along one axis
     """
-    return gauss(D.astype(float), sigma, *args, axis=1, **kwargs)
+    return gauss(D.astype(float), sigma, axis=1, **kwargs)
 
 def split_spectrum(data):
     thick = data[x_spectrum[0]:x_spectrum[1], y_thick[0]:y_thick[1]]
