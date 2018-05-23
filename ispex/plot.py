@@ -39,7 +39,7 @@ def plot_photo(data, saveto=None, **kwargs):
     _saveshow(saveto)
 
 def fluorescent_lines(y, lines, lines_fit, saveto=None):
-    plt.figure(figsize=(13, 10))
+    plt.figure(figsize=(10, 5))
     _rgbplot(y, lines, func=plt.scatter, s=25)
     p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
     _rgbplot(y, lines_fit, path_effects=p_eff)
