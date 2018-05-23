@@ -34,12 +34,7 @@ coefficients = wavelength.load_coefficients("wavelength_solution.npy")
 
 wavelengths_cut = wavelength.calculate_wavelengths(coefficients, raw.x, raw.y)
 
-#wavelengths_cut = np.array([np.polyval(c, raw.x) for c in coefficients_fit])
 wavelengths_split, offsets = raw.pull_apart(wavelengths_cut, colors_cut)
-#nm_diff = np.diff(wavelengths_split, axis=1)/2
-#nm_width = nm_diff[:,1:,:] + nm_diff[:,:-1,:]
-#wavelengths_split = wavelengths_split[:,1:-1,:]
-#RGBG = RGBG[:,1:-1,:] / nm_width
 
 lambdarange, all_interpolated = wavelength.interpolate_multi(wavelengths_split, RGBG)
 plot.RGBG_stacked(all_interpolated, extent=(lambdarange[0], lambdarange[-1], raw.ymax, raw.ymin), show_axes=True, xlabel="$\lambda$ (nm)", aspect=0.5 * len(lambdarange) / len(raw.x), saveto="TL_cutout_corrected.png", boost=boost)
