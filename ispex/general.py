@@ -1,4 +1,4 @@
-from scipy.ndimage.filters import gaussian_filter1d as gauss
+from scipy.ndimage.filters import gaussian_filter1d as gauss1d, gaussian_filter as gaussMd
 from astropy.modeling.blackbody import blackbody_lambda
 import numpy as np
 
@@ -12,7 +12,7 @@ def gauss_filter(D, sigma=5, **kwargs):
     """
     Apply a 1-D Gaussian kernel along one axis
     """
-    return gauss(D.astype(float), sigma, axis=1, **kwargs)
+    return gauss1d(D.astype(float), sigma, axis=1, **kwargs)
 
 def split_spectrum(data):
     thick = data[x_spectrum[0]:x_spectrum[1], y_thick[0]:y_thick[1]]
