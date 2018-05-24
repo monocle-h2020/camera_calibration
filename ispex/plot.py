@@ -101,7 +101,7 @@ def _to_8_bit(data, maxvalue=4096, boost=1):
     converted = converted.astype(np.uint8)
     return converted
 
-def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=1, xlabel="Pixel $x$", show_axes=False, **kwargs):
+def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=5, xlabel="Pixel $x$", show_axes=False, **kwargs):
     """
     Ignore G2 for now
     """
