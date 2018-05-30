@@ -1,7 +1,7 @@
 import numpy as np
 
 polariser_angle = 74.14017
-pixel_angle = 3120.
+pixel_angle = np.array([2825.46078149, 3205.27866603, 3120.66102908])
 I_range = np.linspace(0, 1, 501)
 
 def malus(angle):
