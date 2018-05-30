@@ -3,7 +3,7 @@ import rawpy
 from sys import argv
 from matplotlib import pyplot as plt, patheffects as pe
 from ispex.general import gauss_filter, cut
-from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0
+from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0, pixel_angle
 from ispex import raw, plot, io, wavelength
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
@@ -11,7 +11,6 @@ from scipy.stats import binned_statistic
 filename = argv[1]
 handle = filename.split("/")[-1].split(".")[0]
 polarisation_angle = float(argv[2]) - polariser_angle
-pixel_angle = np.load("pixel_angle.npy")
 nr_points = 12500
 
 img = io.load_dng_raw(filename)
@@ -52,7 +51,7 @@ def save_values(colour, I, RGB, bin_edges, saveto="gamma/"):
         np.save(filename, all_I)
 
 colours = "RGB"
-for colour, C, D in zip(colours, RGB, DRGB):
+for angle, colour, C, D in zip(pixel_angle, colours, RGB, DRGB):
     st = int(len(D)/nr_points)
     o = 69
     plt.hist(C, bins=np.arange(0, 5000, 100), color=colour)
@@ -64,25 +63,28 @@ for colour, C, D in zip(colours, RGB, DRGB):
 
     d_range = np.arange(0, D.max(), 10)
 
-    I0 = find_I0(C-528, D)
+    I0 = find_I0(C, D)
+
+    cos = lambda distance, amp, offset: cos4f(distance, angle, amp, offset)
+    popt, pcov = curve_fit(cos, D, C, p0=[I0, 528])
 
     plt.figure(figsize=(15,8))
     plt.hexbin(D, C, bins="log")
-    plt.plot(d_range, cos4f(d_range, pixel_angle, I0)+528, c='k', label="$\cos^4$ fit")
+    plt.plot(d_range, cos(d_range, *popt), c='k', label="$\cos^4$ fit")
     plt.xlabel("Distance from center (px)")
     plt.ylabel(colour+" value")
     plt.savefig(f"{colour}_cos4.png")
     plt.show()
     plt.close()
 
-    I = cos4f(D, pixel_angle, malus(polarisation_angle))
+    I = cos4f(D, angle, malus(polarisation_angle), 0)
 
-    plt.scatter(I[o::st], C[o::st], c=colour, s=3)
+    plt.hexbin(I, C, bins="log")
     plt.xlabel("Intensity")
     plt.ylabel("RGB value")
     plt.xlim(0, 1)
     plt.ylim(0, 4096)
-    plt.title(f"{colour} linearity ({len(I[o::st])/len(I)*100:.2f}% of data shown)")
+    plt.title(f"{colour} linearity")
     plt.show()
     plt.close()
 
