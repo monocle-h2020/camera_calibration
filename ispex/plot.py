@@ -2,6 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe
 from . import raw
 
+cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues,
+         "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r}
+
 def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
         plt.show()
