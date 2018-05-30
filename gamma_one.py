@@ -2,29 +2,15 @@ import numpy as np
 import rawpy
 from sys import argv
 from matplotlib import pyplot as plt, patheffects as pe
-from ispex.general import gauss_filter
+from ispex.general import gauss_filter, cut
+from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0
 from ispex import raw, plot, io, wavelength
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
 
-def malus(angle):
-    return (np.cos(np.radians(angle)))**2
-
-def cos4(d, p, a):
-    return a*(np.cos(d/p))**4
-
-def cos4f(d, f, a):
-    return a*(np.cos(np.arctan(d/f)))**4
-
-def find_I0(rgbg, distances, radius=100):
-    return rgbg[distances < radius].mean()
-
-def cut(arr, x=250, y=250):
-    return arr[y:-y, x:-x]
-
 filename = argv[1]
 handle = filename.split("/")[-1].split(".")[0]
-polarisation_angle = float(argv[2])
+polarisation_angle = float(argv[2]) - polariser_angle
 pixel_angle = np.load("pixel_angle.npy")
 nr_points = 12500
 
@@ -33,7 +19,7 @@ image_cut  = cut(img.raw_image)
 colors_cut = cut(img.raw_colors)
 
 RGBG, offsets = raw.pull_apart(image_cut, colors_cut)
-plot.RGBG_stacked(RGBG, show_axes=True, boost=1)
+plot.RGBG_stacked(RGBG, show_axes=True, boost=1, saveto="A_plaatje.png")
 
 x = np.arange(image_cut.shape[1])
 y = np.arange(image_cut.shape[0])
@@ -54,7 +40,16 @@ DG = np.concatenate((DG, DG2))
 RGB = [R, G, B]
 DRGB = [DR, DG, DB]
 
-I_range = np.linspace(0, 1, 250)
+def save_values(colour, I, RGB, bin_edges, saveto="gamma/"):
+    for b, bplus in zip(bin_edges, bin_edges[1:]):
+        filename = f"{saveto}/{colour}_{b:.3f}.npy"
+        try:
+            previous = np.load(filename)
+        except FileNotFoundError:
+            previous = np.array([])
+        idx = np.where((I > b) & (I <= bplus))
+        all_I = np.concatenate((previous, RGB[idx]))
+        np.save(filename, all_I)
 
 colours = "RGB"
 for colour, C, D in zip(colours, RGB, DRGB):
@@ -71,11 +66,12 @@ for colour, C, D in zip(colours, RGB, DRGB):
 
     I0 = find_I0(C-528, D)
 
-    plt.scatter(D[o::st], C[o::st], c=colour, s=3, label="Data")
+    plt.figure(figsize=(15,8))
+    plt.hexbin(D, C, bins="log")
     plt.plot(d_range, cos4f(d_range, pixel_angle, I0)+528, c='k', label="$\cos^4$ fit")
     plt.xlabel("Distance from center (px)")
     plt.ylabel(colour+" value")
-    plt.legend(loc="lower left")
+    plt.savefig(f"{colour}_cos4.png")
     plt.show()
     plt.close()
 
@@ -122,4 +118,4 @@ for colour, C, D in zip(colours, RGB, DRGB):
     plt.show()
     plt.close()
 
-    np.save(f"gamma/{colour}_{handle}.npy", np.vstack((bin_centers, mean_per_I, std_per_I, nr_per_I)))
+    #save_values(colour, I, C, bin_edges)

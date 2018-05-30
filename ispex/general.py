@@ -29,3 +29,6 @@ def blackbody(wavelengths, temperature=5777, norm=1):
     bb = blackbody_lambda(wavelengths*10, temperature).value
     bb = bb / bb.max() * norm
     return bb
+
+def cut(arr, x=250, y=250):
+    return arr[y:-y, x:-x]
