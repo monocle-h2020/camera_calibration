@@ -144,3 +144,15 @@ def Bayer(RGB_array, size=10, saveto=None, **kwargs):
     plt.imshow(RGB_array, aspect="equal", interpolation="none", **kwargs)
     plt.axis("off")
     _saveshow(saveto, transparent=True, dpi=900)
+
+def hexbin_colour(colour, *args, **kwargs):
+    plt.hexbin(*args, cmap=cmaps[colour], **kwargs)
+
+def linearity(I, C, colour, gridsize=250, bins="log", extent=(0,1,0,4095), saveto=None, **kwargs):
+    plt.figure(figsize=(10, 7))
+    hexbin_colour(colour, I, C, gridsize=gridsize, bins=bins, extent=extent, **kwargs)
+    plt.xlabel("Intensity")
+    plt.ylabel(colour + " value")
+    plt.xlim(*extent[:2])
+    plt.ylim(*extent[2:])
+    _saveshow(saveto)
