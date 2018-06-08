@@ -32,3 +32,7 @@ def blackbody(wavelengths, temperature=5777, norm=1):
 
 def cut(arr, x=250, y=250):
     return arr[y:-y, x:-x]
+
+def bin_centers(bin_left_edges):
+    width = bin_left_edges[1] - bin_left_edges[0]
+    return bin_left_edges[:-1] + width/2.
