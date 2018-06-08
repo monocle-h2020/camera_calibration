@@ -28,6 +28,8 @@ plot.RGBG(all_interpolated, vmax=800, saveto="RGBG_split_interpolated.png", size
 
 stacked = wavelength.stack(lambdarange, all_interpolated)
 
+plot.plot_spectrum(stacked[...,0], stacked[...,1:])
+
 sub = img.raw_image[1750:, 1750:]
 plt.hist(sub.ravel(), bins=20)
 plt.show()
