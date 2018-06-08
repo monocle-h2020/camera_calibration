@@ -1,10 +1,9 @@
 import numpy as np
-import rawpy
 from sys import argv
-from matplotlib import pyplot as plt, patheffects as pe
-from ispex.general import gauss_filter, cut
+from matplotlib import pyplot as plt
+from ispex.general import cut
 from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0, pixel_angle
-from ispex import raw, plot, io, wavelength
+from ispex import raw, plot, io
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
 
@@ -50,28 +49,34 @@ def save_values(colour, I, RGB, bin_edges, saveto="gamma/"):
         all_I = np.concatenate((previous, RGB[idx]))
         np.save(filename, all_I)
 
+D_max = np.ceil(D_split.max()*1.01)
+
 colours = "RGB"
 for angle, colour, C, D in zip(pixel_angle, colours, RGB, DRGB):
-    st = int(len(D)/nr_points)
-    o = 69
-    plt.hist(C, bins=np.arange(0, 5000, 100), color=colour)
+
+    #idx = np.where((D > 250) & (D < 1850))
+    #C = C[idx]
+    #D = D[idx]
+
+    plt.hist(C, bins=np.arange(0, 4200, 100), color=colour)
     plt.xlim(0, 4096)
     plt.xlabel(colour+" value")
     plt.ylabel("# pixels")
     plt.show()
     plt.close()
 
-    d_range = np.arange(0, D.max(), 10)
+    d_range = np.arange(0, D_max, 15)
 
-    I0 = find_I0(C, D)
+    I0 = C.max()
 
     cos = lambda distance, amp, offset: cos4f(distance, angle, amp, offset)
     popt, pcov = curve_fit(cos, D, C, p0=[I0, 528])
 
     plt.figure(figsize=(15,8))
-    plt.hexbin(D, C, bins="log")
+    plot.hexbin_colour(colour, D, C, bins="log")
     plt.plot(d_range, cos(d_range, *popt), c='k', label="$\cos^4$ fit")
     plt.xlabel("Distance from center (px)")
+    plt.xlim(0, D_max)
     plt.ylabel(colour+" value")
     plt.savefig(f"{colour}_cos4.png")
     plt.show()
@@ -79,30 +84,32 @@ for angle, colour, C, D in zip(pixel_angle, colours, RGB, DRGB):
 
     I = cos4f(D, angle, malus(polarisation_angle), 0)
 
-    plt.hexbin(I, C, bins="log")
-    plt.xlabel("Intensity")
-    plt.ylabel("RGB value")
-    plt.xlim(0, 1)
-    plt.ylim(0, 4096)
-    plt.title(f"{colour} linearity")
-    plt.show()
-    plt.close()
+    plot.linearity(I, C, colour)
 
     mean_per_I, bin_edges, bin_number = binned_statistic(I, C, statistic="mean",  bins=I_range)
     bin_width = bin_edges[1] - bin_edges[0]
     bin_centers = bin_edges + bin_width/2
     std_per_I  = binned_statistic(I, C, statistic=np.std,  bins=I_range).statistic
     nr_per_I   = binned_statistic(I, C, statistic="count", bins=I_range).statistic
-    idx = np.where(nr_per_I > 10e3)
+    idx = np.where(nr_per_I > 1e3)
     bin_centers = bin_centers[idx]
     mean_per_I = mean_per_I[idx]
     std_per_I = std_per_I[idx]
     nr_per_I = nr_per_I[idx]
+
     plt.scatter(bin_centers, mean_per_I, c=colour)
     plt.xlim(0,1)
     plt.ylim(0, 4096)
     plt.xlabel("Intensity")
     plt.ylabel("RGB value (binned)")
+    plt.show()
+    plt.close()
+
+    plt.scatter(bin_centers, std_per_I**2., c=colour)
+    plt.xlim(0,1)
+    plt.ylim(ymin=0)
+    plt.xlabel("Intensity")
+    plt.ylabel("$\sigma^2$")
     plt.show()
     plt.close()
 

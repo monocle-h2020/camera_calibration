@@ -18,6 +18,8 @@ means = np.zeros((3, len(bin_centers)))
 stds = means.copy()
 nrs = means.copy().astype(np.uint32)
 
+bias = 528
+
 for i, b in enumerate(I_range[:-1]):
     for j, c in enumerate(colours):
         filename = f"{folder}/{c}_{b:.3f}.npy"
@@ -53,10 +55,10 @@ for j, c in enumerate(colours):
 for j, c in enumerate(colours):
     idx = np.where((nrs[j] > 5000) & (means[j] < 4000))
     plt.figure(figsize=(15,8))
-    plt.scatter(bin_centers[idx], stds[j][idx]**2 / (means[j][idx]-531), c=c)
+    plt.scatter(bin_centers[idx], stds[j][idx]**2 / (means[j][idx]-bias), c=c)
     plt.xlim(0, I_range[np.nanargmax(means[j][idx])])
     plt.xlabel("Intensity")
-    plt.ylabel(f"$\\sigma^2_{c} / (\\mu_{c} - 531)$")
+    plt.ylabel(f"$\\sigma^2_{c} / (\\mu_{c} - {bias})$")
     plt.savefig(f"{c}_sigma_over_mu.png")
     plt.show()
     plt.close()
