@@ -38,7 +38,7 @@ for filename in files:
             continue
         D = D_split[..., j]
         I0 = find_I0(C, D)
-        popt, pcov = curve_fit(cos4f, D.ravel(), C.ravel(), p0=[I0, 1000, 531])
+        popt, pcov = curve_fit(cos4f, D.ravel(), C.ravel(), p0=[3000, 1000, 528])
         print(popt, np.sqrt(np.diag(pcov)))
         col = j if j <= 2 else 1
         p0s[col].append(popt[0])
@@ -46,14 +46,18 @@ for filename in files:
     print("----")
 
 means = np.empty(3)
+errs  = means.copy()
 for j, p, v in zip(range(3), p0s, v0s):
     p = np.array(p)
     v = np.array(v)
-    mean = np.average(p, weights=1/v)
-    print(mean)
-    print(p.astype(int))
-    print(v.astype(int))
-    print("---")
+    sumw = np.sum(1/v)
+    mean = np.sum(1/v * p) / sumw
+    #print(mean)
+    #print(p.astype(int))
+    #print(v.astype(int))
+    #print("---")
     means[j] = mean
+    err = np.sum(1/v * (p-mean)**2) / (sumw - np.sum(1/v**2)/sumw)  # Bessel corrected
+    errs[j] = np.sqrt(err)
 
-np.save("pixel_angle.npy", means)
+#np.save("pixel_angle.npy", means)
