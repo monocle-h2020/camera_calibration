@@ -8,7 +8,7 @@ I_range = np.linspace(0, 1, 501)
 def malus(angle, offset=polariser_angle):
     return (np.cos(np.radians(angle-offset)))**2
 
-def malus_error(angle0, angle1=polariser_angle, I0=1., sigma_angle0=2., sigma_angle1=0.5, sigma_I0=0.01):
+def malus_error(angle0, angle1=polariser_angle, I0=1., sigma_angle0=2., sigma_angle1=0.1, sigma_I0=0.01):
     alpha = angle0 - angle1
     A = I0 * degrad * np.sin(np.pi/90 * (alpha))
     s_a2 = A**2 * (sigma_angle0**2 + sigma_angle1**2)

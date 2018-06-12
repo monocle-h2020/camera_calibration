@@ -69,6 +69,8 @@ def cos2(angle, amplitude, angle_offset, y_offset):
 idx = np.where(I1500s[2] > 540)
 popt, pcov = curve_fit(cos2, visual_angles[idx], I1500s[2][idx], p0=[1500, 70, 2000])
 polariser_angle = popt[1]
+angle_error = np.sqrt(pcov[1,1])
+print(polariser_angle, angle_error)
 
 a = np.arange(0, 360, 3)
 plt.figure(figsize=(10,5))
