@@ -44,6 +44,7 @@ def fit_fluorescent_lines(lines):
         clipped = sigma_clip(new_line)  # generates a masked array
         idx = ~clipped.mask  # get the non-masked items
         new_y = new_y[idx] ; new_line = new_line[idx]
+        # np.polyfit can go along axis - try this?
         coeff = np.polyfit(new_y, new_line, degree_of_spectral_line_fit)
         lines_fit[j] = np.polyval(coeff, raw.y)
     return lines_fit
