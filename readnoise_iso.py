@@ -13,25 +13,26 @@ x = glob("results/bias/bias_stds_iso*.npy")
 color_pattern = io.load_dng_raw("test_files/bias/0806a/IMG_0390.dng").raw_colors
 
 isos = np.zeros(len(x))
-mean_std = np.zeros((len(x), 4))
-std_std = mean_std.copy()
+rms = np.zeros((len(x), 4))
+std_std = rms.copy()
 for i,file in enumerate(x):
     iso = file.split(".")[0].split("_")[-1][3:]
     print(iso, end=", ")
     std = np.load(file)
     isos[i] = iso
     RGBG, _ = raw.pull_apart(std, color_pattern)
-    mean_std[i] = [RGBG[...,0].mean(), RGBG[...,1::2].mean(), RGBG[...,2].mean(), std.mean()]
-    std_std[i] = [RGBG[...,0].std(), RGBG[...,1::2].std(), RGBG[...,2].std(), std.std()]
+    reshaped = [RGBG[...,0], RGBG[...,1::2], RGBG[...,2], std]
+    rms[i] = [np.sqrt(np.mean(resh**2)) for resh in reshaped]
+    std_std[i] = [np.std(resh) for resh in reshaped]
 
 for xmax, label in zip([1850, 300], ["", "_zoom"]):
     fig, axs = plt.subplots(2,2, sharex=True, sharey=True, figsize=(15,15), tight_layout=True)
     for j, colour, ax in zip(range(4), "RGBk", axs.ravel()):
-        ax.errorbar(isos, mean_std[:,j], yerr=std_std[:,j], fmt='o', c=colour)
+        ax.errorbar(isos, rms[:,j], yerr=std_std[:,j], fmt='o', c=colour)
         ax.grid(ls="--")
     axs[1,0].set_xlabel("ISO") ; axs[1,1].set_xlabel("ISO")
-    axs[0,0].set_ylabel("Mean RON") ; axs[1,0].set_ylabel("Mean RON")
+    axs[0,0].set_ylabel("RMS RON") ; axs[1,0].set_ylabel("RMS RON")
     axs[1,0].set_xlim(0, xmax)
-    fig.suptitle("Mean RON as function of ISO; error bars are std of RON")
+    fig.suptitle("RMS RON as function of ISO; error bars are std of RON")
     fig.savefig(f"results/bias/ISO_RON{label}.png")
     plt.close()
