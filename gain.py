@@ -15,8 +15,8 @@ arrs = np.empty((len(files), 3024, 4032), dtype=np.uint16)
 for j, file in enumerate(files):
     arrs[j] = io.load_dng_raw(file).raw_image
 
-bias = np.load("bias_mean.npy")
-ron  = np.load("bias_stds.npy")
+bias = np.load("results/bias/bias_mean_iso23.npy")
+ron  = np.load("results/bias/bias_stds_iso23.npy")
 
 mean = arrs.mean(axis=0).astype(np.float32) - bias  # mean per x,y
 plt.figure(figsize=(mean.shape[1]/96,mean.shape[0]/96), dpi=96, tight_layout=True)
