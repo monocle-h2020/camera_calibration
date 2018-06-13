@@ -3,6 +3,7 @@
 spectra/*
 reference_spectra/*
 test_files/*
+results/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
