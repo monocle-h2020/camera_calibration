@@ -10,6 +10,7 @@ from scipy.stats import binned_statistic
 from glob import glob
 
 folder = argv[1]
+handle = argv[1].split("/")[2]
 files = glob(folder+"/*.dng")
 arrs = np.empty((len(files), 3024, 4032), dtype=np.uint16)
 for j, file in enumerate(files):
@@ -21,28 +22,31 @@ plt.figure(figsize=(mean.shape[1]/96,mean.shape[0]/96), dpi=96, tight_layout=Tru
 plt.imshow(mean, interpolation="none")
 plt.axis("off")
 plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-plt.savefig("Bias_mean.png", dpi=96, transparent=True)
+plt.savefig(f"results/bias/Bias_mean_{handle}.png", dpi=96, transparent=True)
 plt.close()
-np.save("bias_mean.npy", mean)
+np.save(f"results/bias/bias_mean_{handle}.npy", mean)
 
 stds = np.array([np.std(arrs[:,j], axis=0).astype(np.float32) for j in range(arrs.shape[1])], dtype=np.float32)
 plt.figure(figsize=(stds.shape[1]/96,stds.shape[0]/96), dpi=96, tight_layout=True)
 plt.imshow(stds, interpolation="none", aspect="equal")
 plt.axis("off")
 plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-plt.savefig("Bias_std_im.png", dpi=96, transparent=True)
+plt.savefig(f"results/bias/Bias_std_im_{handle}.png", dpi=96, transparent=True)
 plt.close()
-np.save("bias_stds.npy", stds)
+np.save(f"results/bias/bias_stds_{handle}.npy", stds)
 
 plt.figure(figsize=(10,7), tight_layout=True)
-plt.hist(stds.ravel(), bins=np.linspace(0, 8, 50), density=True, color='k')
+plt.hist(stds.ravel(), bins=np.arange(0, 25, 0.2), density=True, color='k')
 plt.xlabel(r"$\sigma$")
-plt.xlim(xmin=0)
+plt.xlim(0,25)
 plt.yscale("log")
 plt.ylabel("Frequency")
+plt.ylim(ymin=1e-5)
 plt.grid(ls="--")
-plt.savefig("Bias_std_hist.png")
+plt.savefig(f"results/bias/Bias_std_hist_{handle}.png")
 plt.close()
+
+raise Exception
 
 RGBG_std, _ = raw.pull_apart(stds, io.load_dng_raw(file).raw_colors)
 RGBG_mean, _ = raw.pull_apart(mean, io.load_dng_raw(file).raw_colors)
