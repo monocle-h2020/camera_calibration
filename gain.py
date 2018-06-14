@@ -15,8 +15,8 @@ arrs = np.empty((len(files), 3024, 4032), dtype=np.uint16)
 for j, file in enumerate(files):
     arrs[j] = io.load_dng_raw(file).raw_image
 
-bias = np.load("results/bias/bias_mean_iso23.npy")
-ron  = np.load("results/bias/bias_stds_iso23.npy")
+bias = np.load("results/bias/bias_mean_iso1840.npy")
+ron  = np.load("results/bias/bias_stds_iso1840.npy")
 
 mean = arrs.mean(axis=0).astype(np.float32) - bias  # mean per x,y
 plt.figure(figsize=(mean.shape[1]/96,mean.shape[0]/96), dpi=96, tight_layout=True)
@@ -44,8 +44,8 @@ for j in range(4):
     ax = axs.ravel()[j]
     div = RGBG_var[...,j].ravel() / (RGBG_mean[...,j].ravel())
     div = div[~np.isinf(div)]
-    ax.hist(div, bins=np.linspace(0,2,100), color="RGBG"[j], density=True)
-    ax.set_xlim(0, 2)
+    ax.hist(div, bins=np.arange(0,8,0.1), color="RGBG"[j], density=True)
+    ax.set_xlim(0, 8)
 #    ax.set_ylim(0,1)
     ax.grid()
 axs[1,0].set_xlabel(r"$\sigma^2 / (\mu-B)$")
@@ -62,8 +62,8 @@ for j in range(4):
     ax = axs.ravel()[j]
     div = RGBG_var[...,j].ravel() / (RGBG_mean[...,j].ravel())
     div = div[~np.isinf(div)]
-    ax.hist(div, bins=np.linspace(0,2,100), color="RGBG"[j], density=True)
-    ax.set_xlim(0, 2)
+    ax.hist(div, bins=np.arange(0,8,0.1), color="RGBG"[j], density=True)
+    ax.set_xlim(0, 8)
 #    ax.set_ylim(0,1)
     ax.grid()
 axs[1,0].set_xlabel(r"$(\sigma^2 - \sigma_R^2) / (\mu-B)$")
@@ -90,8 +90,8 @@ axs[1,0].set_xlabel(r"$\mu_C - B$")
 axs[1,1].set_xlabel(r"$\mu_C - B$")
 axs[0,0].set_ylabel(r"$(\sigma_C^2 - \sigma_B^2) / (\mu_C - B)$")
 axs[1,0].set_ylabel(r"$(\sigma_C^2 - \sigma_B^2) / (\mu_C - B)$")
-axs[0,0].set_ylim(0, 1)
-axs[0,0].set_yticks(np.arange(0,1.1, 0.1))
+axs[0,0].set_ylim(0, 8)
+#axs[0,0].set_yticks(np.arange(0,1.1, 0.1))
 axs[0,0].set_xlim(0, 4096)
 fig.savefig("Gain_scatter.png")
 plt.close()
