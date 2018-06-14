@@ -7,13 +7,9 @@ from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0, pixel_a
 from ispex import raw, plot, io
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
-from glob import glob
 
 folder = argv[1]
-files = glob(folder+"/*.dng")
-arrs = np.empty((len(files), 3024, 4032), dtype=np.uint16)
-for j, file in enumerate(files):
-    arrs[j] = io.load_dng_raw(file).raw_image
+arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
 
 bias = np.load("results/bias/bias_mean_iso1840.npy")
 ron  = np.load("results/bias/bias_stds_iso1840.npy")
@@ -27,7 +23,6 @@ plt.savefig("Gain_mean.png", dpi=96, transparent=True)
 plt.close()
 
 stds = arrs.std(axis=0, dtype=np.float32)
-del arrs
 plt.figure(figsize=(stds.shape[1]/96,stds.shape[0]/96), dpi=96, tight_layout=True)
 plt.imshow(stds, interpolation="none", aspect="equal")
 plt.axis("off")
@@ -36,8 +31,8 @@ plt.savefig("Gain_std_im.png", dpi=96, transparent=True)
 plt.close()
 
 var = stds**2
-RGBG_var, _ = raw.pull_apart(var, io.load_dng_raw(file).raw_colors)
-RGBG_mean, _ = raw.pull_apart(mean, io.load_dng_raw(file).raw_colors)
+RGBG_var, _ = raw.pull_apart(var, colors)
+RGBG_mean, _ = raw.pull_apart(mean, colors)
 
 fig, axs = plt.subplots(2,2, sharex=True, sharey=True, figsize=(27,16), tight_layout=True)
 for j in range(4):
@@ -56,7 +51,7 @@ fig.savefig("Gain_hist.png")
 plt.close()
 
 var -= ron**2
-RGBG_var, _ = raw.pull_apart(var, io.load_dng_raw(file).raw_colors)
+RGBG_var, _ = raw.pull_apart(var, colors)
 fig, axs = plt.subplots(2,2, sharex=True, sharey=True, figsize=(27,16), tight_layout=True)
 for j in range(4):
     ax = axs.ravel()[j]

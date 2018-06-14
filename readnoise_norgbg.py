@@ -11,12 +11,7 @@ from glob import glob
 
 folder = argv[1]
 handle = argv[1].split("/")[2]
-files = glob(folder+"/*.dng")
-file0 = io.load_dng_raw(files[0])
-arrs = np.empty((len(files), *file0.raw_image.shape), dtype=np.uint16)
-arrs[0] = file0.raw_image
-for j, file in enumerate(files[1:]):
-    arrs[j] = io.load_dng_raw(file).raw_image
+arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
 
 mean = arrs.mean(axis=0).astype(np.float32)  # mean per x,y
 plt.figure(figsize=(mean.shape[1]/96,mean.shape[0]/96), dpi=96, tight_layout=True)
@@ -49,8 +44,8 @@ plt.close()
 
 raise Exception
 
-RGBG_std, _ = raw.pull_apart(stds, io.load_dng_raw(file).raw_colors)
-RGBG_mean, _ = raw.pull_apart(mean, io.load_dng_raw(file).raw_colors)
+RGBG_std, _ = raw.pull_apart(stds, colors)
+RGBG_mean, _ = raw.pull_apart(mean, colors)
 for j in range(4):
     c = RGBG_std[...,j]
     label = ["R", "G", "B", "G2"][j]
