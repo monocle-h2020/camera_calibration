@@ -26,7 +26,7 @@ plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
 plt.savefig("Gain_mean.png", dpi=96, transparent=True)
 plt.close()
 
-stds = np.array([np.std(arrs[:,j], axis=0).astype(np.float32) for j in range(arrs.shape[1])], dtype=np.float32)
+stds = arrs.std(axis=0, dtype=np.float32)
 del arrs
 plt.figure(figsize=(stds.shape[1]/96,stds.shape[0]/96), dpi=96, tight_layout=True)
 plt.imshow(stds, interpolation="none", aspect="equal")

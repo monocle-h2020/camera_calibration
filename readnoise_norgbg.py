@@ -27,7 +27,7 @@ plt.savefig(f"results/bias/Bias_mean_{handle}.png", dpi=96, transparent=True)
 plt.close()
 np.save(f"results/bias/bias_mean_{handle}.npy", mean)
 
-stds = np.array([np.std(arrs[:,j], axis=0).astype(np.float32) for j in range(arrs.shape[1])], dtype=np.float32)
+stds = arrs.std(axis=0, dtype=np.float32)
 plt.figure(figsize=(stds.shape[1]/96,stds.shape[0]/96), dpi=96, tight_layout=True)
 plt.imshow(stds, interpolation="none", aspect="equal")
 plt.axis("off")
