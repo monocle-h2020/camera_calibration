@@ -41,6 +41,20 @@ def plot_photo(data, saveto=None, **kwargs):
     plt.ylabel("$x$")
     _saveshow(saveto)
 
+def imshow_tight(data, figsize=(15,15), saveto=None, **kwargs):
+    plt.figure(figsize=figsize, tight_layout=True)
+    plt.imshow(data, **kwargs)
+    plt.axis("off")
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    _saveshow(saveto, transparent=True)
+
+def bitmap(data, dpi=96, saveto=None, **kwargs):
+    plt.figure(figsize=(data.shape[1]/dpi, data.shape[0]/dpi), dpi=dpi, tight_layout=True)
+    plt.imshow(data, interpolation="none", aspect="equal", **kwargs)
+    plt.axis("off")
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    _saveshow(saveto, transparent=True, dpi=dpi)
+
 def fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.figure(figsize=(10, 5))
     _rgbplot(y, lines, func=plt.scatter, s=25)
@@ -66,6 +80,8 @@ def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, sav
 def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
     for j in range(coefficients_fit.shape[1]):
         try:
+            # save every coefficient plot in its own file
+            # TODO: make one plot with shared x axis
             saveto1 = saveto.split(".")
             saveto1 = saveto1[0] + "_" + str(j) + "." + saveto1[1]
         except AttributeError:

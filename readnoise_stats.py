@@ -37,34 +37,13 @@ for i,file in enumerate(x):
     fig.savefig(f"results/bias/Bias_std_hist{handle}.png")
     plt.close()
 
-    plt.figure(figsize=(mean.shape[1]/96,mean.shape[0]/96), dpi=96, tight_layout=True)
-    plt.imshow(mean, interpolation="none")
-    plt.axis("off")
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig(f"results/bias/Bias_mean{handle}.png", dpi=96, transparent=True)
-    plt.close()
-
-    plt.figure(figsize=(std.shape[1]/96,std.shape[0]/96), dpi=96, tight_layout=True)
-    plt.imshow(std, interpolation="none", aspect="equal")
-    plt.axis("off")
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig(f"results/bias/Bias_std_im{handle}.png", dpi=96, transparent=True)
-    plt.close()
+    plot.bitmap(mean, saveto=f"results/bias/Bias_mean{handle}.png")
+    plot.bitmap(std , saveto=f"results/bias/Bias_std_im{handle}.png")
 
     G = gaussMd(std, sigma=10)
-    plt.figure(figsize=(15,15), tight_layout=True)
-    plt.imshow(G, interpolation="none", aspect="equal")
-    plt.axis("off")
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.savefig(f"results/bias/Bias_std_gauss{handle}.png", transparent=True)
-    plt.close()
+    plot.imshow_tight(G, saveto=f"results/bias/Bias_std_gauss{handle}.png")
 
     for j, c in enumerate("RGBG"):
         G = gaussMd(RGBG[...,j], sigma=10)
-        plt.figure(figsize=(15,15), tight_layout=True)
-        plt.imshow(G, interpolation="none", aspect="equal", cmap=cmaps[c+"r"])
-        plt.axis("off")
-        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
         X = "2" if j == 3 else ""
-        plt.savefig(f"results/bias/Bias_std_gauss{handle}_{c}{X}.png", transparent=True)
-        plt.close()
+        plot.imshow_tight(G, saveto=f"results/bias/Bias_std_gauss{handle}_{c}{X}.png", cmap=plot.cmaps[c+"r"])

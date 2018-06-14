@@ -15,20 +15,10 @@ bias = np.load("results/bias/bias_mean_iso1840.npy")
 ron  = np.load("results/bias/bias_stds_iso1840.npy")
 
 mean = arrs.mean(axis=0).astype(np.float32) - bias  # mean per x,y
-plt.figure(figsize=(mean.shape[1]/96,mean.shape[0]/96), dpi=96, tight_layout=True)
-plt.imshow(mean, interpolation="none")
-plt.axis("off")
-plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-plt.savefig("Gain_mean.png", dpi=96, transparent=True)
-plt.close()
+plot.bitmap(mean, saveto="Gain_mean.png")
 
 stds = arrs.std(axis=0, dtype=np.float32)
-plt.figure(figsize=(stds.shape[1]/96,stds.shape[0]/96), dpi=96, tight_layout=True)
-plt.imshow(stds, interpolation="none", aspect="equal")
-plt.axis("off")
-plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-plt.savefig("Gain_std_im.png", dpi=96, transparent=True)
-plt.close()
+plot.bitmap(stds, saveto="Gain_std_im.png")
 
 var = stds**2
 RGBG_var, _ = raw.pull_apart(var, colors)
