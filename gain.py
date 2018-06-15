@@ -9,8 +9,7 @@ from scipy.stats import binned_statistic
 folder = argv[1]
 arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
 
-bias = np.load("results/bias/bias_mean_iso1840.npy")
-ron  = np.load("results/bias/bias_stds_iso1840.npy")
+bias, ron = io.load_bias_ron(iso=argv[2])
 
 mean = arrs.mean(axis=0).astype(np.float32) - bias  # mean per x,y
 plot.bitmap(mean, saveto="Gain_mean.png")

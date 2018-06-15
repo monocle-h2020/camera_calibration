@@ -29,3 +29,8 @@ def load_exif(filename):
     with open(filename, "rb") as f:
         exif = exifread.process_file(f)
     return exif
+
+def load_bias_ron(iso, folder="results/bias/"):
+    bias = np.load(f"{folder}/bias_mean_iso{iso}.npy")
+    ron  = np.load(f"{folder}/bias_stds_iso{iso}.npy")
+    return bias, ron
