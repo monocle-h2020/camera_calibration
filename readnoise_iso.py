@@ -1,11 +1,7 @@
 import numpy as np
-import rawpy
 from sys import argv
-from matplotlib import pyplot as plt, patheffects as pe
-from ispex.general import cut
-from ispex.gamma import cos4f, find_I0
-from ispex import raw, plot, io, wavelength
-from scipy.optimize import curve_fit
+from matplotlib import pyplot as plt
+from ispex import raw, plot, io
 from glob import glob
 
 

@@ -1,11 +1,9 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from matplotlib.colors import LogNorm
-from ispex.general import cut, bin_centers
-from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0, pixel_angle
 from ispex import raw, plot, io
-from scipy.optimize import curve_fit
+from ispex.general import bin_centers
+from glob import glob
 from scipy.stats import binned_statistic
 
 folder = argv[1]
