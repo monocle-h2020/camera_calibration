@@ -11,7 +11,7 @@ from glob import glob
 
 
 x = glob("results/bias/bias_stds_iso*.npy")
-color_pattern = io.load_dng_raw("test_files/bias/0806a/IMG_0390.dng").raw_colors
+color_pattern = io.load_colors("test_files/bias/0806a/IMG_0390.dng")
 
 isos = np.zeros(len(x))
 mean_std = np.zeros((len(x), 4))
