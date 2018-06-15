@@ -28,7 +28,6 @@ for j in range(4):
     div = div[~np.isinf(div)]
     ax.hist(div, bins=np.arange(0,8,0.1), color="RGBG"[j], density=True)
     ax.set_xlim(0, 8)
-#    ax.set_ylim(0,1)
     ax.grid()
 axs[1,0].set_xlabel(r"$\sigma^2 / (\mu-B)$")
 axs[1,1].set_xlabel(r"$\sigma^2 / (\mu-B)$")
@@ -46,7 +45,6 @@ for j in range(4):
     div = div[~np.isinf(div)]
     ax.hist(div, bins=np.arange(0,8,0.1), color="RGBG"[j], density=True)
     ax.set_xlim(0, 8)
-#    ax.set_ylim(0,1)
     ax.grid()
 axs[1,0].set_xlabel(r"$(\sigma^2 - \sigma_R^2) / (\mu-B)$")
 axs[1,1].set_xlabel(r"$(\sigma^2 - \sigma_R^2) / (\mu-B)$")
@@ -76,4 +74,34 @@ axs[0,0].set_ylim(0, 8)
 #axs[0,0].set_yticks(np.arange(0,1.1, 0.1))
 axs[0,0].set_xlim(0, 4096)
 fig.savefig("Gain_scatter.png")
+plt.close()
+
+mean = arrs.mean(axis=0).astype(np.float32)
+var = arrs.std(axis=0, dtype=np.float32)**2
+RGBG_mean, _ = raw.pull_apart(mean, colors)
+RGBG_var, _ = raw.pull_apart(var, colors)
+fig, axs = plt.subplots(2,2, sharex=True, sharey=True, figsize=(27,16), tight_layout=True)
+for j in range(4):
+    mean_per_I, bin_edges, bin_number = binned_statistic(RGBG_mean[...,j].ravel(), RGBG_var[...,j].ravel(), statistic="mean", bins=C_range)
+    std_per_I = binned_statistic(RGBG_mean[...,j].ravel(), RGBG_var[...,j].ravel(), statistic="std", bins=C_range).statistic
+    nr_per_I = binned_statistic(RGBG_mean[...,j].ravel(), RGBG_var[...,j].ravel(), statistic="count", bins=C_range).statistic
+
+    bc = bin_centers(bin_edges)
+    idx = np.where(nr_per_I > 2000)
+
+    p = np.polyfit(bc[idx], mean_per_I[idx], 1, w=np.sqrt(nr_per_I[idx]-1)/std_per_I[idx])
+
+    ax = axs.ravel()[j]
+    ax.errorbar(bc[idx], mean_per_I[idx], yerr=std_per_I[idx]/np.sqrt(nr_per_I[idx]-1), color="RGBG"[j], fmt="o", label="Data")
+    ax.plot(bc, np.polyval(p, bc), ls="--", c="k", lw=2, label=f"$G \eta = {p[0]:.2f}$")
+    ax.legend(loc="lower right")
+    ax.grid()
+axs[1,0].set_xlabel(r"$\mu_C$")
+axs[1,1].set_xlabel(r"$\mu_C$")
+axs[0,0].set_ylabel(r"$\sigma_C^2$")
+axs[1,0].set_ylabel(r"$\sigma_C^2$")
+axs[0,0].set_ylim(0, 2000)
+#axs[0,0].set_yticks(np.arange(0,1.1, 0.1))
+axs[0,0].set_xlim(0, 4096)
+fig.savefig(f"Gain_comp{argv[1][25:-1]}.png")
 plt.close()
