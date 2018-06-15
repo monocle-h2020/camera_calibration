@@ -21,7 +21,7 @@ for i,file in enumerate(x):
     rms[i] = [np.sqrt(np.mean(resh**2)) for resh in reshaped]
     std_std[i] = [np.std(resh) for resh in reshaped]
 
-for xmax, label in zip([1850, 300], ["", "_zoom"]):
+for xmax, label in zip([isos.max()*1.05, 300], ["", "_zoom"]):
     fig, axs = plt.subplots(2,2, sharex=True, sharey=True, figsize=(15,15), tight_layout=True)
     for j, colour, ax in zip(range(4), "RGBk", axs.ravel()):
         ax.errorbar(isos, rms[:,j], yerr=std_std[:,j], fmt='o', c=colour)
