@@ -36,3 +36,14 @@ def cut(arr, x=250, y=250):
 def bin_centers(bin_left_edges):
     width = bin_left_edges[1] - bin_left_edges[0]
     return bin_left_edges[:-1] + width/2.
+
+def weighted_mean(data, weights, **kwargs):
+    """
+    https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
+    """
+    data = np.array(data) ; weights = np.array(weights)
+    mean = np.average(data, weights=weights, **kwargs)
+    V1 = np.sum(weights)
+    V2 = np.sum(weights**2)
+    s2 = np.sum(weights * (data - mean)**2) / (V1 - V2/V1)
+    return mean, np.sqrt(s2)
