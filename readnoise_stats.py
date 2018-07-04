@@ -1,20 +1,12 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from ispex import raw, plot, io
 from ispex.general import gaussMd
 from glob import glob
 
-def colorbar(mappable):
-    ax = mappable.axes
-    fig = ax.figure
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    return fig.colorbar(mappable, cax=cax)
-
 x = glob("results/bias/bias_stds_iso*.npy")
-color_pattern = io.load_colors("test_files/bias/0806a/IMG_0390.dng")
+color_pattern = io.load_colors("test_files/bias/iso23/IMG_0509.dng")
 
 isos = np.zeros(len(x))
 mean_std = np.zeros((len(x), 4))
@@ -54,7 +46,7 @@ for i,file in enumerate(x):
         plt.figure(figsize=(25, 20))
         img = plt.imshow(G, interpolation="none", aspect="equal", cmap=plot.cmaps[c+"r"])
         plt.axis("off")
-        colorbar(img)
+        plot.colorbar(img)
         plt.tight_layout()
         plt.savefig(f"results/bias/Bias_std_im{handle}_{c}{X}_cb.png")
         plt.close()

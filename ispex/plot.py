@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
 
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues,
@@ -172,3 +173,10 @@ def linearity(I, C, colour, gridsize=250, bins="log", extent=(0,1,0,4095), savet
     plt.xlim(*extent[:2])
     plt.ylim(*extent[2:])
     _saveshow(saveto)
+
+def colorbar(mappable):
+    ax = mappable.axes
+    fig = ax.figure
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    return fig.colorbar(mappable, cax=cax)
