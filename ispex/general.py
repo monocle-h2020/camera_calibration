@@ -41,6 +41,8 @@ def weighted_mean(data, weights, **kwargs):
     """
     https://en.wikipedia.org/wiki/Weighted_arithmetic_mean#Weighted_sample_variance
     """
+    if len(data) == 1 or len(weights) == 1:
+        return data, 1/np.sqrt(weights)
     data = np.array(data) ; weights = np.array(weights)
     mean = np.average(data, weights=weights, **kwargs)
     V1 = np.sum(weights)
