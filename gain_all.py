@@ -19,9 +19,14 @@ errs = gains.copy()
 for i, iso in enumerate(isos):
     fig, axs = plt.subplots(2,3, sharex=True, sharey="row", figsize=(24, 8), tight_layout=True, gridspec_kw={"height_ratios": [4,1]})
     for j, c in enumerate("RGB"):
-        bc, nr_per_I, mean_per_I, std_per_I = np.load(f"{folder}/iso_{iso}_{c}.npy")
+        try:
+            bc, nr_per_I, mean_per_I, std_per_I = np.load(f"{folder}/iso_{iso}_{c}.npy")
+        except FileNotFoundError:
+            print(f"{folder}/iso_{iso}_{c}.npy does not exist")
+            continue
+        err_per_I = std_per_I/np.sqrt(nr_per_I-1)
         idx = np.where((nr_per_I > nrmin) & (bc >= fitmin) & (bc < fitmax))
-        p = np.polyfit(bc[idx], mean_per_I[idx], 1, w=np.sqrt(nr_per_I[idx]-1)/std_per_I[idx])
+        p,cov = np.polyfit(bc[idx], mean_per_I[idx], 1, w=np.sqrt(nr_per_I[idx]-1)/std_per_I[idx], cov=True)
 
         gains[i,j] = p[0]
 
@@ -31,21 +36,23 @@ for i, iso in enumerate(isos):
         errs[i,j] = np.sqrt(np.mean(diffrel[idx]**2)) * gains[i,j]  # RMS
 
         ax = axs[0,j]
-        ax.errorbar(bc, mean_per_I, yerr=std_per_I/np.sqrt(nr_per_I-1), color=c, fmt="o", label="Data", zorder=2)
+        ax.errorbar(bc, mean_per_I, yerr=err_per_I, color=c, fmt="o", label="Data", zorder=2)
         ax.plot(bc, fitted, ls="--", c="k", lw=2, label=f"$G \eta = {gains[i,j]:.2f} \pm {errs[i,j]:.2f}$", zorder=3)
         ax.legend(loc="lower right")
-        ax.set_ylabel(r"$\sigma_C^2$")
+
+        derr_per_I = diffrel * err_per_I * np.sqrt(1/diff**2 + 1/err_per_I**2)
 
         ax = axs[1,j]
-        ax.errorbar(bc, diffrel, yerr=np.zeros_like(bc), color=c, fmt="o", zorder=2)
+        ax.errorbar(bc, diffrel, yerr=derr_per_I, color=c, fmt="o", zorder=2)
         ax.plot(bc, np.zeros_like(bc), ls="--", c="k", lw=2, zorder=3)
-        ax.set_ylabel(r"$\Delta_{\sigma^2} / \sigma^2$")
     for ax in axs.ravel():
         ax.axvline(fitmin, lw=1, c='k')
         ax.axvline(fitmax, lw=1, c='k')
         ax.grid()
     ymax = gains[i].max() * 4096 * 1.05
     axs[0,0].set_ylim(0, ymax)
+    axs[0,0].set_ylabel(r"$\sigma_C^2$")
+    axs[1,0].set_ylabel(r"$\Delta_{\sigma^2} / \sigma^2$")
     axs[1,0].set_ylim(-1, 1)
     axs[1,0].set_xlabel(r"$\mu_C$")
     axs[0,0].set_xlim(0, 4096)

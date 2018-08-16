@@ -28,14 +28,19 @@ for folder in subfolders:
 C_range = np.arange(0, 4096, 1)
 for j in range(3):
     colour = "RGB"[j]
-    print(colour)
+    print(colour, end="")
     mean = np.array(meanRGB[j]).ravel()
     var  = np.array(varRGB[j]).ravel()
 
     mean_per_I, bin_edges, bin_number = binned_statistic(mean, var, statistic="mean", bins=C_range)
-    std_per_I = binned_statistic(mean, var, statistic=np.std, bins=C_range).statistic
-    nr_per_I = binned_statistic(mean, var, statistic="count", bins=C_range).statistic
     bc = bin_centers(bin_edges)
+    print(".", end="")
+    raise Exception
+    std_per_I = binned_statistic(mean, var, statistic=np.std, bins=C_range).statistic
+    print(".", end="")
+    nr_per_I = binned_statistic(mean, var, statistic="count", bins=C_range).statistic
+    print(".", end="")
 
     res = np.array([bc, nr_per_I, mean_per_I, std_per_I])
     np.save(f"results/gain/curves/iso_{iso}_{colour}.npy", res)
+    print("!")

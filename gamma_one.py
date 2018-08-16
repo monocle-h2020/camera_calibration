@@ -26,11 +26,6 @@ X, Y = np.meshgrid(x, y)
 D = np.sqrt((X - x0)**2 + (Y - y0)**2)
 D_split, offsets = raw.pull_apart(D, colors_cut)
 
-#RGBG_norm = RGBG.astype(np.float) - 528
-#RGBG_norm[RGBG_norm > 60000] = 0
-#for j in range(4):
-#    RGBG_norm[..., j] = RGBG_norm[..., j] / find_I0(RGBG_norm[..., j], D_split[..., j])
-
 R, G, B, G2 = [RGBG[..., j].ravel() for j in range(4)]
 DR, DG, DB, DG2 = [D_split[..., j].ravel() for j in range(4)]
 G = np.concatenate((G, G2))
