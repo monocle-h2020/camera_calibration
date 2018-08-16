@@ -2,7 +2,7 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from ispex import raw, plot, io
-from ispex.general import bin_centers, weighted_mean
+from ispex.general import bin_centers, weighted_mean, Rsquare
 from ispex.gamma import malus, malus_error
 from glob import glob
 from scipy.stats import binned_statistic
@@ -53,6 +53,9 @@ gainerr = gain**2 * fiterr[0]
 RON  = gain * np.sqrt(fit[1])
 RONerr = np.sqrt(gainerr**2 * fit[1] + 0.25 * fiterr[1]**2 * gain**2 / fit[1])
 
+fit_measured = np.polyval(fit, Ms)
+R2 = Rsquare(Vs[ind], fit_measured[ind])
+
 plt.figure(figsize=(7,5), tight_layout=True)
 x = np.logspace(-1, 4, 500)
 y = np.polyval(fit, x)
@@ -67,6 +70,7 @@ plt.xscale("log") ; plt.yscale("log")
 plt.xlim(0.1, 4096) ; plt.ylim(ymin=0.9*fit[1])
 plt.xlabel("Mean (ADU)")
 plt.ylabel("Variance (ADU$^2$)")
+plt.title(f"$R^2 = {R2:.4f}$")
 plt.legend(loc="upper left")
 plt.savefig(f"results/gain_new/G_RON_iso{iso}.png")
 plt.show()
