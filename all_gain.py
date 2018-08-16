@@ -2,7 +2,7 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from ispex import raw, plot, io
-from ispex.general import bin_centers, weighted_mean
+from ispex.general import bin_centers, weighted_mean, Rsquare
 from ispex.gamma import malus, malus_error
 from glob import glob
 from scipy.optimize import curve_fit
@@ -46,9 +46,7 @@ invgain_fit = model(irange, *popt)
 err_fit = model_err(irange, popt, pcov)
 
 fit_measured = model(isos, *popt)
-SS_res = np.sum((invgains[ind] - fit_measured[ind])**2)
-SS_tot = np.sum((invgains[ind] - invgains[ind].mean())**2)
-R2 = 1 - SS_res/SS_tot
+R2 = Rsquare(invgains[ind], fit_measured[ind])
 
 for xmax in (1850, 250):
     plt.errorbar(isos, invgains, yerr=invgainerrs, fmt="o", c="k")
