@@ -6,9 +6,10 @@ from ispex.general import gauss_filter
 from ispex import raw, plot, io, wavelength
 
 filename = argv[1]
-handle = filename.split()
+handle = "_".join(filename.split("/")).split(".")[0]
 
 img = io.load_dng_raw(filename)
+exif = io.load_exif(filename)
 image_cut  = raw.cut_out_spectrum(img.raw_image)
 colors_cut = raw.cut_out_spectrum(img.raw_colors)
 
@@ -27,8 +28,9 @@ plot.RGBG(RGBG, vmax=800, saveto="RGBG_split.png", size=30)
 plot.RGBG(all_interpolated, vmax=800, saveto="RGBG_split_interpolated.png", size=30)
 
 stacked = wavelength.stack(lambdarange, all_interpolated)
+np.save("results/spectra/"+handle+"_spectrum.npy", stacked)
 
-plot.plot_spectrum(stacked[...,0], stacked[...,1:])
+plot.plot_spectrum(stacked[...,0], stacked[...,1:], saveto="results/spectra/"+handle+"_spectrum_rgb.png")
 
 sub = img.raw_image[1750:, 1750:]
 plt.hist(sub.ravel(), bins=20)
