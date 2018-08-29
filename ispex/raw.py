@@ -20,7 +20,7 @@ def pull_apart(raw_img, color_pattern, color_desc=b"RGBG"):
     offsets = np.array([_find_offset(color_pattern, i) for i in range(4)])
     offX, offY = offsets.T
     R, G, B, G2 = [raw_img[x::2, y::2] for x, y in zip(offX, offY)]
-    RGBG = np.dstack((R, G, B, G2))
+    RGBG = np.stack((R, G, B, G2))
     return RGBG, offsets
 
 
