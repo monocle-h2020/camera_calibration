@@ -99,16 +99,27 @@ fig.savefig("results/linearity/RGBG.png")
 plt.close()
 print("RGBG JPG-DNG comparison made")
 
+plt.figure(figsize=(8,5), tight_layout=True)
+plt.hexbin(M_RGBG[::3,...,1], J_RGBG[::3,...,1,1], mincnt=1, cmap=plot.cmaps["Gr"])
+plt.xlabel("DNG value")
+plt.ylabel("JPEG value")
+plt.title("DNG-JPEG relation under different lighting conditions")
+plt.savefig("results/linearity/G_dng_jpeg.png")
+plt.close()
+
+def linear_R2(Is, row, saturate=4000):
+    ind = np.where(row < 4000)
+    p = np.polyfit(Is[ind], row[ind], 1)
+    pv = np.polyval(p, Is[ind])
+    R2 = Rsquare(row[ind], pv)
+    return R2
+
 print("R^2 comparison...", end=" ")
 M_reshaped = M_RGBG.reshape(len(M_RGBG), -1, 4)
 M_reshaped = np.ma.array(M_reshaped, mask=M_reshaped>4000)
 R2 = np.zeros((4, len(M_reshaped[0])))
 for j in range(4):
-    for i,row in enumerate(M_reshaped[...,j].T):
-        ind = np.where(row < 4000)
-        p = np.polyfit(Is[ind], row[ind], 1)
-        pv = np.polyval(p, Is)
-        R2[j,i] = Rsquare(row[ind], pv[ind])
+    R2[j] = [linear_R2(Is, row, saturate=4000) for row in M_reshaped[...,j].T]
     print(j, end=" ")
 
 fig, axs = plt.subplots(2, 2, sharex=True, sharey=True, tight_layout=True, figsize=(7,7))
@@ -123,11 +134,3 @@ for ax in axs[:,0]:
 fig.savefig("results/linearity/R2.png")
 plt.close()
 print("made")
-
-plt.figure(figsize=(8,5), tight_layout=True)
-plt.hexbin(M_RGBG[::3,...,1], J_RGBG[::3,...,1,1], mincnt=1, cmap=plot.cmaps["Gr"])
-plt.xlabel("DNG value")
-plt.ylabel("JPEG value")
-plt.title("DNG-JPEG relation under different lighting conditions")
-plt.savefig("results/linearity/G_dng_jpeg.png")
-plt.close()
