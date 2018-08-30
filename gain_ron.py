@@ -8,18 +8,23 @@ from glob import glob
 from scipy.stats import binned_statistic
 
 folder_main = argv[1]
-iso = int(folder_main.split("iso")[-1])
+try:
+    iso = int(folder_main.split("iso")[-1].strip("/"))
+except:
+    iso = "_".join(folder_main.replace("\\", "/").split("/")).strip("_")
 folders_pol = glob(folder_main+"/*")
 folders_pol = [f for f in folders_pol if "." not in f]
 Vs = np.zeros_like(folders_pol, dtype=np.float32)
 Verrs = Vs.copy()
 Ms = Vs.copy()
 Merrs = Ms.copy()
+maxes = Ms.copy()
 for i,folder in enumerate(folders_pol):
     files = glob(folder+"/*.dng")
 
     arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
 
+    max_here = arrs.max()
     mean = arrs.mean(axis=0).astype(np.float32)  # mean per x,y
 
     means = arrs.mean(axis=(1,2)) - 528
@@ -32,7 +37,7 @@ for i,folder in enumerate(folders_pol):
     std_mean = stds.mean()
     var = std_mean**2
     var_err = stds.std() / np.sqrt(len(stds) - 1) * 2 * std_mean
-    Vs[i], Verrs[i], Ms[i], Merrs[i] = var, var_err, mean_all, mean_err
+    Vs[i], Verrs[i], Ms[i], Merrs[i], maxes[i] = var, var_err, mean_all, mean_err, max_here
 
     print(f"{(i+1)/len(folders_pol)*100:.0f}%", end=" ")
 
