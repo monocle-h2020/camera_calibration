@@ -17,12 +17,12 @@ def _saveshow(saveto=None, close=True, **kwargs):
 def _rgbplot(x, y, func=plt.plot, **kwargs):
     RGB = ["R", "G", "B"]
     for j in range(3):
-        func(x, y[..., j], c=RGB[j], **kwargs)
+        func(x, y[j], c=RGB[j], **kwargs)
 
 def _rgbgplot(x, y, func=plt.plot, **kwargs):
     RGBY = ["R", "G", "B", "Y"]
     for j in range(4):
-        func(x, y[..., j], c=RGBY[j], **kwargs)
+        func(x, y[j], c=RGBY[j], **kwargs)
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
     plt.figure(figsize=(10, 5), tight_layout=True)
@@ -102,7 +102,7 @@ def histogram(data, saveto=None, **kwargs):
 
 def RGBG(RGBG, saveto=None, size=13, **kwargs):
     R, G, B, G2 = raw.split_RGBG(RGBG)
-    frac = RGBG.shape[0]/RGBG.shape[1]
+    frac = RGBG.shape[1]/RGBG.shape[2]
     fig, axs = plt.subplots(2,2,sharex=True,sharey=True,figsize=(size,size*frac))
     axs[0,0].imshow(B,  cmap=plt.cm.Blues_r , aspect="equal", **kwargs)
     axs[0,1].imshow(G,  cmap=plt.cm.Greens_r, aspect="equal", **kwargs)
@@ -126,7 +126,8 @@ def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=5, xlabel="Pix
     Ignore G2 for now
     """
     plt.figure(figsize=(size,size))
-    to_plot = _to_8_bit(RGBG[:,:,:3], maxvalue=maxvalue, boost=boost)
+    to_plot = _to_8_bit(RGBG[:3], maxvalue=maxvalue, boost=boost)
+    to_plot = np.moveaxis(to_plot, 0, 2)
     plt.imshow(to_plot, **kwargs)
     plt.xlabel(xlabel)
     plt.ylabel("Pixel $y$")
@@ -136,8 +137,10 @@ def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=5, xlabel="Pix
 
 def RGBG_stacked_with_graph(RGBG, x=raw.x, maxvalue=4096, boost=5, saveto=None, xlabel="Pixel $x$", **kwargs):
     R, G, B, G2 = raw.split_RGBG(RGBG)  # change to RGBG
-    stacked = np.dstack((R, (G+G2)/2, B))
+    stacked = np.stack((R, (G+G2)/2, B))
     stacked_8_bit = _to_8_bit(stacked, maxvalue=maxvalue, boost=boost)
+    stacked_8_bit = np.moveaxis(stacked_8_bit, 0, 2)
+    stacked_8_bit = stacked_8_bit.swapaxes(0,1)
 
     fig, ax1 = plt.subplots(figsize=(17,5))
     ax1.imshow(stacked_8_bit, **kwargs)
@@ -147,7 +150,7 @@ def RGBG_stacked_with_graph(RGBG, x=raw.x, maxvalue=4096, boost=5, saveto=None, 
 
     ax2 = ax1.twinx()
     p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
-    meaned = RGBG.mean(axis=0)
+    meaned = RGBG.mean(axis=2)
     _rgbplot(x, meaned, func=ax2.plot, path_effects = p_eff)  # change to RGBG
     ax2.set_ylabel("Mean RGBG value")
     ax2.set_xlim(x[0], x[-1])

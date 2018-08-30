@@ -87,25 +87,16 @@ def interpolate(wavelength_array, color_value_array, lambdarange):
 
 def interpolate_multi(wavelengths_split, RGBG, lambdamin=340, lambdamax=760, lambdastep=0.5):
     lambdarange = np.arange(lambdamin, lambdamax+lambdastep, lambdastep)
-    all_interpolated = np.array([interpolate(wavelengths_split[:,:,c], RGBG[:,:,c], lambdarange) for c in range(4)])
-    all_interpolated = all_interpolated.T.swapaxes(0,1)
+    all_interpolated = np.array([interpolate(wavelengths_split[c], RGBG[c], lambdarange) for c in range(4)])
+    all_interpolated = np.moveaxis(all_interpolated, 2, 1)
     return lambdarange, all_interpolated
 
 def stack(wavelengths, interpolated):
-    stacked = interpolated.mean(axis=0)
-    stacked = np.roll(stacked, 1, axis=1)  # move to make space for wavelengths
-    stacked[:,2] = (stacked[:,0] + stacked[:,2])/2.  # G becomes mean of G
-    stacked[:,0] = wavelengths  # put wavelengths into array
+    stacked = interpolated.mean(axis=2)
+    stacked = np.roll(stacked, 1, axis=0)  # move to make space for wavelengths
+    stacked[2] = (stacked[0] + stacked[2])/2.  # G becomes mean of G
+    stacked[0] = wavelengths  # put wavelengths into array
     return stacked
-
-def stack_old(x, rgb, coeff, yoffset=0, lambdarange = np.arange(*wavelength_limits, 0.5)):
-    wavelength_funcs = [wavelength_fit(c, *coeff) for c in range(yoffset, yoffset+rgb.shape[1])]
-    wavelengths = np.array([f(x) for f in wavelength_funcs])
-    # divide by nm/px to get intensity per nm
-    rgb_new = rgb[:-1,:,:] / np.diff(wavelengths, axis=1).T[:,:,np.newaxis]
-    interpolated = np.array([interpolate(wavelengths[i,:-1], rgb_new[:,i], lambdarange) for i in range(rgb.shape[1])])
-    means = interpolated.mean(axis=0)
-    return lambdarange, means
 
 def per_wavelength(wavelengths_split, RGBG):
     nm_diff = np.diff(wavelengths_split, axis=1)/2

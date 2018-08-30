@@ -34,8 +34,7 @@ def put_together(R, G, B, G2, offsets):
 
 
 def split_RGBG(RGBG):
-    R, G, B, G2 = RGBG.T
-    R, G, B, G2 = R.T, G.T, B.T, G2.T
+    R, G, B, G2 = RGBG
     return R, G, B, G2
 
 
