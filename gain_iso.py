@@ -53,7 +53,7 @@ R2 = Rsquare(invgains[ind], fit_measured[ind])
 invRONs = invgains * RONs
 invRONerrs = np.sqrt(invgains**2 * RONerrs**2 + RONs**2 * invgainerrs**2)
 
-LUT_iso = np.arange(0, 1840, 1)
+LUT_iso = np.arange(0, 2000, 1)
 LUT_invgain = model(LUT_iso, *popt)
 LUT_invgain_err = model_err(LUT_iso, popt, pcov)
 LUT_gain = 1/LUT_invgain
