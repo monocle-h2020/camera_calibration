@@ -50,8 +50,8 @@ def weighted_mean(data, weights, **kwargs):
     s2 = np.sum(weights * (data - mean)**2) / (V1 - V2/V1)
     return mean, np.sqrt(s2)
 
-def Rsquare(y, y_fit):
-    SS_res = np.sum((y - y_fit)**2)
-    SS_tot = np.sum((y - y.mean())**2)
+def Rsquare(y, y_fit, **kwargs):
+    SS_res = np.ma.sum((y - y_fit)**2, **kwargs)
+    SS_tot = np.ma.sum((y - y.mean(**kwargs))**2, **kwargs)
     R2 = 1 - SS_res/SS_tot
     return R2
