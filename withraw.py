@@ -30,7 +30,8 @@ plot.RGBG(all_interpolated, vmax=800, saveto="RGBG_split_interpolated.png", size
 stacked = wavelength.stack(lambdarange, all_interpolated)
 np.save("results/spectra/"+handle+"_spectrum.npy", stacked)
 
-plot.plot_spectrum(stacked[...,0], stacked[...,1:], saveto="results/spectra/"+handle+"_spectrum_rgb.png")
+plot.plot_spectrum(stacked[...,0], stacked[...,1:], saveto="results/spectra/"+handle+"_spectrum_rgb.png",
+                   xlim=(340, 760), ylim=(528, None), title=exif["Image DateTime"].values)
 
 sub = img.raw_image[1750:, 1750:]
 plt.hist(sub.ravel(), bins=20)
