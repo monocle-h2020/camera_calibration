@@ -57,6 +57,7 @@ for i,folder in enumerate(subfolders):
     jMs[i], jMerrs[i] = jpgmean_all, jpgmean_err
 
     print(f"{(i+1)/len(subfolders)*100:.0f}%", end=" ")
+print("")
 
 meanarrs = np.stack(meanarrs)
 #vararrs = np.stack(vararrs)
@@ -73,34 +74,6 @@ print("Split JPEG means")
 
 Is = malus(pols)
 Ierrs = malus_error(pols, sigma_angle0=1.0)
-lowest_saturated = Is[saturated == 0].max()
-ind_sat = saturated/arrs.size <= 0.1
-less_than_10pct_saturated = Is[ind_sat].max()
-
-fig = plt.figure(figsize=(10,5), tight_layout=True)
-
-ax1 = fig.add_subplot(111, label="1")
-ax1.axvspan(less_than_10pct_saturated, 1.1, color="0.75", zorder=0, alpha=0.4)
-for j, c in enumerate("rgb"):
-    ax1.errorbar(Is, jMs[:,j], xerr=Ierrs, yerr=jMerrs[:,j], fmt=f"{c}o", label="JPG", zorder=1)
-ax1.errorbar([-100, -100], [-100, -100], xerr=[0.1, 0.1], yerr=[0.1, 0.1], fmt="ko", label="DNG")
-
-ax1.legend(loc="lower right")
-ax1.set_xlabel("Input intensity", size="large")
-ax1.set_ylabel("JPEG mean", size="large")
-ax1.tick_params(axis="y")
-ax1.set_xlim(0, 1)
-ax1.set_ylim(-1, 256)
-
-ax2 = ax1.twinx()
-ax2.errorbar(Is, Ms, xerr=Ierrs, yerr=Merrs, fmt="ko", lw=2, zorder=2)
-ax2.set_ylabel("DNG mean")
-ax2.yaxis.set_label_position("right")
-ax2.set_ylim(-1, 4100)
-plt.savefig("results/linearity/JPG_DNG.png")
-plt.show()
-plt.close()
-print("JPG-DNG comparison made")
 
 m1, m2 = M_RGBG.shape[1]//2, M_RGBG.shape[2]//2
 fig, axs = plt.subplots(2, 2, tight_layout=True, figsize=(10,5), sharex=True, sharey=True)
@@ -128,6 +101,7 @@ print("RGBG JPG-DNG comparison made")
 
 print("R^2 comparison...", end=" ")
 M_reshaped = M_RGBG.reshape(len(M_RGBG), -1, 4)
+M_reshaped = np.ma.array(M_reshaped, mask=M_reshaped>4000)
 R2 = np.zeros((4, len(M_reshaped[0])))
 for j in range(4):
     for i,row in enumerate(M_reshaped[...,j].T):
