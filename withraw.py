@@ -5,8 +5,13 @@ from matplotlib import pyplot as plt, patheffects as pe
 from ispex.general import gauss_filter
 from ispex import raw, plot, io, wavelength
 
+LUT = np.load("results/gain_new/LUT.npy")
+
 filename = argv[1]
 handle = "_".join(filename.split("/")).split(".")[0]
+
+ISO = int(argv[2])  # temporary to test Gain
+texp_inv = int(argv[3])  # temporary to test Gain
 
 img = io.load_dng_raw(filename)
 exif = io.load_exif(filename)
@@ -34,6 +39,7 @@ np.save("results/spectra/"+handle+"_spectrum.npy", stacked)
 plot.plot_spectrum(stacked[0], stacked[1:], saveto="results/spectra/"+handle+"_spectrum_rgb.png",
                    xlim=(340, 760), ylim=(0, None), title=exif["Image DateTime"].values)
 
-sub = img.raw_image[1750:, 1750:]
-plt.hist(sub.ravel(), bins=20)
-plt.show()
+gain = LUT[1, ISO]
+stacked[1:] *= gain * texp_inv  # convert ADU to e-/s
+plot.plot_spectrum(stacked[0], stacked[1:], xlim=(340, 760), ylim=(0, 70), title=f"ISO {ISO} ; 1/t_exp {texp_inv:.1f}",
+                   ylabel="$e^-/s$", saveto=f"ISO_{ISO}_texp_{texp_inv:.1f}.png")
