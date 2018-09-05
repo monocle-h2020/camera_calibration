@@ -3,9 +3,10 @@ from sys import argv
 from matplotlib import pyplot as plt
 from ispex import plot, io
 from ispex.raw import pull_apart
-from ispex.general import Rsquare
+from ispex.general import Rsquare, bin_centers
 from ispex.gamma import malus, malus_error
 from glob import glob
+from scipy.stats import binned_statistic
 
 folder_main = argv[1]
 
@@ -99,13 +100,53 @@ fig.savefig("results/linearity/RGBG.png")
 plt.close()
 print("RGBG JPG-DNG comparison made")
 
-plt.figure(figsize=(8,5), tight_layout=True)
-plt.hexbin(M_RGBG[::3,...,1], J_RGBG[::3,...,1,1], mincnt=1, cmap=plot.cmaps["Gr"])
-plt.xlabel("DNG value")
-plt.ylabel("JPEG value")
-plt.title("DNG-JPEG relation under different lighting conditions")
-plt.savefig("results/linearity/G_dng_jpeg.png")
-plt.close()
+maxval = 4096
+x = np.arange(0.5, maxval+1.5, 1)
+means_all = np.zeros((len(M_RGBG), 4, maxval))
+stds_all = np.zeros((len(M_RGBG), 4, maxval))
+lens_all = np.zeros((len(M_RGBG), 4, maxval))
+for k, (M, J) in enumerate(zip(M_RGBG, J_RGBG)):
+    for j in range(4):
+        if j <= 2:
+            i = j
+        else:
+            i = 1
+        Mc = M[...,j].ravel()
+        Jc = J[...,j,i].ravel()
+        means, bin_edges, bin_number = binned_statistic(Mc, Jc, statistic="mean", bins=x)
+        bc = bin_centers(bin_edges)
+        #stds = binned_statistic(Mc, Jc, statistic=np.std, bins=x).statistic
+        lens = binned_statistic(Mc, Jc, statistic="count", bins=x).statistic
+        means_all[k,j] = means
+        #stds_all[k,j] = stds
+        lens_all[k,j] = lens
+    print(k, end=" ")
+print("")
+
+x = np.arange(maxval)
+for j in range(4):
+    c = "rgbg"[j]
+    label = c if j < 3 else "g2"
+    plt.figure(figsize=(10,7), tight_layout=True)
+    for m,s in zip(means_all[:,j], stds_all[:,j]):
+        plt.scatter(bc, m, s=1, c=c)
+        #plt.fill_between(bc, m-s, m+s, alpha=0.5, color=c)
+        plt.xlim(0, maxval*1.03)
+        plt.ylim(0, 260)
+        plt.xlabel("DNG value")
+        plt.ylabel("JPEG value")
+    plt.savefig(f"results/linearity/dng_jpeg_{label}.png")
+    plt.close()
+
+def sRGB(linear, knee, slope, xoff, xmul, yoff, ymul):
+    def curve(linear, xoff, xmul, yoff, ymul):
+        return yoff + ymul * (xmul * (linear-xoff))**(1/2.4)
+    res = curve(linear, xoff, xmul, yoff, ymul)
+    linear_offset = curve(knee, xoff, xmul, yoff, ymul) - slope*knee
+    res[linear < knee] = linear[linear < knee] * slope + linear_offset
+    return res
+
+raise Exception
 
 def linear_R2(Is, row, saturate=4000):
     ind = np.where(row < 4000)
