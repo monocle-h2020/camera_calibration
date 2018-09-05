@@ -48,7 +48,7 @@ plt.close()
 RGBG, _ = raw.pull_apart(mean, colors)
 for j,c in enumerate("RGBG"):
     X = "2" if j == 3 else ""
-    mG = gaussMd(RGBG[...,j], sigma=10)
+    mG = gaussMd(RGBG[j], sigma=10)
     plt.figure(figsize=(20,10), tight_layout=True)
     img = plt.imshow(mG, cmap=plot.cmaps[c+"r"])
     plot.colorbar(img)
@@ -65,7 +65,7 @@ plt.close()
 RGBG, _ = raw.pull_apart(stds, colors)
 for j,c in enumerate("RGBG"):
     X = "2" if j == 3 else ""
-    sG = gaussMd(RGBG[...,j], sigma=10)
+    sG = gaussMd(RGBG[j], sigma=10)
     plt.figure(figsize=(20,10), tight_layout=True)
     img = plt.imshow(sG, cmap=plot.cmaps[c+"r"])
     plot.colorbar(img)
