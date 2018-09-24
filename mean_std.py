@@ -13,6 +13,8 @@ for tup in walk(folder):
     DNGs = glob(f"{fol}/*.dng")
     if len(DNGs) == 0:
         continue
+    
+    print(f"{fol}  -->  {name}_x.npy")
 
     arrs, colors = io.load_dng_many(fol+"/*.dng", return_colors=True)
     mean = arrs.mean(axis=0, dtype=np.float32)
