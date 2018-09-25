@@ -2,6 +2,7 @@ import rawpy
 import exifread
 import glob
 import numpy as np
+from matplotlib import pyplot as plt
 
 def load_dng_raw(filename):
     img = rawpy.imread(filename)
@@ -24,6 +25,19 @@ def load_dng_many(pattern, return_colors=False):
         return arrs, colors
     else:
         return arrs
+
+def load_jpg(filename):
+    img = plt.imread(filename)
+    return img
+
+def load_jpg_many(pattern):
+    files = glob.glob(pattern)
+    img0 = load_jpg(files[0])
+    arrs = np.empty((len(files), *img0.shape), dtype=np.uint8)
+    arrs[0] = img0
+    for j, file in enumerate(files[1:], 1):
+        arrs[j] = load_jpg(file)
+    return arrs
 
 def load_exif(filename):
     with open(filename, "rb") as f:
