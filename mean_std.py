@@ -23,3 +23,14 @@ for tup in walk(folder):
     np.save(f"{name}_mean.npy", mean)
     np.save(f"{name}_stds.npy", stds)
     np.save(f"{name}_colr.npy", colors)
+
+    JPGs = glob(f"{fol}/*.jp*g")
+    if len(JPGs) == 0:
+        continue
+    
+    jarrs = io.load_jpg_many(fol+"/*.jpg")
+    jmean = jarrs.mean(axis=0, dtype=np.float32)
+    jstds = jarrs.std (axis=0, dtype=np.float32)
+    
+    np.save(f"{name}_jmean.npy", jmean)
+    np.save(f"{name}_jstds.npy", jstds)
