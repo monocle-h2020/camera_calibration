@@ -5,7 +5,7 @@
 *.txt
 spectra/*
 reference_spectra/*
-test_files/*
+data/*
 results/*
 
 # Byte-compiled / optimized / DLL files
