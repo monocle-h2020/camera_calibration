@@ -1,0 +1,4 @@
+Template for storing phone data:
+
+- images: raw images
+- stacks: pre-processed images (stacked data, generally mean+std+colours)
