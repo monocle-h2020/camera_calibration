@@ -2,6 +2,7 @@ import rawpy
 import exifread
 import glob
 import numpy as np
+from os import path
 from matplotlib import pyplot as plt
 
 def load_dng_raw(filename):
@@ -59,3 +60,30 @@ def load_jarrs(prefix):
     jmean = np.load(f"{prefix}_jmean.npy")
     jstds = np.load(f"{prefix}_jstds.npy")
     return jmean, jstds
+
+def strip_filenames(files):
+    return [path.split(filename)[0] for filename in files]
+
+def load_npy(folder, pattern, retrieve_value=strip_filenames, **kwargs):
+    files = glob.glob(f"{folder}/{pattern}")
+    stacked = np.stack([np.load(f) for f in files])
+    values = [retrieve_value(f, **kwargs) for f in files]
+    return values, stacked
+
+def split_pol_angle(filename):
+    split_name = filename.split("pol")[1]
+    val = float(split_name.split("_")[0])
+    return val
+
+def split_iso(filename):
+    split_name = filename.split("iso")[1]
+    val = int(split_name.split("_")[0])
+    return val
+
+def load_means(folder, **kwargs):
+    values, means = load_npy(folder, "*_mean.npy", **kwargs)
+    return values, means
+
+def load_stds(folder):
+    values, stds = load_npy(folder, "*_stds.npy", **kwargs)
+    return values, stds
