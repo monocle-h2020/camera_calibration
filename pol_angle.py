@@ -1,29 +1,24 @@
 import numpy as np
-import rawpy
 from sys import argv
-from matplotlib import pyplot as plt, patheffects as pe
-from phonecal.general import gauss_filter
-from phonecal import raw, plot, io, wavelength
+from matplotlib import pyplot as plt
+from phonecal import io
+from phonecal.gain import malus
 from scipy.optimize import curve_fit
-from scipy.stats import binned_statistic
 
-def malus(angle):
-    return (np.cos(np.radians(angle)))**2
+folder = argv[1]
 
-def cos4(d, p, a):
-    return a*(np.cos(d/p))**4
+angles, means = io.load_means("data/iPhone_SE/stacks/linearity/", retrieve_value=io.split_pol_angle)
+means_reshaped = means.reshape(means.shape[0], -1).T
 
-def cos4f(d, f, a):
-    return a*(np.cos(np.arctan(d/f)))**4
+def malus_amp(angles, amplitude, offset_angle, offset_intensity):
+    I = offset_intensity + amplitude * malus(angles, offset_angle)
+    return I
 
-def find_I0(rgbg, distances, radius=100):
-    return rgbg[distances < radius].mean()
+def fit(data):
+    popt, pcov = curve_fit(malus_amp, angles, data, p0=[3000,74,528])
+    return popt[1]
 
-def find_I1500(rgbg, distances):
-    return rgbg[np.where((distances > 1500) & (distances < 1510))].mean()
-
-def cut(arr, x=250, y=250):
-    return arr[y:-y, x:-x]
+raise Exception
 
 I_range = np.linspace(0, 1, 251)
 

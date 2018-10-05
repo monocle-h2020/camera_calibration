@@ -1,5 +1,7 @@
 import numpy as np
 
+polariser_angle = 0
+
 def malus(angle, offset=polariser_angle):
     return (np.cos(np.radians(angle-offset)))**2
 
