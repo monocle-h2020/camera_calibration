@@ -2,35 +2,40 @@ import numpy as np
 from sys import argv
 from ispex import io
 from glob import glob
-from os import walk
+from os import walk, path
 
-folder = argv[1]
+folder_images = argv[1]
+folder_stacks = folder_images.replace("images", "stacks")
+colour_path = folder_stacks.split("stacks")[0] + "/stacks/colour.npy"
+colour_exists = path.exists(colour_path)
 
-for tup in walk(folder):
-    fol = tup[0]
-    name = fol.strip("/")
+for tup in walk(folder_images):
+    folder_here = tup[0]
+    goal = folder_here.strip("/").replace("images", "stacks")
 
-    DNGs = glob(f"{fol}/*.dng")
+    DNGs = glob(f"{folder_here}/*.dng")
     if len(DNGs) == 0:
         continue
     
-    print(f"{fol}  -->  {name}_x.npy")
+    print(f"{folder_here}  -->  {goal}_x.npy")
 
-    arrs, colors = io.load_dng_many(fol+"/*.dng", return_colors=True)
+    arrs, colors = io.load_dng_many(f"{folder_here}/*.dng", return_colors=True)
     mean = arrs.mean(axis=0, dtype=np.float32)
     stds = arrs.std (axis=0, dtype=np.float32)
 
-    np.save(f"{name}_mean.npy", mean)
-    np.save(f"{name}_stds.npy", stds)
-    np.save(f"{name}_colr.npy", colors)
+    np.save(f"{goal}_mean.npy", mean)
+    np.save(f"{goal}_stds.npy", stds)
+    if not colour_exists:
+        np.save(colour_path, colors)
+        colours_exists = True
 
-    JPGs = glob(f"{fol}/*.jp*g")
+    JPGs = glob(f"{folder_here}/*.jp*g")
     if len(JPGs) == 0:
         continue
     
-    jarrs = io.load_jpg_many(fol+"/*.jpg")
+    jarrs = io.load_jpg_many(f"{folder_here}/*.jp*g")
     jmean = jarrs.mean(axis=0, dtype=np.float32)
     jstds = jarrs.std (axis=0, dtype=np.float32)
     
-    np.save(f"{name}_jmean.npy", jmean)
-    np.save(f"{name}_jstds.npy", jstds)
+    np.save(f"{goal}_jmean.npy", jmean)
+    np.save(f"{goal}_jstds.npy", jstds)

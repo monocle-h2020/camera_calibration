@@ -8,8 +8,7 @@ The format should be as follows:
 .../stacks/dark/iso<ISO>/<invtime>_<type>.npy
 where <ISO> is the ISO value, <invtime> is 1/exposure time and <type> the image type (see below).
 
-Three types of stacked images will be present:
+Two types of stacked images will be present:
  - ..._mean.npy: mean per pixel of a data set
- - ..._stds.npy: standard deviation per pixel of a data set
- - ..._colr.npy: Bayer colour per pixel of a data set
+ - ..._stds.npy: standard deviation per pixel of a data set 
  
