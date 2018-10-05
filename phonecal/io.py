@@ -67,7 +67,7 @@ def strip_filenames(files):
 def load_npy(folder, pattern, retrieve_value=strip_filenames, **kwargs):
     files = glob.glob(f"{folder}/{pattern}")
     stacked = np.stack([np.load(f) for f in files])
-    values = [retrieve_value(f, **kwargs) for f in files]
+    values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 
 def split_pol_angle(filename):
