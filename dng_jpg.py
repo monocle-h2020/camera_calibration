@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from ispex import plot, io
 from ispex.raw import pull_apart
 from ispex.general import Rsquare, bin_centers
-from ispex.gamma import malus, malus_error
+from ispex.gain import malus, malus_error
 from glob import glob
 from scipy.stats import binned_statistic
 
