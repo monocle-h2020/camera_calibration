@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from ispex import io
+from phonecal import io
 from glob import glob
 from os import walk, path
 

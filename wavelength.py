@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from sys import argv
 
-from ispex import general, io, plot, wavelength, raw
+from phonecal import general, io, plot, wavelength, raw
 
 filename = argv[1]
 

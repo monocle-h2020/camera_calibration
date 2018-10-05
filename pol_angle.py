@@ -2,8 +2,8 @@ import numpy as np
 import rawpy
 from sys import argv
 from matplotlib import pyplot as plt, patheffects as pe
-from ispex.general import gauss_filter
-from ispex import raw, plot, io, wavelength
+from phonecal.general import gauss_filter
+from phonecal import raw, plot, io, wavelength
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
 

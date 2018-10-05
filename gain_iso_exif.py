@@ -1,9 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex import raw, plot, io
-from ispex.general import bin_centers, weighted_mean, Rsquare
-from ispex.gamma import malus, malus_error
+from phonecal import raw, plot, io
+from phonecal.general import bin_centers, weighted_mean, Rsquare
 from glob import glob
 from scipy.optimize import curve_fit
 

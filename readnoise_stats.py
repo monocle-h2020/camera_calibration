@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex import raw, plot, io
-from ispex.general import gaussMd
+from phonecal import raw, plot, io
+from phonecal.general import gaussMd
 from glob import glob
 
 x = glob("results/bias/bias_stds_iso*.npy")

@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex import raw, plot, io
-from ispex.general import gaussMd
+from phonecal import raw, plot, io
+from phonecal.general import gaussMd
 
 folder = argv[1]
 handle = argv[1].split("/")[2]

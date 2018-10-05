@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex import raw, plot, io
+from phonecal import raw, plot, io
 
 file = argv[1]
 img = io.load_dng_raw(file)

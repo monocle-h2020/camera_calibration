@@ -1,9 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex.general import cut
-from ispex.gamma import polariser_angle, I_range, cos4f, malus, find_I0, pixel_angle
-from ispex import raw, plot, io
+from phonecal.general import cut
+from phonecal import raw, plot, io
 from scipy.optimize import curve_fit
 from scipy.stats import binned_statistic
 from glob import glob

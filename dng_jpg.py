@@ -1,10 +1,10 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex import plot, io
-from ispex.raw import pull_apart
-from ispex.general import Rsquare, bin_centers
-from ispex.gain import malus, malus_error
+from phonecal import plot, io
+from phonecal.raw import pull_apart
+from phonecal.general import Rsquare, bin_centers
+from phonecal.gain import malus, malus_error
 from glob import glob
 from scipy.stats import binned_statistic
 

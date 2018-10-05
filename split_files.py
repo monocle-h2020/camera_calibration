@@ -1,10 +1,5 @@
-import numpy as np
 from sys import argv
 from shutil import move
-from matplotlib import pyplot as plt
-from ispex import raw, plot, io
-from ispex.general import bin_centers, weighted_mean
-from ispex.gamma import malus, malus_error
 from glob import glob
 import os
 from time import time
