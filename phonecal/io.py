@@ -84,6 +84,14 @@ def load_means(folder, **kwargs):
     values, means = load_npy(folder, "*_mean.npy", **kwargs)
     return values, means
 
+def load_jmeans(folder, **kwargs):
+    values, means = load_npy(folder, "*_jmean.npy", **kwargs)
+    return values, means
+
 def load_stds(folder, **kwargs):
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
+    return values, stds
+
+def load_jstds(folder, **kwargs):
+    values, stds = load_npy(folder, "*_jstds.npy", **kwargs)
     return values, stds

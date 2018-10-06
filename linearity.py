@@ -8,57 +8,22 @@ from phonecal.gain import malus, malus_error
 from glob import glob
 from scipy.stats import binned_statistic
 
-folder_main = argv[1]
+folder = argv[1]
 
-subfolders = glob(folder_main+"/*")
-subfolders = [s for s in subfolders if "." not in s]
+angles, means = io.load_means(f"{folder}/stacks/linearity/", retrieve_value=io.split_pol_angle)
+angles, jmeans= io.load_jmeans(f"{folder}/stacks/linearity/", retrieve_value=io.split_pol_angle)
+colours = np.load(f"{folder}/stacks/colour.npy")
 
-pols = np.zeros_like(subfolders, dtype=np.uint16)
-saturated = np.zeros_like(subfolders, dtype=np.uint32)
+offset_angle = np.loadtxt(f"{folder}/stacks/linearity/default_angle.dat")
+intensities = malus(angles, offset_angle)
 
-Ms = np.zeros_like(subfolders, dtype=np.float32)
-Merrs = Ms.copy()
+means = np.moveaxis(means , 0, 2)
+jmeans= np.moveaxis(jmeans, 0, 2)
 
-jMs = np.tile(0, (len(subfolders), 3)).astype(np.float32)
-jMerrs = jMs.copy()
+means_RGBG, _ = pull_apart(means , colours)
+jmeans_RGBG, _= pull_apart(jmeans, colours)
 
-meanarrs = []
-jpgmeanarrs = []
-#vararrs = []
-#jpgvararrs = []
-
-for i,folder in enumerate(subfolders):
-    pols[i] = folder.split("pol")[-1]
-
-    arrs, colors = io.load_dng_many(folder+"/*.dng", return_colors=True)
-
-    mean = arrs.mean(axis=0).astype(np.float32)  # mean per x,y
-    meanarrs.append(mean)
-#    vararrs.append(arrs.var(axis=0))
-
-    means = arrs.mean(axis=(1,2))
-    mean_all = means.mean()
-    mean_err = means.std() / np.sqrt(len(means) - 1)
-
-    saturated[i] = len(np.where(arrs == 4095)[0])
-
-    Ms[i], Merrs[i] = mean_all, mean_err
-
-    JPGs = glob(folder+"/*.jpg")
-    jpgarrs = [plt.imread(jpg) for jpg in JPGs]
-    jpgarrs = np.stack(jpgarrs)
-    jpgmean = jpgarrs.mean(axis=0).astype(np.float32) # mean per x,y,C
-    jpgmeanarrs.append(jpgmean)
-#    jpgvararrs.append(jpgarrs.var(axis=0))
-
-    jpgmeans = jpgarrs.mean(axis=(1,2))
-    jpgmean_all = jpgmeans.mean(axis=0)
-    jpgmean_err = jpgmeans.std(axis=0) / np.sqrt(len(jpgmeans) - 1)
-
-    jMs[i], jMerrs[i] = jpgmean_all, jpgmean_err
-
-    print(f"{(i+1)/len(subfolders)*100:.0f}%", end=" ")
-print("")
+raise Exception
 
 meanarrs = np.stack(meanarrs)
 #vararrs = np.stack(vararrs)
