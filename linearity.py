@@ -16,6 +16,7 @@ colours = np.load(f"{folder}/stacks/colour.npy")
 
 offset_angle = np.loadtxt(f"{folder}/stacks/linearity/default_angle.dat")
 intensities = malus(angles, offset_angle)
+intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
 means = np.moveaxis(means , 0, 2)
 jmeans= np.moveaxis(jmeans, 0, 2)
