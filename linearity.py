@@ -24,36 +24,20 @@ jmeans= np.moveaxis(jmeans, 0, 2)
 means_RGBG, _ = pull_apart(means , colours)
 jmeans_RGBG, _= pull_apart(jmeans, colours)
 
-raise Exception
+middle1, middle2 = means_RGBG.shape[1]//2, means_RGBG.shape[2]//2
 
-meanarrs = np.stack(meanarrs)
-#vararrs = np.stack(vararrs)
-jpgmeanarrs = np.stack(jpgmeanarrs)
-#jpgvararrs = np.stack(jpgvararrs)
-
-M_RGBG, _ = pull_apart(meanarrs.T, colors) ; M_RGBG = M_RGBG.T
-print("Split DNG means")
-J_RGBG, _ = pull_apart(np.moveaxis(jpgmeanarrs, 0, 2), colors)
-J_RGBG = np.moveaxis(J_RGBG, 0, 3)
-J_RGBG = np.moveaxis(J_RGBG, 2, 0)
-print("Split JPEG means")
-#V_RGBG, _ = pull_apart(vararrs.T , colors) ; V_RGBG = V_RGBG.T
-
-Is = malus(pols)
-Ierrs = malus_error(pols, sigma_angle0=1.0)
-
-m1, m2 = M_RGBG.shape[1]//2, M_RGBG.shape[2]//2
+#  plot (intensity, DNG value) and (intensity, JPEG value) for the central 4 pixels in the stack
 fig, axs = plt.subplots(2, 2, tight_layout=True, figsize=(10,5), sharex=True, sharey=True)
 for j in range(4):
     i = j if j < 3 else 1
     c = "rgb"[i]
     ax = axs.ravel()[j]
-    ax.errorbar(Is, J_RGBG[:,m1,m2,j,i], xerr=Ierrs, fmt=f"{c}o")
+    ax.errorbar(intensities, jmeans_RGBG[j,middle1,middle2,:,i], xerr=intensities_errors, fmt=f"{c}o")
     ax.set_xlim(-0.02, 1.02)
     ax.set_ylim(0, 255*1.05)
 
     ax2 = ax.twinx()
-    ax2.errorbar(Is, M_RGBG[:,m1,m2,j], xerr=Ierrs, fmt="ko")
+    ax2.errorbar(intensities, means_RGBG[j,middle1,middle2], xerr=intensities_errors, fmt="ko")
     ax2.set_ylim(0, 4095*1.05)
     if j%2:
         ax2.set_ylabel("DNG value")
@@ -65,6 +49,8 @@ for j in range(4):
 fig.savefig("results/linearity/RGBG.png")
 plt.close()
 print("RGBG JPG-DNG comparison made")
+
+raise Exception
 
 maxval = 4096
 x = np.arange(0.5, maxval+1.5, 1)
@@ -81,10 +67,8 @@ for k, (M, J) in enumerate(zip(M_RGBG, J_RGBG)):
         Jc = J[...,j,i].ravel()
         means, bin_edges, bin_number = binned_statistic(Mc, Jc, statistic="mean", bins=x)
         bc = bin_centers(bin_edges)
-        #stds = binned_statistic(Mc, Jc, statistic=np.std, bins=x).statistic
         lens = binned_statistic(Mc, Jc, statistic="count", bins=x).statistic
         means_all[k,j] = means
-        #stds_all[k,j] = stds
         lens_all[k,j] = lens
     print(k, end=" ")
 print("")
