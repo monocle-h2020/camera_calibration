@@ -1,10 +1,9 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, plot, io
-from phonecal.general import bin_centers, weighted_mean, Rsquare
+from phonecal import raw, io
+from phonecal.general import Rsquare
 from glob import glob
-from scipy.stats import binned_statistic
 
 folder_main = argv[1]
 try:
