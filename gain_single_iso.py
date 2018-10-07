@@ -73,5 +73,6 @@ plt.legend(loc="upper left")
 plt.savefig(f"results/gain_new/G_RON_iso{iso}.png")
 plt.show()
 
-results = np.array([gain, gainerr, RON, RONerr])
-#np.save(f"{folder_main}/gain_ron.npy", results)
+save_to = folder.replace("stacks", "products").strip("/")
+results = np.array([gain, gainerr])
+np.save(f"{save_to}.npy", results)
