@@ -88,7 +88,7 @@ def load_stds(folder, **kwargs):
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
     return values, stds
 
-def load_colours(folder):
+def load_colour(folder):
     folder_split = folder.split("/")
     folder_main  = "/".join(folder_split[:3])
     colours = np.load(f"{folder_main}/colour.npy")
