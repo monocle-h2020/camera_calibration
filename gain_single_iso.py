@@ -5,7 +5,14 @@ from phonecal import raw, io
 from phonecal.general import Rsquare
 from glob import glob
 
-folder_main = argv[1]
+folder = argv[1]
+iso = io.split_iso(folder)
+
+names, means = io.load_means(folder)
+names, stds  = io.load_stds (folder)
+colours      = io.load_colour(folder)
+
+raise Exception
 try:
     iso = int(folder_main.split("iso")[-1].strip("/"))
 except:
