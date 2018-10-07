@@ -71,12 +71,12 @@ def load_npy(folder, pattern, retrieve_value=strip_filenames, **kwargs):
     return values, stacked
 
 def split_pol_angle(filename):
-    split_name = filename.split("pol")[1]
+    split_name = filename.split("pol")[1].strip("/")
     val = float(split_name.split("_")[0])
     return val
 
 def split_iso(filename):
-    split_name = filename.split("iso")[1]
+    split_name = filename.split("iso")[1].strip("/")
     val = int(split_name.split("_")[0])
     return val
 
