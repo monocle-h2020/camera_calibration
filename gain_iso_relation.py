@@ -3,66 +3,41 @@ from sys import argv
 from matplotlib import pyplot as plt
 from phonecal import io
 from phonecal.general import Rsquare
-from glob import glob
 from scipy.optimize import curve_fit
 
 folder = argv[1]
-isos, gains = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso)
+isos, gainarrays = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso, file=True)
+gains, gain_errors = gainarrays.T
 
-raise Exception
-
-folders = glob(folder_main+"/*iso*")
-isos = np.tile(np.nan, len(folders))
-gains = isos.copy()
-gainerrs = gains.copy()
-RONs = gains.copy()
-RONerrs = RONs.copy()
-
-for i,folder in enumerate(folders):
-    isos[i] = int(folder.split("iso")[-1])
-    try:
-        gains[i], gainerrs[i], RONs[i], RONerrs[i] = np.load(folder+"/gain_ron.npy")
-    except FileNotFoundError:
-        continue
-
-invgains = 1/gains
-invgainerrs = invgains**2 * gainerrs
+inverse_gains = 1/gains
+inverse_gain_errors = inverse_gains**2 * gain_errors
 
 def model(iso, slope, offset, knee):
-    iso2 = np.copy(iso)
-    results = np.tile(knee * slope + offset, len(iso2))
-    results[iso2 < knee] = iso2[iso2 < knee] * slope + offset
+    results = np.tile(knee * slope + offset, len(iso))
+    results[iso < knee] = iso[iso < knee] * slope + offset
     return results
 
-def model_err(iso, popt, pcov):
-    iso2 = np.copy(iso)
-    results = np.tile(popt[2]**2 * pcov[0,0] + popt[0]**2 * pcov[2,2] + pcov[1,1], len(iso2))
-    results[iso2 < popt[2]] = iso2[iso2 < popt[2]]**2 * pcov[0,0] + pcov[1,1]
+def model_error(iso, popt, pcov):
+    results = np.tile(popt[2]**2 * pcov[0,0] + popt[0]**2 * pcov[2,2] + pcov[1,1], len(iso))
+    results[iso < popt[2]] = iso[iso < popt[2]]**2 * pcov[0,0] + pcov[1,1]
     results = np.sqrt(results)
     return results
 
-ind = np.where(~np.isnan(gains))
-popt, pcov = curve_fit(model, isos[ind], invgains[ind], p0=[0.1, 0.1, 200], sigma=invgainerrs[ind])
+popt, pcov = curve_fit(model, isos, inverse_gains, p0=[0.1, 0.1, 200], sigma=inverse_gain_errors)
 
-irange = np.arange(0, 1850, 3)
-invgain_fit = model(irange, *popt)
-err_fit = model_err(irange, popt, pcov)
-gain_fit = 1/invgain_fit
-gain_err_fit = err_fit / invgain_fit**2
+isorange = np.arange(0, 2000, 1)
+inverse_gains_fit = model(isorange, *popt)
+inverse_gains_fit_errors = model_error(isorange, popt, pcov)
+gains_fit = 1 / inverse_gains_fit
+gains_fit_errors = inverse_gains_fit_errors / inverse_gains_fit**2
+lookup_table = np.stack([isorange, gains_fit, gains_fit_errors])
+np.save("results/gain_new/gain_lookup_table.npy", lookup_table)
 
-fit_measured = model(isos, *popt)
-R2 = Rsquare(invgains[ind], fit_measured[ind])
+inverse_gains_fit_data = model(isos, *popt)
+inverse_gains_fit_data_errors = model_error(isos, popt, pcov)
+R2 = Rsquare(inverse_gains, inverse_gains_fit_data)
 
-invRONs = invgains * RONs
-invRONerrs = np.sqrt(invgains**2 * RONerrs**2 + RONs**2 * invgainerrs**2)
-
-LUT_iso = np.arange(0, 2000, 1)
-LUT_invgain = model(LUT_iso, *popt)
-LUT_invgain_err = model_err(LUT_iso, popt, pcov)
-LUT_gain = 1/LUT_invgain
-LUT_gain_err = LUT_invgain_err
-LUT = np.stack([LUT_iso, LUT_gain, LUT_gain_err])
-np.save("results/gain_new/LUT.npy", LUT)
+raise Exception
 
 for xmax in (1850, 250):
     plt.figure(figsize=(7,5), tight_layout=True)

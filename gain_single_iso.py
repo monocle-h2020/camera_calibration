@@ -3,7 +3,6 @@ from sys import argv
 from matplotlib import pyplot as plt
 from phonecal import raw, io
 from phonecal.general import Rsquare
-from glob import glob
 
 folder = argv[1]
 iso = io.split_iso(folder)
