@@ -70,13 +70,19 @@ def load_npy(folder, pattern, retrieve_value=strip_filenames, **kwargs):
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 
-def split_pol_angle(filename):
-    split_name = filename.split("pol")[1]
+def split_filename(filename, split_on, file=False):
+    split_name = filename.split(split_on)[1].strip("/")
+    if file:
+        split_name = split_name.split(".")[0]
+    return split_name
+
+def split_pol_angle(filename, **kwargs):
+    split_name = split_filename(filename, "pol", **kwargs)
     val = float(split_name.split("_")[0])
     return val
 
-def split_iso(filename):
-    split_name = filename.split("iso")[1]
+def split_iso(filename, **kwargs):
+    split_name = split_filename(filename, "iso", **kwargs)
     val = int(split_name.split("_")[0])
     return val
 
@@ -87,3 +93,9 @@ def load_means(folder, **kwargs):
 def load_stds(folder, **kwargs):
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
     return values, stds
+
+def load_colour(folder):
+    folder_split = folder.split("/")
+    folder_main  = "/".join(folder_split[:3])
+    colours = np.load(f"{folder_main}/colour.npy")
+    return colours
