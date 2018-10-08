@@ -5,6 +5,10 @@ from phonecal import raw, plot, io
 from phonecal.general import gaussMd
 
 folder = argv[1]
+
+raise Exception
+
+folder = argv[1]
 handle = argv[1].split("/")[2]
 arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
 
