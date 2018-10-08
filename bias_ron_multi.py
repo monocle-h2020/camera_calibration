@@ -5,6 +5,7 @@ from phonecal import raw, plot, io
 from phonecal.general import gaussMd
 
 folder = argv[1]
+isos, means = io.load_means(folder, retrieve_value=io.split_iso, file=True)
 
 raise Exception
 
