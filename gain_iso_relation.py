@@ -37,14 +37,11 @@ inverse_gains_fit_data = model(isos, *popt)
 inverse_gains_fit_data_errors = model_error(isos, popt, pcov)
 R2 = Rsquare(inverse_gains, inverse_gains_fit_data)
 
-raise Exception
-
 for xmax in (1850, 250):
     plt.figure(figsize=(7,5), tight_layout=True)
-    plt.errorbar(isos, invgains, yerr=invgainerrs, fmt="o", c="k")
-    plt.plot(irange, invgain_fit, c="k", label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
-    plt.fill_between(irange, invgain_fit-err_fit, invgain_fit+err_fit, color="0.5",
-                     label=f"$\sigma$ slope: {np.sqrt(pcov[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(pcov[1,1]):.4f}\n$\sigma$ knee: {np.sqrt(pcov[2,2]):.1f}")
+    plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt="o", c="k")
+    plt.plot(isorange, inverse_gains_fit, c="k", label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
+    plt.fill_between(isorange, inverse_gains_fit-inverse_gains_fit_errors, inverse_gains_fit+inverse_gains_fit_errors, color="0.5", label=f"$\sigma$ slope: {np.sqrt(pcov[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(pcov[1,1]):.4f}\n$\sigma$ knee: {np.sqrt(pcov[2,2]):.1f}")
     plt.xlabel("ISO")
     plt.ylabel("$1/G$ (ADU/e$^-$)")
     plt.xlim(0, xmax)
@@ -56,9 +53,9 @@ for xmax in (1850, 250):
     plt.close()
 
     plt.figure(figsize=(7,5), tight_layout=True)
-    plt.errorbar(isos, gains, yerr=gainerrs, fmt="o", c="k")
-    plt.plot(irange, gain_fit, c="k", label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
-    plt.fill_between(irange, gain_fit-gain_err_fit, gain_fit+gain_err_fit, color="0.5",
+    plt.errorbar(isos, gains, yerr=gain_errors, fmt="o", c="k")
+    plt.plot(isorange, gains_fit, c="k", label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
+    plt.fill_between(isorange, gains_fit-gains_fit_errors, gains_fit+gains_fit_errors, color="0.5",
                      label=f"$\sigma$ slope: {np.sqrt(pcov[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(pcov[1,1]):.4f}\n$\sigma$ knee: {np.sqrt(pcov[2,2]):.1f}")
     plt.xlabel("ISO")
     plt.ylabel("$G$ (e$^-$/ADU)")
@@ -67,23 +64,5 @@ for xmax in (1850, 250):
     plt.title(f"$R^2 = {R2:.4f}$")
     plt.legend(loc="upper right")
     plt.savefig(f"results/gain_new/iso_gain_{xmax}.png")
-    plt.show()
-    plt.close()
-
-    plt.figure(figsize=(7,5), tight_layout=True)
-    plt.errorbar(isos, RONs, yerr=RONerrs, fmt="o", c="k")
-    plt.xlabel("ISO")
-    plt.ylabel("RON (e$^-$)")
-    plt.xlim(0, xmax)
-    plt.savefig(f"results/gain_new/iso_RON_{xmax}.png")
-    plt.show()
-    plt.close()
-
-    plt.figure(figsize=(7,5), tight_layout=True)
-    plt.errorbar(isos, invRONs, yerr=invRONerrs, fmt="o", c="k")
-    plt.xlabel("ISO")
-    plt.ylabel("RON/G (ADU)")
-    plt.xlim(0, xmax)
-    plt.savefig(f"results/gain_new/iso_invRON_{xmax}.png")
     plt.show()
     plt.close()
