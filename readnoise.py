@@ -43,6 +43,14 @@ for ind in (low_iso, high_iso):
     plt.savefig(f"results/bias/RON_hist_iso{iso}_e.png")
     plt.close()
 
+    std_RGBG, _ = raw.pull_apart(std, colours)
+
+    plt.figure(figsize=(10, 6), tight_layout=True)
+    for j, c in enumerate("RGBY"):
+        plt.hist(std_RGBG[j].ravel(), bins=np.linspace(0, 10, 500), color=c, alpha=0.7)
+    plt.xlim(0,10)
+    plt.show()
+
     std_gauss = gaussMd(std, sigma=10)
 
     plt.figure(figsize=(20,10), tight_layout=True)
@@ -51,7 +59,6 @@ for ind in (low_iso, high_iso):
     plt.savefig(f"results/bias/RON_gauss_iso{iso}.png")
     plt.close()
 
-    std_RGBG, _ = raw.pull_apart(std, colours)
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
         std_gauss_C = gaussMd(std_RGBG[j], sigma=5)
