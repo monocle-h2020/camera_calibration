@@ -6,7 +6,11 @@ from phonecal.general import Rsquare
 from glob import glob
 from scipy.optimize import curve_fit
 
-folder_main = argv[1]
+folder = argv[1]
+isos, gains = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso)
+
+raise Exception
+
 folders = glob(folder_main+"/*iso*")
 isos = np.tile(np.nan, len(folders))
 gains = isos.copy()
