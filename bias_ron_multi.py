@@ -5,21 +5,20 @@ from phonecal import raw, plot, io
 from phonecal.general import gaussMd
 
 folder = argv[1]
-isos, means = io.load_means(folder, retrieve_value=io.split_iso, file=True)
+isos, means = io.load_means (folder, retrieve_value=io.split_iso, file=True)
+isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso, file=True)
+colours     = io.load_colour(folder)
+
+low_iso = isos.argmin()
+high_iso= isos.argmax()
+
+saveto = folder.replace("stacks", "products").strip("/")
+np.save(f"{saveto}.npy", means[low_iso])
 
 raise Exception
 
-folder = argv[1]
-handle = argv[1].split("/")[2]
-arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
-
-mean = arrs.mean(axis=0).astype(np.float32)  # mean per x,y
 plot.bitmap(mean, saveto=f"results/bias/Bias_mean_{handle}.png")
-np.save(f"results/bias/bias_mean_{handle}.npy", mean)
-
-stds = arrs.std(axis=0, dtype=np.float32)
 plot.bitmap(stds, saveto=f"results/bias/Bias_std_{handle}.png")
-np.save(f"results/bias/bias_stds_{handle}.npy", stds)
 
 plt.figure(figsize=(10,7), tight_layout=True)
 plt.hist(stds.ravel(), bins=np.arange(0, 25, 0.2), color='k')
