@@ -15,12 +15,12 @@ saveto = folder.replace("stacks", "products").strip("/")
 np.save(f"{saveto}.npy", means[low_iso])
 
 for ind in (low_iso, high_iso):
-    iso = isos[ind]
+    iso  = isos [ind]
     mean = means[ind]
 
     plt.figure(figsize=(10,7), tight_layout=True)
     plt.hist(mean.ravel(), bins=np.linspace(513, 543, 250), color='k')
-    plt.xlabel("Mean bias value")
+    plt.xlabel("Mean bias (ADU)")
     plt.xlim(513, 543)
     plt.yscale("log")
     plt.ylabel("Frequency")
@@ -43,6 +43,7 @@ for ind in (low_iso, high_iso):
         mean_gauss_C = gaussMd(mean_RGBG[j], sigma=5)
         plt.figure(figsize=(20,10), tight_layout=True)
         img = plt.imshow(mean_gauss_C, cmap=plot.cmaps[c+"r"])
-        plot.colorbar(img)
+        colorbar = plot.colorbar(img)
+        colorbar.set_label("Mean bias (ADU))")
         plt.savefig(f"results/bias/Bias_mean_gauss_iso{iso}_{c}{X}.png")
         plt.close()

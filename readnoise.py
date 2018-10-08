@@ -57,6 +57,8 @@ for ind in (low_iso, high_iso):
         std_gauss_C = gaussMd(std_RGBG[j], sigma=5)
         plt.figure(figsize=(20,10), tight_layout=True)
         img = plt.imshow(std_gauss_C, cmap=plot.cmaps[c+"r"])
-        plot.colorbar(img)
+        colorbar = plot.colorbar(img)
+        colorbar.set_label("Read noise (e$^-$)")
         plt.savefig(f"results/bias/RON_gauss_iso{iso}_{c}{X}.png")
         plt.close()
+
