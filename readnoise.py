@@ -60,21 +60,8 @@ for ind in (low_iso, high_iso):
     fig.savefig(f"results/bias/RON_hist_iso{iso}_e_colour.png")
     plt.close()
 
-    std_gauss = gaussMd(std, sigma=10)
-
-    plt.figure(figsize=(20,10), tight_layout=True)
-    img = plt.imshow(std_gauss)
-    plot.colorbar(img)
-    plt.savefig(f"results/bias/RON_gauss_iso{iso}.png")
-    plt.close()
+    plot.imshow_gauss(std, sigma=10, colorbar_label="Read noise (e$^-$)", saveto=f"results/bias/RON_gauss_iso{iso}.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        std_gauss_C = gaussMd(std_RGBG[j], sigma=5)
-        plt.figure(figsize=(20,10), tight_layout=True)
-        img = plt.imshow(std_gauss_C, cmap=plot.cmaps[c+"r"])
-        colorbar = plot.colorbar(img)
-        colorbar.set_label("Read noise (e$^-$)")
-        plt.savefig(f"results/bias/RON_gauss_iso{iso}_{c}{X}.png")
-        plt.close()
-
+        plot.imshow_gauss(std_RGBG[j], sigma=5, colorbar_label="Read noise (e$^-$)", saveto=f"results/bias/RON_gauss_iso{iso}_{c}{X}.png", colour=c)
