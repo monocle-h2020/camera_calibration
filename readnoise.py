@@ -45,11 +45,20 @@ for ind in (low_iso, high_iso):
 
     std_RGBG, _ = raw.pull_apart(std, colours)
 
-    plt.figure(figsize=(10, 6), tight_layout=True)
-    for j, c in enumerate("RGBY"):
-        plt.hist(std_RGBG[j].ravel(), bins=np.linspace(0, 10, 500), color=c, alpha=0.7)
-    plt.xlim(0,10)
-    plt.show()
+    fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(5,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+    std_RGB = [s.ravel() for s in std_RGBG[:3]]
+    std_RGB[1] = np.concatenate((std_RGBG[1].ravel(), std_RGBG[3].ravel()))
+    for s, c, ax in zip(std_RGB, "RGBG", axs):
+        ax.hist(s.ravel(), bins=np.linspace(0, 15, 150), color=c, density=True)
+        ax.grid(True)
+    for ax in axs[:2]:
+        ax.xaxis.set_ticks_position("none")
+    axs[0].set_xlim(0, 15)
+    axs[2].set_xlabel("Read noise (e$^-$)")
+    axs[0].set_yscale("log")
+    axs[1].set_ylabel("Probability density")
+    fig.savefig(f"results/bias/RON_hist_iso{iso}_e_colour.png")
+    plt.close()
 
     std_gauss = gaussMd(std, sigma=10)
 
