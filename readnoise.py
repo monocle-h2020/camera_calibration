@@ -14,7 +14,7 @@ gain_table = np.load(folder.replace("stacks", "products").replace("bias", "gain"
 low_iso = isos.argmin()
 high_iso= isos.argmax()
 
-for ind in (low_iso, high_iso):
+for ind in (high_iso, low_iso):
     iso  = isos [ind]
     std  = stds [ind].copy()
 
@@ -43,7 +43,9 @@ for ind in (low_iso, high_iso):
     plt.savefig(f"results/bias/RON_hist_iso{iso}_e.png")
     plt.close()
 
-    std_RGBG, _ = raw.pull_apart(std, colours)
+    std_RGBG, _= raw.pull_apart(std, colours)
+    gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
+    vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
 
     fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(5,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     std_RGB = [s.ravel() for s in std_RGBG[:3]]
@@ -60,8 +62,10 @@ for ind in (low_iso, high_iso):
     fig.savefig(f"results/bias/RON_hist_iso{iso}_e_colour.png")
     plt.close()
 
-    plot.imshow_gauss(std, sigma=10, colorbar_label="Read noise (e$^-$)", saveto=f"results/bias/RON_gauss_iso{iso}.png")
+    gauss = gaussMd(std, sigma=10)
+
+    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=f"results/bias/RON_gauss_iso{iso}.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.imshow_gauss(std_RGBG[j], sigma=5, colorbar_label="Read noise (e$^-$)", saveto=f"results/bias/RON_gauss_iso{iso}_{c}{X}.png", colour=c)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=f"results/bias/RON_gauss_iso{iso}_{c}{X}.png", colour=c, vmin=vmin, vmax=vmax)

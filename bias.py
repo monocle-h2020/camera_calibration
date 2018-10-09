@@ -29,9 +29,14 @@ for ind in (low_iso, high_iso):
     plt.savefig(f"results/bias/Bias_mean_hist_iso{iso}.png")
     plt.close()
 
-    plot.imshow_gauss(mean, sigma=10, colorbar_label="Mean bias (ADU)", saveto=f"results/bias/Bias_mean_gauss_iso{iso}.png")
+    gauss = gaussMd(mean, sigma=10)
+
+    plot.show_image(gauss, colorbar_label="Mean bias (ADU)", saveto=f"results/bias/Bias_mean_gauss_iso{iso}.png")
 
     mean_RGBG, _ = raw.pull_apart(mean, colours)
+    gauss_RGBG = gaussMd(mean_RGBG, sigma=(0,5,5))
+    vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
+
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.imshow_gauss(mean_RGBG[j], sigma=5, colorbar_label="Mean bias (ADU)", saveto=f"results/bias/Bias_mean_gauss_iso{iso}_{c}{X}.png", colour=c)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Mean bias (ADU)", saveto=f"results/bias/Bias_mean_gauss_iso{iso}_{c}{X}.png", colour=c, vmin=vmin, vmax=vmax)
