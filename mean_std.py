@@ -2,7 +2,7 @@ import numpy as np
 from sys import argv
 from phonecal import io
 from glob import glob
-from os import walk, path
+from os import walk, path, makedirs
 
 folder_images = argv[1]
 folder_stacks = folder_images.replace("images", "stacks")
@@ -17,17 +17,24 @@ for tup in walk(folder_images):
     if len(DNGs) == 0:
         continue
     
-    print(f"{folder_here}  -->  {goal}_x.npy")
 
     arrs, colors = io.load_dng_many(f"{folder_here}/*.dng", return_colors=True)
     mean = arrs.mean(axis=0, dtype=np.float32)
     stds = arrs.std (axis=0, dtype=np.float32)
+    
+    goal_folder = path.split(goal)[0]
+    try:
+        makedirs(goal_folder)
+    except FileExistsError:
+        pass
 
     np.save(f"{goal}_mean.npy", mean)
     np.save(f"{goal}_stds.npy", stds)
     if not colour_exists:
         np.save(colour_path, colors)
         colours_exists = True
+        
+    print(f"{folder_here}  -->  {goal}_x.npy")
 
     JPGs = glob(f"{folder_here}/*.jp*g")
     if len(JPGs) == 0:
