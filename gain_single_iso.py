@@ -74,6 +74,6 @@ plt.legend(loc="upper left")
 plt.savefig(results_gain/f"gain_curve_iso{iso}.png")
 plt.show()
 
-save_to = products_gain/f"{folder.stem}.npy"
+save_to = (products_gain/folder.stem).with_suffix(".npy")
 results = np.array([gain, gainerr])
 np.save(save_to, results)
