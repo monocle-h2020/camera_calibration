@@ -93,10 +93,8 @@ def load_stds(folder, **kwargs):
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
     return values, stds
 
-def load_colour(folder):
-    # change to just use stacks folder as input
-    folder_main  = Path("/".join(folder.parts[:3]))
-    colours = np.load(folder_main/"colour.npy")
+def load_colour(stacks):
+    colours = np.load(stacks/"colour.npy")
     return colours
 
 def path_from_input(argv):

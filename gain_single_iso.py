@@ -11,7 +11,7 @@ iso = io.split_iso(folder)
 
 names, means = io.load_means (folder)
 names, stds  = io.load_stds  (folder)
-colours      = io.load_colour(folder)
+colours      = io.load_colour(stacks)
 
 means -= 528  # bias correction
 
