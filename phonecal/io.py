@@ -101,3 +101,11 @@ def load_colour(folder):
 
 def path_from_input(argv):
     return Path(argv[1])
+
+def folders(data_folder):
+    assert "data" in data_folder.parts
+    phone_root = Path("/".join(data_folder.parts[:2]))
+
+    subfolder_names = ["", "images", "stacks", "products", "results"]
+    subfolders = [phone_root/name for name in subfolder_names]
+    return subfolders
