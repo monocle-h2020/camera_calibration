@@ -68,15 +68,14 @@ for j, M in enumerate(M_reshaped):
 
 np.save(results/"linearity/R2.npy", R2)
 
-fig, axs = plt.subplots(2, 2, sharex=True, sharey=True, tight_layout=True, figsize=(7,7))
-for j in range(4):
-    ax = axs.ravel()[j]
-    c = "rgbg"[j]
-    ax.hist(R2[j], bins=np.linspace(0.995,1,200), color=c)
-for ax in axs[1]:
-    ax.set_xlabel("$R^2$")
-for ax in axs[:,0]:
-    ax.set_ylabel("Frequency")
+min_R2 = 0.996
+fig, axs = plt.subplots(nrows=3, sharex=True, tight_layout=True, figsize=(6,8), gridspec_kw={"hspace":0, "wspace":0})
+R2_RGB = [R2[0], np.concatenate([R2[1], R2[3]]), R2[2]]
+for c, ax, R2_C in zip("RGB", axs, R2_RGB):
+    ax.hist(R2_C, bins=np.linspace(min_R2,1,200), color=c)
+axs[1].set_ylabel("Frequency")
+axs[2].set_xlabel("$R^2$")
+axs[2].set_xlim(min_R2, 1)
 fig.savefig(results/"linearity/R2.png")
 plt.close()
 print("Made colour plot")
