@@ -6,15 +6,15 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 
 def load_dng_raw(filename):
-    img = rawpy.imread(filename)
+    img = rawpy.imread(str(filename))
     return img
 
 def load_colors(filename):
-    img = load_dng_raw(filename)
+    img = load_dng_raw(str(filename))
     return img.raw_colors
 
-def load_dng_many(pattern, return_colors=False):
-    files = glob.glob(pattern)
+def load_dng_many(folder, pattern="*.dng", return_colors=False):
+    files = list(folder.glob(pattern))
     file0 = load_dng_raw(files[0])
     colors = file0.raw_colors
     arrs = np.empty((len(files), *file0.raw_image.shape), dtype=np.uint16)
@@ -31,8 +31,8 @@ def load_jpg(filename):
     img = plt.imread(filename)
     return img
 
-def load_jpg_many(pattern):
-    files = glob.glob(pattern)
+def load_jpg_many(folder, pattern="*.jp*g"):
+    files = list(folder.glob(pattern))
     img0 = load_jpg(files[0])
     arrs = np.empty((len(files), *img0.shape), dtype=np.uint8)
     arrs[0] = img0
@@ -107,3 +107,9 @@ def folders(data_folder):
     subfolder_names = ["", "images", "stacks", "products", "results"]
     subfolders = [phone_root/name for name in subfolder_names]
     return subfolders
+
+def replace_word_in_path(path, old, new):
+    split = list(path.parts)
+    split[split.index(old)] = new
+    combined = Path("/".join(split))
+    return combined
