@@ -5,16 +5,16 @@ from phonecal import plot, io
 from phonecal.raw import pull_apart
 from phonecal.general import Rsquare, bin_centers
 from phonecal.gain import malus, malus_error
-from glob import glob
 from scipy.stats import binned_statistic
 
-folder = argv[1]
+folder = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(folder)
 
-angles, means = io.load_means(f"{folder}/stacks/linearity/", retrieve_value=io.split_pol_angle)
-angles, jmeans= io.load_jmeans(f"{folder}/stacks/linearity/", retrieve_value=io.split_pol_angle)
-colours = np.load(f"{folder}/stacks/colour.npy")
+angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
+angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
+colours        = io.load_colour(stacks)
 
-offset_angle = np.loadtxt(f"{folder}/stacks/linearity/default_angle.dat")
+offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat")
 intensities = malus(angles, offset_angle)
 intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
@@ -46,7 +46,7 @@ for j in range(4):
         ax2.tick_params(axis="y", labelright=False)
     if j//2:
         ax.set_xlabel("Intensity")
-fig.savefig("results/linearity/linearity_DNG_JPEG.png")
+fig.savefig(results/"linearity/linearity_DNG_JPEG.png")
 plt.close()
 print("RGBG JPG-DNG comparison made")
 
@@ -66,7 +66,7 @@ for j, M in enumerate(M_reshaped):
     R2[j] = [linear_R2(intensities, row, saturate=4000) for row in M]
     print(j, end=" ")
 
-np.save("results/linearity/R2.npy", R2)
+np.save(results/"linearity/R2.npy", R2)
 
 fig, axs = plt.subplots(2, 2, sharex=True, sharey=True, tight_layout=True, figsize=(7,7))
 for j in range(4):
@@ -77,7 +77,7 @@ for ax in axs[1]:
     ax.set_xlabel("$R^2$")
 for ax in axs[:,0]:
     ax.set_ylabel("Frequency")
-fig.savefig("results/linearity/R2.png")
+fig.savefig(results/"linearity/R2.png")
 plt.close()
 print("Made colour plot")
 
@@ -87,7 +87,7 @@ plt.figure(tight_layout=True, figsize=(5,4))
 plt.hist(R2R, bins=np.linspace(0.997,1,200), color='k')
 plt.xlabel("$R^2$")
 plt.ylabel("Frequency")
-plt.savefig("results/linearity/R2_combined.png")
+plt.savefig(results/"linearity/R2_combined.png")
 plt.close()
 print("Made combined plot")
 
@@ -130,7 +130,7 @@ for j in range(4):
         plt.ylim(0, 260)
         plt.xlabel("DNG value")
         plt.ylabel("JPEG value")
-    plt.savefig(f"results/linearity/dng_jpeg_{label}.png")
+    plt.savefig(results/f"linearity/dng_jpeg_{label}.png")
     plt.close()
 
 def sRGB(linear, knee, slope, xoff, xmul, yoff, ymul):
