@@ -9,11 +9,12 @@ root, images, stacks, products, results = io.folders(folder)
 products_gain, results_gain = products/"gain", results/"gain"
 iso = io.split_iso(folder)
 
-names, means = io.load_means (folder)
-names, stds  = io.load_stds  (folder)
-colours      = io.load_colour(stacks)
+names, means = io.load_means (folder  )
+names, stds  = io.load_stds  (folder  )
+colours      = io.load_colour(stacks  )
+bias         = io.load_bias  (products)
 
-means -= 528  # bias correction
+means -= bias
 
 mean_reshaped = np.moveaxis(means, 0, 2)
 stds_reshaped = np.moveaxis(stds , 0, 2)
