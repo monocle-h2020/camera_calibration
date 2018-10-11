@@ -5,6 +5,7 @@ from phonecal import raw, io
 from phonecal.general import Rsquare
 
 folder = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(folder)
 iso = io.split_iso(folder)
 
 names, means = io.load_means (folder)
@@ -72,6 +73,6 @@ plt.legend(loc="upper left")
 plt.savefig(f"results/gain_new/G_RON_iso{iso}.png")
 plt.show()
 
-save_to = folder.replace("stacks", "products").strip("/")
+save_to = products/"gain"/f"iso{iso}.npy"
 results = np.array([gain, gainerr])
-np.save(f"{save_to}.npy", results)
+np.save(save_to, results)
