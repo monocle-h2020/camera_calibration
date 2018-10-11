@@ -69,10 +69,11 @@ for j, M in enumerate(M_reshaped):
 np.save(results/"linearity/R2.npy", R2)
 
 min_R2 = 0.996
+bins = np.linspace(min_R2, 1, 200)
 fig, axs = plt.subplots(nrows=3, sharex=True, tight_layout=True, figsize=(6,8), gridspec_kw={"hspace":0, "wspace":0})
 R2_RGB = [R2[0], np.concatenate([R2[1], R2[3]]), R2[2]]
 for c, ax, R2_C in zip("RGB", axs, R2_RGB):
-    ax.hist(R2_C, bins=np.linspace(min_R2,1,200), color=c)
+    ax.hist(R2_C, bins=bins, color=c)
 axs[1].set_ylabel("Frequency")
 axs[2].set_xlabel("$R^2$")
 axs[2].set_xlim(min_R2, 1)
@@ -83,9 +84,10 @@ print("Made colour plot")
 R2R = R2.ravel()
 
 plt.figure(tight_layout=True, figsize=(5,4))
-plt.hist(R2R, bins=np.linspace(0.997,1,200), color='k')
+plt.hist(R2R, bins=bins, color='k')
 plt.xlabel("$R^2$")
 plt.ylabel("Frequency")
+plt.xlim(min_R2, 1)
 plt.savefig(results/"linearity/R2_combined.png")
 plt.close()
 print("Made combined plot")
