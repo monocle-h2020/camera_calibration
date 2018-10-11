@@ -6,6 +6,7 @@ from phonecal.general import Rsquare
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+products_gain, results_gain = products/"gain", results/"gain"
 iso = io.split_iso(folder)
 
 names, means = io.load_means (folder)
@@ -70,9 +71,9 @@ plt.xlabel("Mean (ADU)")
 plt.ylabel("Variance (ADU$^2$)")
 plt.title(f"$R^2 = {R2:.4f}$")
 plt.legend(loc="upper left")
-plt.savefig(f"results/gain_new/G_RON_iso{iso}.png")
+plt.savefig(results_gain/"G_RON_iso{iso}.png")
 plt.show()
 
-save_to = products/"gain"/f"iso{iso}.npy"
+save_to = products_gain/f"{folder.stem}.npy"
 results = np.array([gain, gainerr])
 np.save(save_to, results)
