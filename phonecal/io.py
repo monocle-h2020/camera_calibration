@@ -115,3 +115,6 @@ def replace_word_in_path(path, old, new):
     split[split.index(old)] = new
     combined = Path("/".join(split))
     return combined
+
+def replace_suffix(path, new):
+    return (path.parent / path.stem).with_suffix(".jpg")
