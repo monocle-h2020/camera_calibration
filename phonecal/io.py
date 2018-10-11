@@ -44,22 +44,6 @@ def load_exif(filename):
         exif = exifread.process_file(f)
     return exif
 
-def load_bias_ron(iso, folder="results/bias/"):
-    bias = np.load(f"{folder}/bias_mean_iso{iso}.npy")
-    ron  = np.load(f"{folder}/bias_stds_iso{iso}.npy")
-    return bias, ron
-
-def load_arrs(prefix):
-    mean = np.load(f"{prefix}_mean.npy")
-    stds = np.load(f"{prefix}_stds.npy")
-    colr = np.load(f"{prefix}_colr.npy")
-    return mean, stds, colr
-
-def load_jarrs(prefix):
-    jmean = np.load(f"{prefix}_jmean.npy")
-    jstds = np.load(f"{prefix}_jstds.npy")
-    return jmean, jstds
-
 def absolute_filename(file):
     return file.absolute
 
