@@ -2,9 +2,9 @@ import numpy as np
 from sys import argv
 from phonecal import io
 
-folder = argv[1]
+folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-isos, means = io.load_means(folder, retrieve_value=io.split_iso, file=True)
+isos, means = io.load_means(folder, retrieve_value=io.split_iso)
 
 low_iso = isos.argmin()
-np.save(f"{products}/bias.npy", means[low_iso])
+np.save(products/"bias.npy", means[low_iso])

@@ -4,12 +4,14 @@ from matplotlib import pyplot as plt
 from phonecal import raw, io
 from phonecal.general import Rsquare
 
-folder = argv[1]
+folder = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(folder)
+products_gain, results_gain = products/"gain", results/"gain"
 iso = io.split_iso(folder)
 
 names, means = io.load_means (folder)
 names, stds  = io.load_stds  (folder)
-colours      = io.load_colour(folder)
+colours      = io.load_colour(stacks)
 
 means -= 528  # bias correction
 
@@ -69,9 +71,9 @@ plt.xlabel("Mean (ADU)")
 plt.ylabel("Variance (ADU$^2$)")
 plt.title(f"$R^2 = {R2:.4f}$")
 plt.legend(loc="upper left")
-plt.savefig(f"results/gain_new/G_RON_iso{iso}.png")
+plt.savefig(results_gain/f"gain_curve_iso{iso}.png")
 plt.show()
 
-save_to = folder.replace("stacks", "products").strip("/")
+save_to = (products_gain/folder.stem).with_suffix(".npy")
 results = np.array([gain, gainerr])
-np.save(f"{save_to}.npy", results)
+np.save(save_to, results)

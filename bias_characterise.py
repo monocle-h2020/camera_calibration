@@ -4,12 +4,12 @@ from matplotlib import pyplot as plt
 from phonecal import raw, plot, io
 from phonecal.general import gaussMd
 
-folder = argv[1]
+folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-isos, means = io.load_means (folder, retrieve_value=io.split_iso, file=True)
-colours     = io.load_colour(folder)
+isos, means = io.load_means (folder, retrieve_value=io.split_iso)
+colours     = io.load_colour(stacks)
 
-savefolder = f"{results}/bias/"
+savefolder = results/"bias"
 
 for iso, mean in zip(isos, means):
     plt.figure(figsize=(10,7), tight_layout=True)
@@ -21,12 +21,12 @@ for iso, mean in zip(isos, means):
     plt.ylabel("Frequency")
     plt.ylim(ymin=0.9)
     plt.grid(ls="--")
-    plt.savefig(f"{savefolder}/Bias_mean_hist_iso{iso}.png")
+    plt.savefig(savefolder/f"Bias_mean_hist_iso{iso}.png")
     plt.close()
 
     gauss = gaussMd(mean, sigma=10)
 
-    plot.show_image(gauss, colorbar_label="Mean bias (ADU)", saveto=f"{savefolder}/Bias_mean_gauss_iso{iso}.png")
+    plot.show_image(gauss, colorbar_label="Mean bias (ADU)", saveto=savefolder/f"Bias_mean_gauss_iso{iso}.png")
 
     mean_RGBG, _ = raw.pull_apart(mean, colours)
     gauss_RGBG = gaussMd(mean_RGBG, sigma=(0,5,5))
@@ -34,5 +34,5 @@ for iso, mean in zip(isos, means):
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Mean bias (ADU)", saveto=f"{savefolder}/Bias_mean_gauss_iso{iso}_{c}{X}.png", colour=c, vmin=vmin, vmax=vmax)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Mean bias (ADU)", saveto=savefolder/f"Bias_mean_gauss_iso{iso}_{c}{X}.png", colour=c, vmin=vmin, vmax=vmax)
     print(iso)

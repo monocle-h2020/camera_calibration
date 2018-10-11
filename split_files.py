@@ -1,24 +1,24 @@
 from sys import argv
 from shutil import move
-from glob import glob
 import os
 from time import time
+from phonecal import io
 
-folder_main = argv[1]
+folder_main = io.path_from_input(argv[:2])
 blocksize = int(argv[2])
-files = glob(folder_main + "/*.dng")
+files = list(folder_main.glob("*.dng"))
 files = sorted(files)
 blocks = len(files) // blocksize
 for i in range(blocks):
     foldername = str(int(time()*10000)) + str(i%10)
-    total_path = f"{folder_main}/{foldername}"
+    total_path = folder_main/foldername
     print(total_path)
     os.mkdir(total_path)
     files_block = files[blocksize*i : blocksize*(i+1)]
     for file in files_block:
-        move(file, total_path)
-        withjpg = os.path.splitext(file)[0] + ".jpg"
+        move(str(file), total_path)
+        withjpg = io.replace_suffix(file, ".jpg")
         try:
-            move(withjpg, total_path)
+            move(str(withjpg), total_path)
         except FileNotFoundError:
             continue

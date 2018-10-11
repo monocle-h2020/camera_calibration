@@ -5,8 +5,10 @@ from phonecal import io
 from phonecal.general import Rsquare
 from scipy.optimize import curve_fit
 
-folder = argv[1]
-isos, gainarrays = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso, file=True)
+folder = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(folder)
+results_gain = results/"gain"
+isos, gainarrays = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso)
 gains, gain_errors = gainarrays.T
 
 inverse_gains = 1/gains
@@ -31,13 +33,13 @@ inverse_gains_fit_errors = model_error(isorange, popt, pcov)
 gains_fit = 1 / inverse_gains_fit
 gains_fit_errors = inverse_gains_fit_errors / inverse_gains_fit**2
 lookup_table = np.stack([isorange, gains_fit, gains_fit_errors])
-np.save("results/gain_new/gain_lookup_table.npy", lookup_table)
+np.save(results_gain/"gain_lookup_table.npy", lookup_table)
 
 inverse_gains_fit_data = model(isos, *popt)
 inverse_gains_fit_data_errors = model_error(isos, popt, pcov)
 R2 = Rsquare(inverse_gains, inverse_gains_fit_data)
 
-for xmax in (1850, 250):
+for label, xmax in zip(["", "_zoom"], [1850, 250]):
     plt.figure(figsize=(7,5), tight_layout=True)
     plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt="o", c="k")
     plt.plot(isorange, inverse_gains_fit, c="k", label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
@@ -48,7 +50,7 @@ for xmax in (1850, 250):
     plt.ylim(0, 5)
     plt.title(f"$R^2 = {R2:.4f}$")
     plt.legend(loc="lower right")
-    plt.savefig(f"results/gain_new/iso_invgain_{xmax}.png")
+    plt.savefig(results_gain/f"iso_invgain{label}.png")
     plt.show()
     plt.close()
 
@@ -63,6 +65,6 @@ for xmax in (1850, 250):
     plt.ylim(0, 5)
     plt.title(f"$R^2 = {R2:.4f}$")
     plt.legend(loc="upper right")
-    plt.savefig(f"results/gain_new/iso_gain_{xmax}.png")
+    plt.savefig(results_gain/f"iso_gain{label}.png")
     plt.show()
     plt.close()
