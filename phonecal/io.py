@@ -2,7 +2,6 @@ import rawpy
 import exifread
 import glob
 import numpy as np
-from os import path
 from pathlib import Path
 from matplotlib import pyplot as plt
 
@@ -62,28 +61,27 @@ def load_jarrs(prefix):
     jstds = np.load(f"{prefix}_jstds.npy")
     return jmean, jstds
 
-def strip_filenames(files):
-    return [path.split(filename)[0] for filename in files]
+def absolute_filename(file):
+    return file.absolute
 
-def load_npy(folder, pattern, retrieve_value=strip_filenames, **kwargs):
-    files = glob.glob(f"{folder}/{pattern}")
+def load_npy(folder, pattern, retrieve_value=absolute_filename, **kwargs):
+    files = list(folder.glob(pattern))
     stacked = np.stack([np.load(f) for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 
-def split_filename(filename, split_on, file=False):
-    split_name = filename.split(split_on)[1].strip("/")
-    if file:
-        split_name = split_name.split(".")[0]
-    return split_name
+def split_path(path, split_on):
+    split_split_on = path.stem.split(split_on)[1]
+    split_underscore = split_split_on.split("_")[0]
+    return split_underscore
 
-def split_pol_angle(filename, **kwargs):
-    split_name = split_filename(filename, "pol", **kwargs)
+def split_pol_angle(path):
+    split_name = split_path(path, "pol")
     val = float(split_name.split("_")[0])
     return val
 
-def split_iso(filename, **kwargs):
-    split_name = split_filename(filename, "iso", **kwargs)
+def split_iso(path):
+    split_name = split_path(path, "iso")
     val = int(split_name.split("_")[0])
     return val
 
@@ -96,9 +94,9 @@ def load_stds(folder, **kwargs):
     return values, stds
 
 def load_colour(folder):
-    folder_split = folder.split("/")
-    folder_main  = "/".join(folder_split[:3])
-    colours = np.load(f"{folder_main}/colour.npy")
+    # change to just use stacks folder as input
+    folder_main  = Path("/".join(folder.parts[:3]))
+    colours = np.load(folder_main/"colour.npy")
     return colours
 
 def path_from_input(argv):

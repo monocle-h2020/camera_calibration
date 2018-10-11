@@ -5,8 +5,8 @@ from phonecal import io
 from phonecal.general import Rsquare
 from scipy.optimize import curve_fit
 
-folder = argv[1]
-isos, gainarrays = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso, file=True)
+folder = io.path_from_input(argv)
+isos, gainarrays = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso)
 gains, gain_errors = gainarrays.T
 
 inverse_gains = 1/gains

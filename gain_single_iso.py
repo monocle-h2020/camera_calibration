@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from phonecal import raw, io
 from phonecal.general import Rsquare
 
-folder = argv[1]
+folder = io.path_from_input(argv)
 iso = io.split_iso(folder)
 
 names, means = io.load_means (folder)
