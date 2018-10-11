@@ -3,6 +3,7 @@ import exifread
 import glob
 import numpy as np
 from os import path
+from pathlib import Path
 from matplotlib import pyplot as plt
 
 def load_dng_raw(filename):
@@ -99,3 +100,6 @@ def load_colour(folder):
     folder_main  = "/".join(folder_split[:3])
     colours = np.load(f"{folder_main}/colour.npy")
     return colours
+
+def path_from_input(argv):
+    return Path(argv[1])
