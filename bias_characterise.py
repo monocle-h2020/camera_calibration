@@ -15,6 +15,7 @@ for iso, mean in zip(isos, means):
     plt.hist(mean.ravel(), bins=np.linspace(513, 543, 250), color='k')
     plt.xlabel("Mean bias (ADU)")
     plt.xlim(513, 543)
+    plt.ylim(0.9, mean.size)
     plt.yscale("log")
     plt.ylabel("Frequency")
     plt.ylim(ymin=0.9)
