@@ -1,6 +1,5 @@
 import rawpy
 import exifread
-import glob
 import numpy as np
 from pathlib import Path
 from matplotlib import pyplot as plt
@@ -98,7 +97,10 @@ def load_colour(stacks):
     return colours
 
 def path_from_input(argv):
-    return Path(argv[1])
+    if len(argv) == 2:
+        return Path(argv[1])
+    else:
+        return [Path(a) for a in argv[1:]]
 
 def folders(data_folder):
     assert "data" in data_folder.parts

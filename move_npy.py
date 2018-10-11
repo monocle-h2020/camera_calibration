@@ -1,21 +1,17 @@
 import shutil, os
-from glob import glob
 from sys import argv
-import time
+from phonecal import io
 
-origin = argv[1]
-dest   = argv[2]
-
-name = origin.strip("/").split("/")[-1]
+origin, dest = io.path_from_input(argv)
 
 for tup in os.walk(origin):
     fol = tup[0]
-    name = fol.strip("/")
-    NPYs = glob(f"{name}/*.npy")
+    name = io.Path(fol)
+    NPYs = list(name.glob("*.npy"))
     if not NPYs:
         continue
     relname = os.path.relpath(name, origin)
-    newdest = f"{dest}/{relname}"
+    newdest = dest/relname
     os.makedirs(newdest)
     for npy_file in NPYs:
         shutil.copy(npy_file, newdest)
