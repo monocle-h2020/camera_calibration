@@ -71,7 +71,7 @@ plt.xlabel("Mean (ADU)")
 plt.ylabel("Variance (ADU$^2$)")
 plt.title(f"$R^2 = {R2:.4f}$")
 plt.legend(loc="upper left")
-plt.savefig(results_gain/"G_RON_iso{iso}.png")
+plt.savefig(results_gain/f"gain_curve_iso{iso}.png")
 plt.show()
 
 save_to = products_gain/f"{folder.stem}.npy"
