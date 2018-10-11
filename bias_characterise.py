@@ -5,10 +5,11 @@ from phonecal import raw, plot, io
 from phonecal.general import gaussMd
 
 folder = argv[1]
+root, images, stacks, products, results = io.folders(folder)
 isos, means = io.load_means (folder, retrieve_value=io.split_iso, file=True)
 colours     = io.load_colour(folder)
 
-savefolder = "results/bias/"
+savefolder = f"{results}/bias/"
 
 for iso, mean in zip(isos, means):
     plt.figure(figsize=(10,7), tight_layout=True)

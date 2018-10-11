@@ -3,8 +3,8 @@ from sys import argv
 from phonecal import io
 
 folder = argv[1]
+root, images, stacks, products, results = io.folders(folder)
 isos, means = io.load_means(folder, retrieve_value=io.split_iso, file=True)
 
 low_iso = isos.argmin()
-saveto = folder.replace("stacks", "products").strip("/")
-np.save(f"{saveto}.npy", means[low_iso])
+np.save(f"{products}/bias.npy", means[low_iso])
