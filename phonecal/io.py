@@ -3,6 +3,7 @@ import exifread
 import numpy as np
 from pathlib import Path
 from matplotlib import pyplot as plt
+import json
 
 def load_dng_raw(filename):
     img = rawpy.imread(str(filename))
@@ -72,8 +73,16 @@ def load_means(folder, **kwargs):
     values, means = load_npy(folder, "*_mean.npy", **kwargs)
     return values, means
 
+def load_jmeans(folder, **kwargs):
+    values, means = load_npy(folder, "*_jmean.npy", **kwargs)
+    return values, means
+
 def load_stds(folder, **kwargs):
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
+    return values, stds
+
+def load_jstds(folder, **kwargs):
+    values, stds = load_npy(folder, "*_jstds.npy", **kwargs)
     return values, stds
 
 def load_colour(stacks):
@@ -102,3 +111,12 @@ def replace_word_in_path(path, old, new):
 
 def replace_suffix(path, new):
     return (path.parent / path.stem).with_suffix(".jpg")
+
+def load_bias(products):
+    bias_map = np.load(products/"bias.npy")
+    return bias_map
+
+def read_json(path):
+    file = open(path)
+    dump = json.load(file)
+    return dump

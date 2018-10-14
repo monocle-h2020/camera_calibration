@@ -7,6 +7,11 @@ from scipy.optimize import curve_fit
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
+
+iso_min = phone["software"]["ISO min"]
+iso_max = phone["software"]["ISO max"]
+
 results_gain = results/"gain"
 isos, gainarrays = io.load_npy(folder, "iso*.npy", retrieve_value=io.split_iso)
 gains, gain_errors = gainarrays.T
@@ -27,7 +32,7 @@ def model_error(iso, popt, pcov):
 
 popt, pcov = curve_fit(model, isos, inverse_gains, p0=[0.1, 0.1, 200], sigma=inverse_gain_errors)
 
-isorange = np.arange(0, 2000, 1)
+isorange = np.arange(iso_min, iso_max, 1)
 inverse_gains_fit = model(isorange, *popt)
 inverse_gains_fit_errors = model_error(isorange, popt, pcov)
 gains_fit = 1 / inverse_gains_fit
@@ -39,7 +44,8 @@ inverse_gains_fit_data = model(isos, *popt)
 inverse_gains_fit_data_errors = model_error(isos, popt, pcov)
 R2 = Rsquare(inverse_gains, inverse_gains_fit_data)
 
-for label, xmax in zip(["", "_zoom"], [1850, 250]):
+iso_zoom = 250
+for label, xmax in zip(["", "_zoom"], [iso_max, iso_zoom]):
     plt.figure(figsize=(7,5), tight_layout=True)
     plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt="o", c="k")
     plt.plot(isorange, inverse_gains_fit, c="k", label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
@@ -47,7 +53,7 @@ for label, xmax in zip(["", "_zoom"], [1850, 250]):
     plt.xlabel("ISO")
     plt.ylabel("$1/G$ (ADU/e$^-$)")
     plt.xlim(0, xmax)
-    plt.ylim(0, 5)
+    plt.ylim(ymin=0)
     plt.title(f"$R^2 = {R2:.4f}$")
     plt.legend(loc="lower right")
     plt.savefig(results_gain/f"iso_invgain{label}.png")
@@ -62,7 +68,7 @@ for label, xmax in zip(["", "_zoom"], [1850, 250]):
     plt.xlabel("ISO")
     plt.ylabel("$G$ (e$^-$/ADU)")
     plt.xlim(0, xmax)
-    plt.ylim(0, 5)
+    plt.ylim(ymin=0)
     plt.title(f"$R^2 = {R2:.4f}$")
     plt.legend(loc="upper right")
     plt.savefig(results_gain/f"iso_gain{label}.png")

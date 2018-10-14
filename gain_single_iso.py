@@ -6,14 +6,17 @@ from phonecal.general import Rsquare
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
+
 products_gain, results_gain = products/"gain", results/"gain"
 iso = io.split_iso(folder)
 
-names, means = io.load_means (folder)
-names, stds  = io.load_stds  (folder)
-colours      = io.load_colour(stacks)
+names, means = io.load_means (folder  )
+names, stds  = io.load_stds  (folder  )
+colours      = io.load_colour(stacks  )
+bias         = io.load_bias  (products)
 
-means -= 528  # bias correction
+means -= bias
 
 mean_reshaped = np.moveaxis(means, 0, 2)
 stds_reshaped = np.moveaxis(stds , 0, 2)
@@ -66,7 +69,7 @@ for j in range(4):
     c = "rgbg"[j]
     plt.errorbar(mean_mean[j], vars_mean[j], xerr=mean_errors[j], yerr=vars_errors[j], fmt=f"{c}o")
 plt.xscale("log") ; plt.yscale("log")
-plt.xlim(0.1, 4096) ; plt.ylim(ymin=0.9*fit[1])
+plt.xlim(0.1, 2**phone["camera"]["bits"]) ; plt.ylim(ymin=0.9*fit[1])
 plt.xlabel("Mean (ADU)")
 plt.ylabel("Variance (ADU$^2$)")
 plt.title(f"$R^2 = {R2:.4f}$")

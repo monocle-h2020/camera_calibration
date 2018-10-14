@@ -4,7 +4,8 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
 
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues,
-         "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r}
+         "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r,
+         None: plt.cm.viridis}
 
 def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
@@ -183,3 +184,14 @@ def colorbar(mappable):
     divider = make_axes_locatable(ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     return fig.colorbar(mappable, cax=cax)
+
+def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
+    cmap = cmaps[colour+"r"] if colour else plt.cm.viridis
+    plt.figure(figsize=(8,8*data.shape[0]/data.shape[1]), tight_layout=True)
+    img = plt.imshow(data, cmap=cmap, **kwargs)
+    plt.xticks([])
+    plt.yticks([])
+    colorbar_here = colorbar(img)
+    colorbar_here.set_label(colorbar_label)
+    _saveshow(saveto)
+    plt.close()

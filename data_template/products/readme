@@ -4,5 +4,5 @@ This folder will contain products from one part of the calibration that are used
  - ron.py: per-pixel readout noise values
 
 Furthermore, the following subfolders may be contained in this folder:
- - gain.npy: gain values at different ISO values
+ - gain: gain values at different ISO values
  
