@@ -3,6 +3,7 @@ import exifread
 import numpy as np
 from pathlib import Path
 from matplotlib import pyplot as plt
+import json
 
 def load_dng_raw(filename):
     img = rawpy.imread(str(filename))
@@ -110,3 +111,8 @@ def replace_word_in_path(path, old, new):
 
 def replace_suffix(path, new):
     return (path.parent / path.stem).with_suffix(".jpg")
+
+def read_json(path):
+    file = open(path)
+    dump = json.load(file)
+    return dump
