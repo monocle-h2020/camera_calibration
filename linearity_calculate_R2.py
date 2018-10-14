@@ -7,6 +7,7 @@ from phonecal.gain import malus, malus_error
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
 
 angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
 angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
@@ -21,6 +22,9 @@ jmeans= np.moveaxis(jmeans, 0, 2)
 
 means_RGBG, _ = pull_apart(means , colours)
 
+max_value = 2**phone["camera"]["bits"]
+saturation = 0.95 * max_value
+
 def linear_R2(x, y, saturate=4000):
     ind = np.where(y < saturate)
     p = np.polyfit(x[ind], y[ind], 1)
@@ -34,7 +38,7 @@ M_reshaped = means_RGBG.reshape(4, -1, means_RGBG.shape[-1])
 #M_reshaped = np.ma.array(M_reshaped, mask=M_reshaped>4000)
 R2 = np.zeros((4, len(M_reshaped[0])))
 for j, M in enumerate(M_reshaped):
-    R2[j] = [linear_R2(intensities, row, saturate=4000) for row in M]
+    R2[j] = [linear_R2(intensities, row, saturate=saturation) for row in M]
     print(j, end=" ")
 
 np.save(products/"linearity_R2.npy", R2)

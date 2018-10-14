@@ -7,6 +7,7 @@ from phonecal.gain import malus, malus_error
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
 
 angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
 angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
@@ -24,6 +25,8 @@ jmeans_RGBG, _= pull_apart(jmeans, colours)
 
 middle1, middle2 = means_RGBG.shape[1]//2, means_RGBG.shape[2]//2
 
+max_value = 2**phone["camera"]["bits"]
+
 #  plot (intensity, DNG value) and (intensity, JPEG value) for the central 4 pixels in the stack
 fig, axs = plt.subplots(2, 2, tight_layout=True, figsize=(10,5), sharex=True, sharey=True)
 for j in range(4):
@@ -36,7 +39,7 @@ for j in range(4):
 
     ax2 = ax.twinx()
     ax2.errorbar(intensities, means_RGBG[j,middle1,middle2], xerr=intensities_errors, fmt="ko")
-    ax2.set_ylim(0, 4095*1.05)
+    ax2.set_ylim(0, max_value*1.05)
     if j%2:
         ax2.set_ylabel("DNG value")
     else:
