@@ -49,7 +49,7 @@ def absolute_filename(file):
     return file.absolute
 
 def load_npy(folder, pattern, retrieve_value=absolute_filename, **kwargs):
-    files = list(folder.glob(pattern))
+    files = sorted(folder.glob(pattern))
     stacked = np.stack([np.load(f) for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked

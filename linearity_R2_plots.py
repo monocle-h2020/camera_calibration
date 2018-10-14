@@ -12,6 +12,7 @@ root, images, stacks, products, results = io.folders(folder)
 
 R2 = np.load(products/"linearity_R2.npy")
 R2R = R2.ravel()
+print("Read R^2")
 
 print(f"Lowest: {R2R.min():.5f}")
 for percentage in [0.1, 1, 5, 50, 90, 95, 99, 99.9]:
@@ -39,6 +40,16 @@ plt.xlim(percentile, 1)
 plt.savefig(results/"linearity/R2_linear.png")
 plt.close()
 print("Made linear histogram")
+
+plt.figure(tight_layout=True, figsize=(5,4))
+plt.hist(R2R, bins=bins, color='k', cumulative=True, density=True)
+plt.xlabel("$R^2$")
+plt.ylabel("Cumulative frequency")
+plt.xlim(percentile, 1)
+plt.ylim(0, 1)
+plt.savefig(results/"linearity/R2_cumulative.png")
+plt.close()
+print("Made cumulative histogram")
 
 plt.figure(tight_layout=True, figsize=(5,4))
 plt.hist(R2R, bins=bins, color='k')
