@@ -1,1 +1,24 @@
-a
+{
+	"device": {
+		"manufacturer": "Samsung",
+		"name": "Galaxy S8",
+		"code": "SM-G950F"
+	},
+	"camera": {
+		"manufacturer": "Samsung",
+		"series": "",
+		"model": "S5K2L2",
+		"bits": 10,
+		"bayer": true,
+		"colours": "RGBG",
+		"pattern": [[1, 0], [2, 3]]
+	},
+	"software": {
+		"raw": true,
+		"raw extension": ".dng",
+		"ISO min": 50,
+		"ISO max": 1250,
+		"1/t min": 16666.7,
+		"1/t max": 10
+	}
+}
