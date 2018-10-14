@@ -10,26 +10,34 @@ root, images, stacks, products, results = io.folders(folder)
 
 angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
 print("Read DNG")
-angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
-print("Read JPEG")
 colours        = io.load_colour(stacks)
 
-offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat")
-print("Read angles")
-intensities = malus(angles, offset_angle)
-intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
-
 means_to_plot  = np.zeros((4, means.shape[0]))  # in RGBG order
-jmeans_to_plot = np.zeros((4, means.shape[0]))
 middle1, middle2 = means.shape[1]//2, means.shape[2]//2
 index_pairs = [(middle1, middle2), (middle1+1, middle2), (middle1, middle2+1), (middle1+1,middle2+1)]
 for pair in index_pairs:
     i1, i2 = pair
     colour_index = colours[i1, i2]
-    jcolour_index = colour_index if colour_index < 3 else 1
     means_to_plot [colour_index] = means [:,i1,i2]
+print("Found DNG pixels")
+del means
+
+angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
+print("Read JPEG")
+
+jmeans_to_plot = np.zeros_like(means_to_plot)
+for pair in index_pairs:
+    i1, i2 = pair
+    colour_index = colours[i1, i2]
+    jcolour_index = colour_index if colour_index < 3 else 1
     jmeans_to_plot[colour_index] = jmeans[:,i1,i2,jcolour_index]
-print("Found pixels to plot")
+print("Found JPEG pixels")
+del jmeans
+
+offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat")
+print("Read angles")
+intensities = malus(angles, offset_angle)
+intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
 #  plot (intensity, DNG value) and (intensity, JPEG value) for the central 4 pixels in the stack
 fig, axs = plt.subplots(2, 2, tight_layout=True, figsize=(10,5), sharex=True, sharey=True)
