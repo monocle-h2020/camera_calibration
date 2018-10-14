@@ -6,16 +6,21 @@ from phonecal.general import gaussMd
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
+
 isos, means = io.load_means (folder, retrieve_value=io.split_iso)
 colours     = io.load_colour(stacks)
 
 savefolder = results/"bias"
 
+xmax = phone["software"]["bias"] + 25
+xmin = max(phone["software"]["bias"] - 25, 0)
+
 for iso, mean in zip(isos, means):
     plt.figure(figsize=(10,7), tight_layout=True)
-    plt.hist(mean.ravel(), bins=np.linspace(513, 543, 250), color='k')
+    plt.hist(mean.ravel(), bins=np.linspace(xmin, xmax, 250), color='k')
     plt.xlabel("Mean bias (ADU)")
-    plt.xlim(513, 543)
+    plt.xlim(xmin, xmax)
     plt.ylim(0.9, mean.size)
     plt.yscale("log")
     plt.ylabel("Frequency")
