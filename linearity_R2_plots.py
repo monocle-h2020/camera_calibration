@@ -12,6 +12,7 @@ root, images, stacks, products, results = io.folders(folder)
 
 R2 = np.load(products/"linearity_R2.npy")
 R2R = R2.ravel()
+print("Read R^2")
 
 print(f"Lowest: {R2R.min():.5f}")
 for percentage in [0.1, 1, 5, 50, 90, 95, 99, 99.9]:
