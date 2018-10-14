@@ -9,4 +9,4 @@ def read_json(path):
     dump = json.load(file)
     return dump
 
-read_json(path)
+dump = read_json(path)
