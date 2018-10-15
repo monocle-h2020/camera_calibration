@@ -206,3 +206,18 @@ def hist_bias_ron(data, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=No
     plt.ylabel("Frequency")
     plt.grid(ls="--")
     _saveshow(saveto)
+
+def hist_bias_ron_colour(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
+    fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(5,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+    data_RGB = [d.ravel() for d in data_RGBG[:3]]
+    data_RGB[1] = np.concatenate((data_RGBG[1].ravel(), data_RGBG[3].ravel()))
+    for data, colour, ax in zip(data_RGB, "RGB", axs):
+        ax.hist(data.ravel(), bins=np.linspace(*xlim, nrbins), color=colour, density=True)
+        ax.grid(True)
+    for ax in axs[:2]:
+        ax.xaxis.set_ticks_position("none")
+    axs[0].set_xlim(*xlim)
+    axs[2].set_xlabel(xlabel)
+    axs[0].set_yscale("log")
+    axs[1].set_ylabel("Probability density")
+    _saveshow(saveto)

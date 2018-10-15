@@ -26,6 +26,8 @@ for iso, mean in zip(isos, means):
     mean_RGBG, _ = raw.pull_apart(mean, colours)
     gauss_RGBG = gaussMd(mean_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
+    
+    plot.hist_bias_ron_colour(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"Bias_mean_gauss_iso{iso}_colour.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
