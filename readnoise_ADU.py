@@ -6,17 +6,13 @@ from phonecal.general import gaussMd
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-isos, means = io.load_means (folder, retrieve_value=io.split_iso)
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours     = io.load_colour(stacks)
 
 low_iso = isos.argmin()
 high_iso= isos.argmax()
 
-for ind in (high_iso, low_iso):
-    iso  = isos [ind]
-    std  = stds [ind].copy()
-
+for iso, std in zip(isos, stds):
     plt.figure(figsize=(10,7), tight_layout=True)
     plt.hist(std.ravel(), bins=np.linspace(0, 30, 500), color='k')
     plt.xlabel("Read noise (ADU)")
