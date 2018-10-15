@@ -20,16 +20,14 @@ for iso, std in zip(isos, stds):
     gain = gain_table[1, iso]
     std  *= gain
 
+    gauss = gaussMd(std, sigma=10)
     std_RGBG, _= raw.pull_apart(std, colours)
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
     
     plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_histogram_iso{iso}.png")
-
-    gauss = gaussMd(std, sigma=10)
-
-    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"RON_gauss_iso{iso}_e.png")
-
+    
+    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_gauss_iso{iso}.png")
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"RON_gauss_iso{iso}_{c}{X}_e.png", colour=c, vmin=vmin, vmax=vmax)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_{c}{X}_gauss_iso{iso}.png", colour=c, vmin=vmin, vmax=vmax)
