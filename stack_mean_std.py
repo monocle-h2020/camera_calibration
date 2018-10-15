@@ -20,7 +20,7 @@ for tup in walk(folder):
     if len(DNGs) == 0:
         continue
 
-    arrs, colors = io.load_dng_many(folder_here, return_colors=True, pattern=raw_pattern)
+    arrs, colors = io.load_dng_many(folder_here, pattern=raw_pattern)
     mean = arrs.mean(axis=0, dtype=np.float32)
     stds = arrs.std (axis=0, dtype=np.float32)
 
