@@ -19,17 +19,6 @@ for ind in (high_iso, low_iso):
     iso  = isos [ind]
     std  = stds [ind].copy()
 
-    plt.figure(figsize=(10,7), tight_layout=True)
-    plt.hist(std.ravel(), bins=np.linspace(0, 30, 500), color='k')
-    plt.xlabel("Read noise (ADU)")
-    plt.xlim(0, 30)
-    plt.yscale("log")
-    plt.ylabel("Frequency")
-    plt.ylim(0.9, std.size)
-    plt.grid(ls="--")
-    plt.savefig(results/f"bias/RON_hist_iso{iso}_ADU.png")
-    plt.close()
-
     gain = gain_table[1, iso]
     std  *= gain
 
@@ -65,8 +54,8 @@ for ind in (high_iso, low_iso):
 
     gauss = gaussMd(std, sigma=10)
 
-    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}.png")
+    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}_e.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}_{c}{X}.png", colour=c, vmin=vmin, vmax=vmax)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}_{c}{X}_e.png", colour=c, vmin=vmin, vmax=vmax)
