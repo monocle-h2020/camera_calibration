@@ -17,17 +17,7 @@ xmax = phone["software"]["bias"] + 25
 xmin = max(phone["software"]["bias"] - 25, 0)
 
 for iso, mean in zip(isos, means):
-    plt.figure(figsize=(10,7), tight_layout=True)
-    plt.hist(mean.ravel(), bins=np.linspace(xmin, xmax, 250), color='k')
-    plt.xlabel("Mean bias (ADU)")
-    plt.xlim(xmin, xmax)
-    plt.ylim(0.9, mean.size)
-    plt.yscale("log")
-    plt.ylabel("Frequency")
-    plt.ylim(ymin=0.9)
-    plt.grid(ls="--")
-    plt.savefig(savefolder/f"Bias_mean_hist_iso{iso}.png")
-    plt.close()
+    plot.hist_bias_ron(mean, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"Bias_mean_hist_iso{iso}.png")
 
     gauss = gaussMd(mean, sigma=10)
 

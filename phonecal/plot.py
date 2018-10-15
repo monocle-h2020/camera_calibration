@@ -195,3 +195,14 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     colorbar_here.set_label(colorbar_label)
     _saveshow(saveto)
     plt.close()
+
+def hist_bias_ron(data, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
+    plt.figure(figsize=(10,7), tight_layout=True)
+    plt.hist(data.ravel(), bins=np.linspace(*xlim, nrbins), color='k')
+    plt.xlabel(xlabel)
+    plt.xlim(*xlim)
+    plt.ylim(0.9, data.size)
+    plt.yscale("log")
+    plt.ylabel("Frequency")
+    plt.grid(ls="--")
+    _saveshow(saveto)

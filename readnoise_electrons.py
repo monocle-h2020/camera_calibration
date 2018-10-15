@@ -19,17 +19,8 @@ high_iso= isos.argmax()
 for iso, std in zip(isos, stds):
     gain = gain_table[1, iso]
     std  *= gain
-
-    plt.figure(figsize=(10,7), tight_layout=True)
-    plt.hist(std.ravel(), bins=np.linspace(0, 30, 500), color='k')
-    plt.xlabel("Read noise (e$^-$)")
-    plt.xlim(0, 30)
-    plt.yscale("log")
-    plt.ylabel("Frequency")
-    plt.ylim(0.9, std.size)
-    plt.grid(ls="--")
-    plt.savefig(results_readnoise/f"RON_hist_iso{iso}_e.png")
-    plt.close()
+    
+    plot.hist_bias_ron(std, xlim=(0, 30), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"RON_hist_iso{iso}_e.png")
 
     std_RGBG, _= raw.pull_apart(std, colours)
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
