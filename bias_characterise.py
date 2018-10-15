@@ -17,8 +17,6 @@ xmax = phone["software"]["bias"] + 25
 xmin = max(phone["software"]["bias"] - 25, 0)
 
 for iso, mean in zip(isos, means):
-    plot.hist_bias_ron(mean, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"Bias_mean_hist_iso{iso}.png")
-
     gauss = gaussMd(mean, sigma=10)
 
     plot.show_image(gauss, colorbar_label="Mean bias (ADU)", saveto=savefolder/f"Bias_mean_gauss_iso{iso}.png")
@@ -27,7 +25,7 @@ for iso, mean in zip(isos, means):
     gauss_RGBG = gaussMd(mean_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
     
-    plot.hist_bias_ron_colour(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"Bias_mean_gauss_iso{iso}_colour.png")
+    plot.hist_bias_ron_kRGB(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"histogram_iso{iso}.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""

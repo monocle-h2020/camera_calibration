@@ -15,13 +15,11 @@ low_iso = isos.argmin()
 high_iso= isos.argmax()
 
 for iso, std in zip(isos, stds):
-    plot.hist_bias_ron(std, xlim=(0, 30), xlabel="Read noise (ADU)", saveto=results_readnoise/f"RON_hist_iso{iso}_ADU.png")
-
     std_RGBG, _= raw.pull_apart(std, colours)
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
     
-    plot.hist_bias_ron_colour(std_RGBG, xlim=(0, 25), xlabel="Read noise (ADU)", saveto=results_readnoise/f"RON_hist_iso{iso}_ADU_colour.png")
+    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (ADU)", saveto=results_readnoise/f"ADU_histogram_iso{iso}.png")
 
     gauss = gaussMd(std, sigma=10)
 

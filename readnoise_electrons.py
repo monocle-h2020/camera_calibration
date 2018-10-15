@@ -19,14 +19,12 @@ high_iso= isos.argmax()
 for iso, std in zip(isos, stds):
     gain = gain_table[1, iso]
     std  *= gain
-    
-    plot.hist_bias_ron(std, xlim=(0, 30), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"RON_hist_iso{iso}_e.png")
 
     std_RGBG, _= raw.pull_apart(std, colours)
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
     
-    plot.hist_bias_ron_colour(std_RGBG, xlim=(0, 25), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"RON_hist_iso{iso}_e_colour.png")
+    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_histogram_iso{iso}.png")
 
     gauss = gaussMd(std, sigma=10)
 
