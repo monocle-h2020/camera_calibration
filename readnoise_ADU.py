@@ -26,3 +26,4 @@ for iso, std in zip(isos, stds):
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
         plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (ADU)", saveto=results_readnoise/f"ADU_{c}{X}_gauss_iso{iso}.png", colour=c, vmin=vmin, vmax=vmax)
+    print(iso)
