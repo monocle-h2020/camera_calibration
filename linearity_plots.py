@@ -57,7 +57,7 @@ for j in range(4):
     ax2 = ax.twinx()
 
     ax2.errorbar(intensities, mean, xerr=intensities_errors, fmt="ko")
-    ax2.set_ylim(0, 1024*1.05)
+    ax2.set_ylim(0, max_value*1.05)
 
     if j%2:
         ax2.set_ylabel("DNG value")
