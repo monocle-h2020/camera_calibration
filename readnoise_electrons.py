@@ -6,6 +6,8 @@ from phonecal.general import gaussMd
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+results_readnoise = results/"readnoise"
+
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours     = io.load_colour(stacks)
 
@@ -26,7 +28,7 @@ for iso, std in zip(isos, stds):
     plt.ylabel("Frequency")
     plt.ylim(0.9, std.size)
     plt.grid(ls="--")
-    plt.savefig(results/f"bias/RON_hist_iso{iso}_e.png")
+    plt.savefig(results_readnoise/f"RON_hist_iso{iso}_e.png")
     plt.close()
 
     std_RGBG, _= raw.pull_apart(std, colours)
@@ -45,13 +47,13 @@ for iso, std in zip(isos, stds):
     axs[2].set_xlabel("Read noise (e$^-$)")
     axs[0].set_yscale("log")
     axs[1].set_ylabel("Probability density")
-    fig.savefig(results/f"bias/RON_hist_iso{iso}_e_colour.png")
+    fig.savefig(results_readnoise/f"RON_hist_iso{iso}_e_colour.png")
     plt.close()
 
     gauss = gaussMd(std, sigma=10)
 
-    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}_e.png")
+    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"RON_gauss_iso{iso}_e.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}_{c}{X}_e.png", colour=c, vmin=vmin, vmax=vmax)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"RON_gauss_iso{iso}_{c}{X}_e.png", colour=c, vmin=vmin, vmax=vmax)
