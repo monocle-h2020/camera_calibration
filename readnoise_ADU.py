@@ -41,7 +41,7 @@ for ind in (high_iso, low_iso):
     for ax in axs[:2]:
         ax.xaxis.set_ticks_position("none")
     axs[0].set_xlim(0, 15)
-    axs[2].set_xlabel("Read noise (e$^-$)")
+    axs[2].set_xlabel("Read noise (ADU)")
     axs[0].set_yscale("log")
     axs[1].set_ylabel("Probability density")
     fig.savefig(results/f"bias/RON_hist_iso{iso}_ADU_colour.png")
@@ -49,8 +49,8 @@ for ind in (high_iso, low_iso):
 
     gauss = gaussMd(std, sigma=10)
 
-    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_ADU_iso{iso}.png")
+    plot.show_image(gauss, colorbar_label="Read noise (ADU)", saveto=results/f"bias/RON_gauss_ADU_iso{iso}.png")
 
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results/f"bias/RON_gauss_iso{iso}_{c}{X}_ADU.png", colour=c, vmin=vmin, vmax=vmax)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (ADU)", saveto=results/f"bias/RON_gauss_iso{iso}_{c}{X}_ADU.png", colour=c, vmin=vmin, vmax=vmax)
