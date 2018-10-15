@@ -16,8 +16,8 @@ for tup in walk(folder):
     folder_here = io.Path(tup[0])
     goal = io.replace_word_in_path(folder_here, "images", "stacks")
 
-    DNGs = list(folder_here.glob(raw_pattern))
-    if len(DNGs) == 0:
+    raw_files = list(folder_here.glob(raw_pattern))
+    if len(raw_files) == 0:
         continue
 
     arrs, colors = io.load_dng_many(folder_here, pattern=raw_pattern)
