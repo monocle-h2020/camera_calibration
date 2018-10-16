@@ -13,7 +13,7 @@ def load_colors(filename):
     img = load_dng_raw(str(filename))
     return img.raw_colors
 
-def load_dng_many(folder, pattern="*.dng", return_colors=False):
+def load_dng_many(folder, pattern="*.dng"):
     files = list(folder.glob(pattern))
     file0 = load_dng_raw(files[0])
     colors = file0.raw_colors
@@ -22,10 +22,7 @@ def load_dng_many(folder, pattern="*.dng", return_colors=False):
     for j, file in enumerate(files[1:], 1):
         arrs[j] = load_dng_raw(file).raw_image
 
-    if return_colors:
-        return arrs, colors
-    else:
-        return arrs
+    return arrs, colors
 
 def load_jpg(filename):
     img = plt.imread(filename)

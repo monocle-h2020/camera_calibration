@@ -5,18 +5,22 @@ from os import walk, makedirs
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
+
 colour_path = stacks/"colour.npy"
 colour_exists = colour_path.exists()
+
+raw_pattern = f"*{phone['software']['raw extension']}"
 
 for tup in walk(folder):
     folder_here = io.Path(tup[0])
     goal = io.replace_word_in_path(folder_here, "images", "stacks")
 
-    DNGs = list(folder_here.glob("*.dng"))
-    if len(DNGs) == 0:
+    raw_files = list(folder_here.glob(raw_pattern))
+    if len(raw_files) == 0:
         continue
 
-    arrs, colors = io.load_dng_many(folder_here, return_colors=True)
+    arrs, colors = io.load_dng_many(folder_here, pattern=raw_pattern)
     mean = arrs.mean(axis=0, dtype=np.float32)
     stds = arrs.std (axis=0, dtype=np.float32)
 
