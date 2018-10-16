@@ -38,6 +38,8 @@ def pull_apart2(raw_img, color_pattern, color_desc="RGBG", remove=True):
     else:
         clean_stack = stack.copy()
 
+    assert len(np.where(np.nansum(clean_stack, axis=0) != raw_img)[0]) == 0
+
     return clean_stack
 
 folder = io.path_from_input(argv)
