@@ -17,7 +17,7 @@ gains, gain_errors = gainarrays.T
 inverse_gains = 1/gains
 inverse_gain_errors = inverse_gains**2 * gain_errors
 
-model, model_error, parameters, covariances, R2 = gain.fit_iso_relation(isos, inverse_gains, inverse_gain_errors)
+model, model_error, model_label, parameters, covariances, R2 = gain.fit_iso_relation(isos, inverse_gains, inverse_gain_errors)
 
 isorange = np.arange(iso_min, iso_max, 1)
 inverse_gains_fit = model(isorange, *parameters)
@@ -36,11 +36,13 @@ if model is gain.model_knee:
     xmaxes.append(parameters[2]*1.5)
     labels.append("_zoom")
 
+label_model, label_error = model_label(parameters, covariances)
+
 for label, xmax in zip(labels, xmaxes):
     plt.figure(figsize=(7,5), tight_layout=True)
     plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt="o", c="k")
-    plt.plot(isorange, inverse_gains_fit, c="k")#, label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
-    plt.fill_between(isorange, inverse_gains_fit-inverse_gains_fit_errors, inverse_gains_fit+inverse_gains_fit_errors, color="0.5")#, label=f"$\sigma$ slope: {np.sqrt(pcov[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(pcov[1,1]):.4f}\n$\sigma$ knee: {np.sqrt(pcov[2,2]):.1f}")
+    plt.plot(isorange, inverse_gains_fit, c="k", label=label_model)
+    plt.fill_between(isorange, inverse_gains_fit-inverse_gains_fit_errors, inverse_gains_fit+inverse_gains_fit_errors, color="0.5", label=label_error)
     plt.xlabel("ISO")
     plt.ylabel("$1/G$ (ADU/e$^-$)")
     plt.xlim(0, xmax)
@@ -53,9 +55,8 @@ for label, xmax in zip(labels, xmaxes):
 
     plt.figure(figsize=(7,5), tight_layout=True)
     plt.errorbar(isos, gains, yerr=gain_errors, fmt="o", c="k")
-    plt.plot(isorange, gains_fit, c="k")#, label=f"slope: {popt[0]:.4f}\noffset: {popt[1]:.4f}\nknee: {popt[2]:.1f}")
-    plt.fill_between(isorange, gains_fit-gains_fit_errors, gains_fit+gains_fit_errors, color="0.5")#,
-                     #label=f"$\sigma$ slope: {np.sqrt(pcov[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(pcov[1,1]):.4f}\n$\sigma$ knee: {np.sqrt(pcov[2,2]):.1f}")
+    plt.plot(isorange, gains_fit, c="k", label=label_model)
+    plt.fill_between(isorange, gains_fit-gains_fit_errors, gains_fit+gains_fit_errors, color="0.5", label=label_error)
     plt.xlabel("ISO")
     plt.ylabel("$G$ (e$^-$/ADU)")
     plt.xlim(0, xmax)
