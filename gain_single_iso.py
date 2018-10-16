@@ -10,28 +10,34 @@ phone = io.read_json(root/"info.json")
 
 products_gain, results_gain = products/"gain", results/"gain"
 iso = io.split_iso(folder)
+print("Loaded information")
 
 names, means = io.load_means (folder  )
 names, stds  = io.load_stds  (folder  )
 colours      = io.load_colour(stacks  )
 bias         = io.load_bias  (products)
+print("Loaded data")
 
 means -= bias
 
 mean_reshaped = np.moveaxis(means, 0, 2)
 stds_reshaped = np.moveaxis(stds , 0, 2)
+print("Reshaped data")
 
 variances = stds_reshaped**2
 mean_RGBG, _ = raw.pull_apart(mean_reshaped, colours)
 vars_RGBG, _ = raw.pull_apart(variances    , colours)
+print("Split data in RGBG")
 
 mean_mean = mean_RGBG.mean(axis=(1,2))
 vars_mean = vars_RGBG.mean(axis=(1,2))
 mean_stds = mean_RGBG.std (axis=(1,2))
 vars_stds = vars_RGBG.std (axis=(1,2))
+print("Meaned data")
 
 mean_errors = mean_stds / np.sqrt(mean_RGBG.shape[1] * mean_RGBG.shape[2])
 vars_errors = vars_stds / np.sqrt(vars_RGBG.shape[1] * vars_RGBG.shape[2])
+print("Calculated errors")
 
 if phone["software"]["bias"]:
     fit_min = 0
@@ -54,9 +60,11 @@ gain = 1/fit[0]
 gainerr = gain**2 * fiterr[0]
 RON  = gain * np.sqrt(fit[1])
 RONerr = np.sqrt(gainerr**2 * fit[1] + 0.25 * fiterr[1]**2 * gain**2 / fit[1])
+print("Performed fit")
 
 fit_measured = np.polyval(fit, mean_fit)
 R2 = Rsquare(vars_fit, fit_measured)
+print(f"  R^2 = {R2:.4f}")
 
 plt.figure(figsize=(7,5), tight_layout=True)
 x = np.logspace(-1, 4, 500)
@@ -77,9 +85,11 @@ plt.xlabel("Mean (ADU)")
 plt.ylabel("Variance (ADU$^2$)")
 plt.title(f"$R^2 = {R2:.4f}$")
 plt.legend(loc="upper left")
+print("Made plot")
 plt.savefig(results_gain/f"gain_curve_iso{iso}.png")
 plt.show()
 
 save_to = (products_gain/folder.stem).with_suffix(".npy")
 results = np.array([gain, gainerr])
 np.save(save_to, results)
+print("Saved results")
