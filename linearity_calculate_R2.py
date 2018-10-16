@@ -18,7 +18,7 @@ print("Read angles")
 intensities = malus(angles, offset_angle)
 intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
-means = np.moveaxis(means , 0, 2)
+means = np.moveaxis(means, 0, 2)
 print("Reshaped arrays")
 
 means_RGBG, _ = pull_apart(means , colours)
@@ -37,7 +37,6 @@ def linear_R2(x, y, saturate=4000):
 print("Doing R^2 comparison...", end=" ")
 
 M_reshaped = means_RGBG.reshape(4, -1, means_RGBG.shape[-1])
-#M_reshaped = np.ma.array(M_reshaped, mask=M_reshaped>4000)
 R2 = np.zeros((4, len(M_reshaped[0])))
 for j, M in enumerate(M_reshaped):
     R2[j] = [linear_R2(intensities, row, saturate=saturation) for row in M]
