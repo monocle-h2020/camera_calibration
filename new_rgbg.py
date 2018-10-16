@@ -4,6 +4,42 @@ from matplotlib import pyplot as plt
 from phonecal import raw, plot, io
 from phonecal.general import gaussMd
 
+def gauss_nan(data, *args, **kwargs):
+    V = data.copy()
+    V[np.isnan(data)] = 0
+    VV = gaussMd(V, *args, **kwargs)
+
+    W = np.ones_like(data)
+    W[np.isnan(data)] = 0
+    WW = gaussMd(W, *args, **kwargs)
+
+    return VV/WW
+
+def pull_apart2(raw_img, color_pattern, color_desc="RGBG", remove=True):
+    unique_colours = np.unique(color_pattern)
+
+    stack = np.tile(np.nan, (*unique_colours.shape, *raw_img.shape))
+    for j in range(len(unique_colours)):
+        indices = np.where(color_pattern == j)
+        stack[j][indices] = raw_img[indices]
+
+    if remove and len(set(color_desc)) != len(color_desc):
+        to_remove = []
+        for j in range(1, len(unique_colours)):
+            colour = color_desc[j]
+            previous = color_desc[:j]
+            try:
+                ind_previous = previous.index(colour)
+            except ValueError:
+                continue
+            stack[ind_previous][color_pattern == j] = stack[j][color_pattern == j]
+            to_remove.append(j)
+        clean_stack = np.delete(stack, to_remove, axis=0)
+    else:
+        clean_stack = stack.copy()
+
+    return clean_stack
+
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 results_readnoise = results/"readnoise"
@@ -17,27 +53,4 @@ RGBG, _ = raw.pull_apart(s, colours)
 
 unique_colours = np.unique(colours).shape[0]
 
-RGBG2 = np.stack([s for i in range(unique_colours)])
-for j in np.unique(colours):
-    RGBG2[j][colours != j] = np.nan
-
-V = RGBG2.copy()
-V[np.isnan(RGBG2)] = 0
-VV = gaussMd(V, sigma=(0,10,10))
-
-W = np.ones_like(RGBG2)
-W[np.isnan(RGBG2)] = 0
-WW = gaussMd(W, sigma=(0,10,10))
-
-RGBG2 = VV/WW
-
-def gauss_nan(data, *args, **kwargs):
-    V = data.copy()
-    V[np.isnan(data)] = 0
-    VV = gaussMd(V, *args, **kwargs)
-
-    W = np.ones_like(data)
-    W[np.isnan(data)] = 0
-    WW = gaussMd(W, *args, **kwargs)
-
-    return VV/WW
+RGB = pull_apart2(s, colours)
