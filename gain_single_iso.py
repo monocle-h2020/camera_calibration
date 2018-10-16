@@ -33,8 +33,11 @@ vars_stds = vars_RGBG.std (axis=(1,2))
 mean_errors = mean_stds / np.sqrt(mean_RGBG.shape[1] * mean_RGBG.shape[2])
 vars_errors = vars_stds / np.sqrt(vars_RGBG.shape[1] * vars_RGBG.shape[2])
 
-fit_min = 0
-fit_max = 2000
+if phone["software"]["bias"]:
+    fit_min = 0
+else:
+    fit_min = 10
+fit_max = 0.6 * 2**phone["camera"]["bits"]
 ind = np.where((mean_mean > fit_min) & (mean_mean < fit_max))
 mean_fit        = mean_mean  [ind].ravel()
 vars_fit        = vars_mean  [ind].ravel()
