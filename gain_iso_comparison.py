@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from phonecal import io, gain
 
 folders = io.path_from_input(argv)
-colours = ["k", "r", "b"]
+colours = ["k", "r", "xkcd:purple", "xkcd:brown", "xkcd:lilac", "xkcd:custard"]
 
 plt.figure(figsize=(7,5), tight_layout=True)
 
@@ -29,7 +29,7 @@ for c, folder in zip(colours, folders):
     #invgain_err_lut = 
     print(iso_lut.min(), iso_lut.max())
     
-    plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt=f"{c}o")
+    plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt=f"o", c=c)
     plt.plot(iso_lut, invgain_lut, label=phone["device"]["name"], c=c)
     #plt.fill_between(iso_lut, inverse_gains_fit-inverse_gains_fit_errors, inverse_gains_fit+inverse_gains_fit_errors, color="0.5")
     
