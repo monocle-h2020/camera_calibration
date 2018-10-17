@@ -24,7 +24,7 @@ for c, folder in zip(colours, folders):
     inverse_gains = 1/gains
     inverse_gain_errors = inverse_gains**2 * gain_errors
     
-    iso_lut, gain_lut, gain_err_lut = np.load(results/"gain/gain_lookup_table.npy")
+    iso_lut, gain_lut, gain_err_lut = io.read_gain_lookup_table(results)
     invgain_lut = 1/gain_lut
     invgain_err_lut = gain_err_lut * invgain_lut**2
     

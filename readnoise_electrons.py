@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, plot, io
+from phonecal import raw, plot, io, gain
 from phonecal.general import gaussMd
 
 folder = io.path_from_input(argv)
@@ -11,14 +11,14 @@ results_readnoise = results/"readnoise"
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours     = io.load_colour(stacks)
 
-gain_table = np.load(products/"gain_lookup_table.npy")
+gain_table = io.read_gain_lookup_table(results)
 
 low_iso = isos.argmin()
 high_iso= isos.argmax()
 
 for iso, std in zip(isos, stds):
-    gain = gain_table[1, iso]
-    std  *= gain
+    G, G_err = gain.get_gain(gain_table, iso)
+    std  *= G
 
     gauss = gaussMd(std, sigma=10)
     std_RGBG, _= raw.pull_apart(std, colours)

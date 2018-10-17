@@ -62,3 +62,7 @@ def fit_iso_relation(isos, inverse_gains, inverse_gain_errors=None):
     best = R2s.argmax()
 
     return models[best], model_errs[best], model_label[best], parameters[best], covariances[best], R2s[best]
+
+def get_gain(table, iso):
+    ind = np.where(table[0] == iso)[0]
+    return table[1, ind][0], table[2, ind][0]

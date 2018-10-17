@@ -117,3 +117,7 @@ def read_json(path):
     file = open(path)
     dump = json.load(file)
     return dump
+
+def read_gain_lookup_table(results):
+    table = np.load(results/"gain/gain_lookup_table.npy")
+    return table
