@@ -26,12 +26,12 @@ for c, folder in zip(colours, folders):
     
     iso_lut, gain_lut, gain_err_lut = np.load(results/"gain/gain_lookup_table.npy")
     invgain_lut = 1/gain_lut
-    #invgain_err_lut = 
+    invgain_err_lut = gain_err_lut * invgain_lut**2
     print(iso_lut.min(), iso_lut.max())
     
     plt.errorbar(isos, inverse_gains, yerr=inverse_gain_errors, fmt=f"o", c=c)
     plt.plot(iso_lut, invgain_lut, label=phone["device"]["name"], c=c)
-    #plt.fill_between(iso_lut, inverse_gains_fit-inverse_gains_fit_errors, inverse_gains_fit+inverse_gains_fit_errors, color="0.5")
+    plt.fill_between(iso_lut, invgain_lut-invgain_err_lut, invgain_lut+invgain_err_lut, color=c, alpha=0.5)
     
     xmax = max(xmax, iso_lut.max())
 
