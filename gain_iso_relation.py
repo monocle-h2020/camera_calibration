@@ -19,7 +19,7 @@ inverse_gain_errors = inverse_gains**2 * gain_errors
 
 model, model_error, model_label, parameters, covariances, R2 = gain.fit_iso_relation(isos, inverse_gains, inverse_gain_errors)
 
-isorange = np.arange(iso_min, iso_max, 1)
+isorange = np.arange(iso_min, iso_max+1, 1)
 inverse_gains_fit = model(isorange, *parameters)
 inverse_gains_fit_errors = model_error(isorange, parameters, covariances)
 gains_fit = 1 / inverse_gains_fit
