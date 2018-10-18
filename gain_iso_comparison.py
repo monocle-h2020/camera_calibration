@@ -36,8 +36,8 @@ for c, folder in zip(colours, folders):
     
     print(phone["device"]["manufacturer"], phone["device"]["name"])
 
-plt.xlabel("ISO")
-plt.ylabel("$1/G$ (ADU/e$^-$)")
+plt.xlabel("ISO speed rating")
+plt.ylabel("Gain (ADU/e$^-$)")
 plt.xlim(0, xmax)
 plt.ylim(ymin=0)
 plt.legend(loc="lower right")
