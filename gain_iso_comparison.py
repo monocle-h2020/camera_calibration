@@ -6,7 +6,7 @@ from phonecal import io, gain
 folders = io.path_from_input(argv)
 colours = ["k", "r", "xkcd:purple", "xkcd:brown", "xkcd:lilac", "xkcd:custard"]
 
-plt.figure(figsize=(7,5), tight_layout=True)
+plt.figure(figsize=(3.3,3), tight_layout=True)
 
 xmax = 0
 
@@ -41,6 +41,5 @@ plt.ylabel("Gain (ADU/e$^-$)")
 plt.xlim(0, xmax)
 plt.ylim(ymin=0)
 plt.legend(loc="lower right")
-plt.savefig("results/gain_comparison.png")
-plt.show()
+plt.savefig("results/gain_comparison.pdf")
 plt.close()

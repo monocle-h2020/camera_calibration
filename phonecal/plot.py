@@ -1,5 +1,5 @@
 import numpy as np
-from matplotlib import pyplot as plt, patheffects as pe
+from matplotlib import pyplot as plt, patheffects as pe, ticker
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
 
@@ -187,12 +187,14 @@ def colorbar(mappable):
 
 def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     cmap = cmaps[colour+"r"] if colour else plt.cm.viridis
-    plt.figure(figsize=(8,8*data.shape[0]/data.shape[1]), tight_layout=True)
+    plt.figure(figsize=(3.3,3*data.shape[0]/data.shape[1]), tight_layout=True)
     img = plt.imshow(data, cmap=cmap, **kwargs)
     plt.xticks([])
     plt.yticks([])
     colorbar_here = colorbar(img)
     colorbar_here.set_label(colorbar_label)
+    colorbar_here.locator = ticker.MaxNLocator(nbins=5)
+    colorbar_here.update_ticks()
     _saveshow(saveto)
     plt.close()
 
@@ -209,7 +211,7 @@ def hist_bias_ron(data, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=No
 
 def hist_bias_ron_kRGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
     data_KRGB = [data_RGBG.ravel(), data_RGBG[0].ravel(), data_RGBG[1::2].ravel(), data_RGBG[2].ravel()]
-    fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(4,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+    fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     for data, colour, ax in zip(data_KRGB, "kRGB", axs):
         ax.hist(data.ravel(), bins=np.linspace(*xlim, nrbins), color=colour, density=True)
         ax.grid(True)
