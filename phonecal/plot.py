@@ -196,7 +196,19 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     colorbar_here.locator = ticker.MaxNLocator(nbins=5)
     colorbar_here.update_ticks()
     _saveshow(saveto)
-    plt.close()
+    
+def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
+    fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+    for ax, data_c, c in zip(axs, data, "RGBG"):
+        img = ax.imshow(data_c, cmap=cmaps[c+"r"], **kwargs)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        colorbar_here = colorbar(img)
+        if ax is axs[2]:
+            colorbar_here.set_label(colorbar_label)
+        colorbar_here.locator = ticker.MaxNLocator(nbins=4)
+        colorbar_here.update_ticks()
+    _saveshow(saveto)
 
 def hist_bias_ron(data, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
     plt.figure(figsize=(10,7), tight_layout=True)
@@ -220,6 +232,6 @@ def hist_bias_ron_kRGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)",
     axs[0].set_xlim(*xlim)
     axs[3].set_xlabel(xlabel)
     axs[0].set_yscale("log")
-    axs[2].set_ylabel("Probability density")
+    axs[2].set_ylabel(25*" "+"Probability density")
     _saveshow(saveto)
     

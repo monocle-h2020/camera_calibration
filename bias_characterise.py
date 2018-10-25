@@ -28,6 +28,7 @@ for iso, mean in zip(isos, means):
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
         plot.show_image(gauss_RGBG[j], colorbar_label="Bias (ADU)", saveto=savefolder/f"{c}{X}_gauss_iso{iso}.pdf", colour=c, vmin=vmin, vmax=vmax)
+        
+    plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Bias (ADU)", saveto=savefolder/f"all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
+        
     print(iso)
-
-fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})

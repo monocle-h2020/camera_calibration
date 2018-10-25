@@ -25,10 +25,13 @@ for iso, std in zip(isos, stds):
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
     
-    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_histogram_iso{iso}.png")
+    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_histogram_iso{iso}.pdf")
     
-    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_gauss_iso{iso}.png")
+    plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_gauss_iso{iso}.pdf")
     for j, c in enumerate("RGBG"):
         X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_{c}{X}_gauss_iso{iso}.png", colour=c, vmin=vmin, vmax=vmax)
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_{c}{X}_gauss_iso{iso}.pdf", colour=c, vmin=vmin, vmax=vmax)
+        
+    plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Read noise (e$^-$)", saveto=results_readnoise/f"electrons_all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
+    
     print(iso)
