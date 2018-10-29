@@ -5,8 +5,12 @@ from time import time
 from phonecal import io
 
 folder_main = io.path_from_input(argv[:2])
+root, images, stacks, products, results = io.folders(folder_main)
+phone = io.read_json(root/"info.json")
+raw_pattern = f"*{phone['software']['raw extension']}"
+
 blocksize = int(argv[2])
-files = list(folder_main.glob("*.dng"))
+files = list(folder_main.glob(raw_pattern))
 files = sorted(files)
 blocks = len(files) // blocksize
 for i in range(blocks):
