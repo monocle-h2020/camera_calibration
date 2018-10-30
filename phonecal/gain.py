@@ -49,7 +49,11 @@ def fit_iso_relation(isos, inverse_gains, inverse_gain_errors=None):
     except TypeError:
         weights = None
 
-    params_linear, covariance_linear = np.polyfit(isos, inverse_gains, 1, w=weights, cov=True)
+    try:
+        params_linear, covariance_linear = np.polyfit(isos, inverse_gains, 1, w=weights, cov=True)
+    except ValueError:
+        params_linear = np.polyfit(isos, inverse_gains, 1, w=weights, cov=False)
+        covariance_linear = np.array([[np.nan, np.nan], [np.nan, np.nan]])
     params_knee, covariance_knee = curve_fit(model_knee, isos, inverse_gains, p0=[0.1, 0.1, 200], sigma=inverse_gain_errors)
 
     models     = [model_linear      , model_knee      ]
