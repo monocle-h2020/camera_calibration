@@ -31,4 +31,4 @@ for iso, mean in zip(isos, means):
         
     plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Bias (ADU)", saveto=savefolder/f"all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
         
-    print(iso)
+    print(f"ISO: {iso} ; Mean: {mean_RGBG.mean():.3f} ; Median: {np.median(mean_RGBG):.3f} ; Max: {mean_RGBG.max():.3f} ; Min: {mean_RGBG.min():.3f} ; Standard deviation: {mean_RGBG.std():.3f}")
