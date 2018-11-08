@@ -14,6 +14,11 @@ R2 = np.load(products/"linearity_R2.npy")
 R2R = R2.ravel()
 print("Read R^2")
 
+nans = np.where((np.isnan(R2R)) | np.isinf(R2R))
+print(f"Number of megapixels: {len(R2R)/1e6:.1f} ; Number of NaN/inf: {len(nans[0])}")
+
+R2R = np.delete(R2R, nans)
+
 print(f"Lowest: {R2R.min():.5f}")
 for percentage in [0.1, 1, 5, 50, 90, 95, 99, 99.9]:
     print(f"{percentage:>5.1f}%: {np.percentile(R2R, percentage):.5f}")
