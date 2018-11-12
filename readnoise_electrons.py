@@ -25,7 +25,7 @@ for iso, std in zip(isos, stds):
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
     
-    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_histogram_iso{iso}.pdf")
+    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 15), xlabel="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_histogram_iso{iso}.pdf")
     
     plot.show_image(gauss, colorbar_label="Read noise (e$^-$)", saveto=results_readnoise/f"electrons_gauss_iso{iso}.pdf")
     for j, c in enumerate("RGBG"):
@@ -34,4 +34,4 @@ for iso, std in zip(isos, stds):
         
     plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Read noise (e$^-$)", saveto=results_readnoise/f"electrons_all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
     
-    print(iso)
+    print(f"ISO: {iso} ; Mean: {std_RGBG.mean():.3f} ; Median: {np.median(std_RGBG):.3f} ; Max: {std_RGBG.max():.3f} ; Min: {std_RGBG.min():.3f} ; Standard deviation: {std_RGBG.std():.3f}")
