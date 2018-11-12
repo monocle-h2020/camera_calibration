@@ -43,7 +43,7 @@ def load_exif(filename):
     return exif
 
 def absolute_filename(file):
-    return file.absolute
+    return file.absolute()
 
 def load_npy(folder, pattern, retrieve_value=absolute_filename, **kwargs):
     files = sorted(folder.glob(pattern))
@@ -64,6 +64,11 @@ def split_pol_angle(path):
 def split_iso(path):
     split_name = split_path(path, "iso")
     val = int(split_name.split("_")[0])
+    return val
+
+def split_time(path):
+    split_name = path.stem
+    val = 1. / float(split_name.split("_")[0])
     return val
 
 def load_means(folder, **kwargs):

@@ -1,94 +1,83 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from ispex import raw, plot, io
-from ispex.general import Rsquare
+from phonecal import raw, plot, io, gain
+from phonecal.general import Rsquare, gaussMd
 from glob import glob
 
-iso = argv[1]
-folder_main = f"test_files/dark/iso{iso}/"
-folders_t = glob(folder_main+"/*")
-ts = np.zeros_like(folders_t, dtype=np.float32)
-Ms = ts.copy()
-Merrs = Ms.copy()
-Vs = ts.copy()
-Verrs = Vs.copy()
-mean_arrs = []
-var_arrs = []
+folder = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(folder)
+phone = io.read_json(root/"info.json")
+iso = io.split_iso(folder)
 
-for i,folder in enumerate(folders_t):
-    t = 1/float(folder.split("\\")[-1])
-    files = glob(folder+"/*.dng")
+times, means= io.load_means(folder, retrieve_value=io.split_time)
+print("Loaded means")
+colours     = io.load_colour(stacks)
+print(f"Loaded data: {len(times)} exposure times")
 
-    arrs, colors = io.load_dng_many(f"{folder}/*.dng", return_colors=True)
+mean_mean = means.mean(axis=(1,2))
+mean_std  = means.std (axis=(1,2))
+mean_err  = mean_std / np.sqrt(means[0].size - 1)
 
-    mean = arrs.mean(axis=0).astype(np.float32)  # mean per x,y
-    mean_arrs.append(mean)
-    var_arrs.append(arrs.var(axis=0))
+fit_ensemble, cov_ensemble = np.polyfit(times, mean_mean, 1, w=1/mean_err, cov=True)
 
-    means = arrs.mean(axis=(1,2))
-    mean_all = means.mean()
-    mean_err = means.std() / np.sqrt(len(means) - 1)
+time_max = 1/phone["software"]["1/t max"]
+time_range = np.linspace(0, 1.05*time_max, 10)
+time_range_fit = np.polyval(fit_ensemble, time_range)
+time_range_fit_err = np.sqrt(time_range**2 * cov_ensemble[0,0] + cov_ensemble[1,1])
+times_fit = np.polyval(fit_ensemble, times)
+R2 = Rsquare(mean_mean, times_fit)
+print(f"Fit ensemble: R^2 = {R2:.2f}")
 
-    new_arrs = arrs - mean
-
-    stds = new_arrs.std(axis=(1,2))
-    std_mean = stds.mean()
-    var = std_mean**2
-    var_err = stds.std() / np.sqrt(len(stds) - 1) * 2 * std_mean
-    ts[i], Vs[i], Verrs[i], Ms[i], Merrs[i] = t, var, var_err, mean_all, mean_err
-
-    print(f"{(i+1)/len(folders_t)*100:.0f}%", end=" ")
-
-mean_arrs = np.stack(mean_arrs)
-var_arrs  = np.stack(var_arrs)
-p, cov = np.polyfit(ts, Ms, 1, w=1/Merrs, cov=True)
-
-trange = np.linspace(0, 0.35, 100)
-trange_fit = np.polyval(p, trange)
-trange_fit_err = np.sqrt(trange**2 * cov[0,0] + cov[1,1])
-ts_fit = np.polyval(p, ts)
-R2 = Rsquare(Ms, ts_fit)
-
-plt.figure(figsize=(6,4), tight_layout=True)
-plt.errorbar(ts, Ms, yerr=Merrs, fmt="ko", label="Data")
-plt.plot(trange, trange_fit, c="k", label=f"Bias = {p[1]:.3f}\nDark = {p[0]:.3f} ADU/s")
-plt.fill_between(trange, trange_fit-trange_fit_err, trange_fit+trange_fit_err, color="0.5", zorder=0,
-                 label=f"$\sigma_B$ = {np.sqrt(cov[1,1]):.3f}\n$\sigma_D$ = {np.sqrt(cov[0,0]):.3f}")
+plt.figure(figsize=(3.3, 3), tight_layout=True)
+plt.errorbar(times, mean_mean, yerr=mean_err, fmt="ko", label="Data")
+plt.plot(time_range, time_range_fit, c="k", label=f"Bias = {fit_ensemble[1]:.3f}\nDark = {fit_ensemble[0]:.3f} ADU/s")
+plt.fill_between(time_range, time_range_fit-time_range_fit_err, time_range_fit+time_range_fit_err, color="0.5", zorder=0, label=f"$\sigma_B$ = {np.sqrt(cov_ensemble[1,1]):.3f}\n$\sigma_D$ = {np.sqrt(cov_ensemble[0,0]):.3f}")
 plt.xlabel("$t$ (s)")
 plt.ylabel("Mean (ADU)")
-plt.xlim(1e-3, np.max(ts)*1.05)
+plt.xlim(0, time_max)
 plt.ticklabel_format(useOffset=False)
-plt.title(f"10-image dark current ; $R^2 = {R2:.3f}$")
-plt.legend(loc="lower right")
-plt.savefig(f"results/dark/10image_{iso}.png")
+plt.title(f"Dark current ensemble\n$R^2 = {R2:.3f}$")
+#plt.legend(loc="lower right")
+plt.savefig(results/f"dark/ensemble_iso{iso}.pdf")
 plt.close()
+print("Saved ensemble scatter plot")
 
-m = mean_arrs.reshape((mean_arrs.shape[0], -1))  # as list
-P = np.polyfit(ts, m, 1)  # linear fit to every pixel
+mean_reshaped = means.reshape((means.shape[0], -1))  # as list
+fit_separate = np.polyfit(times, mean_reshaped, 1)  # linear fit to every pixel
+print("Fitted data")
+dark_separate, bias_separate = fit_separate
+dark_reshaped = dark_separate.reshape(means[0].shape)
 
-plt.figure(figsize=(10,6), tight_layout=True)
-plt.hist(P[0], bins=np.linspace(-75,100,250), color='k', density=True)
+dark_gauss = gaussMd(dark_reshaped, 10)
+plot.show_image(dark_gauss, colorbar_label="Dark current (ADU/s)", saveto=results/f"dark/map_iso{iso}.pdf")
+print("Saved Gauss map")
+
+dark_RGBG, _= raw.pull_apart(dark_reshaped, colours)
+plot.hist_bias_ron_kRGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (ADU/s)", saveto=results/f"dark/histogram_RGB_iso{iso}.pdf")
+del dark_RGBG
+print("Saved RGB histogram")
+
+plt.figure(figsize=(3.3, 3), tight_layout=True)
+plt.hist(dark_separate, bins=250, color='k', edgecolor='k')
 plt.yscale("log")
 plt.xlabel("Dark current (ADU/s)")
-plt.ylabel("Density")
-plt.title(f"Dark current at ISO {iso} ; mean {P[0].mean():.2f} +- {P[0].std():.2f} ADU/s")
-plt.savefig(f"results/dark/hist_{iso}.png")
+plt.ylabel("Frequency")
+plt.savefig(results/f"dark/histogram_iso{iso}.pdf")
 plt.close()
+print("Saved ADU histogram")
 
-LUT = np.load("results/gain_new/LUT.npy")
-gain = LUT[1, int(iso)]
-Pe = gain * P
+gain_table = io.read_gain_lookup_table(results)
+G, G_err = gain.get_gain(gain_table, iso)
 
-plt.figure(figsize=(10,6), tight_layout=True)
-plt.hist(Pe[0], bins=np.linspace(-35,50,250), color='k', density=True)
+dark_electrons = dark_separate * G
+plt.figure(figsize=(3.3, 3), tight_layout=True)
+plt.hist(dark_electrons, bins=250, color='k', edgecolor='k')
 plt.yscale("log")
-plt.xlabel("Dark current $e^-/s$")
-plt.ylabel("Density")
-plt.xlim(-35,50)
-plt.title(f"Dark current at ISO {iso} ; mean {Pe[0].mean():.2f} +- {Pe[0].std():.2f} $e^-/s$")
-plt.savefig(f"results/dark/hist_e_{iso}.png")
+plt.xlabel("Dark current (e$^-$/s)")
+plt.ylabel("Frequency")
+plt.savefig(results/f"dark/electrons_histogram_iso{iso}.pdf")
 plt.close()
+print("Saved e- histogram")
 
-asimage = Pe[0].reshape(mean_arrs.shape[1:])
-plot.bitmap(asimage, saveto=f"results/dark/map_{iso}.png")
+print(f"ISO {iso} ; mean {dark_separate.mean():.3f} ADU/s == {dark_electrons.mean():.3f} e-/s ; std {dark_separate.std():.3f} ADU/s == {dark_electrons.std():.3f} e-/s ; RMS {np.sqrt(np.mean(dark_separate**2)):.3f} ADU/s == {np.sqrt(np.mean(dark_electrons**2)):.3f} e-/s")
