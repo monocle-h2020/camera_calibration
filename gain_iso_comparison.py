@@ -38,8 +38,8 @@ for c, folder in zip(colours, folders):
 
 plt.xlabel("ISO speed rating")
 plt.ylabel("Gain (ADU/e$^-$)")
-plt.xlim(0, xmax)
-plt.ylim(ymin=0)
-plt.legend(loc="lower right")
+plt.xlim(0, 2000)
+plt.ylim(0, 8)
+plt.legend(loc="upper left")
 plt.savefig("results/gain_comparison.pdf")
 plt.close()
