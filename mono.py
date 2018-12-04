@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io, raw, plot
+from phonecal import io, raw
 from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)
@@ -28,10 +28,11 @@ SNR_stack = mean_stack / std_stack
 for j,c in enumerate("RGBG"):
     SNR_here = SNR_RGBG[j].ravel()
     mean_here = m_RGBG[j].ravel()
-    plt.hist(SNR_here, bins=np.arange(0,50,1), color=c)
+    plt.figure(figsize=(10,3))
+    plt.hist(SNR_here, bins=np.arange(0,100,1), color=c)
     plt.xlabel("SNR")
     plt.axvline(3, c='k', ls="--")
-    plt.xlim(0,50)
+    plt.xlim(0,100)
     plt.show()
     plt.close()
 
