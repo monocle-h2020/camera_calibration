@@ -10,7 +10,7 @@ phone = io.read_json(root/"info.json")
 
 colours     = io.load_colour(stacks)
 
-m = np.load(folder/f"{wvl}_mean.npy")
+m = np.load(folder/f"{wvl}_mean.npy") - phone["software"]["bias"]
 s = np.load(folder/f"{wvl}_stds.npy")
 
 s[s < 0.001] = -1  # prevent infinities
