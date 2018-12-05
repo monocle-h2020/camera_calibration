@@ -33,3 +33,18 @@ def load_spectrum(subfolder):
     return spectrum
 
 spectra = [load_spectrum(subfolder) for subfolder in folders]
+
+plt.figure(figsize=(10,5))
+for spec in spectra:
+    wvls, means, stds = spec
+    for j, c in enumerate("rgby"):
+        plt.plot(wvls, means[:,j], c=c)
+        plt.fill_between(wvls, means[:,j]-stds[:,j], means[:,j]+stds[:,j], color=c, alpha=0.3)
+    plt.xticks(np.arange(0,1000,50))
+    plt.xlim(wvl1,wvl2)
+    plt.xlabel("Wavelength (nm)")
+    plt.ylabel("Spectral response (ADU)")
+    plt.ylim(ymin=0)
+plt.show()
+plt.close()
+
