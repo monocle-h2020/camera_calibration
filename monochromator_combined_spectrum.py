@@ -29,17 +29,27 @@ def load_spectrum(subfolder):
         stds[j] = sub.std(axis=(1,2))
         print(wvls[j])
     print(subfolder)
-    spectrum = [wvls, means, stds]
+    spectrum = np.stack([wvls, *means.T, *stds.T]).T
     return spectrum
 
 spectra = [load_spectrum(subfolder) for subfolder in folders]
 
+all_wvl = np.unique(np.concatenate([spec[:,0] for spec in spectra]))
+all_means = np.tile(np.nan, (len(spectra), len(all_wvl), 4))
+all_stds = all_means.copy()
+
+for j, spec in enumerate(spectra):
+    min_wvl, max_wvl = spec[:,0].min(), spec[:,0].max()
+    min_in_all = np.where(all_wvl == min_wvl)[0][0]
+    max_in_all = np.where(all_wvl == max_wvl)[0][0]
+    all_means[j][min_in_all:max_in_all+1] = spec[:,1:5]
+    all_stds[j][min_in_all:max_in_all+1] = spec[:,5:]
+
 plt.figure(figsize=(10,5))
-for spec in spectra:
-    wvls, means, stds = spec
+for mean, std in zip(all_means, all_stds):
     for j, c in enumerate("rgby"):
-        plt.plot(wvls, means[:,j], c=c)
-        plt.fill_between(wvls, means[:,j]-stds[:,j], means[:,j]+stds[:,j], color=c, alpha=0.3)
+        plt.plot(all_wvl, mean[:,j], c=c)
+        plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
     plt.xticks(np.arange(0,1000,50))
     plt.xlim(wvl1,wvl2)
     plt.xlabel("Wavelength (nm)")
@@ -47,4 +57,3 @@ for spec in spectra:
     plt.ylim(ymin=0)
 plt.show()
 plt.close()
-
