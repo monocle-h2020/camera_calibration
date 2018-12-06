@@ -27,6 +27,8 @@ for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
     stds[j] = sub.std(axis=(1,2))
     print(wvls[j])
 
+means -= phone["software"]["bias"]
+
 SNR = means/stds
 
 plt.figure(figsize=(10,5))
