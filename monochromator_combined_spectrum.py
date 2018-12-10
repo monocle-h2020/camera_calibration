@@ -10,9 +10,10 @@ phone = io.read_json(root/"info.json")
 
 colours = io.load_colour(stacks)
 
-def load_cal_NERC(filename):
+def load_cal_NERC(filename, norm=True):
     data = np.genfromtxt(filename, skip_header=1, skip_footer=10)
-    data = data / data.max()  # normalise to 1
+    if norm:
+        data = data / data.max()  # normalise to 1
     with open(filename, "r") as file:
         info = file.readlines()[0].split(",")
     start, stop, step = [float(i) for i in info[3:6]]
@@ -79,6 +80,13 @@ plt.savefig(results/"spectral_response/raw_spectra.pdf")
 plt.show()
 plt.close()
 
+for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
+    calibration = np.array([cals[0]])
+
+#for j, c in enumerate("rgb"):
+#    plt.plot(spectra[0][:,0], spectra[0][:,j+1], c='k') ; plt.plot(spectra[0][:,0], spectra[0][:,j+1] / cal[1,::2], c=c)
+#    plt.show()
+
 plt.figure(figsize=(10,5))
 for mean, std, norm in zip(all_means, all_stds, norms):
     for j, c in enumerate("rgby"):
@@ -112,7 +120,3 @@ plt.title(f"{phone['device']['name']}: Combined spectral curves")
 plt.savefig(results/"spectral_response/combined_spectra.pdf")
 plt.show()
 plt.close()
-
-#for j, c in enumerate("rgb"):
-#    plt.plot(spectra[0][:,0], spectra[0][:,j+1], c='k') ; plt.plot(spectra[0][:,0], spectra[0][:,j+1] / cal[1,::2], c=c)
-#    plt.show()
