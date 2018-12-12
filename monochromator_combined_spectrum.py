@@ -77,15 +77,20 @@ plt.close()
 
 all_means_calibrated = all_means.copy()
 all_means_calibrated[:] = np.nan
+all_stds_calibrated = all_means_calibrated.copy()
 
 for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     calibrated = mean.copy() ; calibrated[:] = np.nan
     overlap, cal_indices, all_wvl_indices = np.intersect1d(cal[0], all_wvl, return_indices=True)
     calibrated[all_wvl_indices] = mean[all_wvl_indices] / cal[1, cal_indices, np.newaxis]
     all_means_calibrated[i] = calibrated
+    # multiply STDs by same factor, ignoring uncertainty in calibration
+    calibrated_std = std.copy() ; calibrated_std[:] = np.nan
+    calibrated_std[all_wvl_indices] = std[all_wvl_indices] / cal[1, cal_indices, np.newaxis]
+    all_stds_calibrated[i] = calibrated_std
 
 plt.figure(figsize=(10,5))
-for mean, std in zip(all_means_calibrated, all_stds):
+for mean, std in zip(all_means_calibrated, all_stds_calibrated):
     for j, c in enumerate("rgby"):
         plt.plot(all_wvl, mean[:,j], c=c)
         plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
@@ -100,6 +105,7 @@ plt.show()
 plt.close()
 
 all_means_normalised = all_means_calibrated.copy()
+all_stds_normalised = all_stds_calibrated.copy()
 for i, spec in enumerate(spectra):
     if i >= 1:
         ratios = all_means_calibrated[i] / all_means_calibrated[0]
@@ -107,9 +113,10 @@ for i, spec in enumerate(spectra):
         fits = np.polyfit(all_wvl[ind], ratios[ind], 1)
         fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T])
         all_means_normalised[i] = all_means_calibrated[i] / fit_norms.T
+        all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms.T
 
 plt.figure(figsize=(10,5))
-for mean, std, norm in zip(all_means_normalised, all_stds, norms):
+for mean, std in zip(all_means_normalised, all_stds_normalised):
     for j, c in enumerate("rgby"):
         plt.plot(all_wvl, mean[:,j], c=c)
         plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
@@ -123,13 +130,19 @@ plt.savefig(results/"spectral_response/normalised_spectra.pdf")
 plt.show()
 plt.close()
 
-flat_means = np.nanmean(all_means_normalised, axis=0)
-flat_stds  = np.nanstd(all_means_normalised, axis=0)
+SNR = all_means_normalised / all_stds_normalised
+mean_mask = np.ma.array(all_means_normalised, mask=np.isnan(all_means_normalised))
+stds_mask = np.ma.array(all_stds_normalised , mask=np.isnan(all_stds_normalised ))
+SNR_mask  = np.ma.array(SNR                 , mask=np.isnan(SNR                 ))
+
+weights = SNR_mask**2
+flat_means_mask = np.ma.average(mean_mask, axis=0, weights=weights)
+flat_errs_mask = np.sqrt(np.ma.sum((weights/weights.sum(axis=0) * stds_mask)**2, axis=0))
 
 plt.figure(figsize=(10,5))
 for j, c in enumerate("rgby"):
-    plt.plot(all_wvl, flat_means[:,j], c=c)
-    plt.fill_between(all_wvl, flat_means[:,j]-flat_stds[:,j], flat_means[:,j]+flat_stds[:,j], color=c, alpha=0.3)
+    plt.plot(all_wvl, flat_means_mask[:,j], c=c)
+    plt.fill_between(all_wvl, flat_means_mask[:,j]-flat_errs_mask[:,j], flat_means_mask[:,j]+flat_errs_mask[:,j], color=c, alpha=0.3)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(wvl1,wvl2)
 plt.xlabel("Wavelength (nm)")
