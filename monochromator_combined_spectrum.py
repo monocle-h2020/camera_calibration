@@ -75,17 +75,17 @@ plt.savefig(results/"spectral_response/raw_spectra.pdf")
 plt.show()
 plt.close()
 
-all_calibrated = all_means.copy()
-all_calibrated[:] = np.nan
+all_means_calibrated = all_means.copy()
+all_means_calibrated[:] = np.nan
 
 for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     calibrated = mean.copy() ; calibrated[:] = np.nan
     overlap, cal_indices, all_wvl_indices = np.intersect1d(cal[0], all_wvl, return_indices=True)
     calibrated[all_wvl_indices] = mean[all_wvl_indices] / cal[1, cal_indices, np.newaxis]
-    all_calibrated[i] = calibrated
+    all_means_calibrated[i] = calibrated
 
 plt.figure(figsize=(10,5))
-for mean, std in zip(all_calibrated, all_stds):
+for mean, std in zip(all_means_calibrated, all_stds):
     for j, c in enumerate("rgby"):
         plt.plot(all_wvl, mean[:,j], c=c)
         plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
@@ -99,14 +99,14 @@ plt.savefig(results/"spectral_response/calibrated_spectra.pdf")
 plt.show()
 plt.close()
 
+all_means_normalised = all_means_calibrated.copy()
 for i, spec in enumerate(spectra):
     if i >= 1:
-        max_this = np.nanargmax(all_calibrated[i], axis=0)
-        for j in range(4):
-            comparison = np.nanargmax(all_calibrated[:i, max_this[j], j])
-            norms[i,j] = all_calibrated[i,max_this[j], j] / all_calibrated[comparison, max_this[j], j] * norms[comparison,j]
-
-all_means_normalised = all_calibrated / norms[:, np.newaxis]
+        ratios = all_means_calibrated[i] / all_means_calibrated[0]
+        ind = ~np.isnan(ratios[:,0])
+        fits = np.polyfit(all_wvl[ind], ratios[ind], 1)
+        fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T])
+        all_means_normalised[i] = all_means_calibrated[i] / fit_norms.T
 
 plt.figure(figsize=(10,5))
 for mean, std, norm in zip(all_means_normalised, all_stds, norms):
