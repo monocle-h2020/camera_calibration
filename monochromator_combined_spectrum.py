@@ -118,6 +118,14 @@ for i, spec in enumerate(spectra):
         all_means_normalised[i] = all_means_calibrated[i] / fit_norms.T
         all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms.T
 
+#for i, spec in enumerate(spectra):
+#    if i >= 1:
+#        ind = ~np.isnan(all_means_calibrated[i] + all_means_calibrated[0])[:,0]
+#        fits = np.array([np.polyfit(all_means_calibrated[i][ind][:,j], all_means_calibrated[0][ind][:,j], 1) for j in range(4)])
+#        fit_norms = np.array([np.polyval(f, all_means_calibrated[i,:,j]) for j,f in enumerate(fits)]).T
+#        all_means_normalised[i] = fit_norms
+#        all_stds_normalised[i] = all_stds_calibrated[i]
+
 plt.figure(figsize=(10,5))
 for mean, std in zip(all_means_normalised, all_stds_normalised):
     for j, c in enumerate("rgby"):
