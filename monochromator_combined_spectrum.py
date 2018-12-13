@@ -113,10 +113,10 @@ for i, spec in enumerate(spectra):
     if i >= 1:
         ratios = all_means_calibrated[i] / all_means_calibrated[0]
         ind = ~np.isnan(ratios[:,0])
-        fits = np.polyfit(all_wvl[ind], ratios[ind], 1)
-        fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T])
-        all_means_normalised[i] = all_means_calibrated[i] / fit_norms.T
-        all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms.T
+        fits = np.polyfit(all_wvl[ind], ratios[ind], 2)
+        fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T]).T
+        all_means_normalised[i] = all_means_calibrated[i] / fit_norms
+        all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
 
 #for i, spec in enumerate(spectra):
 #    if i >= 1:
@@ -149,6 +149,7 @@ SNR_mask  = np.ma.array(SNR                 , mask=np.isnan(SNR                 
 weights = SNR_mask**2
 flat_means_mask = np.ma.average(mean_mask, axis=0, weights=weights)
 flat_errs_mask = np.sqrt(np.ma.sum((weights/weights.sum(axis=0) * stds_mask)**2, axis=0))
+SNR_final = flat_means_mask / flat_errs_mask
 
 plt.figure(figsize=(10,5))
 for j, c in enumerate("rgby"):
