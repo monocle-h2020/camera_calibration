@@ -23,10 +23,12 @@ def load_cal_NERC(filename, norm=True):
 
 folders = sorted(folder.glob("*"))
 
-def load_spectrum(subfolder):
+def load_spectrum(subfolder, blocksize=100):
     mean_files = sorted(subfolder.glob("*_mean.npy"))
     stds_files = sorted(subfolder.glob("*_stds.npy"))
     assert len(mean_files) == len(stds_files)
+
+    d = blocksize//2
 
     wvls  = np.zeros((len(mean_files)))
     means = np.zeros((len(mean_files), 4))
@@ -34,7 +36,8 @@ def load_spectrum(subfolder):
     for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
         m = np.load(mean_file)
         mean_RGBG, _ = raw.pull_apart(m, colours)
-        sub = mean_RGBG[:,756-50:756+51,1008-50:1008+51]
+        midx, midy = np.array(mean_RGBG.shape[1:])//2
+        sub = mean_RGBG[:,midx-d:midx+d+1,midy-d:midy+d+1]
         wvls[j] = mean_file.stem.split("_")[0]
         means[j] = sub.mean(axis=(1,2))
         stds[j] = sub.std(axis=(1,2))
