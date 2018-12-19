@@ -47,7 +47,7 @@ def weighted_mean(data, weights, **kwargs):
     mean = np.average(data, weights=weights, **kwargs)
     V1 = np.sum(weights)
     V2 = np.sum(weights**2)
-    s2 = np.sum(weights * (data - mean)**2) / (V1 - V2/V1)
+    s2 = np.sum(weights * (data - mean)**2, **kwargs) / (V1 - V2/V1)
     return mean, np.sqrt(s2)
 
 def Rsquare(y, y_fit, **kwargs):
