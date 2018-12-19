@@ -14,6 +14,22 @@ def gauss_filter(D, sigma=5, **kwargs):
     """
     return gauss1d(D.astype(float), sigma, axis=1, **kwargs)
 
+def gauss_nan(D, sigma=5, **kwargs):
+    """
+    Apply a multidimensional Gaussian kernel
+    https://stackoverflow.com/a/36307291/2229219
+    """
+    V = D.copy()
+    V[D!=D] = 0
+    VV = gaussMd(V, sigma=sigma, **kwargs)
+
+    W = 0 * D.copy() + 1
+    W[D!=D] = 0
+    WW = gaussMd(W, sigma=sigma, **kwargs)
+
+    Z=VV/WW
+    return Z
+
 def split_spectrum(data):
     thick = data[x_spectrum[0]:x_spectrum[1], y_thick[0]:y_thick[1]]
     thin  = data[x_spectrum[0]:x_spectrum[1], y_thin[0] :y_thin[1] ]
