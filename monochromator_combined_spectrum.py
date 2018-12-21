@@ -164,3 +164,7 @@ plt.title(f"{phone['device']['name']}: Combined spectral curves")
 plt.savefig(results/"spectral_response/combined_spectra.pdf")
 plt.show()
 plt.close()
+
+result = np.array(np.stack([all_wvl, *flat_means_mask.T, *flat_errs_mask.T]))
+np.save(results/"spectral_response/curve.npy", result)
+
