@@ -38,9 +38,11 @@ def load_spectrum(subfolder, blocksize=100):
         mean_RGBG, _ = raw.pull_apart(m, colours)
         midx, midy = np.array(mean_RGBG.shape[1:])//2
         sub = mean_RGBG[:,midx-d:midx+d+1,midy-d:midy+d+1]
-        wvls[j] = mean_file.stem.split("_")[0]
-        means[j] = sub.mean(axis=(1,2))
+        m = sub.mean(axis=(1,2))
+        m[m >= 0.95 * 2**phone["camera"]["bits"]] = np.nan
+        means[j] = m
         stds[j] = sub.std(axis=(1,2))
+        wvls[j] = mean_file.stem.split("_")[0]
         print(wvls[j])
     print(subfolder)
     means -= phone["software"]["bias"]
@@ -109,22 +111,31 @@ plt.close()
 
 all_means_normalised = all_means_calibrated.copy()
 all_stds_normalised = all_stds_calibrated.copy()
-for i, spec in enumerate(spectra):
-    if i >= 1:
-        ratios = all_means_calibrated[i] / all_means_calibrated[0]
-        ind = ~np.isnan(ratios[:,0])
-        fits = np.polyfit(all_wvl[ind], ratios[ind], 2)
-        fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T]).T
-        all_means_normalised[i] = all_means_calibrated[i] / fit_norms
-        all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
 
-#for i, spec in enumerate(spectra):
-#    if i >= 1:
-#        ind = ~np.isnan(all_means_calibrated[i] + all_means_calibrated[0])[:,0]
-#        fits = np.array([np.polyfit(all_means_calibrated[i][ind][:,j], all_means_calibrated[0][ind][:,j], 1) for j in range(4)])
-#        fit_norms = np.array([np.polyval(f, all_means_calibrated[i,:,j]) for j,f in enumerate(fits)]).T
-#        all_means_normalised[i] = fit_norms
-#        all_stds_normalised[i] = all_stds_calibrated[i]
+def overlap(spectrum_a, spectrum_b):
+    summed = spectrum_a + spectrum_b
+    length = len(np.where(~np.isnan(summed))[0])
+    return length
+
+all_overlaps = np.array([[overlap(mean1, mean2) for mean1 in all_means_calibrated] for mean2 in all_means_calibrated])
+baseline = np.diag(all_overlaps).argmax()
+normalise_order = np.argsort(all_overlaps[baseline])[-2::-1]
+
+for i in normalise_order:
+    if all_overlaps[i,baseline]:
+        comparison = baseline
+    else:
+        # NB should add a check to make sure the `comparison` is one that has previously been normalised
+        # Alternately do two iterations?
+        comparison = np.argsort(all_overlaps[i])[-2]
+    ratios = all_means_calibrated[i] / all_means_normalised[comparison]
+    print(f"Normalising spectrum {i} to spectrum {comparison}")
+    ind = ~np.isnan(ratios[:,0])
+    fits = np.polyfit(all_wvl[ind], ratios[ind], 2)
+    fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T]).T
+    all_means_normalised[i] = all_means_calibrated[i] / fit_norms
+    all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
+
 
 plt.figure(figsize=(10,5))
 for mean, std in zip(all_means_normalised, all_stds_normalised):
