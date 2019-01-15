@@ -61,6 +61,15 @@ def split_pol_angle(path):
     val = float(split_name.split("_")[0])
     return val
 
+def split_exposure_time(path):
+    without_letters = path.stem.strip("t_meansd")  # strip underscores, leading t, trailing "mean"/"stds"
+    if "_" in without_letters:
+        numerator, denominator = without_letters.split("_")
+        time = float(numerator)/float(denominator)
+    else:
+        time = float(without_letters)
+    return time
+
 def split_iso(path):
     split_name = split_path(path, "iso")
     val = int(split_name.split("_")[0])
