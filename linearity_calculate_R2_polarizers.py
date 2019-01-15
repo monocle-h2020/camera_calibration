@@ -9,7 +9,7 @@ root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
 
 angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
-print("Read DNG")
+print("Read means")
 colours        = io.load_colour(stacks)
 
 offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat")
