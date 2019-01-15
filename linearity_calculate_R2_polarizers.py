@@ -1,9 +1,8 @@
 import numpy as np
 from sys import argv
 from phonecal import io
-from phonecal.raw import pull_apart
-from phonecal.general import Rsquare
 from phonecal.gain import malus, malus_error
+from phonecal.linearity import calculate_linear_R2_values
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
@@ -18,28 +17,11 @@ print("Read angles")
 intensities = malus(angles, offset_angle)
 intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
-means = np.moveaxis(means, 0, 2)
-print("Reshaped arrays")
-
-means_RGBG, _ = pull_apart(means , colours)
-print("Reshaped to RGBG")
-
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
-def linear_R2(x, y, saturate=4000):
-    ind = np.where(y < saturate)
-    p = np.polyfit(x[ind], y[ind], 1)
-    pv = np.polyval(p, x[ind])
-    R2 = Rsquare(y[ind], pv)
-    return R2
-
 print("Doing R^2 comparison...", end=" ")
 
-M_reshaped = means_RGBG.reshape(4, -1, means_RGBG.shape[-1])
-R2 = np.zeros((4, len(M_reshaped[0])))
-for j, M in enumerate(M_reshaped):
-    R2[j] = [linear_R2(intensities, row, saturate=saturation) for row in M]
-    print(j, end=" ")
+R2, saturated = calculate_linear_R2_values(intensities, means, saturate=saturation)
 
 np.save(products/"linearity_R2.npy", R2)
