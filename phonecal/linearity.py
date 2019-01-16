@@ -22,6 +22,6 @@ def calculate_linear_R2_values(x, y, **kwargs):
                 R2[i,j] = np.nan
                 saturated.append((i,j))
         if i%5 == 0:
-            print(f"{i/y.shape[1]*100:.1f}%")
+            print(f"{i/y.shape[1]*100:.1f}%", end=" ", flush=True)
 
     return R2, saturated
