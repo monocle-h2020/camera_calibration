@@ -1,11 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import plot, io
-from phonecal.raw import pull_apart
-from phonecal.general import Rsquare, bin_centers
-from phonecal.gain import malus, malus_error
-from scipy.stats import binned_statistic
+from phonecal import io
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
