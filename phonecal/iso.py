@@ -45,3 +45,9 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     print(f"(R^2 = {R2:.6f})")
 
     return model, R2
+
+
+def normalise(data, iso, lookup_table):
+    normalisation_factor = lookup_table[1][iso]
+    new_data = data * normalisation_factor
+    return new_data
