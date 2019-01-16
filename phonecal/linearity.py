@@ -3,8 +3,10 @@ from .general import Rsquare
 
 polariser_angle = 74
 
+
 def malus(angle, offset=polariser_angle):
     return (np.cos(np.radians(angle-offset)))**2
+
 
 def malus_error(angle0, angle1=polariser_angle, I0=1., sigma_angle0=2., sigma_angle1=0.1, sigma_I0=0.01):
     alpha = angle0 - angle1
@@ -14,6 +16,7 @@ def malus_error(angle0, angle1=polariser_angle, I0=1., sigma_angle0=2., sigma_an
     total = np.sqrt(s_I2 + s_a2)
 
     return total
+
 
 def linear_R2(x, y, saturate=4000):
     ind = np.where(y < saturate)
