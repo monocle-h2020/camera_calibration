@@ -126,3 +126,8 @@ def read_json(path):
 def read_iso_lookup_table(products):
     table = np.load(products/"iso_lookup_table.npy")
     return table
+
+def read_gain_table(path):
+    table = np.load(path)
+    iso = split_iso(path)
+    return iso, table
