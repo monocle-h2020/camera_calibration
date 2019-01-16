@@ -11,7 +11,7 @@ phone = io.read_json(root/"info.json")
 min_iso = phone["software"]["ISO min"]
 max_iso = phone["software"]["ISO max"]
 
-products_iso, results_iso = products/"iso", results/"iso"
+results_iso = results/"iso"
 print("Loaded information")
 
 colours      = io.load_colour(stacks  )
@@ -53,5 +53,5 @@ plt.close()
 lookup_table = np.stack([iso_range, model(iso_range)])
 data         = np.stack([isos, ratios_mean, ratios_errs])
 
-np.save(products_iso/"lookup_table.npy", lookup_table)
-np.save(products_iso/"data.npy"        , data)
+np.save(products/"iso_lookup_table.npy", lookup_table)
+np.save(products/"iso_data.npy"        , data)

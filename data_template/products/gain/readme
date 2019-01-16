@@ -1,7 +1,0 @@
-This folder will contain gain-calibration results at different ISO values. These are in the following format:
-
-Title: iso<iso>.dat
-Contents:
- - Gain value in e/ADU
- - Error on gain value in e/ADU
- 
