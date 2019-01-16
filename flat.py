@@ -2,7 +2,7 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from phonecal import raw, io, plot
-from phonecal.general import Rsquare, gaussMd, gauss_nan
+from phonecal.general import gaussMd
 
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
@@ -19,14 +19,20 @@ mean = np.load(meanfile)
 stds = np.load(stdsfile)
 colours = io.load_colour(stacks)
 
-mRGBG,_ = raw.pull_apart(mean, colours)
-sRGBG,_ = raw.pull_apart(stds, colours)
+mean -= bias
+
+mRGBG, offsets = raw.pull_apart(mean, colours)
+sRGBG, offsets = raw.pull_apart(stds, colours)
 
 # rescale to normalised values
-mRGBG -= bias
 normalisation = mRGBG.max(axis=(1,2))[:,np.newaxis,np.newaxis]
 mRGBG = mRGBG / normalisation
 sRGBG = sRGBG / normalisation
+
+flat_field = raw.put_together(*mRGBG, offsets)
+flat_field_gauss = gaussMd(flat_field, 10)
+np.save(products/"flatfield.npy", flat_field_gauss)
+print("Saved array")
 
 vmin, vmax = np.nanmin(mRGBG), 1
 plot.show_RGBG(mRGBG, colorbar_label=25*" "+"Relative transmission", vmin=vmin, vmax=1, saveto=results/f"flat/iso{iso}.pdf")
@@ -52,6 +58,7 @@ plt.fill_between(y, mRGBG[0,mid1]-sRGBG[0,mid1], mRGBG[0,mid1]+sRGBG[0,mid1], co
 plt.xlabel("Y position")
 plt.xlim(0, mean.shape[1])
 plt.ylim(0, 1.1)
+plt.grid()
 plt.show()
 plt.close()
 
@@ -60,6 +67,7 @@ plt.fill_between(x, mRGBG[0,:,mid2]-sRGBG[0,:,mid2], mRGBG[0,:,mid2]+sRGBG[0,:,m
 plt.xlabel("X position")
 plt.xlim(0, mean.shape[0])
 plt.ylim(0, 1.1)
+plt.grid()
 plt.show()
 plt.close()
 
