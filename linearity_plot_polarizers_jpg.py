@@ -1,8 +1,6 @@
 import numpy as np
 from sys import argv
-from matplotlib import pyplot as plt
-from phonecal import io, plot
-from phonecal.linearity import malus, malus_error
+from phonecal import io, plot, linearity as lin
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
@@ -25,8 +23,8 @@ jmeans = jmeans.reshape((len(jmeans), -1, 3))
 
 offset_angle = io.load_angle(stacks)
 print("Read angles")
-intensities = malus(angles, offset_angle)
-intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
+intensities = lin.malus(angles, offset_angle)
+intensities_errors = lin.malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
 max_value = 2**phone["camera"]["bits"]
 

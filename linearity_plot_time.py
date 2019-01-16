@@ -1,7 +1,6 @@
 import numpy as np
 from sys import argv
-from matplotlib import pyplot as plt
-from phonecal import io, plot
+from phonecal import io, plot, linearity as lin
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
