@@ -23,7 +23,7 @@ print("Loaded DNG data")
 angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle, selection=center)
 jmeans = jmeans.reshape((len(jmeans), -1, 3))
 
-offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat")
+offset_angle = io.load_angle(stacks)
 print("Read angles")
 intensities = malus(angles, offset_angle)
 intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)

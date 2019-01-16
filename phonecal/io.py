@@ -103,6 +103,10 @@ def load_colour(stacks):
     colours = np.load(stacks/"colour.npy")
     return colours
 
+def load_angle(stacks):
+    offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
+    return offset_angle
+
 def path_from_input(argv):
     if len(argv) == 2:
         return Path(argv[1])
