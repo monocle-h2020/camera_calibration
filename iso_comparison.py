@@ -4,13 +4,13 @@ from matplotlib import pyplot as plt
 from phonecal import io, gain
 
 folders = io.path_from_input(argv)
-colours = ["black", "red", "xkcd:purple", "xkcd:olive", "xkcd:lilac", "xkcd:custard", "xkcd:peach"]
+plot_colours = ["black", "red", "xkcd:purple", "xkcd:olive", "xkcd:lilac", "xkcd:custard", "xkcd:peach"]
 
 plt.figure(figsize=(6, 4), tight_layout=True)
 
 xmax = 0
 
-for c, folder in zip(colours, folders):
+for c, folder in zip(plot_colours, folders):
     root, images, stacks, products, results = io.folders(folder)
     phone = io.read_json(root/"info.json")
 
