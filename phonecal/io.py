@@ -45,9 +45,17 @@ def load_exif(filename):
 def absolute_filename(file):
     return file.absolute
 
-def load_npy(folder, pattern, retrieve_value=absolute_filename, **kwargs):
+def expected_array_size(folder, pattern):
     files = sorted(folder.glob(pattern))
-    stacked = np.stack([np.load(f) for f in files])
+    array = np.load(files[0])
+    return np.array(array.shape)
+
+def array_size_dng(folder):
+    return expected_array_size(folder, pattern="*_mean.npy")
+
+def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
+    files = sorted(folder.glob(pattern))
+    stacked = np.stack([np.load(f)[selection] for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 

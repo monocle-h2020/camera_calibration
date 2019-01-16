@@ -2,8 +2,6 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from phonecal import io
-from phonecal.raw import pull_apart
-from phonecal.gain import malus, malus_error
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)

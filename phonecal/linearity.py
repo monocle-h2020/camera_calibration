@@ -1,5 +1,6 @@
 import numpy as np
 from .general import Rsquare
+from .gain import malus, malus_error
 
 
 def linear_R2(x, y, saturate=4000):
