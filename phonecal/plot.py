@@ -221,6 +221,30 @@ def hist_bias_ron_kRGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)",
     axs[2].set_ylabel("Probability density")
     _saveshow(saveto)
 
+def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
+    for j in range(4):
+        colour_index = colours_here[j]
+        colour = "rgbg"[colour_index]
+        if colour_index < 3:
+            label = colour
+        else:
+            label = "g2"
+        try:
+            saveto = savefolder/f"linearity_DNG_singlepixel_{label}.pdf"
+        except:
+            saveto = None
+
+        mean_dng =  means[:, j]
+
+        fig, ax2 = plt.subplots(1, 1, figsize=(3.3,2), tight_layout=True)
+        ax2.errorbar(intensities, mean_dng, xerr=intensities_errors, fmt="ko", ms=3)
+        ax2.set_ylim(0, max_value*1.02)
+        ax2.locator_params(axis="y", nbins=5)
+        ax2.set_ylabel("RAW value")
+        ax2.grid(True)
+        _saveshow(saveto)
+        print(f"Plotted pixel {j} ({label})")
+
 def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
     for j in range(4):
         colour_index = colours_here[j]
@@ -249,6 +273,8 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         ax2.errorbar(intensities, mean_dng, xerr=intensities_errors, fmt="ko", ms=3)
         ax2.set_ylim(0, max_value*1.02)
         ax2.locator_params(axis="y", nbins=5)
+        ax.grid(True, axis="x")
+        ax2.grid(True, axis="y")
         jpeglabel = ax.set_ylabel("JPEG value")
         jpeglabel.set_color(colour)
         ax.tick_params(axis="y", colors=colour)
