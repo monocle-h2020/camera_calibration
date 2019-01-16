@@ -88,5 +88,8 @@ plt.savefig(results_iso/"normalization.pdf")
 plt.show()
 plt.close()
 
-np.save(products_iso/"lookup_table.npy", np.stack([iso_range, model(iso_range)   ]))
-np.save(products_iso/"data.npy"        , np.stack([isos, ratios_mean, ratios_errs]))
+lookup_table = np.stack([iso_range, model(iso_range)])
+data         = np.stack([isos, ratios_mean, ratios_errs])
+
+np.save(products_iso/"lookup_table.npy", lookup_table)
+np.save(products_iso/"data.npy"        , data)
