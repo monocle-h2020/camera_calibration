@@ -2,71 +2,46 @@ import numpy as np
 from scipy.optimize import curve_fit
 from phonecal.general import Rsquare
 
-polariser_angle = 0
 
-def malus(angle, offset=polariser_angle):
-    return (np.cos(np.radians(angle-offset)))**2
+def generate_linear_model(slope, offset):
+    model = lambda isos: np.polyval([slope, offset], isos)
+    return model
 
-def malus_error(angle0, angle1=polariser_angle, I0=1., sigma_angle0=2., sigma_angle1=0.1, sigma_I0=0.01):
-    alpha = angle0 - angle1
-    A = I0 * np.pi/180 * np.sin(np.pi/90 * (alpha))
-    s_a2 = A**2 * (sigma_angle0**2 + sigma_angle1**2)
-    s_I2 = (malus(angle0, offset=angle1) * sigma_I0)**2
-    total = np.sqrt(s_I2 + s_a2)
 
-    return total
+def knee_model(isos, slope, offset, knee):
+    linear_model = generate_linear_model(slope, offset)
+    values = np.clip(linear_model(isos), a_min=None, a_max=linear_model(knee))
+    return values
 
-def model_knee(iso, slope, offset, knee):
-    results = np.tile(knee * slope + offset, len(iso))
-    results[iso < knee] = iso[iso < knee] * slope + offset
-    return results
 
-def model_knee_error(iso, popt, pcov):
-    results = np.tile(popt[2]**2 * pcov[0,0] + popt[0]**2 * pcov[2,2] + pcov[1,1], len(iso))
-    results[iso < popt[2]] = iso[iso < popt[2]]**2 * pcov[0,0] + pcov[1,1]
-    results = np.sqrt(results)
-    return results
+def generate_knee_model(slope, offset, knee):
+    model = lambda isos: knee_model(isos, slope, offset, knee)
+    return model
 
-def model_knee_label(params, covariances):
-    label_model = f"slope: {params[0]:.4f}\noffset: {params[1]:.4f}\nknee: {params[2]:.1f}"
-    label_error = f"$\sigma$ slope: {np.sqrt(covariances[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(covariances[1,1]):.4f}\n$\sigma$ knee: {np.sqrt(covariances[2,2]):.1f}"
-    return label_model, label_error
 
-def model_linear(x, *params):
-    return np.polyval(params, x)
+def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, max_iso=50000):
+    parameters_linear, covariance_linear = np.polyfit(isos, ratios, 1, cov=True)
+    model_linear = generate_linear_model(*parameters_linear)
+    R2_linear = Rsquare(ratios, model_linear(isos))
 
-def model_linear_error(x, params, covariances):
-    return np.sqrt(covariances[0,0]**2 * x**2 + covariances[1,1]**2)
+    parameters_knee, covariance_knee = curve_fit(knee_model, isos, ratios, p0=[1/min_iso, 0, 200], bounds=([0, -np.inf, 1.05*min_iso], [1, np.inf, 0.95*max_iso]))
+    model_knee = generate_knee_model(*parameters_knee)
+    R2_knee   = Rsquare(ratios, model_knee(isos))
 
-def model_linear_label(params, covariances):
-    label_model = f"slope: {params[0]:.4f}\noffset: {params[1]:.4f}"
-    label_error = f"$\sigma$ slope: {np.sqrt(covariances[0,0]):.4f}\n$\sigma$ offset: {np.sqrt(covariances[1,1]):.4f}"
-    return label_model, label_error
+    if R2_linear < 0.9 and R2_knee < 0.9:
+        raise ValueError("Could not find an accurate (R^2 >= 0.9) fit to the iso-normalization relation")
+    elif R2_linear >= 0.9:
+        model = model_linear
+        R2 = R2_linear
+        print(f"Found linear model [y = ax + b] with a = {parameters_linear[0]:.3f} & b = {parameters_linear[1]:.3f}", end=" ")
+    elif R2_knee >= 0.9:
+        model = model_knee
+        R2 = R2_knee
+        print(f"Found knee model with with a = {parameters_knee[0]:.3f} & b = {parameters_knee[1]:.3f} & k = {parameters_knee[2]:.1f}", end=" ")
+    # space for extra models here
+    else:
+        raise ValueError("This should never occur -- are all comparisons the right way around?")
 
-def fit_iso_relation(isos, inverse_gains, inverse_gain_errors=None):
-    try:
-        weights = 1/inverse_gain_errors
-    except TypeError:
-        weights = None
+    print(f"(R^2 = {R2:.6f})")
 
-    try:
-        params_linear, covariance_linear = np.polyfit(isos, inverse_gains, 1, w=weights, cov=True)
-    except ValueError:
-        params_linear = np.polyfit(isos, inverse_gains, 1, w=weights, cov=False)
-        covariance_linear = np.array([[np.nan, np.nan], [np.nan, np.nan]])
-    params_knee, covariance_knee = curve_fit(model_knee, isos, inverse_gains, p0=[0.1, 0.1, 200], sigma=inverse_gain_errors)
-
-    models     = [model_linear      , model_knee      ]
-    model_errs = [model_linear_error, model_knee_error]
-    model_label= [model_linear_label, model_knee_label]
-    parameters = [params_linear     , params_knee     ]
-    covariances= [covariance_linear , covariance_knee ]
-
-    R2s = np.array([Rsquare(inverse_gains, model(isos, *params)) for model, params in zip(models, parameters)])
-    best = R2s.argmax()
-
-    return models[best], model_errs[best], model_label[best], parameters[best], covariances[best], R2s[best]
-
-def get_gain(table, iso):
-    ind = np.where(table[0] == iso)[0]
-    return table[1, ind][0], table[2, ind][0]
+    return model, R2
