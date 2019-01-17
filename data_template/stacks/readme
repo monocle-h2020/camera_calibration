@@ -4,7 +4,9 @@ This folder will contain stacked images (NPY) directly from the camera. These wi
  - dark: subfolders containing dark images, split according to ISO
  - gain: subfolders containing files, split according to ISO
  - iso: files, named according to ISO
+ - flat: flat fields, split according to ISO
  - linearity: flat fields, split according to lighting conditions (angle/exposure time)
+ - monochromator: images from a monochromator, split according to grating/filter combination, and then according to wavelength
  
 Furthermore, this folder will contain one file:
  - colour.npy: Bayer colour per pixel of this camera (applies to all contained data sets)
