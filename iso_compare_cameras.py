@@ -18,8 +18,8 @@ for c, folder in zip(plot_colours, folders):
 
     products_iso = products/"iso"
 
-    lookup_table = np.load(products_iso/"lookup_table.npy")
-    data         = np.load(products_iso/"data.npy"        )
+    lookup_table = np.load(products/"iso_lookup_table.npy")
+    data         = np.load(products/"iso_data.npy"        )
 
     plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=phone["device"]["name"])
     plt.plot(*lookup_table, c=c)
