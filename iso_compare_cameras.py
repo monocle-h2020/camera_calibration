@@ -6,7 +6,7 @@ from phonecal import io
 folders = io.path_from_input(argv)
 plot_colours = ["black", "red", "xkcd:purple", "xkcd:olive", "xkcd:lilac", "xkcd:custard", "xkcd:peach"]
 
-plt.figure(figsize=(6, 4), tight_layout=True)
+plt.figure(figsize=(4, 3), tight_layout=True)
 
 xmax = 0
 
