@@ -61,6 +61,13 @@ def put_together(R, G, B, G2, offsets):
     return result
 
 
+def put_together_from_colours(RGBG, colours):
+    original = np.zeros((2*RGBG.shape[1], 2*RGBG.shape[2]))
+    for j in range(4):
+        original[np.where(colours == j)] = RGBG[j].ravel()
+    return original
+
+
 def split_RGBG(RGBG):
     R, G, B, G2 = RGBG
     return R, G, B, G2
