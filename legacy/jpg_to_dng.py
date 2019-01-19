@@ -14,7 +14,7 @@ angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
 angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
 colours        = io.load_colour(stacks)
 
-offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat")
+offset_angle = io.load_angle(stacks)
 intensities = malus(angles, offset_angle)
 intensities_errors = malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 

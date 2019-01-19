@@ -1,11 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import plot, io
-from phonecal.raw import pull_apart
-from phonecal.general import Rsquare, bin_centers
-from phonecal.gain import malus, malus_error
-from scipy.stats import binned_statistic
+from phonecal import io
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
@@ -33,7 +29,7 @@ for c, ax, R2_C in zip("RGB", axs, R2_RGB):
 axs[1].set_ylabel("Frequency")
 axs[2].set_xlabel("$R^2$")
 axs[2].set_xlim(percentile, 1)
-fig.savefig(results/"linearity/R2_RGB.png")
+fig.savefig(results/"linearity/R2_RGB.pdf")
 plt.close()
 print("Made RGB histogram")
 
@@ -42,7 +38,7 @@ plt.hist(R2R, bins=bins, color='k')
 plt.xlabel("$R^2$")
 plt.ylabel("Frequency")
 plt.xlim(percentile, 1)
-plt.savefig(results/"linearity/R2_linear.png")
+plt.savefig(results/"linearity/R2_linear.pdf")
 plt.close()
 print("Made linear histogram")
 
@@ -52,7 +48,7 @@ plt.xlabel("$R^2$")
 plt.ylabel("Cumulative frequency")
 plt.xlim(percentile, 1)
 plt.ylim(0, 1)
-plt.savefig(results/"linearity/R2_cumulative.png")
+plt.savefig(results/"linearity/R2_cumulative.pdf")
 plt.close()
 print("Made cumulative histogram")
 
@@ -63,6 +59,6 @@ plt.ylabel("Frequency")
 plt.xlim(percentile, 1)
 plt.yscale("log")
 plt.ylim(ymin=0.9)
-plt.savefig(results/"linearity/R2_log.png")
+plt.savefig(results/"linearity/R2_log.pdf")
 plt.close()
 print("Made logarithmic histogram")

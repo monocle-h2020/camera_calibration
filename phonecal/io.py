@@ -45,9 +45,17 @@ def load_exif(filename):
 def absolute_filename(file):
     return file.absolute()
 
-def load_npy(folder, pattern, retrieve_value=absolute_filename, **kwargs):
+def expected_array_size(folder, pattern):
     files = sorted(folder.glob(pattern))
-    stacked = np.stack([np.load(f) for f in files])
+    array = np.load(files[0])
+    return np.array(array.shape)
+
+def array_size_dng(folder):
+    return expected_array_size(folder, pattern="*_mean.npy")
+
+def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
+    files = sorted(folder.glob(pattern))
+    stacked = np.stack([np.load(f)[selection] for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 
@@ -60,6 +68,15 @@ def split_pol_angle(path):
     split_name = split_path(path, "pol")
     val = float(split_name.split("_")[0])
     return val
+
+def split_exposure_time(path):
+    without_letters = path.stem.strip("t_meansd")  # strip underscores, leading t, trailing "mean"/"stds"
+    if "_" in without_letters:
+        numerator, denominator = without_letters.split("_")
+        time = float(numerator)/float(denominator)
+    else:
+        time = float(without_letters)
+    return time
 
 def split_iso(path):
     split_name = split_path(path, "iso")
@@ -90,6 +107,10 @@ def load_jstds(folder, **kwargs):
 def load_colour(stacks):
     colours = np.load(stacks/"colour.npy")
     return colours
+
+def load_angle(stacks):
+    offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
+    return offset_angle
 
 def path_from_input(argv):
     if len(argv) == 2:

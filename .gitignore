@@ -3,8 +3,7 @@
 *.dat
 *.npy
 *.txt
-spectra/*
-reference_spectra/*
+*.pdf
 data/*
 results/*
 
