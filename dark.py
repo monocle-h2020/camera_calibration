@@ -81,4 +81,4 @@ plt.show()
 plt.close()
 print("Saved normalised histogram")
 
-#print(f"ISO {iso} ; mean {dark_separate.mean():.3f} ADU/s == {dark_electrons.mean():.3f} e-/s ; std {dark_separate.std():.3f} ADU/s == {dark_electrons.std():.3f} e-/s ; RMS {np.sqrt(np.mean(dark_separate**2)):.3f} ADU/s == {np.sqrt(np.mean(dark_electrons**2)):.3f} e-/s")
+print(f"ISO {ISO} ; mean {dark_separate.mean():.3f} ADU/s == {dark_normalised.mean():.3f} norm. ADU/s ; std {dark_separate.std():.3f} ADU/s == {dark_normalised.std():.3f} norm. ADU/s ; RMS {np.sqrt(np.mean(dark_separate**2)):.3f} ADU/s == {np.sqrt(np.mean(dark_normalised**2)):.3f} norm. ADU/s")
