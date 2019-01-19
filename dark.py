@@ -9,10 +9,12 @@ root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
 ISO = io.split_iso(folder)
 
-times, means= io.load_means(folder, retrieve_value=io.split_time)
+times, means= io.load_means(folder, retrieve_value=io.split_exposure_time)
 print("Loaded means")
 colours     = io.load_colour(stacks)
 print(f"Loaded data: {len(times)} exposure times")
+
+raise Exception
 
 mean_mean = means.mean(axis=(1,2))
 mean_std  = means.std (axis=(1,2))

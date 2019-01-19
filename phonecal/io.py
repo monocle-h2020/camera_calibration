@@ -83,11 +83,6 @@ def split_iso(path):
     val = int(split_name.split("_")[0])
     return val
 
-def split_time(path):
-    split_name = path.stem
-    val = 1. / float(split_name.split("_")[0])
-    return val
-
 def load_means(folder, **kwargs):
     values, means = load_npy(folder, "*_mean.npy", **kwargs)
     return values, means
