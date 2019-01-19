@@ -1,14 +1,13 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, plot, io, gain
+from phonecal import raw, plot, io, iso
 from phonecal.general import Rsquare, gaussMd
-from glob import glob
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
-iso = io.split_iso(folder)
+ISO = io.split_iso(folder)
 
 times, means= io.load_means(folder, retrieve_value=io.split_time)
 print("Loaded means")
@@ -66,6 +65,8 @@ plt.ylabel("Frequency")
 plt.savefig(results/f"dark/histogram_iso{iso}.pdf")
 plt.close()
 print("Saved ADU histogram")
+
+raise Exception
 
 gain_table = io.read_gain_lookup_table(results)
 G, G_err = gain.get_gain(gain_table, iso)
