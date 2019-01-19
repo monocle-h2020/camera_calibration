@@ -42,15 +42,13 @@ plt.show()
 plt.close()
 print("Saved ensemble scatter plot")
 
-raise Exception
-
 mean_reshaped = means.reshape((means.shape[0], -1))  # as list
 fit_separate = np.polyfit(times, mean_reshaped, 1)  # linear fit to every pixel
 print("Fitted data")
 dark_separate, bias_separate = fit_separate
 dark_reshaped = dark_separate.reshape(means[0].shape)
 
-dark_gauss = gaussMd(dark_reshaped, 10)
+dark_gauss = gaussMd(dark_reshaped, 25)
 plot.show_image(dark_gauss, colorbar_label="Dark current (ADU/s)", saveto=results/f"dark/map_iso{ISO}.pdf")
 print("Saved Gauss map")
 
@@ -65,22 +63,22 @@ plt.yscale("log")
 plt.xlabel("Dark current (ADU/s)")
 plt.ylabel("Frequency")
 plt.savefig(results/f"dark/histogram_iso{ISO}.pdf")
+plt.show()
 plt.close()
 print("Saved ADU histogram")
 
-raise Exception
+iso_lookup_table = io.read_iso_lookup_table(products)
+dark_normalised = iso.normalise(dark_separate, ISO, iso_lookup_table)
 
-gain_table = io.read_gain_lookup_table(results)
-G, G_err = gain.get_gain(gain_table, iso)
-
-dark_electrons = dark_separate * G
 plt.figure(figsize=(3.3, 3), tight_layout=True)
-plt.hist(dark_electrons, bins=250, color='k', edgecolor='k')
+plt.hist(dark_normalised, bins=np.linspace(-20,20,250), color='k', edgecolor='k')
 plt.yscale("log")
-plt.xlabel("Dark current (e$^-$/s)")
+plt.xlabel("Dark current (norm. ADU)")
 plt.ylabel("Frequency")
-plt.savefig(results/f"dark/electrons_histogram_iso{iso}.pdf")
+plt.xlim(-20, 20)
+plt.savefig(results/f"dark/normalised_histogram_iso{ISO}.pdf")
+plt.show()
 plt.close()
-print("Saved e- histogram")
+print("Saved normalised histogram")
 
-print(f"ISO {iso} ; mean {dark_separate.mean():.3f} ADU/s == {dark_electrons.mean():.3f} e-/s ; std {dark_separate.std():.3f} ADU/s == {dark_electrons.std():.3f} e-/s ; RMS {np.sqrt(np.mean(dark_separate**2)):.3f} ADU/s == {np.sqrt(np.mean(dark_electrons**2)):.3f} e-/s")
+#print(f"ISO {iso} ; mean {dark_separate.mean():.3f} ADU/s == {dark_electrons.mean():.3f} e-/s ; std {dark_separate.std():.3f} ADU/s == {dark_electrons.std():.3f} e-/s ; RMS {np.sqrt(np.mean(dark_separate**2)):.3f} ADU/s == {np.sqrt(np.mean(dark_electrons**2)):.3f} e-/s")
