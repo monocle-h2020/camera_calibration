@@ -24,13 +24,20 @@ def pull_apart(raw_img, color_pattern, color_desc=b"RGBG"):
     return RGBG, offsets
 
 
-def put_together(R, G, B, G2, offsets):
+def put_together_from_offsets(R, G, B, G2, offsets):
     result = np.zeros((R.shape[0]*2, R.shape[1]*2))
     for colour, offset in zip([R,G,B,G2], offsets):
         x, y = offset
         result[x::2, y::2] = colour
     result = result.astype(R.dtype)
     return result
+
+
+def put_together_from_colours(RGBG, colours):
+    original = np.zeros((2*RGBG.shape[1], 2*RGBG.shape[2]))
+    for j in range(4):
+        original[np.where(colours == j)] = RGBG[j].ravel()
+    return original
 
 
 def split_RGBG(RGBG):
