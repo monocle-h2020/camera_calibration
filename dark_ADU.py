@@ -86,3 +86,4 @@ print(f"Mean = {dark_separate.mean():+.3f} ADU/s == {dark_normalised.mean():+.3f
 print(f"Std  = {dark_separate. std():+.3f} ADU/s == {dark_normalised. std():+.3f} norm. ADU/s")
 print(f"RMS  = {np.sqrt(np.mean(dark_separate**2)):+.3f} ADU/s == {np.sqrt(np.mean(dark_normalised**2)):+.3f} norm. ADU/s")
 print(f"A99% = {np.percentile(np.abs(dark_separate.ravel()), 99):+.3f} ADU/s == {np.percentile(np.abs(dark_normalised.ravel()), 99):+.3f} norm. ADU/s")
+print(f">50 norm. ADU/s: {np.where(dark_normalised > 50)[0].shape[0]}")
