@@ -26,7 +26,7 @@ print("Made map")
 
 gains_combined_gauss = gauss_nan(gains, sigma=10)
 for gauss, label, cm in zip([gains_combined_gauss, *gains_gauss], ["combined", *"RGB", "G2"], [None, "Rr", "Gr", "Br", "Gr"]):
-    plt.figure(figsize=(3.3,3), tight_layout=True)
+    plt.figure(figsize=(3.3,2.5), tight_layout=True)
     im = plt.imshow(gauss, cmap=plot.cmaps[cm])
     plt.xticks([])
     plt.yticks([])
