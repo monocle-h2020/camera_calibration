@@ -25,7 +25,6 @@ plot.show_RGBG(gains_gauss, colorbar_label=25*" "+"Gain (ADU/e$^-$)", vmin=vmin,
 print("Made map")
 
 gains_combined_gauss = gauss_nan(gains, sigma=10)
-
 for gauss, label, cm in zip([gains_combined_gauss, *gains_gauss], ["combined", *"RGB", "G2"], [None, "Rr", "Gr", "Br", "Gr"]):
     plt.figure(figsize=(3.3,3), tight_layout=True)
     im = plt.imshow(gauss, cmap=plot.cmaps[cm])
@@ -36,3 +35,20 @@ for gauss, label, cm in zip([gains_combined_gauss, *gains_gauss], ["combined", *
     plt.savefig(results_gain/f"map_iso{ISO}_{label}.pdf")
     plt.close()
 print("Made individual maps")
+
+fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,3), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+axs[0].hist(gains_RGBG[0]   .ravel(), bins=np.linspace(0, 3.5, 250), color="r", edgecolor="r", density=True)
+axs[1].hist(gains_RGBG[1::2].ravel(), bins=np.linspace(0, 3.5, 250), color="g", edgecolor="g", density=True)
+axs[2].hist(gains_RGBG[2]   .ravel(), bins=np.linspace(0, 3.5, 250), color="b", edgecolor="b", density=True)
+for ax in axs[:2]:
+    ax.xaxis.set_ticks_position("none")
+for ax in axs:
+    ax.grid(True)
+    ax.set_yticks([0,1,2])
+axs[0].set_xlim(0, 3.5)
+axs[0].set_ylim(0, 2.5)
+axs[2].set_xlabel("Gain (ADU/e-)")
+axs[1].set_ylabel("Probability density")
+plt.savefig(results_gain/f"hist_iso{ISO}_RGB.pdf")
+plt.close()
+print("Made RGB histogram")
