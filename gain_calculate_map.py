@@ -24,9 +24,9 @@ fit_max = 0.95 * 2**phone["camera"]["bits"]
 gains = np.tile(np.nan, means.shape[1:])
 rons  = gains.copy()
 
-for i in range(means.shape[0]):
-    for j in range(means.shape[1]):
-        m = means[i,j] ; v = variance[i,j]
+for i in range(means.shape[1]):
+    for j in range(means.shape[2]):
+        m = means[:,i,j] ; v = variance[:,i,j]
         ind = np.where(m < fit_max)
         try:
             gains[i,j], rons[i,j] = np.polyfit(m[ind], v[ind], 1, w=1/m[ind])
@@ -34,6 +34,6 @@ for i in range(means.shape[0]):
             pass
 
     if i%15:
-        print(f"{100 * i / means.shape[0]:.1f}%", end=" ", flush=True)
+        print(f"{100 * i / means.shape[1]:.1f}%", end=" ", flush=True)
 
 np.save(products_gain/f"iso{ISO}.npy", gains)
