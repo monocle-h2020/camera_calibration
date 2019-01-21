@@ -4,7 +4,7 @@ from astropy.stats import sigma_clip
 
 import numpy as np
 
-fluorescent_lines = np.array([611.6, 544.45, 436.6])
+fluorescent_lines = np.array([611.6, 544.45, 436.6])  # RGB, units: nm
 degree_of_spectral_line_fit = 2
 degree_of_wavelength_fit = 2
 degree_of_coefficient_fit = 4
@@ -51,7 +51,7 @@ def fit_single_wavelength_relation(lines):
 def fit_many_wavelength_relations(y, lines):
     coeffarr = np.tile(np.nan, (y.shape[0], degree_of_wavelength_fit+1))
     for i, col in enumerate(y):
-        coeffarr[i] = fit_single_wavelength_relation(lines[i])
+        coeffarr[i] = fit_single_wavelength_relation(lines[:,i])
 
     return coeffarr
 

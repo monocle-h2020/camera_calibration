@@ -4,6 +4,7 @@ from sys import argv
 from phonecal import general, io, plot, wavelength, raw2
 
 file = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(file)
 
 img = io.load_dng_raw(file)
 image_cut  = img.raw_image [760:1470, 2150:3900]
@@ -19,16 +20,14 @@ plot.show_RGBG(RGB_gauss)
 
 lines = wavelength.find_fluorescent_lines(RGB_gauss)
 lines_fit = wavelength.fit_fluorescent_lines(lines)
-
 plot.fluorescent_lines(y, lines, lines_fit)
 
+wavelength_fits = wavelength.fit_many_wavelength_relations(y, lines_fit)
+coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(y, wavelength_fits)
+plot.wavelength_coefficients(y, wavelength_fits, coefficients_fit)
+wavelength.save_coefficients(coefficients, saveto=results/"ispex/wavelength_solution.npy")
+
 raise Exception
-
-wavelength_fits = wavelength.fit_many_wavelength_relations(raw.y, lines_fit.T)
-coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(raw.y, wavelength_fits)
-plot.wavelength_coefficients(raw.y, wavelength_fits, coefficients_fit, saveto="TL_coeff.png")
-
-wavelength.save_coefficients(coefficients, saveto="wavelength_solution.npy")
 
 coefficients = wavelength.load_coefficients("wavelength_solution.npy")
 
