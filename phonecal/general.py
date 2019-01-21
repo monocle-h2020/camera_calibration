@@ -71,3 +71,6 @@ def Rsquare(y, y_fit, **kwargs):
     SS_tot = np.ma.sum((y - y.mean(**kwargs))**2, **kwargs)
     R2 = 1 - SS_res/SS_tot
     return R2
+
+def RMS(x, **kwargs):
+    return np.sqrt(np.mean(x**2, **kwargs))
