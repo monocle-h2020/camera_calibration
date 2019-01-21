@@ -1,6 +1,5 @@
 import numpy as np
 from sys import argv
-from matplotlib import pyplot as plt
 from phonecal import raw, plot, io, wavelength
 from datetime import datetime, timedelta
 
