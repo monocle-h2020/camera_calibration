@@ -49,3 +49,11 @@ table[:, 7:] = cal[:, 7:]
 upwelling = table[table[:, 6] == 34252.]
 
 np.save(file.parent/(file.stem+".npy"), upwelling)
+
+interpolated_wavelengths = np.arange(390, 701, 1)
+new_upwelling = np.tile(np.nan, (len(upwelling), 8+len(interpolated_wavelengths)))
+new_upwelling[:, :8] = upwelling[:, :8]
+for j, row_old in enumerate(upwelling):
+    new_upwelling[j, 8:] = np.interp(interpolated_wavelengths, wavelengths, row_old[8:])
+
+np.save(file.parent/(file.stem+"_interpolated.npy"), new_upwelling)
