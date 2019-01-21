@@ -1,25 +1,28 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from sys import argv
+from phonecal import general, io, plot, wavelength, raw
+from phonecal.general import gaussMd
 
-from phonecal import general, io, plot, wavelength
-from phonecal.general import x, y, y_thin, y_thick, x_spectrum
+file = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(file)
 
-filename = argv[1]
+img = io.load_dng_raw(file)
+exif = io.load_exif(file)
+image_cut  = img.raw_image [760:1000, 2150:3900]
+colors_cut = img.raw_colors[760:1000, 2150:3900]
+x = np.arange(2150, 3900)
+y = np.arange(760 , 1000)
 
-data = io.load_dng(filename)
-exif = io.load_exif(filename)
+RGBG,_ = raw.pull_apart(image_cut, colors_cut)
+plot.show_RGBG(RGBG)
+print("Split spectrum into RGBG")
 
-thick, thin = general.split_spectrum(data)
+RGBG_gauss = gaussMd(RGBG, sigma=(0,5,0))
+plot.show_RGBG(RGBG_gauss)
+print("Gaussed spectrum")
 
-plot.plot_photo(thick, extent=(*y_thick, *x_spectrum[::-1]))
-plot.plot_photo(thin , extent=(*y_thin , *x_spectrum[::-1]))
-
-thickF = general.gauss_filter(thick)
-thinF  = general.gauss_filter(thin )
-
-plot.plot_photo(thickF, extent=(*y_thick, *x_spectrum[::-1]))
-plot.plot_photo(thinF , extent=(*y_thin , *x_spectrum[::-1]))
+raise Exception
 
 y_example = 100
 plot.plot_spectrum(general.x, thick[:, y_example], xlabel="$x$ (px)", title=f"RGB values at $y = {y_example+y_thick[0]}$", xlim=x_spectrum, ylim=(0,255))
