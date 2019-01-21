@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe, ticker
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
+from .wavelength import fluorescent_lines
 
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues,
          "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r,
@@ -37,6 +38,20 @@ def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kw
         pass
     _saveshow(saveto)
 
+def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital value (ADU)", xlabel="Wavelength (nm)", **kwargs):
+    plt.figure(figsize=(6.6, 3), tight_layout=True)
+    _rgbplot(wavelengths, RGB)
+    plt.axis("tight")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    for line in fluorescent_lines:
+        plt.axvline(line, c='0.5', ls="--")
+    try:
+        plt.gca().set(**kwargs)
+    except:
+        pass
+    _saveshow(saveto)
+
 def plot_photo(data, saveto=None, **kwargs):
     plt.imshow(data.astype("uint8"), **kwargs)
     plt.xlabel("$y$")
@@ -57,14 +72,14 @@ def bitmap(data, dpi=96, saveto=None, **kwargs):
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     _saveshow(saveto, transparent=True, dpi=dpi)
 
-def fluorescent_lines(y, lines, lines_fit, saveto=None):
-    plt.figure(figsize=(10, 5))
+def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
+    plt.figure(figsize=(3.3,3))
     _rgbplot(y, lines, func=plt.scatter, s=25)
     p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
     _rgbplot(y, lines_fit, path_effects=p_eff)
     plt.title("Locations of RGB maxima")
-    plt.xlabel("$y$")
-    plt.ylabel("$x_{peak}$")
+    plt.xlabel("Row along spectrum ($y$)")
+    plt.ylabel("Line location ($x$)")
     plt.axis("tight")
     plt.tight_layout()
     _saveshow(saveto)
@@ -196,7 +211,7 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     colorbar_here.locator = ticker.MaxNLocator(nbins=5)
     colorbar_here.update_ticks()
     _saveshow(saveto)
-    
+
 def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     for ax, data_c, c in zip(axs, data, "RGBG"):

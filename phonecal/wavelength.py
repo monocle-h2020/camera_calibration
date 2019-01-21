@@ -1,63 +1,37 @@
-from .general import x_spectrum, y_thick, y_thin, y
-from . import raw
 from astropy.stats import sigma_clip
 
 import numpy as np
 
-fluorescent_lines = np.array([611.6, 544.45, 436.6])
+fluorescent_lines = np.array([611.6, 544.45, 436.6])  # RGB, units: nm
 degree_of_spectral_line_fit = 2
 degree_of_wavelength_fit = 2
 degree_of_coefficient_fit = 4
 wavelength_limits = (350, 750)
 
-def find_RGB_lines(image, offset=0):
-    return image.argmax(axis=0) + offset
+def find_fluorescent_lines(RGB):
+    RGB_copy = RGB.copy()
+    RGB_copy[np.isnan(RGB_copy)] = -999
+    peaks = np.nanargmax(RGB_copy, axis=2).astype(np.float32)
+    peaks[peaks == 0] = np.nan
+    return peaks
 
-def find_fluorescent_lines_old(thick, thin, offset=x_spectrum[0]):
-    lines_thick = find_RGB_lines(thick, offset=offset)
-    lines_thin  = find_RGB_lines(thin , offset=offset)
-    l = np.concatenate((lines_thick, lines_thin))
-    l_fit = l.copy()
-    for j in (0,1,2):  # fit separately for R, G, B
-        coeff = np.polyfit(y, l[:,j], degree_of_spectral_line_fit)
-        l_fit[:,j] = np.polyval(coeff, y)
-
-    return l, l_fit
-
-def find_fluorescent_lines(RGBG, offsets):
-    maxes = RGBG.argmax(axis=1)
-    maxes = 2 * maxes + offsets[:,1]  # correct pixel offset from Bayer filter
-    maxes += raw.xmin
-    # line position per column in REAL image coordinates:
-    lines = np.tile(np.nan, (3, raw.ymax - raw.ymin))
-    lines[0, offsets[0,0]::2] = maxes[:,0]  # R
-    lines[1, offsets[1,0]::2] = maxes[:,1]  # G
-    lines[1, offsets[3,0]::2] = maxes[:,3]  # G2
-    lines[2, offsets[2,0]::2] = maxes[:,2]  # B
-    return lines
-
-def fit_fluorescent_lines(lines):
+def fit_fluorescent_lines(lines, y):
     lines_fit = lines.copy()
     for j in (0,1,2):  # fit separately for R, G, B
         idx = np.isfinite(lines[j])
-        new_y = raw.y[idx] ; new_line = lines[j][idx]
+        new_y = y[idx] ; new_line = lines[j][idx]
         clipped = sigma_clip(new_line)  # generates a masked array
         idx = ~clipped.mask  # get the non-masked items
         new_y = new_y[idx] ; new_line = new_line[idx]
         # np.polyfit can go along axis - try this?
         coeff = np.polyfit(new_y, new_line, degree_of_spectral_line_fit)
-        lines_fit[j] = np.polyval(coeff, raw.y)
+        lines_fit[j] = np.polyval(coeff, y)
     return lines_fit
-
-def fit_single_wavelength_relation(lines):
-    coeffs = np.polyfit(lines, fluorescent_lines, degree_of_wavelength_fit)
-    return coeffs
 
 def fit_many_wavelength_relations(y, lines):
     coeffarr = np.tile(np.nan, (y.shape[0], degree_of_wavelength_fit+1))
     for i, col in enumerate(y):
-        coeffarr[i] = fit_single_wavelength_relation(lines[i])
-
+        coeffarr[i] = np.polyfit(lines[:,i], fluorescent_lines, degree_of_wavelength_fit)
     return coeffarr
 
 def fit_wavelength_coefficients(y, coefficients):
@@ -81,11 +55,10 @@ def interpolate_old(wavelengths, rgb, lambdarange):
     return interpolated
 
 def interpolate(wavelength_array, color_value_array, lambdarange):
-    interpolated = np.array([np.interp(lambdarange, wavelengths, color_values)
-    for wavelengths, color_values in zip(wavelength_array, color_value_array)])
+    interpolated = np.array([np.interp(lambdarange, wavelengths, color_values) for wavelengths, color_values in zip(wavelength_array, color_value_array)])
     return interpolated
 
-def interpolate_multi(wavelengths_split, RGBG, lambdamin=340, lambdamax=760, lambdastep=0.5):
+def interpolate_multi(wavelengths_split, RGBG, lambdamin=390, lambdamax=700, lambdastep=1):
     lambdarange = np.arange(lambdamin, lambdamax+lambdastep, lambdastep)
     all_interpolated = np.array([interpolate(wavelengths_split[c], RGBG[c], lambdarange) for c in range(4)])
     all_interpolated = np.moveaxis(all_interpolated, 2, 1)
