@@ -19,7 +19,7 @@ plot.show_RGBG(RGB_gauss)
 
 lines = wavelength.find_fluorescent_lines(RGB_gauss) + x[0]
 lines_fit = wavelength.fit_fluorescent_lines(lines, y)
-plot.fluorescent_lines(y, lines, lines_fit)
+plot.plot_fluorescent_lines(y, lines, lines_fit)
 
 wavelength_fits = wavelength.fit_many_wavelength_relations(y, lines_fit)
 coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(y, wavelength_fits)
@@ -33,4 +33,4 @@ RGBG,_ = raw2.pull_apart(image_cut, colors_cut)
 lambdarange, all_interpolated = wavelength.interpolate_multi(wavelengths_split, RGBG)
 
 stacked = wavelength.stack(lambdarange, all_interpolated)
-plot.plot_spectrum(stacked[0], stacked[1:])
+plot.plot_fluorescent_spectrum(stacked[0], stacked[1:])

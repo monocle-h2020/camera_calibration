@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe, ticker
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
+from .wavelength import fluorescent_lines
 
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues,
          "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r,
@@ -37,6 +38,20 @@ def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kw
         pass
     _saveshow(saveto)
 
+def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital value (ADU)", xlabel="Wavelength (nm)", **kwargs):
+    plt.figure(figsize=(6.6, 3), tight_layout=True)
+    _rgbplot(wavelengths, RGB)
+    plt.axis("tight")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    for line in fluorescent_lines:
+        plt.axvline(line, c='0.5', ls="--")
+    try:
+        plt.gca().set(**kwargs)
+    except:
+        pass
+    _saveshow(saveto)
+
 def plot_photo(data, saveto=None, **kwargs):
     plt.imshow(data.astype("uint8"), **kwargs)
     plt.xlabel("$y$")
@@ -57,7 +72,7 @@ def bitmap(data, dpi=96, saveto=None, **kwargs):
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
     _saveshow(saveto, transparent=True, dpi=dpi)
 
-def fluorescent_lines(y, lines, lines_fit, saveto=None):
+def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.figure(figsize=(3.3,3))
     _rgbplot(y, lines, func=plt.scatter, s=25)
     p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
