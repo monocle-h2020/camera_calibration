@@ -75,12 +75,25 @@ R = Rs.mean(axis=0)
 G = Gs.mean(axis=0)
 B = Bs.mean(axis=0)
 
+Rerr = Rs.std(axis=0)
+Gerr = Gs.std(axis=0)
+Berr = Bs.std(axis=0)
+
 RGB = np.stack([R,G,B])
 plot.plot_spectrum(wavelengths, RGB, title="Averaged")
 
 RGB -= RGB.min(axis=1)[:, np.newaxis]
-RGB /= RGB.max(axis=1)[:, np.newaxis]
+normalization = RGB.max(axis=1)
+RGB /= normalization[:, np.newaxis]
 plot.plot_spectrum(wavelengths, RGB, title="Normalized")
+R, G, B = RGB
+Rerr /= normalization[0]
+Gerr /= normalization[1]
+Berr /= normalization[2]
 
-np.save(results/"ispex/spectral_response_ispex.npy", RGB)
+# combine G and G2
+spectral_response = np.stack([wavelengths, R, G, B, G, Rerr, Gerr, Berr, Gerr])
+
+np.save(results/"ispex/spectral_response_ispex.npy", spectral_response)
+np.save(results/"spectral_response/ispex_curve.npy", spectral_response)
 print("Saved spectral response curves")

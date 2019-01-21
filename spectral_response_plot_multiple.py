@@ -3,12 +3,12 @@ from sys import argv
 from phonecal import io, raw, plot
 from matplotlib import pyplot as plt
 
-folders = io.path_from_input(argv)
+files = io.path_from_input(argv)
 
+folders = [io.folders(file)[0] for file in files]
 cameras = [io.read_json(folder/"info.json")["device"]["name"] for folder in folders]
 
-curve_files = [folder/"results/spectral_response/curve.npy" for folder in folders]
-curves = [np.load(f) for f in curve_files]
+curves = [np.load(f) for f in files]
 
 assert len(cameras) == len(curves)
 
