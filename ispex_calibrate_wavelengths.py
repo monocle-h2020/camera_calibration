@@ -1,4 +1,3 @@
-from matplotlib import pyplot as plt
 import numpy as np
 from sys import argv
 from phonecal import general, io, plot, wavelength, raw2
@@ -19,7 +18,7 @@ RGB_gauss = general.gauss_nan(RGB, sigma=(0,0,10))
 plot.show_RGBG(RGB_gauss)
 
 lines = wavelength.find_fluorescent_lines(RGB_gauss) + x[0]
-lines_fit = wavelength.fit_fluorescent_lines(lines)
+lines_fit = wavelength.fit_fluorescent_lines(lines, y)
 plot.fluorescent_lines(y, lines, lines_fit)
 
 wavelength_fits = wavelength.fit_many_wavelength_relations(y, lines_fit)
