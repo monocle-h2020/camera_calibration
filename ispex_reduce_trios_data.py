@@ -1,6 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from datetime import datetime
+from phonecal import io
+from sys import argv
 
 def get_time(c):
     try:
@@ -15,7 +17,9 @@ def get_time(c):
     except:
         return t
 
-cal = np.genfromtxt("test_files/Loch/20180821_MONOCLE_iSPEX_cal_01.txt", delimiter=",", dtype=str)
+file = io.path_from_input(argv)
+
+cal = np.genfromtxt(file, delimiter=",", dtype=str)
 cal[cal == ""] = "nan"
 cal[..., 6] = [int(a, 16) for a in cal[..., 6]]
 cal[..., 0] = [get_time(c) for c in cal[...,0]]
