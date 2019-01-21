@@ -47,3 +47,5 @@ table[:, 6] = [int(ID, 16) for ID in cal[:, 6]]
 table[:, 7:] = cal[:, 7:]
 
 upwelling = table[table[:, 6] == 34252.]
+
+np.save(file.parent/(file.stem+".npy"), upwelling)
