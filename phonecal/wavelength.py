@@ -24,17 +24,12 @@ def find_fluorescent_lines_old(thick, thin, offset=x_spectrum[0]):
 
     return l, l_fit
 
-def find_fluorescent_lines(RGBG, offsets):
-    maxes = RGBG.argmax(axis=1)
-    maxes = 2 * maxes + offsets[:,1]  # correct pixel offset from Bayer filter
-    maxes += raw.xmin
-    # line position per column in REAL image coordinates:
-    lines = np.tile(np.nan, (3, raw.ymax - raw.ymin))
-    lines[0, offsets[0,0]::2] = maxes[:,0]  # R
-    lines[1, offsets[1,0]::2] = maxes[:,1]  # G
-    lines[1, offsets[3,0]::2] = maxes[:,3]  # G2
-    lines[2, offsets[2,0]::2] = maxes[:,2]  # B
-    return lines
+def find_fluorescent_lines(RGB):
+    RGB_copy = RGB.copy()
+    RGB_copy[np.isnan(RGB_copy)] = -999
+    peaks = np.nanargmax(RGB_copy, axis=2).astype(np.float32)
+    peaks[peaks == 0] = np.nan
+    return peaks
 
 def fit_fluorescent_lines(lines):
     lines_fit = lines.copy()

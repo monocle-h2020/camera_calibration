@@ -58,13 +58,13 @@ def bitmap(data, dpi=96, saveto=None, **kwargs):
     _saveshow(saveto, transparent=True, dpi=dpi)
 
 def fluorescent_lines(y, lines, lines_fit, saveto=None):
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(3.3,3))
     _rgbplot(y, lines, func=plt.scatter, s=25)
     p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
     _rgbplot(y, lines_fit, path_effects=p_eff)
     plt.title("Locations of RGB maxima")
-    plt.xlabel("$y$")
-    plt.ylabel("$x_{peak}$")
+    plt.xlabel("Row along spectrum ($y$)")
+    plt.ylabel("Line location ($x$)")
     plt.axis("tight")
     plt.tight_layout()
     _saveshow(saveto)
@@ -196,7 +196,7 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     colorbar_here.locator = ticker.MaxNLocator(nbins=5)
     colorbar_here.update_ticks()
     _saveshow(saveto)
-    
+
 def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     for ax, data_c, c in zip(axs, data, "RGBG"):

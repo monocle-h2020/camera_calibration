@@ -1,27 +1,28 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from sys import argv
-from phonecal import general, io, plot, wavelength, raw
+from phonecal import general, io, plot, wavelength, raw2
 
 file = io.path_from_input(argv)
 
 img = io.load_dng_raw(file)
 image_cut  = img.raw_image [760:1470, 2150:3900]
 colors_cut = img.raw_colors[760:1470, 2150:3900]
+x = np.arange(2150, 3900)
+y = np.arange(760 , 1470)
 
-RGBG,_ = raw.pull_apart(image_cut, colors_cut)
-plot.show_RGBG(RGBG)
+RGB = raw2.pull_apart2(image_cut, colors_cut)
+plot.show_RGBG(RGB)
 
-RGBG_gauss = general.gaussMd(RGBG, sigma=(0,0,5))
-plot.show_RGBG(RGBG_gauss)
+RGB_gauss = general.gauss_nan(RGB, sigma=(0,0,10))
+plot.show_RGBG(RGB_gauss)
 
-raise Exception
-
-lines = wavelength.find_fluorescent_lines(RGBG_gauss, offsets)
-
+lines = wavelength.find_fluorescent_lines(RGB_gauss)
 lines_fit = wavelength.fit_fluorescent_lines(lines)
 
-plot.fluorescent_lines(raw.y, lines.T, lines_fit.T, saveto="TL_lines.png")
+plot.fluorescent_lines(y, lines, lines_fit)
+
+raise Exception
 
 wavelength_fits = wavelength.fit_many_wavelength_relations(raw.y, lines_fit.T)
 coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(raw.y, wavelength_fits)

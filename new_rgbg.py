@@ -56,7 +56,3 @@ RGBG, _ = raw.pull_apart(s, colours)
 unique_colours = np.unique(colours).shape[0]
 
 RGB = pull_apart2(s, colours)
-
-#temp = s.copy() ; temp[temp == 0] = -1
-#peaks = np.nanargmax(temp, axis=2).astype(np.float32)
-#peaks[peaks == 0] = np.nan
