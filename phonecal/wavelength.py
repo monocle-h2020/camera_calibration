@@ -44,15 +44,10 @@ def fit_fluorescent_lines(lines):
         lines_fit[j] = np.polyval(coeff, raw.y)
     return lines_fit
 
-def fit_single_wavelength_relation(lines):
-    coeffs = np.polyfit(lines, fluorescent_lines, degree_of_wavelength_fit)
-    return coeffs
-
 def fit_many_wavelength_relations(y, lines):
     coeffarr = np.tile(np.nan, (y.shape[0], degree_of_wavelength_fit+1))
     for i, col in enumerate(y):
-        coeffarr[i] = fit_single_wavelength_relation(lines[:,i])
-
+        coeffarr[i] = np.polyfit(lines[:,i], fluorescent_lines, degree_of_wavelength_fit)
     return coeffarr
 
 def fit_wavelength_coefficients(y, coefficients):
@@ -76,11 +71,10 @@ def interpolate_old(wavelengths, rgb, lambdarange):
     return interpolated
 
 def interpolate(wavelength_array, color_value_array, lambdarange):
-    interpolated = np.array([np.interp(lambdarange, wavelengths, color_values)
-    for wavelengths, color_values in zip(wavelength_array, color_value_array)])
+    interpolated = np.array([np.interp(lambdarange, wavelengths, color_values) for wavelengths, color_values in zip(wavelength_array, color_value_array)])
     return interpolated
 
-def interpolate_multi(wavelengths_split, RGBG, lambdamin=340, lambdamax=760, lambdastep=0.5):
+def interpolate_multi(wavelengths_split, RGBG, lambdamin=390, lambdamax=700, lambdastep=1):
     lambdarange = np.arange(lambdamin, lambdamax+lambdastep, lambdastep)
     all_interpolated = np.array([interpolate(wavelengths_split[c], RGBG[c], lambdarange) for c in range(4)])
     all_interpolated = np.moveaxis(all_interpolated, 2, 1)
