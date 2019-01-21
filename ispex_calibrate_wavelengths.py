@@ -1,22 +1,21 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from sys import argv
-
 from phonecal import general, io, plot, wavelength, raw
 
-filename = argv[1]
+file = io.path_from_input(argv)
 
-boost=2.5
+img = io.load_dng_raw(file)
+image_cut  = img.raw_image [760:1470, 2150:3900]
+colors_cut = img.raw_colors[760:1470, 2150:3900]
 
-img = io.load_dng_raw(filename)
-image_cut  = raw.cut_out_spectrum(img.raw_image)
-colors_cut = raw.cut_out_spectrum(img.raw_colors)
+RGBG,_ = raw.pull_apart(image_cut, colors_cut)
+plot.show_RGBG(RGBG)
 
-RGBG, offsets = raw.pull_apart(image_cut, colors_cut)
-plot.RGBG_stacked(RGBG, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True, saveto="TL_cutout.png", boost=boost)
+RGBG_gauss = general.gaussMd(RGBG, sigma=(0,0,5))
+plot.show_RGBG(RGBG_gauss)
 
-RGBG_gauss = general.gauss_filter(RGBG, sigma=5)
-plot.RGBG_stacked(RGBG_gauss, extent=(raw.xmin, raw.xmax, raw.ymax, raw.ymin), show_axes=True, saveto="TL_cutout_gauss.png", boost=boost)
+raise Exception
 
 lines = wavelength.find_fluorescent_lines(RGBG_gauss, offsets)
 
