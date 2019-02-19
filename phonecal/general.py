@@ -1,4 +1,5 @@
 from scipy.ndimage.filters import gaussian_filter1d as gauss1d, gaussian_filter as gaussMd
+from scipy.optimize import curve_fit
 from astropy.modeling.blackbody import blackbody_lambda
 import numpy as np
 
@@ -74,3 +75,11 @@ def Rsquare(y, y_fit, **kwargs):
 
 def RMS(x, **kwargs):
     return np.sqrt(np.mean(x**2, **kwargs))
+
+def distances_px(array):
+    x = np.arange(array.shape[1])
+    y = np.arange(array.shape[0])
+    X, Y = np.meshgrid(x, y)
+    x_center, y_center = array.shape[1]/2, array.shape[0]/2
+    distance = np.sqrt((X - x_center)**2 + (Y - y_center)**2)
+    return X, Y, distance
