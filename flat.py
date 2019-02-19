@@ -29,7 +29,7 @@ normalisation = mRGBG.max(axis=(1,2))[:,np.newaxis,np.newaxis]
 mRGBG = mRGBG / normalisation
 sRGBG = sRGBG / normalisation
 
-flat_field = raw.put_together(*mRGBG, offsets)
+flat_field = raw.put_together_from_colours(mRGBG, colours)
 flat_field_gauss = gaussMd(flat_field, 10)
 np.save(products/"flatfield.npy", flat_field_gauss)
 print("Saved array")
