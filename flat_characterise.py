@@ -120,6 +120,8 @@ plt.close()
 popt, pcov = curve_fit(vignette_radial, XY, correction.ravel(), p0=[1, 2, -5, 5, -2, 0.5, 0.5])
 standard_errors = np.sqrt(np.diag(pcov))
 
+np.save(results/f"flat/iso{iso}_parameters.npy", np.stack([popt, standard_errors]))
+
 print("Parameter +- Error    ; Relative error")
 for p, s in zip(popt, standard_errors):
     print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
