@@ -175,9 +175,6 @@ plt.savefig(results/f"flat/iso{iso}_correction_difference.pdf")
 plt.show()
 plt.close()
 
-print(f"RMS difference: {RMS(difference):.3f}")
-print(f"RMS difference (relative): {100*RMS(difference/correction):.1f} %")
-
 plt.figure(figsize=(5,5), tight_layout=True)
 plt.hist(difference.ravel(), bins=250)
 plt.xlabel("Correction factor (observed - fit)")
@@ -192,8 +189,5 @@ plt.savefig(results/f"flat/iso{iso}_correction_difference_hist_relative.pdf")
 plt.show()
 plt.close()
 
-#flat_fit_image = np.reshape(flat_fit_all, flat_field.shape)
-#
-#rmse_absolute = RMS(flat_field.ravel() - flat_fit_all.ravel())
-#rmse_relative = RMS((flat_field.ravel() - flat_fit_all.ravel()) / flat_field.ravel())
-#print(f"Root mean square error: {rmse_absolute:.2f} (absolute) / {100 * rmse_relative:.1f} % (relative)")
+print(f"RMS difference: {RMS(difference):.3f}")
+print(f"RMS difference (relative): {100*RMS(difference/correction):.1f} %")
