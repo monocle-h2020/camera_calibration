@@ -92,36 +92,108 @@ plt.show()
 plt.close()
 
 X, Y, D = distances_px(flat_field)
-D_range = np.linspace(0, D.max(), 250)
 
-def even_polynomial(x, p0, p2, p4, p6):
-    return p0 + p2 * x**2 + p4 * x**4 + p6 * x**6
+XY = np.stack([X.ravel(), Y.ravel()])
 
-popt, pcov = curve_fit(even_polynomial, D.ravel(), flat_field.ravel())
-print("Polynomial parameters:", *popt)
-print("Relative errors (%):", np.sqrt(np.diag(pcov))/popt*100)
+def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
+    """
+    Vignetting function as defined in Adobe DNG standard 1.4.0.0
 
-flat_fit     = even_polynomial(D_range,   *popt)
-flat_fit_all = even_polynomial(D.ravel(), *popt)
-R2 = Rsquare(flat_field.ravel(), flat_fit_all.ravel())
+    Parameters
+    ----------
+    XY
+        array with X and Y positions of pixels, in absolute (pixel) units
+    k0, ..., k4
+        polynomial coefficients
+    cx_hat, cy_hat
+        optical center of image, in normalized euclidean units (0-1)
+        relative to the top left corner of the image
+    """
+    x, y = XY
 
-print(f"R^2 = {R2:.3f}")
+    x0, y0 = x[0], y[0] # top left corner
+    x1, y1 = x[-1], y[-1]  # bottom right corner
+    cx = x0 + cx_hat * (x1 - x0)
+    cy = y0 + cy_hat * (y1 - y0)
+    # (cx, cy) is the optical center in absolute (pixel) units
+    mx = max([abs(x0 - cx), abs(x1 - cx)])
+    my = max([abs(y0 - cy), abs(y1 - cy)])
+    m = np.sqrt(mx**2 + my**2)
+    # m is the euclidean distance from the optical center to the farthest corner in absolute (pixel) units
+    r = 1/m * np.sqrt((x - cx)**2 + (y - cy)**2)
+    # r is the normalized euclidean distance of every pixel from the optical center (0-1)
+
+    p = [k4, 0, k3, 0, k2, 0, k1, 0, k0, 0, 1]
+    g = np.polyval(p, r)
+    # g is the normalization factor to multiply measured values with
+
+    return g
+
+correction = 1 / flat_field
 
 plt.figure(figsize=(5,5), tight_layout=True)
-plt.hexbin(D, flat_field, mincnt=1, bins="log", gridsize=150, extent=(0, D.max(), 0, 1))
-plt.plot(D_range, flat_fit, c='k')
-plt.xlabel("Distance from center (px)")
-plt.ylabel("Relative sensitivity")
-plt.xlim(0, D.max())
-plt.ylim(0, 1)
-plt.title(f"$R^2$ = {R2:.3f}")
-plt.grid()
-plt.savefig(results/f"flat/iso{iso}_distance.pdf")
+img = plt.imshow(correction, vmin=1, vmax=correction.max())
+plt.xticks([])
+plt.yticks([])
+colorbar_here = plot.colorbar(img)
+colorbar_here.set_label("Correction factor (observed)")
+colorbar_here.update_ticks()
+plt.savefig(results/f"flat/iso{iso}_correction_observed.pdf")
 plt.show()
 plt.close()
 
-flat_fit_image = np.reshape(flat_fit_all, flat_field.shape)
+popt, pcov = curve_fit(vignette_radial, XY, correction.ravel(), p0=[1, 2, -5, 5, -2, 0.5, 0.5])
+standard_errors = np.sqrt(np.diag(pcov))
 
-rmse_absolute = RMS(flat_field.ravel() - flat_fit_all.ravel())
-rmse_relative = RMS((flat_field.ravel() - flat_fit_all.ravel()) / flat_field.ravel())
-print(f"Root mean square error: {rmse_absolute:.2f} (absolute) / {100 * rmse_relative:.1f} % (relative)")
+print("Parameter +- Error    ; Relative error")
+for p, s in zip(popt, standard_errors):
+    print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
+
+g_fit = vignette_radial(XY, *popt).reshape(correction.shape)
+
+plt.figure(figsize=(5,5), tight_layout=True)
+img = plt.imshow(g_fit, vmin=1, vmax=correction.max())
+plt.xticks([])
+plt.yticks([])
+colorbar_here = plot.colorbar(img)
+colorbar_here.set_label("Correction factor (best fit)")
+colorbar_here.update_ticks()
+plt.savefig(results/f"flat/iso{iso}_correction_fit.pdf")
+plt.show()
+plt.close()
+
+difference = correction - g_fit
+
+plt.figure(figsize=(5,5), tight_layout=True)
+img = plt.imshow(difference)
+plt.xticks([])
+plt.yticks([])
+colorbar_here = plot.colorbar(img)
+colorbar_here.set_label("Correction factor (observed - fit)")
+colorbar_here.update_ticks()
+plt.savefig(results/f"flat/iso{iso}_correction_difference.pdf")
+plt.show()
+plt.close()
+
+print(f"RMS difference: {RMS(difference):.3f}")
+print(f"RMS difference (relative): {100*RMS(difference/correction):.1f} %")
+
+plt.figure(figsize=(5,5), tight_layout=True)
+plt.hist(difference.ravel(), bins=250)
+plt.xlabel("Correction factor (observed - fit)")
+plt.savefig(results/f"flat/iso{iso}_correction_difference_hist.pdf")
+plt.show()
+plt.close()
+
+plt.figure(figsize=(5,5), tight_layout=True)
+plt.hist(difference.ravel() / correction.ravel(), bins=250)
+plt.xlabel("Correction factor (observed - fit)/observed")
+plt.savefig(results/f"flat/iso{iso}_correction_difference_hist_relative.pdf")
+plt.show()
+plt.close()
+
+#flat_fit_image = np.reshape(flat_fit_all, flat_field.shape)
+#
+#rmse_absolute = RMS(flat_field.ravel() - flat_fit_all.ravel())
+#rmse_relative = RMS((flat_field.ravel() - flat_fit_all.ravel()) / flat_field.ravel())
+#print(f"Root mean square error: {rmse_absolute:.2f} (absolute) / {100 * rmse_relative:.1f} % (relative)")
