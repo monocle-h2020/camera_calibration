@@ -38,6 +38,10 @@ for percentage in [0.1, 1, 5, 50, 90, 95, 99, 99.9]:
         for j in range(3):
             print(f"{np.percentile(r_jpeg_ravel[j], percentage):.5f}", end="  ")
     print()
+print(f"   Highest: {r_ravel.max():.5f}", end="  ")
+if jpeg:
+    for j in range(3):
+        print(f"{r_jpeg_ravel[j].max():.5f}", end="  ")
 
 percentile = np.percentile(r_ravel, 0.5)
 
@@ -87,15 +91,16 @@ plt.close()
 print("Made logarithmic histogram")
 
 if jpeg:
-    bins_new = np.linspace(0.9, 1.0, 250)
-    plt.figure(tight_layout=True, figsize=(5,4))
-    plt.hist(r_ravel, bins=bins_new, color='k', density=True)
+    bins_new = np.linspace(0.9, 1.0, 150)
+    plt.figure(tight_layout=True, figsize=(5,2))
+    plt.hist(r_ravel, bins=bins_new, color='k')
     for j, c in enumerate("rgb"):
-        plt.hist(r_jpeg_ravel[j], bins=bins_new, color=c, alpha=0.7, density=True)
+        plt.hist(r_jpeg_ravel[j], bins=bins_new, color=c, alpha=0.7)
     plt.xlabel("Pearson $r$")
-    plt.ylabel("Density")
+    plt.ylabel("Frequency")
     plt.yscale("log")
     plt.xlim(0.9, 1)
+    plt.ylim(ymin=0.9)
     plt.xticks(rotation=30)
     plt.savefig(results/"linearity/r_raw_jpeg.pdf")
     plt.close()
