@@ -45,7 +45,7 @@ print("Made linear histogram")
 
 plt.figure(tight_layout=True, figsize=(5,4))
 plt.hist(r_ravel, bins=bins, color='k', cumulative=True, density=True)
-plt.xlabel("$R^2$")
+plt.xlabel("Pearson $r$")
 plt.ylabel("Cumulative frequency")
 plt.xlim(percentile, 1)
 plt.xticks(rotation=30)
