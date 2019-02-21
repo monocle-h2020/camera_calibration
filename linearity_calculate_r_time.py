@@ -23,7 +23,7 @@ colours      = io.load_colour(stacks)
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
-print("Doing R^2 comparison...", end=" ", flush=True)
+print("Calculating Pearson r...", end=" ", flush=True)
 
 r, saturated = lin.calculate_pearson_r_values(times, means, saturate=saturation)
 
