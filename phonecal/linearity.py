@@ -71,4 +71,3 @@ def calculate_pearson_r_values_jpeg(x, y, **kwargs):
         r[j], saturated[j] = calculate_pearson_r_values(x, y[..., j], saturate=240)
     r = np.stack(r)
     return r, saturated
-
