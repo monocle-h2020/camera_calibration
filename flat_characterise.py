@@ -66,10 +66,6 @@ plt.show()
 plt.close()
 print("Made full plot")
 
-X, Y, D = distances_px(flat_field)
-
-XY = np.stack([X.ravel(), Y.ravel()])
-
 def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     """
     Vignetting function as defined in Adobe DNG standard 1.4.0.0
@@ -104,7 +100,11 @@ def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
 
     return g
 
-correction = 1 / flat_field
+correction = 1 / flat_field_gauss
+
+correction = correction[250:-250, 250:-250]
+X, Y, D = distances_px(correction)
+XY = np.stack([X.ravel(), Y.ravel()])
 
 plt.figure(figsize=(5,5), tight_layout=True)
 img = plt.imshow(correction, vmin=1, vmax=correction.max())
@@ -144,7 +144,7 @@ x = np.arange(0, correction.shape[0])
 y = np.arange(0, correction.shape[1])
 
 R2_y = Rsquare(correction[mid1], g_fit[mid1])
-plt.plot(y, correction[mid1], c='r', label="Observed")
+plt.scatter(y, correction[mid1], c='r', label="Observed")
 plt.plot(y, g_fit[mid1], c='k', label="Fit")
 plt.xlabel("Y position")
 plt.ylabel("Correction factor")
@@ -158,7 +158,7 @@ plt.show()
 plt.close()
 
 R2_x = Rsquare(correction[:, mid2], g_fit[:, mid2])
-plt.plot(x, correction[:, mid2], c='r', label="Observed")
+plt.scatter(x, correction[:, mid2], c='r', label="Observed")
 plt.plot(x, g_fit[:, mid2], c='k', label="Fit")
 plt.xlabel("X position")
 plt.ylabel("Correction factor")
