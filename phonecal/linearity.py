@@ -1,5 +1,6 @@
 import numpy as np
 from .general import Rsquare
+from scipy.stats import pearsonr
 
 polariser_angle = 74
 
@@ -40,3 +41,25 @@ def calculate_linear_R2_values(x, y, **kwargs):
             print(f"{i/y.shape[1]*100:.1f}%", end=" ", flush=True)
 
     return R2, saturated
+
+
+def pearson_r_single(x, y, saturate):
+    ind = np.where(y < saturate)
+    r, p = pearsonr(x[ind], y[ind])
+    return r
+
+
+def calculate_pearson_r_values(x, y, **kwargs):
+    saturated = []
+    r = np.zeros(y.shape[1:])
+    for i in range(y.shape[1]):
+        for j in range(y.shape[2]):
+            try:
+                r[i,j] = pearson_r_single(x, y[:,i,j], **kwargs)
+            except TypeError:  # if fully saturated
+                r[i,j] = np.nan
+                saturated.append((i,j))
+        if i%5 == 0:
+            print(f"{i/y.shape[1]*100:.1f}%", end=" ", flush=True)
+
+    return r, saturated
