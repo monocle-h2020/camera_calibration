@@ -94,6 +94,7 @@ if jpeg:
         plt.hist(r_jpeg_ravel[j], bins=bins_new, color=c, alpha=0.7, density=True)
     plt.xlabel("Pearson $r$")
     plt.ylabel("Density")
+    plt.yscale("log")
     plt.xlim(0.9, 1)
     plt.xticks(rotation=30)
     plt.savefig(results/"linearity/r_raw_jpeg.pdf")
