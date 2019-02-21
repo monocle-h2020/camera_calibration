@@ -7,7 +7,15 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
 r = np.load(products/"linearity_pearson_r.npy")
+try:
+    r_jpeg = np.load(products/"linearity_pearson_r_jpeg.npy")
+except FileNotFoundError:
+    jpeg = False
+else:
+    jpeg = True
 r_ravel = r.ravel()
+if jpeg:
+    r_jpeg_ravel = r_jpeg.reshape(3, -1)
 print("Read R^2")
 
 nans = np.where((np.isnan(r_ravel)) | np.isinf(r_ravel))
