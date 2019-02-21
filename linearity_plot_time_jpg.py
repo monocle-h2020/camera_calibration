@@ -20,6 +20,7 @@ print("Loaded DNG data")
 
 times, jmeans = io.load_jmeans(folder, retrieve_value=io.split_exposure_time, selection=center)
 jmeans = jmeans.reshape((len(jmeans), -1, 3))
+print("Loaded JPEG data")
 
 intensities = times / times.max()
 

@@ -20,6 +20,7 @@ print("Loaded DNG data")
 
 angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle, selection=center)
 jmeans = jmeans.reshape((len(jmeans), -1, 3))
+print("Loaded JPEG data")
 
 offset_angle = io.load_angle(stacks)
 print("Read angles")
