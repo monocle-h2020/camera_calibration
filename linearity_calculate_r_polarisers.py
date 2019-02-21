@@ -18,7 +18,7 @@ intensities_errors = lin.malus_error(angles, offset_angle, sigma_angle0=1, sigma
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
-print("Doing R^2 comparison...", end=" ", flush=True)
+print("Calculating Pearson r...", end=" ", flush=True)
 
 r, saturated = lin.calculate_pearson_r_values(intensities, means, saturate=saturation)
 

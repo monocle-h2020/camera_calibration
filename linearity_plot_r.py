@@ -8,7 +8,7 @@ root, images, stacks, products, results = io.folders(folder)
 
 r = np.load(products/"linearity_pearson_r.npy")
 r_ravel = r.ravel()
-print("Read R^2")
+print("Read Pearson r")
 
 nans = np.where((np.isnan(r_ravel)) | np.isinf(r_ravel))
 print(f"Number of megapixels: {len(r_ravel)/1e6:.1f} ; Number of NaN/inf: {len(nans[0])}")
