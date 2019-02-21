@@ -42,6 +42,7 @@ print(f"   Highest: {r_ravel.max():.5f}", end="  ")
 if jpeg:
     for j in range(3):
         print(f"{r_jpeg_ravel[j].max():.5f}", end="  ")
+print()
 
 percentile = np.percentile(r_ravel, 0.5)
 
