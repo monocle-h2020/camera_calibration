@@ -63,3 +63,12 @@ def calculate_pearson_r_values(x, y, **kwargs):
             print(f"{i/y.shape[1]*100:.1f}%", end=" ", flush=True)
 
     return r, saturated
+
+
+def calculate_pearson_r_values_jpeg(x, y, **kwargs):
+    r, saturated = [[], [], []], [[], [], []]
+    for j in range(3):
+        r[j], saturated[j] = calculate_pearson_r_values(x, y[..., j], saturate=240)
+    r = np.stack(r)
+    return r, saturated
+

@@ -32,5 +32,5 @@ print("... Done!")
 np.save(products/"linearity_pearson_r.npy", r)
 
 if jpeg:
-    r_jpeg = np.stack([lin.calculate_pearson_r_values(times, jmeans[..., j], saturate=240)[0]] for j in range(3))[:,0]
+    r_jpeg, saturated_jpeg = lin.calculate_pearson_r_values_jpeg(times, jmeans)
     np.save(products/"linearity_pearson_r_jpeg.npy", r_jpeg)
