@@ -15,8 +15,8 @@ saturation = 0.95 * max_value
 
 print("Doing R^2 comparison...", end=" ", flush=True)
 
-R2, saturated = lin.calculate_linear_R2_values(times, means, saturate=saturation)
+r, saturated = lin.calculate_pearson_r_values(times, means, saturate=saturation)
 
 print("... Done!")
 
-np.save(products/"linearity_R2.npy", R2)
+np.save(products/"linearity_pearson_r.npy", r)
