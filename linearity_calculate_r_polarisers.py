@@ -8,6 +8,16 @@ phone = io.read_json(root/"info.json")
 
 angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
 print("Read means")
+
+try:
+    angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
+except ValueError:
+    jpeg = False
+    print("No JPEG data")
+else:
+    jpeg = True
+    print("Read JPEG means")
+
 colours = io.load_colour(stacks)
 
 offset_angle = io.load_angle(stacks)
@@ -25,3 +35,7 @@ r, saturated = lin.calculate_pearson_r_values(intensities, means, saturate=satur
 print("... Done!")
 
 np.save(products/"linearity_pearson_r.npy", r)
+
+if jpeg:
+    r_jpeg = np.stack([lin.calculate_pearson_r_values(intensities, jmeans[..., j], saturate=240)[0]] for j in range(3))[:,0]
+    np.save(products/"linearity_pearson_r_jpeg.npy", r_jpeg)
