@@ -29,7 +29,7 @@ for ax, raw, jpeg, camera in zip(axs, r_raw, r_jpeg, cameras):
         print(f"JPEG {c} pixels with r < {lower_limit}: {len(below_limit)}")
         ax.hist(jpeg_c.ravel(), bins=bins, color=c, alpha=0.7)
     ax.set_ylabel(camera)
-axs[0] .set_xlim(0.9, 1)
+axs[0] .set_xlim(lower_limit, 1)
 axs[0] .set_yscale("log")
 axs[0] .set_ylim(ymin=0.9)
 axs[-1].set_xlabel("Pearson $r$")
