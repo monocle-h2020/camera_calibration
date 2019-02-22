@@ -198,8 +198,8 @@ def colorbar(mappable):
     ax = mappable.axes
     fig = ax.figure
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    return fig.colorbar(mappable, cax=cax)
+    cax = divider.append_axes("bottom", size="5%", pad=0.05)
+    return fig.colorbar(mappable, cax=cax, orientation="horizontal")
 
 def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     cmap = cmaps[colour+"r"] if colour else plt.cm.viridis
@@ -214,13 +214,13 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     _saveshow(saveto)
 
 def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
-    fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+    fig, axs = plt.subplots(ncols=4, sharex=True, sharey=True, figsize=(7,2), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     for ax, data_c, c in zip(axs, data, "RGBG"):
         img = ax.imshow(data_c, cmap=cmaps[c+"r"], **kwargs)
         ax.set_xticks([])
         ax.set_yticks([])
         colorbar_here = colorbar(img)
-        if ax is axs[2]:
+        if ax is axs[1]:
             colorbar_here.set_label(colorbar_label)
         colorbar_here.locator = ticker.MaxNLocator(nbins=4)
         colorbar_here.update_ticks()
