@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt, patheffects as pe, ticker
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
 from .wavelength import fluorescent_lines
+from .linearity import pearson_r_single
 
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues,
          "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r,
@@ -265,12 +266,15 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
 
         mean_dng =  means[:, j]
 
+        r = pearson_r_single(intensities, mean_dng, saturate=max_value*0.95)
+
         fig, ax2 = plt.subplots(1, 1, figsize=(3.3,2), tight_layout=True)
         ax2.errorbar(intensities, mean_dng, xerr=intensities_errors, fmt="ko", ms=3)
         ax2.set_ylim(0, max_value*1.02)
         ax2.locator_params(axis="y", nbins=5)
         ax2.set_ylabel("RAW value")
         ax2.grid(True)
+        ax2.set_title(f"$r = {r:.3f}$")
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
 
@@ -292,6 +296,11 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         mean_dng =  means[:, j]
         mean_jpg = jmeans[:, j, i]
 
+        r_dng  = pearson_r_single(intensities, mean_dng, saturate=max_value*0.95)
+        r_jpeg = pearson_r_single(intensities, mean_jpg, saturate=240)
+        r_dng_str = "$r_{DNG}"
+        r_jpg_str = "$r_{JPEG}"
+
         fig, ax = plt.subplots(1, 1, figsize=(3.3,2), tight_layout=True)
         ax.errorbar(intensities, mean_jpg, xerr=intensities_errors, fmt=f"{colour}o", ms=3)
         ax.set_xlim(-0.02, 1.02)
@@ -309,5 +318,6 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         ax.tick_params(axis="y", colors=colour)
         ax2.set_ylabel("RAW value")
         ax.set_xlabel("Relative incident intensity")
+        ax.set_title(f"{r_jpg_str} = {r_jpeg:.3f}$    {r_dng_str} = {r_dng:.3f}$")
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
