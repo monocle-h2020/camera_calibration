@@ -18,6 +18,15 @@ angles, means = io.load_means (folder, retrieve_value=io.split_pol_angle, select
 means = means.reshape((len(means), -1))
 print("Loaded DNG data")
 
+try:
+    angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle, selection=center)
+except ValueError:
+    jpeg = False
+else:
+    jpeg = True
+    jmeans = jmeans.reshape((len(jmeans), -1, 3))
+    print("Loaded JPEG data")
+
 offset_angle = io.load_angle(stacks)
 print("Read angles")
 intensities = lin.malus(angles, offset_angle)
@@ -25,4 +34,7 @@ intensities_errors = lin.malus_error(angles, offset_angle, sigma_angle0=1, sigma
 
 max_value = 2**phone["camera"]["bits"]
 
-plot.plot_linearity_dng(intensities, means, colours_here, intensities_errors=intensities_errors, max_value=max_value, savefolder=results/"linearity")
+if jpeg:
+    plot.plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities_errors=intensities_errors, max_value=max_value, savefolder=results/"linearity")
+else:
+    plot.plot_linearity_dng(intensities, means, colours_here, intensities_errors=intensities_errors, max_value=max_value, savefolder=results/"linearity")

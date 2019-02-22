@@ -18,8 +18,20 @@ times, means = io.load_means (folder, retrieve_value=io.split_exposure_time, sel
 means = means.reshape((len(means), -1))
 print("Loaded DNG data")
 
+try:
+    times, jmeans = io.load_jmeans(folder, retrieve_value=io.split_exposure_time, selection=center)
+except ValueError:
+    jpeg = False
+else:
+    jpeg = True
+    jmeans = jmeans.reshape((len(jmeans), -1, 3))
+    print("Loaded JPEG data")
+
 intensities = times / times.max()
 
 max_value = 2**phone["camera"]["bits"]
 
-plot.plot_linearity_dng(intensities, means, colours_here, max_value=max_value, savefolder=results/"linearity")
+if jpeg:
+    plot.plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, max_value=max_value, savefolder=results/"linearity")
+else:
+    plot.plot_linearity_dng(intensities, means, colours_here, max_value=max_value, savefolder=results/"linearity")
