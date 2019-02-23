@@ -44,7 +44,7 @@ def noisy_r(i, d):
     r = lin.pearson_r_single(i_o, d_n, saturate)
     return r
 
-r_sample = np.array([noisy_r(intensities_real, digital_values) for j in range(25000)])
+r_sample = np.array([noisy_r(intensities_real, digital_values) for j in range(1000000)])
 plt.hist(r_sample, bins=np.linspace(0.9, 1, 150))
 plt.show()
 plt.close()
