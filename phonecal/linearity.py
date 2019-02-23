@@ -3,7 +3,7 @@ from .general import Rsquare
 from scipy.stats import pearsonr
 
 polariser_angle = 74
-linearity_limit = 0.99
+linearity_limit = 0.98
 
 
 def malus(angle, offset=polariser_angle):
