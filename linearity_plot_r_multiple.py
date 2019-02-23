@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import io
+from phonecal import io, linearity as lin
 
 folders = io.path_from_input(argv)
 roots = [io.folders(folder)[0] for folder in folders]
@@ -29,6 +29,9 @@ for ax, raw, jpeg, camera in zip(axs, r_raw, r_jpeg, cameras):
         print(f"JPEG {c} pixels with r < {lower_limit}: {len(below_limit)}")
         ax.hist(jpeg_c.ravel(), bins=bins, color=c, alpha=0.7)
     ax.set_ylabel(camera)
+    ax.axvline(lin.linearity_limit, c='k', ls="--")
+    bad_pixels = np.where(raw < lin.linearity_limit)[0]
+    print(f"RAW pixels with r < {lin.linearity_limit}: {len(bad_pixels)}")
 axs[0] .set_xlim(lower_limit, 1)
 axs[0] .set_yscale("log")
 axs[0] .set_ylim(ymin=0.9)
