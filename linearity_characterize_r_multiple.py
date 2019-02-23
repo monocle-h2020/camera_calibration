@@ -26,13 +26,13 @@ print("       Camera: |      RAW       |       J_R      |      J_G       |      
 for camera, raw_, jpeg_ in zip(cameras, r_raw, r_jpeg):
     print(f"{camera:>13}:", end="   ")
     raw = raw_[~np.isnan(raw_)].ravel()
-    low, high = np.percentile(raw, 0.1), np.percentile(raw, 99)
+    low, high = lin.percentile_r(raw)
     print(f"{low:.3f} -- {high:.3f}", end="   ")
     if jpeg_ is None:
         print("      --               --               --")
     else:
         for j_ in jpeg_:
             jpeg = j_[~np.isnan(j_)].ravel()
-            low, high = np.percentile(jpeg, 0.1), np.percentile(jpeg, 99)
+            low, high = lin.percentile_r(jpeg)
             print(f"{low:.3f} -- {high:.3f}", end="   ")
     print()
