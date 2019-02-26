@@ -194,12 +194,13 @@ def linearity(I, C, colour, gridsize=250, bins="log", extent=(0,1,0,4095), savet
     plt.ylim(*extent[2:])
     _saveshow(saveto)
 
-def colorbar(mappable):
+def colorbar(mappable, location="bottom"):
+    orientation = "horizontal" if location in ("top", "bottom") else "vertical"
     ax = mappable.axes
     fig = ax.figure
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("bottom", size="5%", pad=0.05)
-    return fig.colorbar(mappable, cax=cax, orientation="horizontal")
+    cax = divider.append_axes(location, size="5%", pad=0.05)
+    return fig.colorbar(mappable, cax=cax, orientation=orientation)
 
 def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     cmap = cmaps[colour+"r"] if colour else plt.cm.viridis

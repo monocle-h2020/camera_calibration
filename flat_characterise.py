@@ -34,6 +34,10 @@ flat_field_gauss = gaussMd(flat_field, 10)
 np.save(products/"flatfield.npy", flat_field_gauss)
 print("Saved array")
 
+# selection for further analysis
+selection = np.s_[250:-250, 250:-250]
+flat_field_gauss = flat_field_gauss[selection]
+
 vmin, vmax = np.nanmin(mRGBG), 1
 plot.show_RGBG(mRGBG, colorbar_label=25*" "+"Relative sensitivity", vmin=vmin, vmax=1, saveto=results/f"flat/iso{iso}.pdf")
 print("Made RGBG images")
@@ -44,14 +48,27 @@ plt.figure(figsize=(3,2), tight_layout=True)
 img = plt.imshow(mRGBG[0], cmap=plot.cmaps["Rr"])
 plt.xticks([])
 plt.yticks([])
-colorbar_here = plot.colorbar(img)
+colorbar_here = plot.colorbar(img, location="right")
 colorbar_here.set_label("Relative sensitivity")
 colorbar_here.locator = plot.ticker.MaxNLocator(nbins=4)
 colorbar_here.update_ticks()
 plt.savefig(results/f"flat/iso{iso}_R.pdf")
 plt.show()
 plt.close()
-print("Made single plot")
+print("Made single plot of sensitivity")
+
+plt.figure(figsize=(3,2), tight_layout=True)
+img = plt.imshow(1/mRGBG[0], cmap=plot.cmaps["Rr"])
+plt.xticks([])
+plt.yticks([])
+colorbar_here = plot.colorbar(img, location="right")
+colorbar_here.set_label("Correction factor")
+colorbar_here.locator = plot.ticker.MaxNLocator(nbins=4)
+colorbar_here.update_ticks()
+plt.savefig(results/f"flat/iso{iso}_R_correction.pdf")
+plt.show()
+plt.close()
+print("Made single plot of correction factor")
 
 plt.figure(figsize=(5,5), tight_layout=True)
 img = plt.imshow(flat_field)
@@ -101,8 +118,6 @@ def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     return g
 
 correction = 1 / flat_field_gauss
-
-correction = correction[250:-250, 250:-250]
 print(f"Maximum correction factor: {correction.max():.2f}")
 
 X, Y, D = distances_px(correction)
@@ -174,6 +189,7 @@ plt.show()
 plt.close()
 
 difference = correction - g_fit
+diff_max = max([abs(difference.max()), abs(difference.min())])
 
 plt.figure(figsize=(5,5), tight_layout=True)
 img = plt.imshow(difference)
@@ -197,6 +213,22 @@ plt.figure(figsize=(5,2), tight_layout=True)
 plt.hist(difference.ravel() / correction.ravel(), bins=250)
 plt.xlabel("Correction factor (observed - fit)/observed")
 plt.savefig(results/f"flat/iso{iso}_correction_difference_hist_relative.pdf")
+plt.show()
+plt.close()
+
+vmins = [1, 1, -diff_max]
+vmaxs = [correction.max(), correction.max(), diff_max]
+clabels = ["$g$ (Observed)", "$g$ (Best fit)", "Residual"]
+fig, axs = plt.subplots(ncols=3, figsize=(6,2), sharex=True, sharey=True, squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+for data, ax, vmin, vmax, clabel in zip([correction, g_fit, difference], axs, vmins, vmaxs, clabels):
+    img = ax.imshow(data, vmin=vmin, vmax=vmax)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    colorbar_here = plot.colorbar(img)
+    colorbar_here.set_label(clabel)
+    colorbar_here.locator = plot.ticker.MaxNLocator(nbins=4)
+    colorbar_here.update_ticks()
+fig.savefig(results/f"flat/iso{iso}_correction_combined.pdf")
 plt.show()
 plt.close()
 
