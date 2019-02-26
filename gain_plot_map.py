@@ -36,7 +36,7 @@ for gauss, label, cm in zip([gains_combined_gauss, *gains_gauss], ["combined", *
     plt.close()
 print("Made individual maps")
 
-fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,3), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
 axs[0].hist(gains_RGBG[0]   .ravel(), bins=np.linspace(0, 3.5, 250), color="r", edgecolor="r", density=True)
 axs[1].hist(gains_RGBG[1::2].ravel(), bins=np.linspace(0, 3.5, 250), color="g", edgecolor="g", density=True)
 axs[2].hist(gains_RGBG[2]   .ravel(), bins=np.linspace(0, 3.5, 250), color="b", edgecolor="b", density=True)
@@ -48,7 +48,7 @@ for ax in axs:
 axs[0].set_xlim(0, 3.5)
 axs[0].set_ylim(0, 2.5)
 axs[2].set_xlabel("Gain (ADU/e-)")
-axs[1].set_ylabel("Probability density")
+axs[1].set_ylabel("Frequency")
 plt.savefig(results_gain/f"hist_iso{ISO}_RGB.pdf")
 plt.close()
 print("Made RGB histogram")
