@@ -70,7 +70,7 @@ def split_pol_angle(path):
     return val
 
 def split_exposure_time(path):
-    without_letters = path.stem.strip("t_meansd")  # strip underscores, leading t, trailing "mean"/"stds"
+    without_letters = path.stem.strip("t_jmeansd")  # strip underscores, leading t, trailing "mean"/"stds"
     if "_" in without_letters:
         numerator, denominator = without_letters.split("_")
         time = float(numerator)/float(denominator)
