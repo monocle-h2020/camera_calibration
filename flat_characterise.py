@@ -103,6 +103,8 @@ def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
 correction = 1 / flat_field_gauss
 
 correction = correction[250:-250, 250:-250]
+print(f"Maximum correction factor: {correction.max():.2f}")
+
 X, Y, D = distances_px(correction)
 XY = np.stack([X.ravel(), Y.ravel()])
 
