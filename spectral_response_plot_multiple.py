@@ -46,7 +46,7 @@ for i, (curve, camera, ax) in enumerate(zip(curves, cameras, axs)):
         error = curve[5+j] / curve[1+j].max()
         ax.plot(wavelength, mean, c=c)
         ax.grid(True)
+    ax.set_ylabel(camera)
 axs[0].set_xlim(390, 700)
 axs[-1].set_xlabel("Wavelength (nm)")
-axs[0].set_ylabel("Relative sensitivity")
 plt.show()
