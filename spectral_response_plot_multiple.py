@@ -1,6 +1,7 @@
 import numpy as np
 from sys import argv
-from phonecal import io, raw, plot
+from phonecal import io
+from phonecal.general import RMS
 from matplotlib import pyplot as plt
 
 files = io.path_from_input(argv)
@@ -22,7 +23,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     for j, c in enumerate("rgby"):
         mean  = curve[1+j] / curve[1+j].max()
         error = curve[5+j] / curve[1+j].max()
-        print(camera, c, f"RMS: {np.sqrt(np.mean(error**2)):.3f}")
+        print(camera, c, f"RMS: {RMS(error):.3f}")
         plt.plot(wavelength, mean, c=c, ls=style)
         #plt.fill_between(wavelength, mean-error, mean+error, color=c, alpha=0.5)
     plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
