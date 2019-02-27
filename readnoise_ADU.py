@@ -29,4 +29,4 @@ for iso, std in zip(isos, stds):
 
     plot.show_RGBG(gauss_RGBG, colorbar_label=35*" "+"Read noise (ADU)", saveto=results_readnoise/f"ADU_all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
 
-    print(iso)
+    print(f"ISO: {iso} ; Mean: {std_RGBG.mean():.3f} ; Median: {np.median(std_RGBG):.3f} ; Max: {std_RGBG.max():.3f} ; Min: {std_RGBG.min():.3f} ; Standard deviation: {std_RGBG.std():.3f}")
