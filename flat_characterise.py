@@ -31,8 +31,6 @@ sRGBG = sRGBG / normalisation
 
 flat_field = raw.put_together_from_colours(mRGBG, colours)
 flat_field_gauss = gaussMd(flat_field, 10)
-np.save(products/"flatfield.npy", flat_field_gauss)
-print("Saved array")
 
 # selection for further analysis
 selection = np.s_[250:-250, 250:-250]
@@ -138,6 +136,8 @@ popt, pcov = curve_fit(vignette_radial, XY, correction.ravel(), p0=[1, 2, -5, 5,
 standard_errors = np.sqrt(np.diag(pcov))
 
 np.save(results/f"flat/{label}_parameters.npy", np.stack([popt, standard_errors]))
+np.save(products/f"flat_{label}_correction.npy", correction)
+print("Saved look-up table & parameters")
 
 print("Parameter +- Error    ; Relative error")
 for p, s in zip(popt, standard_errors):
