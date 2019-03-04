@@ -24,6 +24,9 @@ def _print_model_parameters(labels, parameters, errors):
         print(f"{label} = {parameter:.5f} +- {error:.5f}")
 
 
+model_generator = {"Linear": generate_linear_model, "Knee": generate_knee_model}
+
+
 def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, max_iso=50000):
     parameters_linear, covariance_linear = np.polyfit(isos, ratios, 1, cov=True)
     errors_linear = np.sqrt(np.diag(covariance_linear))
@@ -38,10 +41,10 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     if R2_linear < 0.9 and R2_knee < 0.9:
         raise ValueError("Could not find an accurate (R^2 >= 0.9) fit to the iso-normalization relation")
     elif R2_linear >= 0.9:
-        model, R2, parameters, errors, labels = model_linear, R2_linear, parameters_linear, errors_linear, ["Slope", "Offset"]
+        model, R2, parameters, errors, labels, model_type = model_linear, R2_linear, parameters_linear, errors_linear, ["Slope", "Offset"], "Linear"
         print("Found linear model [y = ax + b]")
     elif R2_knee >= 0.9:
-        model, R2, parameters, errors, labels = model_knee, R2_knee, parameters_knee, errors_knee, ["Slope", "Offset", "ISO cap"]
+        model, R2, parameters, errors, labels, model_type = model_knee, R2_knee, parameters_knee, errors_knee, ["Slope", "Offset", "ISO cap"], "Knee"
         print(f"Found knee model [y = ax + b, capped at K]")
     # space for extra models here
     else:
@@ -50,7 +53,7 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     _print_model_parameters(labels, parameters, errors)
     print(f"(R^2 = {R2:.6f})")
 
-    return model, R2, parameters, errors
+    return model_type, model, R2, parameters, errors
 
 
 def normalise(data, iso, lookup_table):

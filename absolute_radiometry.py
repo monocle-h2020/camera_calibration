@@ -8,11 +8,15 @@ meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
 phone = io.read_json(root/"info.json")
 
+iso = 23
+exposure_time = 1/3
+
 mean = np.load(meanfile)
 
 bias = np.load(products/"bias.npy")
 dark = np.load(products/"dark.npy")
 
-exposure_time = 1/3
-
 ADU_corrected = mean - bias - dark * exposure_time
+
+ISO_model = io.read_iso_model(products)
+iso_normalization = ISO_model(iso)

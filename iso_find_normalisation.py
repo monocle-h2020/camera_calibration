@@ -34,7 +34,7 @@ ratios = means / means[isos.argmin()]
 ratios_mean = ratios.mean(axis=(1,2))
 ratios_errs = ratios.std (axis=(1,2))
 
-model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=min_iso, max_iso=max_iso)
+model_type, model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=min_iso, max_iso=max_iso)
 
 iso_range = np.arange(0, max_iso+1, 1)
 plt.figure(figsize=(3.3,3), tight_layout=True)
@@ -55,3 +55,6 @@ data         = np.stack([isos, ratios_mean, ratios_errs])
 
 np.save(products/"iso_lookup_table.npy", lookup_table)
 np.save(products/"iso_data.npy"        , data)
+
+model_array = np.stack([len(parameters) * [model_type], parameters, errors])
+np.savetxt(products/"iso_model.dat", model_array, fmt="%s")

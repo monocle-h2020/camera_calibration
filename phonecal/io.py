@@ -4,6 +4,7 @@ import numpy as np
 from pathlib import Path
 from matplotlib import pyplot as plt
 import json
+from .iso import model_generator as iso_model_generator
 
 def load_dng_raw(filename):
     img = rawpy.imread(str(filename))
@@ -143,7 +144,15 @@ def read_iso_lookup_table(products):
     table = np.load(products/"iso_lookup_table.npy")
     return table
 
+def read_iso_model(products):
+    as_array = np.loadtxt(products/"iso_model.dat", dtype=str)
+    model_type = as_array[0,0]
+    parameters = as_array[1].astype(np.float64)
+    errors     = as_array[2].astype(np.float64)
+    model = iso_model_generator[model_type](*parameters)
+    return model
+
 def read_gain_table(path):
     table = np.load(path)
-    iso = split_iso(path)
-    return iso, table
+    ISO = split_iso(path)
+    return ISO, table
