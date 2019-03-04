@@ -12,7 +12,8 @@
 		"bits": 10,
 		"bayer": true,
 		"colours": "RGBG",
-		"pattern": [[1, 0], [2, 3]]
+		"pattern": [[1, 0], [2, 3]],
+		"f-number": 1.7
 	},
 	"software": {
 		"raw": true,
