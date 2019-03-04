@@ -4,6 +4,7 @@
 *.npy
 *.txt
 *.pdf
+*.csv
 data/*
 results/*
 
