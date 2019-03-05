@@ -16,7 +16,9 @@ mean = np.load(meanfile)
 bias = np.load(products/"bias.npy")
 dark = np.load(products/"dark.npy")
 
-ADU_corrected = mean - bias - dark * exposure_time
+corrected_ADU = mean - bias - dark * exposure_time  # ADU
 
 ISO_model = io.read_iso_model(products)
 iso_normalization = ISO_model(iso)
+
+corrected_exposure = (phone["camera"]["f-number"]**2 / (exposure_time * iso_normalization) ) * corrected_ADU  # norm. ADU sr^-1 s^-1
