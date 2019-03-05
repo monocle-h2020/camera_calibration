@@ -59,3 +59,10 @@ def to_RGB_array(raw_image, color_pattern):
 def cut_out_spectrum(raw_image):
     cut = raw_image[ymin:ymax, xmin:xmax]
     return cut
+
+
+def multiply_RGBG(data, colours, factors):
+    data_new = data.copy()
+    for j in range(4):
+        data_new[colours == j] *= factors[j]
+    return data_new

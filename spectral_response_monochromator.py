@@ -176,6 +176,15 @@ plt.savefig(results/"spectral_response/combined_spectra.pdf")
 plt.show()
 plt.close()
 
-result = np.array(np.stack([all_wvl, *flat_means_mask.T, *flat_errs_mask.T]))
+peaks = flat_means_mask.max(axis=0)
+response_normalised = (flat_means_mask / peaks).data
+errors_normalised = (flat_errs_mask / peaks).data
+
+result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
 np.save(results/"spectral_response/monochromator_curve.npy", result)
 
+bandwidths = np.trapz(response_normalised, x=all_wvl, axis=0)
+np.savetxt(products/"spectral_bandwidths.dat", bandwidths)
+print("Effective spectral bandwidths:")
+for band, width in zip([*"RGB", "G2"], bandwidths):
+    print(f"{band:<2}: {width:5.1f} nm")

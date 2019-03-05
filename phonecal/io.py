@@ -162,3 +162,17 @@ def read_gain_table(path):
     table = np.load(path)
     ISO = split_iso(path)
     return ISO, table
+
+def read_spectral_responses(results):
+    try:  # use monochromator data if available
+        as_array = np.load(results/"spectral_response/monochromator_curve.npy")
+    except FileNotFoundError:
+        as_array = np.load(results/"spectral_response/curve.npy")
+    wavelengths = as_array[0]
+    RGBG2 = as_array[1:5]
+    RGBG2_error = as_array[5:]
+    return wavelengths, RGBG2, RGBG2_error
+
+def read_spectral_bandwidths(products):
+    bandwidths = np.loadtxt(products/"spectral_bandwidths.dat")
+    return bandwidths
