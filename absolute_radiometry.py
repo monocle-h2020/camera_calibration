@@ -13,7 +13,10 @@ colours = io.load_colour(stacks)
 iso = 23
 exposure_time = 1/3
 
-mean = np.load(meanfile)
+try:
+    mean = np.load(meanfile)
+except OSError:
+    mean = io.load_dng_raw(meanfile).raw_image
 
 bias = np.load(products/"bias.npy")
 dark = np.load(products/"dark.npy")
