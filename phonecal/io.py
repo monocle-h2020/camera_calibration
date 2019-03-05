@@ -5,6 +5,7 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 import json
 from .iso import model_generator as iso_model_generator
+from .flat import apply_vignette_radial
 
 def load_dng_raw(filename):
     img = rawpy.imread(str(filename))
@@ -151,6 +152,11 @@ def read_iso_model(products):
     errors     = as_array[2].astype(np.float64)
     model = iso_model_generator[model_type](*parameters)
     return model
+
+def read_flat_field_correction(products, shape):
+    parameters, errors = np.load(products/"flat_parameters.npy")
+    correction_map = apply_vignette_radial(shape, parameters)
+    return correction_map
 
 def read_gain_table(path):
     table = np.load(path)

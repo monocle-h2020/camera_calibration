@@ -76,10 +76,15 @@ def Rsquare(y, y_fit, **kwargs):
 def RMS(x, **kwargs):
     return np.sqrt(np.mean(x**2, **kwargs))
 
-def distances_px(array):
-    x = np.arange(array.shape[1])
-    y = np.arange(array.shape[0])
+def generate_XY(shape):
+    x = np.arange(shape[1])
+    y = np.arange(shape[0])
     X, Y = np.meshgrid(x, y)
+    XY = np.stack([X.ravel(), Y.ravel()])
+    return X, Y, XY
+
+def distances_px(array):
+    X, Y, _ = generate_XY(array.shape)
     x_center, y_center = array.shape[1]/2, array.shape[0]/2
     distance = np.sqrt((X - x_center)**2 + (Y - y_center)**2)
     return X, Y, distance
