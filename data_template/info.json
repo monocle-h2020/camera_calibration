@@ -13,7 +13,8 @@
 		"bayer": true,
 		"colours": "RGBG",
 		"pattern": [[1, 0], [2, 3]],
-		"f-number": 1.7
+		"f-number": 1.7,
+		"pixel_size": 1.44
 	},
 	"software": {
 		"raw": true,

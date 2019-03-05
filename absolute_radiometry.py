@@ -30,3 +30,5 @@ colours_edges = colours[flat.clip_border]
 flat_field_correction = io.read_flat_field_correction(products, corrected_edges.shape)
 
 corrected_flat = flat_field_correction * corrected_edges  # norm. ADU sr^-1 s^-1
+
+pixel_size_m = phone["camera"]["pixel_size"] * 1e-6
