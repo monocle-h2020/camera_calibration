@@ -36,3 +36,7 @@ corrected_pixel_size = corrected_flat / pixel_area_m  # norm. ADU m^-2 sr^-1 s^-
 
 effective_bandwidths = io.read_spectral_bandwidths(products) * 1e-9  # m
 corrected_bandwidth = raw.multiply_RGBG(corrected_pixel_size, colours_edges, 1/effective_bandwidths)  # norm. ADU m^-2 sr^-1 s^-1 m^-1
+
+hc = 1.9864459e-25  # J m
+
+corrected_RRU = hc * corrected_bandwidth
