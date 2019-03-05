@@ -32,7 +32,7 @@ flat_field_correction = io.read_flat_field_correction(products, corrected_edges.
 corrected_flat = flat_field_correction * corrected_edges  # norm. ADU sr^-1 s^-1
 
 pixel_area_m = (phone["camera"]["pixel_size"] * 1e-6)**2
-corrected_pixel_size = corrected_flat / pixel_area_m
+corrected_pixel_size = corrected_flat / pixel_area_m  # norm. ADU m^-2 sr^-1 s^-1
 
-effective_bandwidths = io.read_spectral_bandwidths(products)
-corrected_bandwidth = raw.multiply_RGBG(corrected_pixel_size, colours_edges, 1/effective_bandwidths)
+effective_bandwidths = io.read_spectral_bandwidths(products) * 1e-9  # m
+corrected_bandwidth = raw.multiply_RGBG(corrected_pixel_size, colours_edges, 1/effective_bandwidths)  # norm. ADU m^-2 sr^-1 s^-1 m^-1
