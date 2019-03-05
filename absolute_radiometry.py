@@ -32,3 +32,4 @@ flat_field_correction = io.read_flat_field_correction(products, corrected_edges.
 corrected_flat = flat_field_correction * corrected_edges  # norm. ADU sr^-1 s^-1
 
 pixel_size_m = phone["camera"]["pixel_size"] * 1e-6
+corrected_pixel_size = corrected_flat / pixel_size_m
