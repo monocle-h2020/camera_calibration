@@ -25,7 +25,7 @@ mRGBG, offsets = raw.pull_apart(mean, colours)
 sRGBG, offsets = raw.pull_apart(stds, colours)
 
 # rescale to normalised values
-normalisation = mRGBG.max(axis=(1,2))[:,np.newaxis,np.newaxis]
+normalisation = gaussMd(mRGBG, sigma=(0,5,5)).max(axis=(1,2))[:,np.newaxis,np.newaxis]
 mRGBG = mRGBG / normalisation
 sRGBG = sRGBG / normalisation
 
