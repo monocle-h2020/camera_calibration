@@ -22,17 +22,5 @@ print("Fitting sRGB...", end=" ", flush=True)
 
 normalisations, offsets, gammas, R2s = lin.fit_sRGB_generic(intensities, jmeans)
 
-for param, label, label_simple in zip([normalisations, offsets, gammas, R2s], ["Input normalization", "Offset (ADU)", "Gamma", "$R^2$"], ["normalization", "offset", "gamma", "R2"]):
-    plt.figure(figsize=(4,4), tight_layout=True)
-    for j, c in enumerate("rgb"):
-        P = param[...,j].ravel()
-        P = P[~np.isnan(P)]
-        plt.hist(P, bins=250, color=c, alpha=0.7)
-    plt.xlabel(label)
-    plt.ylabel("Frequency")
-    plt.title(f"{len(P)} pixels ({len(P)/(param.shape[0] * param.shape[1])*100:.1f}%)")
-    plt.savefig(results/f"linearity/jpeg_{label_simple}.pdf")
-    plt.show()
-    plt.close()
-
+for param, label_simple in zip([normalisations, offsets, gammas, R2s], ["normalization", "offset", "gamma", "R2"]):
     np.save(results/f"linearity/{label_simple}.npy", param)
