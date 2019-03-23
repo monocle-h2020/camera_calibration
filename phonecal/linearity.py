@@ -1,5 +1,5 @@
 import numpy as np
-from .general import Rsquare
+from .general import Rsquare, curve_fit
 from scipy.stats import pearsonr
 
 polariser_angle = 74
@@ -18,6 +18,49 @@ def malus_error(angle0, angle1=polariser_angle, I0=1., sigma_angle0=2., sigma_an
     total = np.sqrt(s_I2 + s_a2)
 
     return total
+
+
+def sRGB(I):
+    u = I/255.
+    u_small = np.where(u < 0.0031308)
+    u_large = np.where(u >=0.0031308)
+    u[u_small] = 12.92 * u[u_small]
+    u[u_large] = 1.055 * u[u_large]**(1/2.4) - 0.055
+    u *= 255
+    return u
+
+
+def sRGB_generic(I, normalization=255, offset=0, gamma=2.4):
+    u = (I + offset)/normalization
+    u_small = np.where(u < 0.0031308)
+    u_large = np.where(u >=0.0031308)
+    u[u_small] = 12.92 * u[u_small]
+    u[u_large] = 1.055 * u[u_large]**(1/gamma) - 0.055
+    u *= 255
+    u = np.clip(u, 0, 255)
+    return u
+
+
+def fit_sRGB_generic(intensities, jmeans):
+    normalizations = np.tile(np.nan, jmeans.shape[1:])
+    offsets = normalizations.copy()
+    gammas = normalizations.copy()
+    Rsquares = normalizations.copy()
+    try:
+        for i in range(jmeans.shape[1]):
+            for j in range(jmeans.shape[2]):
+                for k in range(jmeans.shape[3]):
+                    popt, pcov = curve_fit(sRGB_generic, intensities, jmeans[:,i,j,k], p0=[1, 0, 2.2])
+                    normalizations[i,j,k], offsets[i,j,k], gammas[i,j,k] = popt
+                    jmeans_fit = sRGB_generic(intensities, *popt)
+                    Rsquares[i,j,k] = Rsquare(jmeans[:,i,j,k], jmeans_fit)
+            if i%10 == 0:
+                print(100*i/jmeans.shape[1])
+    except BaseException as e:  # BaseException so we also catch SystemExit and KeyboardInterrupt
+        print(e)
+        pass
+    finally:
+        return normalizations, offsets, gammas, Rsquares
 
 
 def linear_R2(x, y, saturate=4000):
