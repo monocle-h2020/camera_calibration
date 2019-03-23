@@ -30,8 +30,8 @@ def sRGB(I):
     return u
 
 
-def sRGB_generic(I, normalization=255, offset=0, gamma=2.4):
-    u = (I + offset)/normalization
+def sRGB_generic(I, normalization=255, gamma=2.4):
+    u = I/normalization
     u_small = np.where(u < 0.0031308)
     u_large = np.where(u >=0.0031308)
     u[u_small] = 12.92 * u[u_small]
@@ -43,15 +43,14 @@ def sRGB_generic(I, normalization=255, offset=0, gamma=2.4):
 
 def fit_sRGB_generic(intensities, jmeans):
     normalizations = np.tile(np.nan, jmeans.shape[1:])
-    offsets = normalizations.copy()
     gammas = normalizations.copy()
     Rsquares = normalizations.copy()
     try:
         for i in range(jmeans.shape[1]):
             for j in range(jmeans.shape[2]):
                 for k in range(jmeans.shape[3]):
-                    popt, pcov = curve_fit(sRGB_generic, intensities, jmeans[:,i,j,k], p0=[1, 0, 2.2])
-                    normalizations[i,j,k], offsets[i,j,k], gammas[i,j,k] = popt
+                    popt, pcov = curve_fit(sRGB_generic, intensities, jmeans[:,i,j,k], p0=[1, 2.2])
+                    normalizations[i,j,k], gammas[i,j,k] = popt
                     jmeans_fit = sRGB_generic(intensities, *popt)
                     Rsquares[i,j,k] = Rsquare(jmeans[:,i,j,k], jmeans_fit)
             if i%10 == 0:
@@ -60,7 +59,7 @@ def fit_sRGB_generic(intensities, jmeans):
         print(e)
         pass
     finally:
-        return normalizations, offsets, gammas, Rsquares
+        return normalizations, gammas, Rsquares
 
 
 def linear_R2(x, y, saturate=4000):

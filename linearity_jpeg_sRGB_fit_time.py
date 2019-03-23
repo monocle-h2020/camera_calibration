@@ -17,5 +17,5 @@ print("Fitting sRGB...", end=" ", flush=True)
 
 normalisations, offsets, gammas, R2s = lin.fit_sRGB_generic(times, jmeans)
 
-for param, label_simple in zip([normalisations, offsets, gammas, R2s], ["normalization", "offset", "gamma", "R2"]):
+for param, label_simple in zip([normalisations, gammas, R2s], ["normalization", "gamma", "R2"]):
     np.save(results/f"linearity/{label_simple}.npy", param)
