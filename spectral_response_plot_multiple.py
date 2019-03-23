@@ -40,15 +40,25 @@ plt.savefig("results/spectral_responses.pdf")
 plt.show()
 plt.close()
 
-fig, axs = plt.subplots(nrows=number_of_cameras, sharex=True, sharey=True, figsize=(7,number_of_cameras*2), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-for i, (curve, camera, ax) in enumerate(zip(curves, cameras, axs)):
+plt.figure(figsize=(7,3), tight_layout=True)
+for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
-    for j, c in enumerate("rgby"):
-        mean  = curve[1+j] / curve[1+j].max()
-        error = curve[5+j] / curve[1+j].max()
-        ax.plot(wavelength, mean, c=c)
-        ax.grid(True)
-    ax.set_ylabel(camera)
-axs[0].set_xlim(390, 700)
-axs[-1].set_xlabel("Wavelength (nm)")
+    means = curve[1:5] / curve[1:5].max(axis=1)[:, np.newaxis]
+    G = means[1::2].mean(axis=0)
+    means_RGB = np.stack([means[0], G, means[2]])
+    for j, c in enumerate("rgb"):
+        mean  = means_RGB[j]
+        over_20_percent = np.where(mean >= 0.2)[0]
+        min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
+        plt.plot(wavelength, mean, c=c, ls=style)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
+plt.grid(True)
+plt.xticks(np.arange(0,1000,50))
+plt.xlim(390, 700)
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Relative sensitivity")
+plt.ylim(0, 1.02)
+plt.legend(loc="best")
+plt.savefig("results/spectral_responses_RGB.pdf")
 plt.show()
+plt.close()
