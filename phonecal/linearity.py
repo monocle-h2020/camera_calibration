@@ -69,7 +69,7 @@ def sRGB_compare_gammas(intensities, jmeans, gammas=[2.2, 2.4]):
         for g, gamma in enumerate(gammas):
             sRGB = lambda I, normalization: sRGB_generic(I, normalization, gamma=gamma)
             for i in range(jmeans.shape[1]):
-                for j in range(25):
+                for j in range(jmeans.shape[2]):
                     for k in range(jmeans.shape[3]):
                         popt, pcov = curve_fit(sRGB, intensities, jmeans[:,i,j,k], p0=[1])
                         normalizations[g,i,j,k] = popt[0]
