@@ -21,4 +21,12 @@ saturation = 0.95 * max_value
 
 print("Fitting sRGB...")
 
+gammas = [2.2, 2.4]
 normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gammas(intensities, jmeans)
+
+for g, gamma in gammas:
+    print(gamma)
+    for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
+        p = param[g]
+        np.save(results/f"linearity/{label_simple}_gamma{gamma}.npy", p)
+        print(f"Saved {label_simple}.npy")
