@@ -21,4 +21,4 @@ saturation = 0.95 * max_value
 
 print("Fitting sRGB...")
 
-normalizations, Rsquares, RMSes = lin.sRGB_compare_gammas(intensities, jmeans)
+normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gammas(intensities, jmeans)

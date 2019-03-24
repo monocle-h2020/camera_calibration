@@ -65,6 +65,7 @@ def sRGB_compare_gammas(intensities, jmeans, gammas=[2.2, 2.4]):
     normalizations = np.tile(np.nan, (len(gammas), *jmeans.shape[1:]))
     Rsquares = normalizations.copy()
     RMSes = normalizations.copy()
+    RMSes_relative = normalizations.copy()
     try:
         for g, gamma in enumerate(gammas):
             sRGB = lambda I, normalization: sRGB_generic(I, normalization, gamma=gamma)
@@ -77,12 +78,13 @@ def sRGB_compare_gammas(intensities, jmeans, gammas=[2.2, 2.4]):
                         jmeans_fit = sRGB(intensities[ind], *popt)
                         Rsquares[g,i,j,k] = Rsquare(jmeans[:,i,j,k][ind], jmeans_fit)
                         RMSes[g,i,j,k] = RMS(jmeans[:,i,j,k][ind] - jmeans_fit)
+                        RMSes_relative[g,i,j,k] = RMS(1 - jmeans[:,i,j,k][ind] / jmeans_fit)
                 if i%30 == 0:
                     print(100*i/jmeans.shape[1])
     except BaseException:  # BaseException so we also catch SystemExit and KeyboardInterrupt
         pass
     finally:
-        return normalizations, Rsquares, RMSes
+        return normalizations, Rsquares, RMSes, RMSes_relative
 
 
 def linear_R2(x, y, saturate=4000):
