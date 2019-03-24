@@ -13,7 +13,7 @@ print("Read means")
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
-print("Fitting sRGB...", end=" ", flush=True)
+print("Fitting sRGB...")
 
 normalisations, gammas, R2s = lin.fit_sRGB_generic(times, jmeans)
 

@@ -18,7 +18,7 @@ intensities_errors = lin.malus_error(angles, offset_angle, sigma_angle0=1, sigma
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
-print("Fitting sRGB...", end=" ", flush=True)
+print("Fitting sRGB...")
 
 normalisations, gammas, R2s = lin.fit_sRGB_generic(intensities, jmeans)
 
