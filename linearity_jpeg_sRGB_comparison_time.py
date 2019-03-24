@@ -18,7 +18,7 @@ print("Fitting sRGB...")
 gammas = [2.2, 2.4]
 normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gammas(times, jmeans, gammas=gammas)
 
-for g, gamma in gammas:
+for g, gamma in enumerate(gammas):
     print(gamma)
     for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
         p = param[g]
