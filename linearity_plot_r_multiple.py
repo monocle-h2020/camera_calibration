@@ -21,11 +21,11 @@ def load_jpeg(path):
 r_raw  = [  np.load(raw_path ) for raw_path  in r_raw_paths ]
 r_jpeg = [load_jpeg(jpeg_path) for jpeg_path in r_jpeg_paths]
 
-lower_limit = 0.88
+lower_limit = 0.85
 
-bins = np.linspace(lower_limit, 1.0, 100)
+bins = np.linspace(lower_limit, 1.0, 150)
 
-fig, axs = plt.subplots(nrows=len(r_raw), sharex=True, sharey=True, squeeze=True, tight_layout=True, figsize=(4,1.1*len(r_raw)), gridspec_kw={"wspace":0, "hspace":0})
+fig, axs = plt.subplots(nrows=len(r_raw), sharex=True, sharey=True, squeeze=True, tight_layout=True, figsize=(8,1.1*len(r_raw)), gridspec_kw={"wspace":0, "hspace":0})
 for ax, raw_, jpeg_, camera in zip(axs, r_raw, r_jpeg, cameras):
     raw = raw_[~np.isnan(raw_)]
     print(camera)
@@ -44,7 +44,9 @@ for ax, raw_, jpeg_, camera in zip(axs, r_raw, r_jpeg, cameras):
     print(f"RAW pixels with r < {lin.linearity_limit}: {len(bad_pixels)}")
 axs[0] .set_xlim(lower_limit, 1)
 axs[0] .set_yscale("log")
-axs[0] .set_ylim(ymin=0.9)
+axs[0] .set_ylim(ymin=10)
+for ax in axs:
+    ax.set_yticks([1e2, 1e4, 1e6])
 axs[-1].set_xlabel("Pearson $r$")
 fig.savefig("results/linearity.pdf")
 plt.show()
