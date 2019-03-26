@@ -4,7 +4,7 @@ from phonecal import io, linearity as lin
 from phonecal.general import Rsquare, curve_fit, RMS
 from matplotlib import pyplot as plt
 
-folder = io.path_from_input(argv)
+folder, gamma = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
 
@@ -19,14 +19,11 @@ intensities_errors = lin.malus_error(angles, offset_angle, sigma_angle0=1, sigma
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
+print(f"Gamma = {gamma}")
 print("Fitting sRGB...")
 
-gammas = [2.2, 2.4]
-normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gammas(intensities, jmeans)
+normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gamma(intensities, jmeans, gamma=gamma)
 
-for g, gamma in enumerate(gammas):
-    print(gamma)
-    for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
-        p = param[g]
-        np.save(results/f"linearity/{label_simple}_gamma{gamma}.npy", p)
-        print(f"Saved {label_simple}.npy")
+for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
+    np.save(results/f"linearity/{label_simple}_gamma{gamma}.npy", param)
+    print(f"Saved {label_simple}_gamma{gamma}.npy")
