@@ -4,7 +4,7 @@ from phonecal import io, linearity as lin
 from matplotlib import pyplot as plt
 
 folder, gamma = io.path_from_input(argv)
-gamma = float(gamma)
+gamma = float(str(gamma))
 root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
 
