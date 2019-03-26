@@ -3,7 +3,8 @@ from sys import argv
 from phonecal import io, linearity as lin
 from matplotlib import pyplot as plt
 
-folder = io.path_from_input(argv)
+folder, gamma = io.path_from_input(argv)
+gamma = float(gamma)
 root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
 
@@ -13,14 +14,11 @@ print("Read means")
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
+print(f"Gamma = {gamma}")
 print("Fitting sRGB...")
 
-gammas = [2.2, 2.4]
-normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gammas(times, jmeans, gammas=gammas)
+normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gamma(times, jmeans, gamma=gamma)
 
-for g, gamma in enumerate(gammas):
-    print(gamma)
-    for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
-        p = param[g]
-        np.save(results/f"linearity/{label_simple}_gamma{gamma}.npy", p)
-        print(f"Saved {label_simple}.npy")
+for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
+    np.save(results/f"linearity/{label_simple}_gamma{gamma}.npy", param)
+    print(f"Saved {label_simple}_gamma{gamma}.npy")

@@ -61,26 +61,25 @@ def fit_sRGB_generic(intensities, jmeans):
     finally:
         return normalizations, gammas, Rsquares
 
-def sRGB_compare_gammas(intensities, jmeans, gammas=[2.2, 2.4]):
-    normalizations = np.tile(np.nan, (len(gammas), *jmeans.shape[1:]))
+def sRGB_compare_gamma(intensities, jmeans, gamma):
+    normalizations = np.tile(np.nan, jmeans.shape[1:])
     Rsquares = normalizations.copy()
     RMSes = normalizations.copy()
     RMSes_relative = normalizations.copy()
+    sRGB = lambda I, normalization: sRGB_generic(I, normalization, gamma=gamma)
     try:
-        for g, gamma in enumerate(gammas):
-            sRGB = lambda I, normalization: sRGB_generic(I, normalization, gamma=gamma)
-            for i in range(jmeans.shape[1]):
-                for j in range(jmeans.shape[2]):
-                    for k in range(jmeans.shape[3]):
-                        popt, pcov = curve_fit(sRGB, intensities, jmeans[:,i,j,k], p0=[1])
-                        normalizations[g,i,j,k] = popt[0]
-                        ind = np.where(jmeans[:,i,j,k] < 255)
-                        jmeans_fit = sRGB(intensities[ind], *popt)
-                        Rsquares[g,i,j,k] = Rsquare(jmeans[:,i,j,k][ind], jmeans_fit)
-                        RMSes[g,i,j,k] = RMS(jmeans[:,i,j,k][ind] - jmeans_fit)
-                        RMSes_relative[g,i,j,k] = RMS(1 - jmeans[:,i,j,k][ind] / jmeans_fit)
-                if i%30 == 0:
-                    print(100*i/jmeans.shape[1])
+        for i in range(jmeans.shape[1]):
+            for j in range(jmeans.shape[2]):
+                for k in range(jmeans.shape[3]):
+                    popt, pcov = curve_fit(sRGB, intensities, jmeans[:,i,j,k], p0=[1])
+                    normalizations[i,j,k] = popt[0]
+                    ind = np.where(jmeans[:,i,j,k] < 255)
+                    jmeans_fit = sRGB(intensities[ind], *popt)
+                    Rsquares[i,j,k] = Rsquare(jmeans[:,i,j,k][ind], jmeans_fit)
+                    RMSes[i,j,k] = RMS(jmeans[:,i,j,k][ind] - jmeans_fit)
+                    RMSes_relative[i,j,k] = RMS(1 - jmeans[:,i,j,k][ind] / jmeans_fit)
+            if i%30 == 0:
+                print(100*i/jmeans.shape[1])
     except BaseException:  # BaseException so we also catch SystemExit and KeyboardInterrupt
         pass
     finally:
