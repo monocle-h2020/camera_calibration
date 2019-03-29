@@ -33,7 +33,11 @@ coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.n
 img  = io.load_dng_raw(file)
 exif = io.load_exif(file)
 
-bias = phone["software"]["bias"]
+try:
+    bias = io.load_bias(products)
+except FileNotFoundError:
+    bias = phone["software"]["bias"]
+    print("Using EXIF bias value")
 values = img.raw_image.astype(np.float32) - bias
 
 xmin, xmax = 2150, 3500
