@@ -110,7 +110,7 @@ def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, tit
     plt.xlim(390, 700)
     plt.xlabel("Wavelength (nm)")
     plt.ylabel("Relative sensitivity")
-    plt.ylim(0, 1.01)
+    plt.ylim(0, 1.02)
     plt.grid()
     plt.legend(loc="best")
     if saveto is not None:
@@ -133,3 +133,25 @@ SMARTS_thick = stacked_thick / smartsx_smooth
 SMARTS_thick /= SMARTS_thick.max(axis=1)[:,np.newaxis]
 
 plot_spectral_response(wvl, SMARTS_thin, SMARTS_thick, curves, "SMARTS2", saveto="results/ispex_smarts2.pdf")
+
+BB_spec = np.stack([BB_thin, BB_thick]).mean(axis=0)
+SMARTS_spec = np.stack([SMARTS_thin, SMARTS_thick]).mean(axis=0)
+
+plt.figure(figsize=(7,3), tight_layout=True)
+for j, c in enumerate("rgb"):
+    plt.plot(curves[0], curves[1+j], c=c)
+    plt.plot(wvl, SMARTS_spec[1+j], c=c, ls="--")
+    plt.plot(wvl, BB_spec[1+j], c=c, ls=":")
+    print(f"{c}: BB vs SMARTS: {RMS(BB_spec[1+j] - SMARTS_spec[1+j]):.2f}  ;  thick: {RMS(BB_spec[1+j] - SMARTS_spec[1+j]):.2f}")
+plt.plot([-10], [-10], c='k', label="Monochromator")
+plt.plot([-10], [-10], c='k', ls="--", label="iSPEX (SMARTS2)")
+plt.plot([-10], [-10], c='k', ls=":" , label="iSPEX (black-body)")
+plt.xlim(390, 700)
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Relative sensitivity")
+plt.ylim(0, 1.02)
+plt.grid()
+plt.legend(loc="best")
+plt.savefig("results/spectral_response_ispex.pdf")
+plt.show()
+plt.close()
