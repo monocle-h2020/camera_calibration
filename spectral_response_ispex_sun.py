@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from phonecal import raw, plot, io, wavelength
+from phonecal import raw, plot, io, wavelength, flat
 from phonecal.general import blackbody, RMS, gauss1d
 
 #wavelength, spectrometer = np.loadtxt("reference_spectra/sun.txt", skiprows=13, unpack=True)
@@ -39,6 +39,9 @@ except FileNotFoundError:
     bias = phone["software"]["bias"]
     print("Using EXIF bias value")
 values = img.raw_image.astype(np.float32) - bias
+
+flat_correction = io.read_flat_field_correction(products, values.shape)
+values = values / flat_correction
 
 xmin, xmax = 2150, 3500
 ymin_thin , ymax_thin  =  700, 1050
