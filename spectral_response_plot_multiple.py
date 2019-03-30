@@ -21,8 +21,8 @@ plt.figure(figsize=(7,3), tight_layout=True)
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
     for j, c in enumerate("rgby"):
-        mean  = curve[1+j] / curve[1+j].max()
-        error = curve[5+j] / curve[1+j].max()
+        mean  = curve[1+j]
+        error = curve[5+j]
         over_20_percent = np.where(mean >= 0.2)[0]
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
         print(camera, c, f"RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm")
@@ -43,7 +43,7 @@ plt.close()
 plt.figure(figsize=(7,3), tight_layout=True)
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
-    means = curve[1:5] / curve[1:5].max(axis=1)[:, np.newaxis]
+    means = curve[1:5]
     G = means[1::2].mean(axis=0)
     means_RGB = np.stack([means[0], G, means[2]])
     for j, c in enumerate("rgb"):
