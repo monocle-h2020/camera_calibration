@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io
+from phonecal import io, spectral
 from phonecal.general import RMS
 from matplotlib import pyplot as plt
 
@@ -25,7 +25,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         error = curve[5+j]
         over_20_percent = np.where(mean >= 0.2)[0]
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
-        print(camera, c, f"RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm")
+        print(f"{camera:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
         plt.plot(wavelength, mean, c=c, ls=style)
         #plt.fill_between(wavelength, mean-error, mean+error, color=c, alpha=0.5)
     plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
@@ -50,6 +50,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         mean  = means_RGB[j]
         over_20_percent = np.where(mean >= 0.2)[0]
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
+        print(f"{camera:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
         plt.plot(wavelength, mean, c=c, ls=style)
     plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
 plt.grid(True)

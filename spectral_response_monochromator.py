@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io, raw, plot
+from phonecal import io, raw, plot, spectral
 from matplotlib import pyplot as plt
 
 folder, wvl1, wvl2 = io.path_from_input(argv)
@@ -183,7 +183,7 @@ plt.close()
 result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
 np.save(results/"spectral_response/monochromator_curve.npy", result)
 
-bandwidths = np.trapz(response_normalised, x=all_wvl, axis=0)
+bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
 np.savetxt(products/"spectral_bandwidths.dat", bandwidths)
 print("Effective spectral bandwidths:")
 for band, width in zip([*"RGB", "G2"], bandwidths):
