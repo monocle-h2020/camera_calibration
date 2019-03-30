@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
 from phonecal import raw, plot, io, wavelength, flat
-from phonecal.general import blackbody, RMS, gauss1d
+from phonecal.general import blackbody, RMS, gauss1d, curve_fit
 
 #wavelength, spectrometer = np.loadtxt("reference_spectra/sun.txt", skiprows=13, unpack=True)
 #spectrometer /= spectrometer[wavelength == 500]
@@ -41,7 +41,7 @@ except FileNotFoundError:
 values = img.raw_image.astype(np.float32) - bias
 
 flat_correction = io.read_flat_field_correction(products, values.shape)
-values = values / flat_correction
+values = values * flat_correction
 
 xmin, xmax = 2150, 3500
 ymin_thin , ymax_thin  =  700, 1050
@@ -89,8 +89,8 @@ lambdarange, all_interpolated_thick = wavelength.interpolate_multi(wavelengths_t
 stacked_thin  = wavelength.stack(lambdarange, all_interpolated_thin )
 stacked_thick = wavelength.stack(lambdarange, all_interpolated_thick)
 
-stacked_thin [1:] /= stacked_thin [1:].max(axis=1)[:,np.newaxis]
-stacked_thick[1:] /= stacked_thick[1:].max(axis=1)[:,np.newaxis]
+stacked_thin [1:] /= stacked_thin [1:].max()
+stacked_thick[1:] /= stacked_thick[1:].max()
 
 ind = np.where(lambdarange % 2 == 0)[0]
 stacked_thin  = stacked_thin [:, ind]
@@ -102,17 +102,17 @@ wvl = wvl[ind]
 
 smartsx_smooth = gauss1d(smartsx, 10)
 
-def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, title="", saveto=None):
+def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, title="", saveto=None, label_thin = "narrow_slit", label_thick="broad slit"):
     print(title)
     plt.figure(figsize=(7,3), tight_layout=True)
     for j, c in enumerate("rgb"):
         plt.plot(monochromator[0], monochromator[1+j], c=c)
         plt.plot(wavelength, thin_spec [1+j], c=c, ls="--")
-        plt.plot(wavelength, thick_spec[1+j], c=c, ls="-.")
-        print(f"{c}: thin: {RMS(monochromator[1+j] - thin_spec[1+j]):.2f}  ;  thick: {RMS(monochromator[1+j] - thick_spec[1+j]):.2f}")
+        plt.plot(wavelength, thick_spec[1+j], c=c, ls=":" )
+        print(f"{c}: {label_thin}: {RMS(monochromator[1+j] - thin_spec[1+j]):.2f}  ;  {label_thick}: {RMS(monochromator[1+j] - thick_spec[1+j]):.2f}")
     plt.plot([-10], [-10], c='k', label="Monochromator")
-    plt.plot([-10], [-10], c='k', ls="--", label="iSPEX (narrow slit)")
-    plt.plot([-10], [-10], c='k', ls="-.", label="iSPEX (broad slit)")
+    plt.plot([-10], [-10], c='k', ls="--", label=f"iSPEX ({label_thin})")
+    plt.plot([-10], [-10], c='k', ls=":" , label=f"iSPEX ({label_thick})")
     plt.title(title)
     plt.xlim(390, 700)
     plt.xlabel("Wavelength (nm)")
@@ -127,38 +127,46 @@ def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, tit
 
 curves = np.load(results/"spectral_response/monochromator_curve.npy")
 
+plot_spectral_response(wvl, stacked_thin, stacked_thick, curves, "Original", saveto="results/ispex_original.pdf")
+
 BB_thin  = stacked_thin  / BB
-BB_thin  /= BB_thin .max(axis=1)[:,np.newaxis]
+BB_thin  /= BB_thin [1:].max()
 BB_thick = stacked_thick / BB
-BB_thick /= BB_thick.max(axis=1)[:,np.newaxis]
+BB_thick /= BB_thick[1:].max()
 
 plot_spectral_response(wvl, BB_thin, BB_thick, curves, "Black-body", saveto="results/ispex_black_body.pdf")
 
-SMARTS_thin = stacked_thin / smartsx_smooth
-SMARTS_thin /= SMARTS_thin.max(axis=1)[:,np.newaxis]
+SMARTS_thin  = stacked_thin / smartsx_smooth
+SMARTS_thin  /= SMARTS_thin [1:].max()
 SMARTS_thick = stacked_thick / smartsx_smooth
-SMARTS_thick /= SMARTS_thick.max(axis=1)[:,np.newaxis]
+SMARTS_thick /= SMARTS_thick[1:].max()
 
 plot_spectral_response(wvl, SMARTS_thin, SMARTS_thick, curves, "SMARTS2", saveto="results/ispex_smarts2.pdf")
 
 BB_spec = np.stack([BB_thin, BB_thick]).mean(axis=0)
 SMARTS_spec = np.stack([SMARTS_thin, SMARTS_thick]).mean(axis=0)
 
-plt.figure(figsize=(7,3), tight_layout=True)
-for j, c in enumerate("rgb"):
-    plt.plot(curves[0], curves[1+j], c=c)
-    plt.plot(wvl, SMARTS_spec[1+j], c=c, ls="--")
-    plt.plot(wvl, BB_spec[1+j], c=c, ls=":")
-    print(f"{c}: BB vs SMARTS: {RMS(BB_spec[1+j] - SMARTS_spec[1+j]):.2f}  ;  thick: {RMS(BB_spec[1+j] - SMARTS_spec[1+j]):.2f}")
-plt.plot([-10], [-10], c='k', label="Monochromator")
-plt.plot([-10], [-10], c='k', ls="--", label="iSPEX (SMARTS2)")
-plt.plot([-10], [-10], c='k', ls=":" , label="iSPEX (black-body)")
-plt.xlim(390, 700)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Relative sensitivity")
-plt.ylim(0, 1.02)
-plt.grid()
-plt.legend(loc="best")
-plt.savefig("results/spectral_response_ispex.pdf")
-plt.show()
-plt.close()
+plot_spectral_response(wvl, SMARTS_spec, BB_spec, curves, title="BB and SMARTS2", label_thin="SMARTS2", label_thick="black-body", saveto="results/ispex_both.pdf")
+
+transwvl, transmission = np.load("reference_spectra/transmission.npy")
+
+BB_trans = BB_spec / transmission
+BB_trans = BB_trans / BB_trans[1:].max()
+SMARTS_trans = SMARTS_spec / transmission
+SMARTS_trans = SMARTS_trans / SMARTS_trans[1:].max()
+
+plot_spectral_response(wvl, SMARTS_trans, BB_trans, curves, title="Transmission corrected", label_thin="SMARTS2", label_thick="black-body", saveto="results/ispex_transmission.pdf")
+
+def fix_trans(profile, factor):
+    return profile * factor
+
+SMARTS_factors = np.array([curve_fit(fix_trans, SMARTS_trans[j], curves[j], p0=1)[0] for j in range(1,4)])
+SMARTS_factors[1] = 1.
+SMARTS_fixed = SMARTS_trans.copy() ; SMARTS_fixed[1:] *= SMARTS_factors
+print("SMARTS factors:", SMARTS_factors)
+BB_factors = np.array([curve_fit(fix_trans, BB_trans[j], curves[j], p0=1)[0] for j in range(1,4)])
+BB_factors[1] = 1.
+BB_fixed = BB_trans.copy() ; BB_fixed[1:] *= BB_factors
+print("BB factors:", BB_factors)
+
+plot_spectral_response(wvl, SMARTS_fixed, BB_fixed, curves, title="Multiplied by constant", label_thin="SMARTS2", label_thick="black-body", saveto="results/ispex_fixed.pdf")
