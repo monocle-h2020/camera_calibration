@@ -166,14 +166,14 @@ response_normalised = (flat_means_mask / flat_means_mask.max()).data
 errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
 
 plt.figure(figsize=(10,5))
-for j, c in enumerate("rgby"):
+for j, c in enumerate("rybg"):
     plt.plot(all_wvl, response_normalised[:,j], c=c)
     plt.fill_between(all_wvl, response_normalised[:,j]-errors_normalised[:,j], response_normalised[:,j]+errors_normalised[:,j], color=c, alpha=0.3)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(wvl1,wvl2)
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Spectral response (ADU)")
-plt.ylim(ymin=0)
+plt.ylim(0, 1.02)
 plt.title(f"{phone['device']['name']}: Combined spectral curves")
 plt.savefig(results/"spectral_response/combined_spectra.pdf")
 plt.show()
