@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io, raw, plot
+from phonecal import io, raw, plot, spectral
 from matplotlib import pyplot as plt
 
 folder, wvl1, wvl2 = io.path_from_input(argv)
@@ -162,28 +162,28 @@ flat_means_mask = np.ma.average(mean_mask, axis=0, weights=weights)
 flat_errs_mask = np.sqrt(np.ma.sum((weights/weights.sum(axis=0) * stds_mask)**2, axis=0))
 SNR_final = flat_means_mask / flat_errs_mask
 
+response_normalised = (flat_means_mask / flat_means_mask.max()).data
+errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
+
 plt.figure(figsize=(10,5))
-for j, c in enumerate("rgby"):
-    plt.plot(all_wvl, flat_means_mask[:,j], c=c)
-    plt.fill_between(all_wvl, flat_means_mask[:,j]-flat_errs_mask[:,j], flat_means_mask[:,j]+flat_errs_mask[:,j], color=c, alpha=0.3)
+for j, c in enumerate("rybg"):
+    plt.plot(all_wvl, response_normalised[:,j], c=c)
+    plt.fill_between(all_wvl, response_normalised[:,j]-errors_normalised[:,j], response_normalised[:,j]+errors_normalised[:,j], color=c, alpha=0.3)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(wvl1,wvl2)
 plt.xlabel("Wavelength (nm)")
-plt.ylabel("Spectral response (ADU)")
-plt.ylim(ymin=0)
+plt.ylabel("Spectral response (normalized)")
+plt.ylim(0, 1.02)
+plt.grid()
 plt.title(f"{phone['device']['name']}: Combined spectral curves")
 plt.savefig(results/"spectral_response/combined_spectra.pdf")
 plt.show()
 plt.close()
 
-peaks = flat_means_mask.max(axis=0)
-response_normalised = (flat_means_mask / peaks).data
-errors_normalised = (flat_errs_mask / peaks).data
-
 result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
 np.save(results/"spectral_response/monochromator_curve.npy", result)
 
-bandwidths = np.trapz(response_normalised, x=all_wvl, axis=0)
+bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
 np.savetxt(products/"spectral_bandwidths.dat", bandwidths)
 print("Effective spectral bandwidths:")
 for band, width in zip([*"RGB", "G2"], bandwidths):
