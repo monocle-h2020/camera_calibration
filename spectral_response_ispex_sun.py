@@ -10,19 +10,24 @@ from phonecal.general import blackbody, RMS, gauss1d, curve_fit
 #wavelength = wavelength[ind]
 #spectrometer = spectrometer[ind]
 
-wvl, smartsx, smartsy, smartsz = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)
+wvl, smartsz, smartsy, smartsx = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)
 smartsx /= smartsx[wvl == 500] ; smartsy /= smartsy[wvl == 500] ; smartsz /= smartsz[wvl == 500]
 ind = np.where(wvl % 1 == 0)
 wvl = wvl[ind]
 smartsx = smartsx[ind] ; smartsy = smartsy[ind] ; smartsz = smartsz[ind]
 
+smartsx_smooth = gauss1d(smartsx, 5)
+
 BB = blackbody(wvl)
 BB /= BB[wvl == 500]
 
 #plt.plot(wavelength, spectrometer, c='b')
-plt.plot(wvl, BB, c='k')
-plt.plot(wvl, smartsx, c='r')
+plt.plot(wvl, BB, c='k', label="Black-body")
+plt.plot(wvl, smartsx, c='r', label="SMARTS2 (Diffuse)")
+plt.plot(wvl, smartsx_smooth, c='b', label="SMARTS2 (smoothed)")
 plt.xlim(390, 700)
+plt.legend(loc="best")
+plt.savefig("results/SMARTS_vs_BB.pdf")
 plt.show()
 
 file = io.path_from_input(argv)
@@ -97,10 +102,8 @@ stacked_thin  = stacked_thin [:, ind]
 stacked_thick = stacked_thick[:, ind]
 
 BB = BB[ind]
-smartsx = smartsx[ind]
+smartsx_smooth = smartsx_smooth[ind]
 wvl = wvl[ind]
-
-smartsx_smooth = gauss1d(smartsx, 10)
 
 def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, title="", saveto=None, label_thin = "narrow_slit", label_thick="broad slit"):
     print(title)
@@ -113,7 +116,8 @@ def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, tit
     plt.plot([-10], [-10], c='k', label="Monochromator")
     plt.plot([-10], [-10], c='k', ls="--", label=f"iSPEX ({label_thin})")
     plt.plot([-10], [-10], c='k', ls=":" , label=f"iSPEX ({label_thick})")
-    plt.title(title)
+    if title:
+        plt.title(title)
     plt.xlim(390, 700)
     plt.xlabel("Wavelength (nm)")
     plt.ylabel("Relative sensitivity")
@@ -170,3 +174,5 @@ BB_fixed = BB_trans.copy() ; BB_fixed[1:] *= BB_factors
 print("BB factors:", BB_factors)
 
 plot_spectral_response(wvl, SMARTS_fixed, BB_fixed, curves, title="Multiplied by constant", label_thin="SMARTS2", label_thick="black-body", saveto="results/ispex_fixed.pdf")
+
+plot_spectral_response(wvl, SMARTS_trans, BB_trans, curves, label_thin="SMARTS2", label_thick="black-body", saveto="results/spectral_responses_ispex.pdf")
