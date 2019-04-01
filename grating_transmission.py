@@ -22,7 +22,10 @@ plt.show()
 
 plt.plot(wavelengths, transmission)
 plt.xlim(390, 700)
-plt.ylim(0.6, 1.15)
+plt.ylim(0., 1.)
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Transmission")
+plt.savefig("results/grating_transmission.pdf")
 plt.show()
 
 trans = np.stack([wavelengths, transmission])
