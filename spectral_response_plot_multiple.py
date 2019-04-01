@@ -44,10 +44,14 @@ plt.figure(figsize=(7,3), tight_layout=True)
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
     means = curve[1:5]
+    errors = curve[5:]
     G = means[1::2].mean(axis=0)
+    G_errors = 0.5 * np.sqrt((errors[1::2]**2).sum(axis=0))
     means_RGB = np.stack([means[0], G, means[2]])
+    errors_RGB = np.stack([errors[0], G_errors, errors[2]])
     for j, c in enumerate("rgb"):
-        mean  = means_RGB[j]
+        mean  =  means_RGB[j]
+        error = errors_RGB[j]
         over_20_percent = np.where(mean >= 0.2)[0]
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
         print(f"{camera:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
