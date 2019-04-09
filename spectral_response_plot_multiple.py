@@ -29,6 +29,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         plt.plot(wavelength, mean, c=c, ls=style)
         #plt.fill_between(wavelength, mean-error, mean+error, color=c, alpha=0.5)
     plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
+    print(f"{camera:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
 plt.grid(True)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(390, 700)
@@ -56,7 +57,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
         print(f"{camera:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
         plt.plot(wavelength, mean, c=c, ls=style)
-    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera)
 plt.grid(True)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(390, 700)
