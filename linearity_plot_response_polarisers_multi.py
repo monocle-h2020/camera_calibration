@@ -1,6 +1,7 @@
 import numpy as np
 from sys import argv
 from phonecal import io, plot, linearity as lin
+from phonecal.general import RMS
 from matplotlib import pyplot as plt
 
 folders = io.path_from_input(argv)
@@ -45,7 +46,7 @@ for folder, phone in zip(folders, phones):
     jpeg_means.append(jmeans)
 
 for j, c in enumerate("rgbg"):
-    fig, axs = plt.subplots(ncols=len(folders), figsize=(3.3*len(folders), 2), tight_layout=True, squeeze=True)
+    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(3.3*len(folders), 3.5), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.8})
     colour_index = colours_here[j]
     colour = "rgbg"[colour_index]
     if colour_index < 3:
@@ -54,7 +55,7 @@ for j, c in enumerate("rgbg"):
     else:
         i = 1
         label = "g2"
-    for phone, intensities, intensities_errors, means, jmeans, ax in zip(phones, intensities_es, intensities_er, dng_means, jpeg_means, axs):
+    for phone, intensities, intensities_errors, means, jmeans, ax_col in zip(phones, intensities_es, intensities_er, dng_means, jpeg_means, axs.T):
         M =  means[:, j]
         J = jmeans[:, j, i]
 
@@ -68,9 +69,10 @@ for j, c in enumerate("rgbg"):
         x = np.linspace(0, 1, 250)
         fit_linear   = np.polyfit(intensities[M < max_value*0.95], M[M < max_value*0.95], 1)
         fit_sRGB, pc = lin.curve_fit(lin.sRGB_generic, intensities[J < 240], J[J < 240], p0=[1, 2.2])
-        y_linear = np.polyval(fit_linear, x)
+        y_linear = np.clip(np.polyval(fit_linear, x), 0, max_value)
         y_sRGB   = lin.sRGB_generic(x, *fit_sRGB)
 
+        ax = ax_col[0]
         ax.errorbar(intensities, J, xerr=intensities_errors, fmt=f"{colour}o", ms=3)
         ax.plot(x, y_sRGB, c=colour)
         ax.set_xlim(-0.02, 1.02)
@@ -87,9 +89,31 @@ for j, c in enumerate("rgbg"):
         jpeglabel = ax.set_ylabel("JPEG value")
         jpeglabel.set_color(colour)
         ax.tick_params(axis="y", colors=colour)
+        ax.tick_params(axis="x", bottom=False)
         ax2.set_ylabel("RAW value")
-        ax.set_xlabel("Relative incident intensity")
         ax.set_title(f"{phone['device']['name']}\n{r_jpg_str} = {r_jpeg:.3f}$ {r_dng_str} = {r_dng:.3f}$")
+
+        J_res = 100*(J - lin.sRGB_generic(intensities, *fit_sRGB))/255
+        ax_res = ax_col[1]
+        ax_res.errorbar(intensities, J_res, xerr=intensities_errors, fmt=f"{colour}o", ms=3)
+        ax_res.locator_params(axis="y", nbins=5)
+        jpeglabel_res = ax_res.set_ylabel("Norm. res.\n(JPEG, %)")
+        jpeglabel_res.set_color(colour)
+        ax_res2 = ax_res.twinx()
+        M_res = 100*(M - np.clip(np.polyval(fit_linear, intensities), 0, max_value))/max_value
+        ax_res2.errorbar(intensities, M_res, xerr=intensities_errors, fmt="ko", ms=3)
+        ax_res2.set_ylabel(f"Norm. res.\n(RAW, %)")
+        ax_res2.locator_params(axis="y", nbins=5)
+        ax_res.grid(True, axis="x")
+        ax_res.grid(True, axis="y")
+        ax_res.set_xlabel("Relative incident intensity")
+        ax_res.tick_params(axis="y", colors=colour)
+        ylim = [min([J_res.min(), M_res.min()])-0.3, max([J_res.max(), M_res.max()])+0.3]
+        ax_res.set_ylim(*ylim)
+        ax_res2.set_ylim(*ylim)
+
+        print(f"RMS residual (RAW):  {RMS(M_res[M < max_value*0.95]):.1f}%")
+        print(f"RMS residual (JPEG): {RMS(J_res[J < 240]):.1f}%")
     plt.savefig(f"results/linearity_DNG_JPEG_{label}.pdf")
     plt.show()
     plt.close()
