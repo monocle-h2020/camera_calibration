@@ -81,7 +81,9 @@ plt.close()
 print("Made full plot")
 
 correction = 1 / flat_field_gauss
-print(f"Maximum correction factor: {correction.max():.2f}")
+correction_raw = 1 / flat_field[flat.clip_border]
+print(f"Maximum correction factor (raw): {correction_raw.max():.2f}")
+print(f"Maximum correction factor (gauss): {correction.max():.2f}")
 
 plt.figure(figsize=(5,5), tight_layout=True)
 img = plt.imshow(correction, vmin=1, vmax=correction.max())
@@ -98,6 +100,7 @@ popt, standard_errors = flat.fit_vignette_radial(correction)
 
 np.save(products/f"flat_{label}_parameters.npy", np.stack([popt, standard_errors]))
 np.save(products/f"flat_{label}_correction.npy", correction)
+np.save(products/f"flat_{label}_correction_raw.npy", correction_raw)
 print("Saved look-up table & parameters")
 
 print("Parameter +- Error    ; Relative error")
@@ -193,5 +196,10 @@ fig.savefig(results/f"flat/{label}_correction_combined.pdf")
 plt.show()
 plt.close()
 
-print(f"RMS difference: {RMS(difference):.3f}")
-print(f"RMS difference (relative): {100*RMS(difference/correction):.1f} %")
+print(f"RMS difference (gauss): {RMS(difference):.3f}")
+print(f"RMS difference (gauss, relative): {100*RMS(difference/correction):.1f} %")
+
+difference_raw = correction_raw - g_fit
+
+print(f"RMS difference (raw): {RMS(difference_raw):.3f}")
+print(f"RMS difference (raw, relative): {100*RMS(difference_raw/correction_raw):.1f} %")
