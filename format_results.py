@@ -6,10 +6,19 @@ them into a format that can be uploaded to the database.
 from sys import argv
 import numpy as np
 from phonecal import io
+from os import makedirs
 
+# Load data
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 phone = io.read_json(root/"info.json")
+
+# Create results folder
+identifier = "-".join([phone["device"]["manufacturer"], phone["device"]["name"], phone["device"]["code"]])
+identifier = identifier.replace(" ", "_")
+save_folder = root/"spectacle"/identifier
+
+makedirs(save_folder, exist_ok=True)  # create folder if it does not yet exist
 
 # General properties
 
@@ -34,4 +43,3 @@ try:
 except FileNotFoundError:
     print("No spectral response curve found")
     spectral_response = np.tile(np.nan, (9, 156))
-
