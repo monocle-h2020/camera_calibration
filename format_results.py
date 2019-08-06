@@ -22,6 +22,15 @@ makedirs(save_folder, exist_ok=True)  # create folder if it does not yet exist
 
 # General properties
 
+generic_header =f"\
+# SPECTACLE data sheet. More information can be found in our paper (https://doi.org/10.1364/OE.27.019075) and on our website (http://spectacle.ddq.nl/). \n\
+# Camera manufacturer: {phone['device']['manufacturer']}\n\
+# Camera device: {phone['device']['name']}\n\
+# Camera product code: {phone['device']['code']}\n\
+# Sensor manufacturer: {phone['camera']['manufacturer']}\n\
+# Sensor series: {phone['camera']['series']}\n\
+# Sensor model: {phone['camera']['model']}\n"
+
 # Linearity
 
 # Bias
@@ -47,4 +56,4 @@ except FileNotFoundError:
 spectral_response = spectral_response.T  # transpose to have columns for wavelength, R, G, ...
 header = "wavelength (nm),R,G,B,G2,R_error,G_error,B_error,G2_error"
 
-np.savetxt(save_folder/f"spectral_response_{identifier}.csv", spectral_response, delimiter=",", fmt="%.8f", header=header)
+np.savetxt(save_folder/f"spectral_response_{identifier}.csv", spectral_response, delimiter=",", fmt="%.8f", header=header, comments=generic_header)
