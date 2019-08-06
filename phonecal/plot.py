@@ -194,7 +194,7 @@ def linearity(I, C, colour, gridsize=250, bins="log", extent=(0,1,0,4095), savet
     plt.ylim(*extent[2:])
     _saveshow(saveto)
 
-def colorbar(mappable, location="bottom", label=None):
+def colorbar(mappable, location="bottom", label=""):
     orientation = "horizontal" if location in ("top", "bottom") else "vertical"
     ax = mappable.axes
     fig = ax.figure
