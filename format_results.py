@@ -47,4 +47,4 @@ except FileNotFoundError:
 spectral_response = spectral_response.T  # transpose to have columns for wavelength, R, G, ...
 header = "wavelength (nm),R,G,B,G2,R_error,G_error,B_error,G2_error"
 
-np.savetxt(save_folder/"spectral_response.csv", spectral_response, delimiter=",", fmt="%.8f", header=header)
+np.savetxt(save_folder/f"spectral_response_{identifier}.csv", spectral_response, delimiter=",", fmt="%.8f", header=header)
