@@ -16,7 +16,7 @@ exposure_time = 1/3
 try:
     mean = np.load(meanfile)
 except OSError:
-    mean = io.load_dng_raw(meanfile).raw_image
+    mean = io.load_raw_image(meanfile)
 
 bias = np.load(products/"bias.npy")
 dark = np.load(products/"dark.npy")

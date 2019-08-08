@@ -35,7 +35,7 @@ root, images, stacks, products, results = io.folders(file)
 phone = io.read_json(root/"info.json")
 coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.npy")
 
-img  = io.load_dng_raw(file)
+img  = io.load_raw_file(file)
 exif = io.load_exif(file)
 
 try:

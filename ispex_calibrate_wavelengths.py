@@ -5,7 +5,7 @@ from spectacle import general, io, plot, wavelength, raw2
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
 
-img = io.load_dng_raw(file)
+img = io.load_raw_file(file)
 image_cut  = img.raw_image [760:1470, 2150:3900]
 colors_cut = img.raw_colors[760:1470, 2150:3900]
 x = np.arange(2150, 3900)

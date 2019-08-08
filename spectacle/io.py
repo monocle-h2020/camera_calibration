@@ -8,22 +8,32 @@ from .iso import model_generator as iso_model_generator
 from .flat import apply_vignette_radial
 from .config import spectacle_folder, results_folder
 
-def load_dng_raw(filename):
+def load_raw_file(filename):
+    """
+    Load a raw file using rawpy's `imread` function. Return the rawpy object.
+    """
     img = rawpy.imread(str(filename))
     return img
 
+def load_raw_image(filename):
+    """
+    Load a raw file using rawpy's `imread` function. Return only the image data.
+    """
+    img = load_raw_file(filename)
+    return img.raw_image
+
 def load_colors(filename):
-    img = load_dng_raw(str(filename))
+    img = load_raw_file(str(filename))
     return img.raw_colors
 
 def load_dng_many(folder, pattern="*.dng"):
     files = list(folder.glob(pattern))
-    file0 = load_dng_raw(files[0])
+    file0 = load_raw_file(files[0])
     colors = file0.raw_colors
     arrs = np.empty((len(files), *file0.raw_image.shape), dtype=np.uint16)
     arrs[0] = file0.raw_image
     for j, file in enumerate(files[1:], 1):
-        arrs[j] = load_dng_raw(file).raw_image
+        arrs[j] = load_raw_file(file).raw_image
 
     return arrs, colors
 

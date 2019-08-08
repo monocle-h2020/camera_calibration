@@ -6,7 +6,7 @@ file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
 phone = io.read_json(root/"info.json")
 
-img  = io.load_dng_raw(file)
+img  = io.load_raw_file(file)
 exif = io.load_exif(file)
 
 bias = phone["software"]["bias"]

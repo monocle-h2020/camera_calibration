@@ -12,7 +12,7 @@ for filename in files:
     print(filename)
     handle = "_".join(filename.replace("\\", "/").split("/")).split(".")[0]
 
-    img = io.load_dng_raw(filename)
+    img = io.load_raw_file(filename)
     exif = io.load_exif(filename)
     image_cut  = raw.cut_out_spectrum(img.raw_image)
     colors_cut = raw.cut_out_spectrum(img.raw_colors)

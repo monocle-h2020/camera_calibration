@@ -22,7 +22,7 @@ Bs = []
 
 for file in files:
     print(file)
-    img  = io.load_dng_raw(file)
+    img  = io.load_raw_file(file)
     exif = io.load_exif(file)
     time = datetime.strptime(exif["EXIF DateTimeOriginal"].values, "%Y:%m:%d %H:%M:%S")
     time = (time - timedelta(hours=1)).timestamp()
