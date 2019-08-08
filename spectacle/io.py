@@ -29,12 +29,26 @@ def load_raw_colors(filename):
     img = load_raw_file(str(filename))
     return img.raw_colors
 
-def load_dng_many(folder, pattern="*.dng"):
+def load_raw_image_multi(folder, pattern="*.dng"):
+    """
+    Load many raw files simultaneously and put their image data in a single array.
+    """
+
+    # Find all files in `folder` matching the given pattern `pattern`
     files = list(folder.glob(pattern))
+
+    # Load the first file to get the Bayer color information (`colors`)
+    # and the shape of the images
     file0 = load_raw_file(files[0])
     colors = file0.raw_colors
+
+    # Create an array to fit the image contained in each file
     arrs = np.empty((len(files), *file0.raw_image.shape), dtype=np.uint16)
+
+    # Include the already loaded first image in the array
     arrs[0] = file0.raw_image
+
+    # Include the image data from the other files in the array
     for j, file in enumerate(files[1:], 1):
         arrs[j] = load_raw_file(file).raw_image
 

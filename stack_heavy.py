@@ -20,7 +20,7 @@ for tup in walk(folder):
     if len(raw_files) == 0:
         continue
 
-    arrs, colors = io.load_dng_many(folder_here, pattern=raw_pattern)
+    arrs, colors = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
     mean = np.tile(np.nan, arrs.shape[1:])
     stds = mean.copy()
     for i, row in enumerate(mean):
