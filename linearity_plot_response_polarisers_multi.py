@@ -114,7 +114,7 @@ for j, c in enumerate("rgbg"):
 
         print(f"RMS residual (RAW):  {RMS(M_res[M < max_value*0.95]):.1f}%")
         print(f"RMS residual (JPEG): {RMS(J_res[J < 240]):.1f}%")
-    plt.savefig(f"results/linearity_DNG_JPEG_{label}.pdf")
+    plt.savefig(io.results_folder/f"linearity_DNG_JPEG_{label}.pdf")
     plt.show()
     plt.close()
     print(f"Plotted pixel {j} ({label})")

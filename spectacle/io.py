@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import json
 from .iso import model_generator as iso_model_generator
 from .flat import apply_vignette_radial
+from .config import spectacle_folder, results_folder
 
 def load_dng_raw(filename):
     img = rawpy.imread(str(filename))
@@ -115,9 +116,11 @@ def path_from_input(argv):
     else:
         return [Path(a) for a in argv[1:]]
 
-def folders(data_folder):
-    assert "data" in data_folder.parts
-    phone_root = Path("/".join(data_folder.parts[:2]))
+def folders(input_path):
+    assert isinstance(input_path, Path), f"Input path '{input_path}' is not a pathlib Path object"
+    assert spectacle_folder in input_path.parents, f"Input path '{input_path}' is not in the SPECTACLE data folder '{spectacle_folder}'"
+    subfolder = input_path.relative_to(spectacle_folder).parts[0]
+    phone_root = spectacle_folder / subfolder
 
     subfolder_names = ["", "images", "stacks", "products", "results"]
     subfolders = [phone_root/name for name in subfolder_names]

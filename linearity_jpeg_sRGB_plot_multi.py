@@ -47,7 +47,7 @@ for ax in axs_table[:,0].ravel():
     ax.locator_params(axis="y", nbins=4)
 for ax in axs_table[-1].ravel():
     ax.locator_params(axis="x", nbins=4)
-plt.savefig("results/jpeg_gamma.pdf")
+plt.savefig(io.results_folder/"jpeg_gamma.pdf")
 print("Saved plot")
 plt.show()
 plt.close()

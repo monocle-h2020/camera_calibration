@@ -30,7 +30,7 @@ for path, gauss, axs_here in zip(files, gauss_all, axs):
             colorbar_here.locator = plot.ticker.MaxNLocator(nbins=3)
             colorbar_here.update_ticks()
 
-path_image = "results/RGBG_" + "_".join(path.stem for path in files) + ".pdf"
+path_image = io.results_folder/"RGBG_" + "_".join(path.stem for path in files) + ".pdf"
 fig.savefig(path_image)
 plt.show()
 plt.close()

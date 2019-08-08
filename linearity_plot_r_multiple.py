@@ -48,6 +48,6 @@ axs[0] .set_ylim(ymin=10)
 for ax in axs:
     ax.set_yticks([1e2, 1e4, 1e6])
 axs[-1].set_xlabel("Pearson $r$")
-fig.savefig("results/linearity.pdf")
+fig.savefig(io.results_folder/"linearity.pdf")
 plt.show()
 plt.close()

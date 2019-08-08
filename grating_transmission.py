@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from spectacle.general import gauss1d
+from spectacle import io
 
 wvl, with_grating    = np.genfromtxt("reference_spectra/with_grating.txt"   , skip_header=14, unpack=True)
 wvl, without_grating = np.genfromtxt("reference_spectra/without_grating.txt", skip_header=14, unpack=True)
@@ -25,7 +26,7 @@ plt.xlim(390, 700)
 plt.ylim(0., 1.)
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Transmission")
-plt.savefig("results/grating_transmission.pdf")
+plt.savefig(io.results_folder/"grating_transmission.pdf")
 plt.show()
 
 trans = np.stack([wavelengths, transmission])

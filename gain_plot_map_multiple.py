@@ -31,7 +31,7 @@ for j, (c, label) in enumerate(zip("RGBG", [*"RGB", "G2"])):
             loc = "bottom"
         cbar = plot.colorbar(im, location=loc, label="Gain (ADU/e$^-$)")
         ax.set_title(f"{camera} (ISO {iso})")
-    fig.savefig(f"results/gain_{label}.pdf")
+    fig.savefig(io.results_folder/f"gain_{label}.pdf")
     plt.show(fig)
     plt.close()
 
@@ -53,7 +53,7 @@ axs[1,0].set_ylabel("Frequency")
 axs[0,0].set_xlim(bins[0], bins[-1])
 axs[0,0].set_yticks([0.5, 1.5])
 axs[0,0].set_xticks(np.arange(0.5, 3, 0.5))
-fig.savefig("results/gain_hist.pdf")
+fig.savefig(io.results_folder/"gain_hist.pdf")
 plt.show(fig)
 plt.close()
 
