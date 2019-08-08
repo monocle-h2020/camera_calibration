@@ -85,11 +85,17 @@ def load_jpg_multi(folder, pattern="*.jp*g"):
     return arrs
 
 def load_exif(filename):
+    """
+    Load the EXIF data in an image using exifread's `process_file` function. Return all EXIF data.
+    """
     with open(filename, "rb") as f:
         exif = exifread.process_file(f)
     return exif
 
 def absolute_filename(file):
+    """
+    Return the absolute filename of a given Path object `file`.
+    """
     return file.absolute()
 
 def expected_array_size(folder, pattern):
