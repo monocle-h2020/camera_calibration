@@ -1,3 +1,5 @@
 SPECTACLE (Standardised Photographic Equipment Calibration Technique And CataLoguE) is a standardised methodology for the spectral and radiometric calibration of consumer camera data. The associated database, containing calibration data for a number of popular consumer cameras, can be found at http://spectacle.ddq.nl/. More information on the SPECTACLE methodology, including results from applying it to several cameras, can be found in our paper: https://doi.org/10.1364/OE.27.019075
 
 This repository contains the associated `spectacle` Python module. This module can be used to calibrate data using previously obtained calibration data (measured by the user or retrieved from the SPECTACLE database). It also includes functions and pre-made scripts for processing calibration data, as described in the paper linked above.
+
+*The SPECTACLE method is currently use-ready but we are in the process of making it more user-friendly. If you have any questions or suggestions, feel free to contact the authors by emailing to burggraaff@strw.leidenuniv.nl.*
