@@ -54,17 +54,34 @@ def load_raw_image_multi(folder, pattern="*.dng"):
 
     return arrs, colors
 
-def load_jpg(filename):
+def load_jpg_image(filename):
+    """
+    Load a raw file using pyplot's `imread` function. Return only the image data.
+    """
     img = plt.imread(filename)
     return img
 
-def load_jpg_many(folder, pattern="*.jp*g"):
+def load_jpg_multi(folder, pattern="*.jp*g"):
+    """
+    Load many jpg files simultaneously and put their image data in a single array.
+    """
+
+    # Find all files in `folder` matching the given pattern `pattern`
     files = list(folder.glob(pattern))
-    img0 = load_jpg(files[0])
+
+    # Load the first file to get the shape of the images
+    img0 = load_jpg_image(files[0])
+
+    # Create an array to fit the image contained in each file
     arrs = np.empty((len(files), *img0.shape), dtype=np.uint8)
+
+    # Include the already loaded first image in the array
     arrs[0] = img0
+
+    # Include the image data from the other files in the array
     for j, file in enumerate(files[1:], 1):
-        arrs[j] = load_jpg(file)
+        arrs[j] = load_jpg_image(file)
+
     return arrs
 
 def load_exif(filename):

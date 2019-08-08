@@ -44,7 +44,7 @@ for tup in walk(folder):
     if len(JPGs) == 0:
         continue
 
-    jarrs = io.load_jpg_many(folder_here)
+    jarrs = io.load_jpg_multi(folder_here)
     jmean = jarrs.mean(axis=0, dtype=np.float32)
     jstds = jarrs.std (axis=0, dtype=np.float32)
 
