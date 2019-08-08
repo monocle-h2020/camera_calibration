@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from phonecal import linearity as lin
+from spectacle import linearity as lin
 
 number_of_intensities = 15
 

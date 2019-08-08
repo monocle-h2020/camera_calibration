@@ -2,7 +2,7 @@ from sys import argv
 from shutil import move
 import os
 from time import time
-from phonecal import io
+from spectacle import io
 
 folder_main = io.path_from_input(argv[:2])
 root, images, stacks, products, results = io.folders(folder_main)

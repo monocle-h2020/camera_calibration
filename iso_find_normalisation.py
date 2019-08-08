@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import io, plot, iso
-from phonecal.general import Rsquare
+from spectacle import io, plot, iso
+from spectacle.general import Rsquare
 from scipy.optimize import curve_fit
 
 folder = io.path_from_input(argv)

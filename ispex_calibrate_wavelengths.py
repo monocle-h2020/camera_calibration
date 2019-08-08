@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import general, io, plot, wavelength, raw2
+from spectacle import general, io, plot, wavelength, raw2
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)

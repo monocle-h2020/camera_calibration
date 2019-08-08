@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, io, plot, flat
-from phonecal.general import gaussMd, Rsquare, RMS
+from spectacle import raw, io, plot, flat
+from spectacle.general import gaussMd, Rsquare, RMS
 
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)

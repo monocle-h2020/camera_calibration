@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import curve_fit
-from phonecal.general import Rsquare
+from spectacle.general import Rsquare
 
 
 def generate_linear_model(slope, offset):

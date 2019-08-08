@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
-from phonecal import io, spectral
-from phonecal.general import RMS
+from spectacle import io, spectral
+from spectacle.general import RMS
 from matplotlib import pyplot as plt
 
 files = io.path_from_input(argv)

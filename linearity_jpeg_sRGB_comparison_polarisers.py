@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
-from phonecal import io, linearity as lin
-from phonecal.general import Rsquare, curve_fit, RMS
+from spectacle import io, linearity as lin
+from spectacle.general import Rsquare, curve_fit, RMS
 from matplotlib import pyplot as plt
 
 folder, gamma = io.path_from_input(argv)

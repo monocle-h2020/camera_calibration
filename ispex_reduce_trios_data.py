@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from datetime import datetime
-from phonecal import io
+from spectacle import io
 from sys import argv
 
 def get_time(c):

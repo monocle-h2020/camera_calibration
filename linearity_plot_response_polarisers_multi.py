@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
-from phonecal import io, plot, linearity as lin
-from phonecal.general import RMS
+from spectacle import io, plot, linearity as lin
+from spectacle.general import RMS
 from matplotlib import pyplot as plt
 
 folders = io.path_from_input(argv)

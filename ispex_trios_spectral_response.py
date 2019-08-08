@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import raw, plot, io, wavelength
+from spectacle import raw, plot, io, wavelength
 from datetime import datetime, timedelta
 
 folder = io.path_from_input(argv)

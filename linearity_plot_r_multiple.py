@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import io, linearity as lin
+from spectacle import io, linearity as lin
 
 folders = io.path_from_input(argv)
 roots = [io.folders(folder)[0] for folder in folders]

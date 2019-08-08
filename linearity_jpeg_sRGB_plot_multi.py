@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io, linearity as lin
+from spectacle import io, linearity as lin
 from matplotlib import pyplot as plt
 
 files = io.path_from_input(argv)

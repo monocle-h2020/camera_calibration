@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from phonecal.general import gauss1d
+from spectacle.general import gauss1d
 
 wvl, with_grating    = np.genfromtxt("reference_spectra/with_grating.txt"   , skip_header=14, unpack=True)
 wvl, without_grating = np.genfromtxt("reference_spectra/without_grating.txt", skip_header=14, unpack=True)

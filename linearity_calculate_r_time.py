@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io, linearity as lin
+from spectacle import io, linearity as lin
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)

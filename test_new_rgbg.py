@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, plot, io
-from phonecal.general import gaussMd
+from spectacle import raw, plot, io
+from spectacle.general import gaussMd
 
 def gauss_nan(data, *args, **kwargs):
     V = data.copy()

@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, io, plot
-from phonecal.general import gaussMd
+from spectacle import raw, io, plot
+from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)

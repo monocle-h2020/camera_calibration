@@ -1,8 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from phonecal import raw, plot, io, wavelength, flat
-from phonecal.general import blackbody, RMS, gauss1d, curve_fit
+from spectacle import raw, plot, io, wavelength, flat
+from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 
 #wavelength, spectrometer = np.loadtxt("reference_spectra/sun.txt", skiprows=13, unpack=True)
 #spectrometer /= spectrometer[wavelength == 500]

@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import io, iso
+from spectacle import io, iso
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)

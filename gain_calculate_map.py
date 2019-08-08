@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import raw, io
+from spectacle import raw, io
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)

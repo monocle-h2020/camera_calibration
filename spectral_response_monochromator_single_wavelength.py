@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from phonecal import io, raw
+from spectacle import io, raw
 from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)

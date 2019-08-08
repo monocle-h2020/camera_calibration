@@ -2,8 +2,8 @@ from matplotlib import pyplot as plt
 import numpy as np
 from sys import argv
 
-from phonecal import general, io, plot, wavelength
-from phonecal.general import x, y, y_thin, y_thick, x_spectrum
+from spectacle import general, io, plot, wavelength
+from spectacle.general import x, y, y_thin, y_thick, x_spectrum
 
 filename = argv[1]
 

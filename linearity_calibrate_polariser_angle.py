@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import io, raw
-from phonecal.gain import malus
+from spectacle import io, raw
+from spectacle.gain import malus
 from scipy.optimize import curve_fit
 
 folder = argv[1]

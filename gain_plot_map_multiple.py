@@ -1,8 +1,8 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from phonecal import raw, io, plot
-from phonecal.general import gauss_nan
+from spectacle import raw, io, plot
+from spectacle.general import gauss_nan
 
 files = io.path_from_input(argv)
 roots = [io.folders(file)[0] for file in files]
