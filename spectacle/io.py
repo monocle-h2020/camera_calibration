@@ -50,7 +50,7 @@ def load_raw_image_multi(folder, pattern="*.dng"):
 
     # Include the image data from the other files in the array
     for j, file in enumerate(files[1:], 1):
-        arrs[j] = load_raw_file(file).raw_image
+        arrs[j] = load_raw_image(file)
 
     return arrs, colors
 
