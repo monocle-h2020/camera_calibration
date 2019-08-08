@@ -15,7 +15,7 @@ assert len(cameras) == len(curves)
 
 number_of_cameras = len(cameras)
 
-styles = ["-", "--", ":", ".-"]
+styles = ["-", "--", ":", "-."]
 
 plt.figure(figsize=(7,3), tight_layout=True)
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
