@@ -216,16 +216,27 @@ def load_colour(stacks):
     return colours
 
 def load_angle(stacks):
+    """
+    Load the default polariser offset angle located in
+    `stacks`/linearity/default_angle.dat
+    """
     offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
     return offset_angle
 
 def path_from_input(argv):
+    """
+    Turn command-line input(s) into Path objects.
+    """
     if len(argv) == 2:
         return Path(argv[1])
     else:
         return [Path(a) for a in argv[1:]]
 
 def folders(input_path):
+    """
+    For a given `input_path`, return the appropriate subfolders, following the
+    default format explained in the data template.
+    """
     assert isinstance(input_path, Path), f"Input path '{input_path}' is not a pathlib Path object"
     assert spectacle_folder in input_path.parents, f"Input path '{input_path}' is not in the SPECTACLE data folder '{spectacle_folder}'"
     subfolder = input_path.relative_to(spectacle_folder).parts[0]
@@ -236,6 +247,9 @@ def folders(input_path):
     return subfolders
 
 def replace_word_in_path(path, old, new):
+    """
+    Replace the string `old` with the string `new` in a given `path`.
+    """
     split = list(path.parts)
     split[split.index(old)] = new
     combined = Path("/".join(split))
@@ -245,19 +259,33 @@ def replace_suffix(path, new):
     return (path.parent / path.stem).with_suffix(".jpg")
 
 def load_bias(products):
+    """
+    Load the biad map located at `products`/bias.npy
+    """
     bias_map = np.load(products/"bias.npy")
     return bias_map
 
 def read_json(path):
+    """
+    Read a JSON file.
+    """
     file = open(path)
     dump = json.load(file)
     return dump
 
 def read_iso_lookup_table(products):
+    """
+    Load the ISO normalization lookup table located at
+    `products`/iso_lookup_table.npy
+    """
     table = np.load(products/"iso_lookup_table.npy")
     return table
 
 def read_iso_model(products):
+    """
+    Load the ISO normalization function, the parameters of which are contained
+    in `products`/iso_model.dat
+    """
     as_array = np.loadtxt(products/"iso_model.dat", dtype=str)
     model_type = as_array[0,0]
     parameters = as_array[1].astype(np.float64)
@@ -266,6 +294,10 @@ def read_iso_model(products):
     return model
 
 def read_flat_field_correction(products, shape):
+    """
+    Load the flat-field correction model, the parameters of which are contained
+    in `products`/flat_parameters.npy
+    """
     parameters, errors = np.load(products/"flat_parameters.npy")
     correction_map = apply_vignette_radial(shape, parameters)
     return correction_map
@@ -276,6 +308,13 @@ def read_gain_table(path):
     return ISO, table
 
 def read_spectral_responses(results):
+    """
+    Load the spectral response functions located in the `results` folder.
+    If available, use monochromator data from
+        `results`/spectral_response/monochromator_curve.npy
+    Else, use the data from
+        `results`/spectral_response/curve.npy
+    """
     try:  # use monochromator data if available
         as_array = np.load(results/"spectral_response/monochromator_curve.npy")
     except FileNotFoundError:
@@ -286,5 +325,9 @@ def read_spectral_responses(results):
     return wavelengths, RGBG2, RGBG2_error
 
 def read_spectral_bandwidths(products):
+    """
+    Load the effective spectal bandwidths contained in
+    `products`/spectral_bandwidths.dat
+    """
     bandwidths = np.loadtxt(products/"spectral_bandwidths.dat")
     return bandwidths
