@@ -8,12 +8,24 @@ from .iso import model_generator as iso_model_generator
 from .flat import apply_vignette_radial
 from .config import spectacle_folder, results_folder
 
+
+def path_from_input(argv):
+    """
+    Turn command-line input(s) into Path objects.
+    """
+    if len(argv) == 2:
+        return Path(argv[1])
+    else:
+        return [Path(a) for a in argv[1:]]
+
+
 def load_raw_file(filename):
     """
     Load a raw file using rawpy's `imread` function. Return the rawpy object.
     """
     img = rawpy.imread(str(filename))
     return img
+
 
 def load_raw_image(filename):
     """
@@ -23,6 +35,7 @@ def load_raw_image(filename):
     img = load_raw_file(filename)
     return img.raw_image
 
+
 def load_raw_colors(filename):
     """
     Load a raw file using rawpy's `imread` function. Return only the Bayer
@@ -30,6 +43,7 @@ def load_raw_colors(filename):
     """
     img = load_raw_file(str(filename))
     return img.raw_colors
+
 
 def load_raw_image_multi(folder, pattern="*.dng"):
     """
@@ -57,6 +71,7 @@ def load_raw_image_multi(folder, pattern="*.dng"):
 
     return arrs, colors
 
+
 def load_jpg_image(filename):
     """
     Load a raw file using pyplot's `imread` function. Return only the image
@@ -64,6 +79,7 @@ def load_jpg_image(filename):
     """
     img = plt.imread(filename)
     return img
+
 
 def load_jpg_multi(folder, pattern="*.jp*g"):
     """
@@ -89,6 +105,7 @@ def load_jpg_multi(folder, pattern="*.jp*g"):
 
     return arrs
 
+
 def load_exif(filename):
     """
     Load the EXIF data in an image using exifread's `process_file` function.
@@ -98,11 +115,22 @@ def load_exif(filename):
         exif = exifread.process_file(f)
     return exif
 
+
+def read_json(path):
+    """
+    Read a JSON file.
+    """
+    file = open(path)
+    dump = json.load(file)
+    return dump
+
+
 def absolute_filename(file):
     """
     Return the absolute filename of a given Path object `file`.
     """
     return file.absolute()
+
 
 def expected_array_size(folder, pattern):
     """
@@ -112,6 +140,7 @@ def expected_array_size(folder, pattern):
     files = sorted(folder.glob(pattern))
     array = np.load(files[0])
     return np.array(array.shape)
+
 
 def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
     """
@@ -126,6 +155,7 @@ def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 
+
 def split_path(path, split_on):
     """
     Split a pathlib Path object `path` on a string `split_on`.
@@ -133,6 +163,7 @@ def split_path(path, split_on):
     split_split_on = path.stem.split(split_on)[1]
     split_underscore = split_split_on.split("_")[0]
     return split_underscore
+
 
 def split_pol_angle(path):
     """
@@ -142,6 +173,7 @@ def split_pol_angle(path):
     split_name = split_path(path, "pol")
     val = float(split_name.split("_")[0])
     return val
+
 
 def split_exposure_time(path):
     """
@@ -158,6 +190,7 @@ def split_exposure_time(path):
         time = float(without_letters)
     return time
 
+
 def split_iso(path):
     """
     Retrieve an ISO speed from a path `path`. Expects the path to contain
@@ -166,6 +199,7 @@ def split_iso(path):
     split_name = split_path(path, "iso")
     val = int(split_name.split("_")[0])
     return val
+
 
 def load_means(folder, **kwargs):
     """
@@ -177,6 +211,7 @@ def load_means(folder, **kwargs):
     values, means = load_npy(folder, "*_mean.npy", **kwargs)
     return values, means
 
+
 def load_jmeans(folder, **kwargs):
     """
     Quickly load all the mean JPG image stacks in a given folder.
@@ -186,6 +221,7 @@ def load_jmeans(folder, **kwargs):
     """
     values, means = load_npy(folder, "*_jmean.npy", **kwargs)
     return values, means
+
 
 def load_stds(folder, **kwargs):
     """
@@ -197,6 +233,7 @@ def load_stds(folder, **kwargs):
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
     return values, stds
 
+
 def load_jstds(folder, **kwargs):
     """
     Quickly load all the standard deviation JPG image stacks in a given folder.
@@ -207,6 +244,7 @@ def load_jstds(folder, **kwargs):
     values, stds = load_npy(folder, "*_jstds.npy", **kwargs)
     return values, stds
 
+
 def load_colour(stacks):
     """
     Load the Bayer colour pattern for a camera from its respective `stacks`
@@ -214,6 +252,7 @@ def load_colour(stacks):
     """
     colours = np.load(stacks/"colour.npy")
     return colours
+
 
 def load_angle(stacks):
     """
@@ -223,14 +262,6 @@ def load_angle(stacks):
     offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
     return offset_angle
 
-def path_from_input(argv):
-    """
-    Turn command-line input(s) into Path objects.
-    """
-    if len(argv) == 2:
-        return Path(argv[1])
-    else:
-        return [Path(a) for a in argv[1:]]
 
 def folders(input_path):
     """
@@ -246,6 +277,7 @@ def folders(input_path):
     subfolders = [phone_root/name for name in subfolder_names]
     return subfolders
 
+
 def replace_word_in_path(path, old, new):
     """
     Replace the string `old` with the string `new` in a given `path`.
@@ -255,6 +287,7 @@ def replace_word_in_path(path, old, new):
     combined = Path("/".join(split))
     return combined
 
+
 def load_bias(products):
     """
     Load the biad map located at `products`/bias.npy
@@ -262,13 +295,6 @@ def load_bias(products):
     bias_map = np.load(products/"bias.npy")
     return bias_map
 
-def read_json(path):
-    """
-    Read a JSON file.
-    """
-    file = open(path)
-    dump = json.load(file)
-    return dump
 
 def read_iso_lookup_table(products):
     """
@@ -277,6 +303,7 @@ def read_iso_lookup_table(products):
     """
     table = np.load(products/"iso_lookup_table.npy")
     return table
+
 
 def read_iso_model(products):
     """
@@ -290,6 +317,7 @@ def read_iso_model(products):
     model = iso_model_generator[model_type](*parameters)
     return model
 
+
 def read_flat_field_correction(products, shape):
     """
     Load the flat-field correction model, the parameters of which are contained
@@ -298,6 +326,7 @@ def read_flat_field_correction(products, shape):
     parameters, errors = np.load(products/"flat_parameters.npy")
     correction_map = apply_vignette_radial(shape, parameters)
     return correction_map
+
 
 def read_spectral_responses(results):
     """
@@ -315,6 +344,7 @@ def read_spectral_responses(results):
     RGBG2 = as_array[1:5]
     RGBG2_error = as_array[5:]
     return wavelengths, RGBG2, RGBG2_error
+
 
 def read_spectral_bandwidths(products):
     """
