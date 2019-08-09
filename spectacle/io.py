@@ -113,9 +113,6 @@ def expected_array_size(folder, pattern):
     array = np.load(files[0])
     return np.array(array.shape)
 
-def array_size_dng(folder):
-    return expected_array_size(folder, pattern="*_mean.npy")
-
 def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
     files = sorted(folder.glob(pattern))
     stacked = np.stack([np.load(f)[selection] for f in files])
