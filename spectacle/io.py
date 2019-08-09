@@ -17,21 +17,24 @@ def load_raw_file(filename):
 
 def load_raw_image(filename):
     """
-    Load a raw file using rawpy's `imread` function. Return only the image data.
+    Load a raw file using rawpy's `imread` function. Return only the image
+    data.
     """
     img = load_raw_file(filename)
     return img.raw_image
 
 def load_raw_colors(filename):
     """
-    Load a raw file using rawpy's `imread` function. Return only the Bayer colour data.
+    Load a raw file using rawpy's `imread` function. Return only the Bayer
+    colour data.
     """
     img = load_raw_file(str(filename))
     return img.raw_colors
 
 def load_raw_image_multi(folder, pattern="*.dng"):
     """
-    Load many raw files simultaneously and put their image data in a single array.
+    Load many raw files simultaneously and put their image data in a single
+    array.
     """
 
     # Find all files in `folder` matching the given pattern `pattern`
@@ -56,14 +59,16 @@ def load_raw_image_multi(folder, pattern="*.dng"):
 
 def load_jpg_image(filename):
     """
-    Load a raw file using pyplot's `imread` function. Return only the image data.
+    Load a raw file using pyplot's `imread` function. Return only the image
+    data.
     """
     img = plt.imread(filename)
     return img
 
 def load_jpg_multi(folder, pattern="*.jp*g"):
     """
-    Load many jpg files simultaneously and put their image data in a single array.
+    Load many jpg files simultaneously and put their image data in a single
+    array.
     """
 
     # Find all files in `folder` matching the given pattern `pattern`
@@ -86,7 +91,8 @@ def load_jpg_multi(folder, pattern="*.jp*g"):
 
 def load_exif(filename):
     """
-    Load the EXIF data in an image using exifread's `process_file` function. Return all EXIF data.
+    Load the EXIF data in an image using exifread's `process_file` function.
+    Return all EXIF data.
     """
     with open(filename, "rb") as f:
         exif = exifread.process_file(f)
@@ -99,6 +105,10 @@ def absolute_filename(file):
     return file.absolute()
 
 def expected_array_size(folder, pattern):
+    """
+    Find the required array size when loading files from `folder` that follow
+    the pattern `pattern`, e.g. all .DNG files.
+    """
     files = sorted(folder.glob(pattern))
     array = np.load(files[0])
     return np.array(array.shape)
