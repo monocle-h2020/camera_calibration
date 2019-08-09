@@ -114,22 +114,42 @@ def expected_array_size(folder, pattern):
     return np.array(array.shape)
 
 def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
+    """
+    Load a series of .npy (NumPy binary) files from `folder` following a
+    pattern `pattern`. Returns the contents of the .npy files as well as a
+    list of values based on their parsing their filenames with a function
+    given in the `retrieve_value` keyword. Only return array elements included
+    in `selection` (default: all).
+    """
     files = sorted(folder.glob(pattern))
     stacked = np.stack([np.load(f)[selection] for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
     return values, stacked
 
 def split_path(path, split_on):
+    """
+    Split a pathlib Path object `path` on a string `split_on`.
+    """
     split_split_on = path.stem.split(split_on)[1]
     split_underscore = split_split_on.split("_")[0]
     return split_underscore
 
 def split_pol_angle(path):
+    """
+    Retrieve a polariser angle from a path `path`. Expects the path to contain
+    a string `polX` with X the polariser angle.
+    """
     split_name = split_path(path, "pol")
     val = float(split_name.split("_")[0])
     return val
 
 def split_exposure_time(path):
+    """
+    Retrieve an exposure time from a path `path`. Handles inverted exposure
+    times, e.g. 1/1000 seconds.
+    For a filename `x.z`, the returned value is `float(x)`.
+    For a filename `x_y.z`, the returned value is `float(x/y)`.
+    """
     without_letters = path.stem.strip("t_jmeansd")  # strip underscores, leading t, trailing "mean"/"stds"
     if "_" in without_letters:
         numerator, denominator = without_letters.split("_")
@@ -139,27 +159,59 @@ def split_exposure_time(path):
     return time
 
 def split_iso(path):
+    """
+    Retrieve an ISO speed from a path `path`. Expects the path to contain
+    a string `isoX` with X the ISO speed.
+    """
     split_name = split_path(path, "iso")
     val = int(split_name.split("_")[0])
     return val
 
 def load_means(folder, **kwargs):
+    """
+    Quickly load all the mean RAW image stacks in a given folder.
+
+    Load the files in `folder` that follow the pattern `*_mean.npy`.
+    Any additional **kwargs are passed to `load_npy`.
+    """
     values, means = load_npy(folder, "*_mean.npy", **kwargs)
     return values, means
 
 def load_jmeans(folder, **kwargs):
+    """
+    Quickly load all the mean JPG image stacks in a given folder.
+
+    Load the files in `folder` that follow the pattern `*_jmean.npy`.
+    Any additional **kwargs are passed to `load_npy`.
+    """
     values, means = load_npy(folder, "*_jmean.npy", **kwargs)
     return values, means
 
 def load_stds(folder, **kwargs):
+    """
+    Quickly load all the standard deviation RAW image stacks in a given folder.
+
+    Load the files in `folder` that follow the pattern `*_stds.npy`.
+    Any additional **kwargs are passed to `load_npy`.
+    """
     values, stds = load_npy(folder, "*_stds.npy", **kwargs)
     return values, stds
 
 def load_jstds(folder, **kwargs):
+    """
+    Quickly load all the standard deviation JPG image stacks in a given folder.
+
+    Load the files in `folder` that follow the pattern `*_jstds.npy`.
+    Any additional **kwargs are passed to `load_npy`.
+    """
     values, stds = load_npy(folder, "*_jstds.npy", **kwargs)
     return values, stds
 
 def load_colour(stacks):
+    """
+    Load the Bayer colour pattern for a camera from its respective `stacks`
+    folder.
+    """
     colours = np.load(stacks/"colour.npy")
     return colours
 
