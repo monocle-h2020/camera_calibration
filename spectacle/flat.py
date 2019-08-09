@@ -8,6 +8,8 @@ clip_border = np.s_[250:-250, 250:-250]
 def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     """
     Vignetting function as defined in Adobe DNG standard 1.4.0.0
+    Reference:
+        https://www.adobe.com/content/dam/acom/en/products/photoshop/pdfs/dng_spec_1.4.0.0.pdf
 
     Parameters
     ----------
@@ -41,6 +43,10 @@ def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
 
 
 def fit_vignette_radial(correction_observed, **kwargs):
+    """
+    Fit a radial vignetting function to the observed correction factors
+    `correction_observed`. Any additional **kwargs are passed to `curve_fit`.
+    """
     X, Y, XY = generate_XY(correction_observed.shape)
     popt, pcov = curve_fit(vignette_radial, XY, correction_observed.ravel(), p0=[1, 2, -5, 5, -2, 0.5, 0.5], **kwargs)
     standard_errors = np.sqrt(np.diag(pcov))
@@ -48,6 +54,9 @@ def fit_vignette_radial(correction_observed, **kwargs):
 
 
 def apply_vignette_radial(shape, parameters):
+    """
+    Apply a radial vignetting function to obtain a correction factotr map.
+    """
     X, Y, XY = generate_XY(shape)
     correction = vignette_radial(XY, *parameters).reshape(shape)
     return correction
