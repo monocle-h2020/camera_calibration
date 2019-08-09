@@ -288,6 +288,10 @@ def replace_word_in_path(path, old, new):
     return combined
 
 
+def replace_suffix(path, new):
+    return (path.parent / path.stem).with_suffix(".jpg")
+
+
 def load_bias(products):
     """
     Load the biad map located at `products`/bias.npy
@@ -326,6 +330,12 @@ def read_flat_field_correction(products, shape):
     parameters, errors = np.load(products/"flat_parameters.npy")
     correction_map = apply_vignette_radial(shape, parameters)
     return correction_map
+
+
+def read_gain_table(path):
+    table = np.load(path)
+    ISO = split_iso(path)
+    return ISO, table
 
 
 def read_spectral_responses(results):
