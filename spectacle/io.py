@@ -116,7 +116,7 @@ def load_exif(filename):
     return exif
 
 
-def read_json(path):
+def load_json(path):
     """
     Read a JSON file.
     """
@@ -129,7 +129,7 @@ def load_metadata(root):
     """
     Read the metadata JSON located in the `root` folder.
     """
-    metadata = read_json(root/"info.json")
+    metadata = load_json(root/"info.json")
     return metadata
 
 
