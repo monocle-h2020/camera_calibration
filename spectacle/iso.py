@@ -77,7 +77,7 @@ def load_iso_lookup_table(root):
     return table
 
 
-def read_iso_model(root):
+def load_iso_model(root):
     """
     Load the ISO normalization function, the parameters of which are contained
     in `root`/products/iso_model.dat
