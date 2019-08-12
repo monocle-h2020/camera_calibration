@@ -5,4 +5,5 @@ If you are only interested in calibrating your data, using previously generated
 calibrations, this is the module to use.
 """
 
+from . import io
 from .iso import normalise_single_iso, normalise_multiple_iso
