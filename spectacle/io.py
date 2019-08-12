@@ -305,7 +305,7 @@ def replace_suffix(path, new_suffix):
 
 def load_bias_map(root):
     """
-    Load the bias map located at `products`/bias.npy
+    Load the bias map located at `root`/products/bias.npy
     """
     bias_map = np.load(root/"products/bias.npy")
     return bias_map
