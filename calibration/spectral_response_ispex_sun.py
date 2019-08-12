@@ -32,7 +32,7 @@ plt.show()
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.npy")
 
 img  = io.load_raw_file(file)

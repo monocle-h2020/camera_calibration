@@ -125,6 +125,14 @@ def read_json(path):
     return dump
 
 
+def load_metadata(root):
+    """
+    Read the metadata JSON located in the `root` folder.
+    """
+    metadata = read_json(root/"info.json")
+    return metadata
+
+
 def absolute_filename(file):
     """
     Return the absolute filename of a given Path object `file`.

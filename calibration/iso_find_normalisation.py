@@ -7,7 +7,7 @@ from scipy.optimize import curve_fit
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 min_iso = phone["software"]["ISO min"]
 max_iso = phone["software"]["ISO max"]
 

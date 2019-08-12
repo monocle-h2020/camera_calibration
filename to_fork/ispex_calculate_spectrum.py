@@ -4,7 +4,7 @@ from spectacle import raw, plot, io, wavelength
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 img  = io.load_raw_file(file)
 exif = io.load_exif(file)

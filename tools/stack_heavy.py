@@ -5,7 +5,7 @@ from os import walk, makedirs
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 colour_path = stacks/"colour.npy"
 colour_exists = colour_path.exists()

@@ -6,7 +6,7 @@ from spectacle.general import gaussMd, Rsquare, RMS
 
 flat_files = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(flat_files[0])
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 colors = io.load_colour(stacks)
 shape = colors.shape

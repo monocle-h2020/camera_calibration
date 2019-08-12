@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 files = io.path_from_input(argv)
 roots = [io.folders(file)[0] for file in files]
-cameras = [io.read_json(root/"info.json")["device"]["name"] for root in roots]
+cameras = [io.load_metadata(root)["device"]["name"] for root in roots]
 print("Read meta-data")
 
 gammas_best = [np.load(root/"results/linearity/gamma.npy") for root in roots]

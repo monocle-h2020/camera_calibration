@@ -6,7 +6,7 @@ from spectacle.general import gaussMd, Rsquare, RMS
 
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 label = meanfile.stem.split("_mean")[0]
 print("Loaded information")

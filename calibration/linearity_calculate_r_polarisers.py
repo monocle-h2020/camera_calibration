@@ -4,7 +4,7 @@ from spectacle import io, linearity as lin
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
 print("Read means")

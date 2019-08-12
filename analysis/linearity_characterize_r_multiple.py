@@ -8,7 +8,7 @@ roots = [io.folders(folder)[0] for folder in folders]
 r_raw_paths  = [root/"products/linearity_pearson_r.npy" for root in roots]
 r_jpeg_paths = [root/"products/linearity_pearson_r_jpeg.npy" for root in roots]
 
-cameras = [io.read_json(root/"info.json")["device"]["name"] for root in roots]
+cameras = [io.load_metadata(root)["device"]["name"] for root in roots]
 
 def load_jpeg(path):
     try:

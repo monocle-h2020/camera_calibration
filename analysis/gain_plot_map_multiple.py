@@ -6,7 +6,7 @@ from spectacle.general import gauss_nan
 
 files = io.path_from_input(argv)
 roots = [io.folders(file)[0] for file in files]
-cameras = [io.read_json(root/"info.json")["device"]["name"] for root in roots]
+cameras = [io.load_metadata(root)["device"]["name"] for root in roots]
 colours_arrays = [io.load_colour(root/"stacks") for root in roots]
 
 isos = [io.split_iso(file) for file in files]

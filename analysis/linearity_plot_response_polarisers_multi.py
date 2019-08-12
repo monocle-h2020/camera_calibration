@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 
 folders = io.path_from_input(argv)
 roots = [io.folders(f)[0] for f in folders]
-phones = [io.read_json(root/"info.json") for root in roots]
+phones = [io.load_metadata(root) for root in roots]
 
 intensities_es = []
 intensities_er = []

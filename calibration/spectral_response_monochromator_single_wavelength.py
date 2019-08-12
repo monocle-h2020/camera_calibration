@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 folder, wvl = io.path_from_input(argv)
 wvl = wvl.stem
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 colours     = io.load_colour(stacks)
 

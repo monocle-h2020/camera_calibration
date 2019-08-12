@@ -20,7 +20,7 @@ def correct_bias(root, data):
     try:
         bias = io.load_bias_map(root)
     except FileNotFoundError:
-        metadata = io.read_json(root/"info.json")
+        metadata = io.load_metadata(root)
         bias = metadata["software"]["bias"]
         print(f"Using bias value from metadata in `{root}/info.json`")
     else:

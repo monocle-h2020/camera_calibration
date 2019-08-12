@@ -6,7 +6,7 @@ from spectacle.general import Rsquare, gaussMd
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 ISO = io.split_iso(folder)
 
 times, means= io.load_means(folder, retrieve_value=io.split_exposure_time)

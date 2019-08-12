@@ -12,7 +12,7 @@ xmax = 0
 
 for c, folder in zip(plot_colours, folders):
     root, images, stacks, products, results = io.folders(folder)
-    phone = io.read_json(root/"info.json")
+    phone = io.load_metadata(root)
 
     iso_max = phone["software"]["ISO max"]
 

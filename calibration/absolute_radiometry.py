@@ -6,7 +6,7 @@ from spectacle.general import gaussMd
 
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 colours = io.load_colour(stacks)
 

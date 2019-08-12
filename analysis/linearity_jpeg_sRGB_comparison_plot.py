@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 gammas = [2.2, 2.4]
 for g, gamma in enumerate(gammas):

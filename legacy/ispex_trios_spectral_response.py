@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 bias = phone["software"]["bias"]
 
 files = sorted(folder.glob("*.dng"))

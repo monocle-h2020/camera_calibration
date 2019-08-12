@@ -6,7 +6,7 @@ from spectacle import io
 
 folder_main = io.path_from_input(argv[:2])
 root, images, stacks, products, results = io.folders(folder_main)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 raw_pattern = f"*{phone['software']['raw extension']}"
 
 blocksize = int(argv[2])

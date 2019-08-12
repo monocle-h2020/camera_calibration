@@ -6,7 +6,7 @@ from spectacle.general import gauss_nan
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 products_gain, results_gain = products/"gain", results/"gain"
 ISO = io.split_iso(file)

@@ -5,7 +5,7 @@ from spectacle import io, iso
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.read_json(root/"info.json")
+phone = io.load_metadata(root)
 
 results_gain = results/"gain"
 
