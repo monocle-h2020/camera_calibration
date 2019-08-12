@@ -1,7 +1,6 @@
-import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io
+from spectacle import raw, plot, io, analyse
 from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
@@ -11,8 +10,8 @@ results_readnoise = results/"readnoise"
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours     = io.load_colour(stacks)
 
-low_iso = isos.argmin()
-high_iso= isos.argmax()
+table = analyse.statistics(stds, prefix_column=isos, prefix_column_header="ISO")
+print(table)
 
 for iso, std in zip(isos, stds):
     gauss = gaussMd(std, sigma=10)
@@ -28,5 +27,3 @@ for iso, std in zip(isos, stds):
         plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (ADU)", saveto=results_readnoise/f"ADU_{c}{X}_gauss_iso{iso}.pdf", colour=c, vmin=vmin, vmax=vmax)
 
     plot.show_RGBG(gauss_RGBG, colorbar_label=35*" "+"Read noise (ADU)", saveto=results_readnoise/f"ADU_all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
-
-    print(f"ISO: {iso} ; Mean: {std_RGBG.mean():.3f} ; Median: {np.median(std_RGBG):.3f} ; Max: {std_RGBG.max():.3f} ; Min: {std_RGBG.min():.3f} ; Standard deviation: {std_RGBG.std():.3f}")

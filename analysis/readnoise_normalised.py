@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, iso
+from spectacle import raw, plot, io, iso, analyse
 from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
@@ -13,8 +13,12 @@ colours     = io.load_colour(stacks)
 
 lookup_table = io.read_iso_lookup_table(products)
 
-for ISO, std_ in zip(isos, stds):
-    std = iso.normalise(std_, ISO, lookup_table)
+stds_normalised = np.array([iso.normalise(std_, ISO, lookup_table) for std_, ISO in zip(stds, isos)])
+
+table = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")
+print(table)
+
+for ISO, std in zip(isos, stds_normalised):
     gauss = gaussMd(std, sigma=10)
     std_RGBG, _= raw.pull_apart(std, colours)
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
@@ -28,5 +32,3 @@ for ISO, std_ in zip(isos, stds):
         plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_{c}{X}_gauss_iso{ISO}.pdf", colour=c, vmin=vmin, vmax=vmax)
 
     plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_all_gauss_iso{ISO}.pdf", vmin=vmin, vmax=vmax)
-
-    print(f"ISO: {ISO} ; Mean: {std_RGBG.mean():.3f} ; Median: {np.median(std_RGBG):.3f} ; Max: {std_RGBG.max():.3f} ; Min: {std_RGBG.min():.3f} ; Standard deviation: {std_RGBG.std():.3f}")
