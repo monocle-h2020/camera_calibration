@@ -5,7 +5,7 @@ If you are only interested in calibrating your data, using previously generated
 calibrations, this is the module to use.
 """
 
-from . import io, iso
+from . import bias_readnoise, io, iso
 
 def correct_bias(root, data):
     """
@@ -17,10 +17,9 @@ def correct_bias(root, data):
         - ISO selection
     """
     try:
-        bias = io.load_bias_map(root)
+        bias = bias_readnoise.load_bias_map(root)
     except FileNotFoundError:
-        metadata = io.load_metadata(root)
-        bias = metadata["software"]["bias"]
+        bias = bias_readnoise.load_bias_metadata(root)
         print(f"Using bias value from metadata in `{root}/info.json`")
     else:
         print(f"Using bias map from `{root}/products/bias_map.npy`")

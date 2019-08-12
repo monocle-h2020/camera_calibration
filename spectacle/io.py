@@ -302,14 +302,6 @@ def replace_suffix(path, new_suffix):
     return (path.parent / path.stem).with_suffix(new_suffix)
 
 
-def load_bias_map(root):
-    """
-    Load the bias map located at `root`/products/bias.npy
-    """
-    bias_map = np.load(root/"products/bias.npy")
-    return bias_map
-
-
 def read_flat_field_correction(products, shape):
     """
     Load the flat-field correction model, the parameters of which are contained
