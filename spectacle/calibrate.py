@@ -6,7 +6,6 @@ calibrations, this is the module to use.
 """
 
 from . import io
-from .io import load_bias
 from .iso import normalise_single_iso, normalise_multiple_iso
 
 def correct_bias(root, data):
@@ -18,6 +17,13 @@ def correct_bias(root, data):
         - Use EXIF value if no map available
         - ISO selection
     """
-    bias_map = load_bias(root)
-    data_corrected = data - bias_map
+    try:
+        bias = io.load_bias_map(root)
+    except FileNotFoundError:
+        metadata = io.read_json(root/"info.json")
+        bias = metadata["software"]["bias"]
+        print(f"Using bias value from metadata in `{root}/info.json`")
+    else:
+        print(f"Using bias map from `{root}/products/bias_map.npy`")
+    data_corrected = data - bias
     return data_corrected

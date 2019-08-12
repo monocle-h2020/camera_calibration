@@ -295,7 +295,7 @@ def replace_suffix(path, new_suffix):
     return (path.parent / path.stem).with_suffix(new_suffix)
 
 
-def load_bias(root):
+def load_bias_map(root):
     """
     Load the bias map located at `products`/bias.npy
     """

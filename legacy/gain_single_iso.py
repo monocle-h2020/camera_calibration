@@ -15,7 +15,7 @@ print("Loaded information")
 names, means = io.load_means (folder  )
 names, stds  = io.load_stds  (folder  )
 colours      = io.load_colour(stacks  )
-bias         = io.load_bias  (products)
+bias         = io.load_bias_map(products)
 print("Loaded data")
 
 means -= bias
