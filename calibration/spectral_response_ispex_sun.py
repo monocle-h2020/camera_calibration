@@ -40,7 +40,7 @@ exif = io.load_exif(file)
 
 values = calibrate.correct_bias(img.raw_image.astype(np.float32), root)
 
-flat_correction = io.read_flat_field_correction(products, values.shape)
+flat_correction = flat.read_flat_field_correction(root, values.shape)
 values = values * flat_correction
 
 xmin, xmax = 2150, 3500

@@ -4,7 +4,6 @@ import numpy as np
 from pathlib import Path
 from matplotlib import pyplot as plt
 import json
-from .flat import apply_vignette_radial
 from .config import spectacle_folder, results_folder
 
 
@@ -300,16 +299,6 @@ def replace_suffix(path, new_suffix):
     Replace a suffix in a path with `new_suffix`
     """
     return (path.parent / path.stem).with_suffix(new_suffix)
-
-
-def read_flat_field_correction(products, shape):
-    """
-    Load the flat-field correction model, the parameters of which are contained
-    in `products`/flat_parameters.npy
-    """
-    parameters, errors = np.load(products/"flat_parameters.npy")
-    correction_map = apply_vignette_radial(shape, parameters)
-    return correction_map
 
 
 def read_gain_table(path):

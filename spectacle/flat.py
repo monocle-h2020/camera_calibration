@@ -60,3 +60,13 @@ def apply_vignette_radial(shape, parameters):
     X, Y, XY = generate_XY(shape)
     correction = vignette_radial(XY, *parameters).reshape(shape)
     return correction
+
+
+def read_flat_field_correction(root, shape):
+    """
+    Load the flat-field correction model, the parameters of which are contained
+    in `root`/products/flat_parameters.npy
+    """
+    parameters, errors = np.load(root/"products/flat_parameters.npy")
+    correction_map = apply_vignette_radial(shape, parameters)
+    return correction_map
