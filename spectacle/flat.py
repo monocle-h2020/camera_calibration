@@ -55,7 +55,7 @@ def fit_vignette_radial(correction_observed, **kwargs):
 
 def apply_vignette_radial(shape, parameters):
     """
-    Apply a radial vignetting function to obtain a correction factotr map.
+    Apply a radial vignetting function to obtain a correction factor map.
     """
     X, Y, XY = generate_XY(shape)
     correction = vignette_radial(XY, *parameters).reshape(shape)
