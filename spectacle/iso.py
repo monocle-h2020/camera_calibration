@@ -56,7 +56,13 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     return model_type, model, R2, parameters, errors
 
 
-def normalise(data, iso, lookup_table):
+def normalise_single_iso(data, iso, lookup_table):
     normalisation_factor = lookup_table[1][iso]
     new_data = data / normalisation_factor
     return new_data
+
+
+def normalise_multiple_iso(data, isos, lookup_table):
+    as_list = [normalise_single_iso(data_sub, ISO, lookup_table) for data_sub, ISO in zip(data, isos)]
+    as_array = np.array(as_list)
+    return as_array

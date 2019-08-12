@@ -25,7 +25,7 @@ plt.savefig(results_readnoise/"iso_dependence.pdf")
 plt.show()
 plt.close()
 
-stds_normalised = np.stack([iso.normalise(std, ISO, lookup_table) for std, ISO in zip(stds, isos)])
+stds_normalised = iso.normalise_multiple_isos(stds, isos, lookup_table)
 
 stds_mean = stds_normalised.mean(axis=(1,2))
 stds_stds = stds_normalised.std (axis=(1,2))

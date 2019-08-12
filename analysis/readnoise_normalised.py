@@ -13,7 +13,7 @@ colours     = io.load_colour(stacks)
 
 lookup_table = io.read_iso_lookup_table(products)
 
-stds_normalised = np.array([iso.normalise(std_, ISO, lookup_table) for std_, ISO in zip(stds, isos)])
+stds_normalised = iso.normalise_multiple_isos(stds, isos, lookup_table)
 
 table = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")
 print(table)

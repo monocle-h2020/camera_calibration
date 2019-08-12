@@ -16,7 +16,7 @@ print(f"Loaded data: {len(times)} exposure times")
 
 ISO_gain, gain = io.read_gain_table(results/"gain"/"table_iso50.npy")  # hard-coded for now
 iso_lookup_table = io.read_iso_lookup_table(products)
-gain_normalised = iso.normalise(gain, ISO, iso_lookup_table)
+gain_normalised = iso.normalise_single_iso(gain, ISO, iso_lookup_table)
 gain_gauss = gauss_nan(gain_normalised, sigma=(0,5,5))
 gain_image = raw.put_together_from_colours(gain_gauss, colours)
 

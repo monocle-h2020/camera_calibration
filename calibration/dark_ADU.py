@@ -68,7 +68,7 @@ plt.close()
 print("Saved ADU histogram")
 
 iso_lookup_table = io.read_iso_lookup_table(products)
-dark_normalised = iso.normalise(dark_separate, ISO, iso_lookup_table)
+dark_normalised = iso.normalise_single_iso(dark_separate, ISO, iso_lookup_table)
 dark_normalised_reshaped = dark_normalised.reshape(dark_reshaped.shape)
 np.save(products/"dark.npy", dark_normalised_reshaped)
 
