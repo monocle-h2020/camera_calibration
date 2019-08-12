@@ -288,8 +288,11 @@ def replace_word_in_path(path, old, new):
     return combined
 
 
-def replace_suffix(path, new):
-    return (path.parent / path.stem).with_suffix(".jpg")
+def replace_suffix(path, new_suffix):
+    """
+    Replace a suffix in a path with `new_suffix`
+    """
+    return (path.parent / path.stem).with_suffix(new_suffix)
 
 
 def load_bias(products):
