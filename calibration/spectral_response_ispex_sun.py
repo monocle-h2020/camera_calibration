@@ -38,7 +38,7 @@ coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.n
 img  = io.load_raw_file(file)
 exif = io.load_exif(file)
 
-values = calibrate.correct_bias(img.raw_image.astype(np.float32), root)
+values = calibrate.correct_bias(root, img.raw_image.astype(np.float32))
 values = calibrate.correct_flatfield(root, values, values.shape)
 
 xmin, xmax = 2150, 3500
