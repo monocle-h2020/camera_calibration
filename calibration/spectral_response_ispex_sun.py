@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from spectacle import raw, plot, io, wavelength, flat, calibrate
+from spectacle import raw, plot, io, wavelength, calibrate
 from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 
 #wavelength, spectrometer = np.loadtxt("reference_spectra/sun.txt", skiprows=13, unpack=True)
@@ -39,9 +39,7 @@ img  = io.load_raw_file(file)
 exif = io.load_exif(file)
 
 values = calibrate.correct_bias(img.raw_image.astype(np.float32), root)
-
-flat_correction = flat.read_flat_field_correction(root, values.shape)
-values = values * flat_correction
+values = calibrate.correct_flatfield(root, values, values.shape)
 
 xmin, xmax = 2150, 3500
 ymin_thin , ymax_thin  =  700, 1050

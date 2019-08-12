@@ -5,7 +5,7 @@ If you are only interested in calibrating your data, using previously generated
 calibrations, this is the module to use.
 """
 
-from . import bias_readnoise, io, iso
+from . import bias_readnoise, flat, io, iso
 
 def correct_bias(root, data):
     """
@@ -43,3 +43,17 @@ def normalise_iso(root, data, iso_values):
         data_normalised = iso.normalise_multiple_iso(data, iso_values, lookup_table)
 
     return data_normalised
+
+
+def correct_flatfield(root, data, shape):
+    """
+    Correction for flat-fielding using a flat-field model retrieved from
+    `root`/products/flat_parameters.npy.
+
+    To do:
+        - Get shape from metadata
+    """
+    correction_factor = flat.read_flat_field_correction(root, shape)
+    data_corrected = data * correction_factor
+
+    return data_corrected
