@@ -10,7 +10,7 @@ from . import io, iso
 def correct_bias(root, data):
     """
     Perform a bias correction on data using a bias map from
-    `root/products/bias.npy`.
+    `root`/products/bias.npy.
 
     To do:
         - Use EXIF value if no map available
@@ -26,6 +26,7 @@ def correct_bias(root, data):
         print(f"Using bias map from `{root}/products/bias_map.npy`")
     data_corrected = data - bias
     return data_corrected
+
 
 def normalise_iso(root, data, iso_values):
     """
