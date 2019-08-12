@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from spectacle import raw, plot, io, wavelength, flat
+from spectacle import raw, plot, io, wavelength, flat, calibrate
 from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 
 #wavelength, spectrometer = np.loadtxt("reference_spectra/sun.txt", skiprows=13, unpack=True)
@@ -38,12 +38,7 @@ coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.n
 img  = io.load_raw_file(file)
 exif = io.load_exif(file)
 
-try:
-    bias = io.load_bias(products)
-except FileNotFoundError:
-    bias = phone["software"]["bias"]
-    print("Using EXIF bias value")
-values = img.raw_image.astype(np.float32) - bias
+values = calibrate.correct_bias(img.raw_image.astype(np.float32), root)
 
 flat_correction = io.read_flat_field_correction(products, values.shape)
 values = values * flat_correction

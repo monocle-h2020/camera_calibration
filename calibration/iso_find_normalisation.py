@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, plot, iso
+from spectacle import io, plot, iso, calibrate
 from spectacle.general import Rsquare
 from scipy.optimize import curve_fit
 
@@ -15,14 +15,13 @@ results_iso = results/"iso"
 print("Loaded information")
 
 colours      = io.load_colour(stacks  )
-bias         = io.load_bias  (products)
 print("Loaded metadata")
 
 isos, means = io.load_means (folder, retrieve_value=io.split_iso)
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 print("Loaded data")
 
-means -= bias
+means = calibrate.correct_bias(root, means)
 
 relative_errors = stds / means
 median_relative_error = np.median(relative_errors)

@@ -295,11 +295,11 @@ def replace_suffix(path, new_suffix):
     return (path.parent / path.stem).with_suffix(new_suffix)
 
 
-def load_bias(products):
+def load_bias(root):
     """
-    Load the biad map located at `products`/bias.npy
+    Load the bias map located at `products`/bias.npy
     """
-    bias_map = np.load(products/"bias.npy")
+    bias_map = np.load(root/"products/bias.npy")
     return bias_map
 
 

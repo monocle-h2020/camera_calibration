@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, plot
+from spectacle import raw, io, plot, calibrate
 from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
@@ -12,7 +12,6 @@ products_gain, results_gain = products/"gain", results/"gain"
 print("Loaded information")
 
 colours      = io.load_colour(stacks  )
-bias         = io.load_bias  (products)
 
 nr_files = len(list(folder.glob("*_mean.npy")))
 assert nr_files%2 == 0  # equal number for both ISO speeds
@@ -27,8 +26,8 @@ _, high_mean = io.load_npy(folder, f"{high}_*_mean.npy")
 _, high_stds = io.load_npy(folder, f"{high}_*_stds.npy")
 print(f"Loaded ISO {high}")
 
-low_mean  -= bias
-high_mean -= bias
+low_mean  = calibrate.correct_bias(root, low_mean )
+high_mean = calibrate.correct_bias(root, high_mean)
 
 ratio = high_mean / low_mean
 q_low, q_high = np.percentile(ratio.ravel(), 0.1), np.percentile(ratio.ravel(), 99.9)

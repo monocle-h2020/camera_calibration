@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from spectacle import raw, io
+from spectacle import io, calibrate
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
@@ -13,10 +13,10 @@ print("Loaded information")
 names, means = io.load_means (folder  )
 names, stds  = io.load_stds  (folder  )
 colours      = io.load_colour(stacks  )
-bias         = io.load_bias  (products)
 print("Loaded data")
 
-means -= bias
+means = calibrate.correct_bias(root, means)
+
 variance = stds**2
 
 fit_max = 0.95 * 2**phone["camera"]["bits"]
