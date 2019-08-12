@@ -3,6 +3,8 @@ Module for common functions in analysing camera data or calibration data.
 """
 
 from . import plot
+from .iso import normalise_single_iso, normalise_multiple_iso
+
 import numpy as np
 from astropy.table import Table
 from matplotlib import pyplot as plt

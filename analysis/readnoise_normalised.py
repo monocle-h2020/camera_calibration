@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, iso, analyse
+from spectacle import raw, plot, io, analyse
 from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
@@ -13,7 +13,7 @@ colours     = io.load_colour(stacks)
 
 lookup_table = io.read_iso_lookup_table(products)
 
-stds_normalised = iso.normalise_multiple_isos(stds, isos, lookup_table)
+stds_normalised = analyse.normalise_multiple_iso(stds, isos, lookup_table)
 
 table = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")
 print(table)
