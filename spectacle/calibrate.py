@@ -5,8 +5,7 @@ If you are only interested in calibrating your data, using previously generated
 calibrations, this is the module to use.
 """
 
-from . import io
-from .iso import normalise_single_iso, normalise_multiple_iso
+from . import io, iso
 
 def correct_bias(root, data):
     """
@@ -27,3 +26,20 @@ def correct_bias(root, data):
         print(f"Using bias map from `{root}/products/bias_map.npy`")
     data_corrected = data - bias
     return data_corrected
+
+def normalise_iso(root, data, iso_values):
+    """
+    Normalise data using an ISO normalisation look-up table from
+    `root`/products/iso_lookup_table.npy.
+
+    If `iso` is a single number, use `normalise_single_iso`. Otherwise, use
+    `normalise_multiple_iso`.
+    """
+    lookup_table = iso.load_iso_lookup_table(root)
+
+    if isinstance(iso_values, (int, float)):
+        data_normalised = iso.normalise_single_iso  (data, iso_values, lookup_table)
+    else:
+        data_normalised = iso.normalise_multiple_iso(data, iso_values, lookup_table)
+
+    return data_normalised

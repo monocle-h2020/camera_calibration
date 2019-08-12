@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, iso
+from spectacle import raw, plot, io, calibrate
 from spectacle.general import Rsquare, gaussMd
 
 folder = io.path_from_input(argv)
@@ -67,8 +67,7 @@ plt.show()
 plt.close()
 print("Saved ADU histogram")
 
-iso_lookup_table = io.read_iso_lookup_table(products)
-dark_normalised = iso.normalise_single_iso(dark_separate, ISO, iso_lookup_table)
+dark_normalised = calibrate.normalise_iso(root, dark_separate, ISO)
 dark_normalised_reshaped = dark_normalised.reshape(dark_reshaped.shape)
 np.save(products/"dark.npy", dark_normalised_reshaped)
 

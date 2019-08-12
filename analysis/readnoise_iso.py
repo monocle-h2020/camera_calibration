@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, analyse, calibrate
+from spectacle import raw, plot, io, analyse, iso, calibrate
 from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
@@ -11,7 +11,7 @@ results_readnoise = results/"readnoise"
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours     = io.load_colour(stacks)
 
-lookup_table = io.read_iso_lookup_table(products)
+lookup_table = iso.load_iso_lookup_table(root)
 
 stds_mean = stds.mean(axis=(1,2))
 stds_stds = stds.std (axis=(1,2))
@@ -25,7 +25,7 @@ plt.savefig(results_readnoise/"iso_dependence.pdf")
 plt.show()
 plt.close()
 
-stds_normalised = calibrate.normalise_multiple_iso(stds, isos, lookup_table)
+stds_normalised = calibrate.normalise_iso(root, stds, isos)
 
 stds_mean = stds_normalised.mean(axis=(1,2))
 stds_stds = stds_normalised.std (axis=(1,2))

@@ -66,3 +66,25 @@ def normalise_multiple_iso(data, isos, lookup_table):
     as_list = [normalise_single_iso(data_sub, ISO, lookup_table) for data_sub, ISO in zip(data, isos)]
     as_array = np.array(as_list)
     return as_array
+
+
+def load_iso_lookup_table(root):
+    """
+    Load the ISO normalization lookup table located at
+    `root`/products/iso_lookup_table.npy
+    """
+    table = np.load(root/"products/iso_lookup_table.npy")
+    return table
+
+
+def read_iso_model(root):
+    """
+    Load the ISO normalization function, the parameters of which are contained
+    in `root`/products/iso_model.dat
+    """
+    as_array = np.loadtxt(root/"products/iso_model.dat", dtype=str)
+    model_type = as_array[0,0]
+    parameters = as_array[1].astype(np.float64)
+    errors     = as_array[2].astype(np.float64)
+    model = model_generator[model_type](*parameters)
+    return model

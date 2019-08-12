@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, iso
+from spectacle import raw, plot, io, calibrate
 from spectacle.general import Rsquare, gaussMd, gauss_nan
 
 folder = io.path_from_input(argv)
@@ -15,8 +15,7 @@ colours     = io.load_colour(stacks)
 print(f"Loaded data: {len(times)} exposure times")
 
 ISO_gain, gain = io.read_gain_table(results/"gain"/"table_iso50.npy")  # hard-coded for now
-iso_lookup_table = io.read_iso_lookup_table(products)
-gain_normalised = iso.normalise_single_iso(gain, ISO, iso_lookup_table)
+gain_normalised = calibrate.normalise_iso(root, gain, ISO)
 gain_gauss = gauss_nan(gain_normalised, sigma=(0,5,5))
 gain_image = raw.put_together_from_colours(gain_gauss, colours)
 

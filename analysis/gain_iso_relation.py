@@ -10,7 +10,7 @@ phone = io.load_metadata(root)
 results_gain = results/"gain"
 
 ISO, gain_image = io.read_gain_table(file)
-lookup_table = io.read_iso_lookup_table(products)
+lookup_table = iso.load_iso_lookup_table(products)
 
 midx, midy = np.array(gain_image.shape)[1:]//2
 
