@@ -8,7 +8,7 @@ phone = io.read_json(root/"info.json")
 
 colours = io.load_colour(stacks)
 
-array_size = io.array_size_dng(folder)
+array_size = np.array(colours.shape)
 mid1, mid2 = array_size // 2
 center = np.s_[mid1:mid1+2, mid2:mid2+2]
 

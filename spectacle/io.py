@@ -142,10 +142,6 @@ def expected_array_size(folder, pattern):
     return np.array(array.shape)
 
 
-def array_size_dng(folder):
-    return expected_array_size(folder, pattern="*_mean.npy")
-
-
 def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
     """
     Load a series of .npy (NumPy binary) files from `folder` following a
