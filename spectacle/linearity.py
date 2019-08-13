@@ -2,6 +2,7 @@ import numpy as np
 from .general import Rsquare, curve_fit, RMS
 from scipy.stats import pearsonr
 
+# minimum Pearson r value to be considered linear (see SPECTACLE paper)
 linearity_limit = 0.98
 modes = {"p": "polarisers", "t": "exposure_time"}
 
