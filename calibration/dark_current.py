@@ -31,11 +31,12 @@ print(f"Loaded data at {len(times)} exposure times")
 dark_current, bias_fit = dark.fit_dark_current_linear(times, means)
 print("Fitted dark current to each pixel")
 
-save_to = root/"products/dark.npy"
+save_to = root/"products/dark_current.npy"
 np.save(save_to, dark_current)
-print(f"Saved dark current map to '{save_to}'")
+print(f"Saved dark current map at ISO {ISO} to '{save_to}'")
 
 # ISO normalisation
 dark_current_normalised = calibrate.normalise_iso(root, dark_current, ISO)
-save_to_normalised = root/"products/dark_normalised.npy"
+save_to_normalised = root/"products/dark_current_normalised.npy"
 np.save(save_to_normalised, dark_current_normalised)
+print(f"Saved normalised dark current map to '{save_to_normalised}'")

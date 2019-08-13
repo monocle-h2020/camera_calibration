@@ -6,11 +6,12 @@ calibrations, this is the module to use.
 """
 
 # Import other SPECTACLE submodules to use in functions
-from . import bias_readnoise, flat, io, iso
+from . import bias_readnoise, dark, flat, io, iso
 
 # Import functions from other SPECTACLE submodules which may be used in
 # calibration scripts, for simpler access
 from .bias_readnoise import load_bias_map, load_readnoise_map
+from .dark import load_dark_current_map
 
 def correct_bias(root, data):
     """
@@ -29,6 +30,21 @@ def correct_bias(root, data):
     else:
         print(f"Using bias map from `{root}/products/bias_map.npy`")
     data_corrected = data - bias
+
+    return data_corrected
+
+
+def correct_dark_current(root, data, exposure_time):
+    """
+    Perform a dark current correction on data using a dark current map from
+    `root`/products/dark_normalised.npy
+
+    To do:
+        - Easy way to parse exposure times in scripts
+    """
+    dark_current = dark.load_dark_current_map(root)
+    dark_total = dark_current * exposure_time
+    data_corrected = data - dark_total
 
     return data_corrected
 
