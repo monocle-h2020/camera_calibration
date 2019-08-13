@@ -1,6 +1,7 @@
 import numpy as np
 from sys import argv
 from spectacle import io, linearity as lin
+from spectacle.general import symmetric_percentiles
 
 folders = io.path_from_input(argv)
 roots = [io.folders(folder)[0] for folder in folders]
@@ -26,13 +27,13 @@ print(f"       Camera: |      RAW       |       J_R      |      J_G       |     
 for camera, raw_, jpeg_ in zip(cameras, r_raw, r_jpeg):
     print(f"{camera:>13}:", end="   ")
     raw = raw_[~np.isnan(raw_)].ravel()
-    low, high = lin.percentile_r(raw)
+    low, high = symmetric_percentiles(raw)
     print(f"{low:.3f} -- {high:.3f}", end="   ")
     if jpeg_ is None:
         print("      --               --               --         ", end="")
     else:
         for j_ in jpeg_:
             jpeg = j_[~np.isnan(j_)].ravel()
-            low, high = lin.percentile_r(jpeg)
+            low, high = symmetric_percentiles(jpeg)
             print(f"{low:.3f} -- {high:.3f}", end="   ")
     print(f"{np.where(raw < lin.linearity_limit)[0].shape[0]:>8}")

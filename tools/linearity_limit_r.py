@@ -11,6 +11,7 @@ To do:
 import numpy as np
 from matplotlib import pyplot as plt
 from spectacle import linearity as lin
+from spectacle.general import symmetric_percentiles
 
 # Number of intensities (exposure times, polariser angles) at which
 # measurements were taken
@@ -75,5 +76,5 @@ plt.hist(r_sample, bins=np.linspace(0.9, 1, 150))
 plt.show()
 plt.close()
 print(f"Mean: {r_sample.mean():.3f} +- {r_sample.std():.3f}")
-low, high = lin.percentile_r(r_sample)
+low, high = symmetric_percentiles(r_sample)
 print(f"0.1% -- 99.9% range: {low:.3f} -- {high:.3f}")

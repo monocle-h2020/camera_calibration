@@ -134,3 +134,13 @@ def distances_px(array):
     x_center, y_center = array.shape[1]/2, array.shape[0]/2
     distance = np.sqrt((X - x_center)**2 + (Y - y_center)**2)
     return X, Y, distance
+
+
+def symmetric_percentiles(data, percent=0.1, **kwargs):
+    """
+    Find the lowest and highest `percent` percentile in a data set `data`.
+    Default: P_0.1 and P_99.9
+
+    Additional **kwargs are passed to `numpy.nanpercentile`
+    """
+    return np.nanpercentile(data, percent, **kwargs), np.nanpercentile(data, 100-percent, **kwargs)
