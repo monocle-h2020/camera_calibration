@@ -24,6 +24,7 @@ def correct_bias(root, data):
     else:
         print(f"Using bias map from `{root}/products/bias_map.npy`")
     data_corrected = data - bias
+
     return data_corrected
 
 
@@ -52,6 +53,7 @@ def correct_flatfield(root, data, shape):
 
     To do:
         - Get shape from metadata
+        - Choose between model and map (separate functions?)
     """
     correction_factor = flat.read_flat_field_correction(root, shape)
     data_corrected = data * correction_factor
