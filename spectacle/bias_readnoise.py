@@ -17,3 +17,11 @@ def load_bias_metadata(root):
     metadata = io.load_metadata(root)
     bias_value = metadata["software"]["bias"]
     return bias_value
+
+
+def load_readnoise_map(root):
+    """
+    Load the bias map located at `root`/products/readnoise.npy
+    """
+    readnoise_map = np.load(root/"products/readnoise.npy")
+    return readnoise_map

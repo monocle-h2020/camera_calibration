@@ -5,7 +5,12 @@ If you are only interested in calibrating your data, using previously generated
 calibrations, this is the module to use.
 """
 
+# Import other SPECTACLE submodules to use in functions
 from . import bias_readnoise, flat, io, iso
+
+# Import functions from other SPECTACLE submodules which may be used in
+# calibration scripts, for simpler access
+from .bias_readnoise import load_bias_map, load_readnoise_map
 
 def correct_bias(root, data):
     """
