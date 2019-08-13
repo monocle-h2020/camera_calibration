@@ -1,3 +1,21 @@
+"""
+Determines the linearity of the response of each pixel in a camera using RAW
+data. The Pearson r coefficient is used as a measure of linearity. Two methods
+for measuring linearity are currently supported:
+    * "polarisers" (`p` on the command-line), two linear polarisers with
+    varying angles.
+    * "exposure_times" (`t` on the command-line), the same image taken with
+    varying exposure times.
+
+Command line arguments:
+    * `folder`: folder containing stacked linearity data
+    * `mode`: the calibration mode (`p` for polarisers, `t` for exposure times)
+
+To do:
+    * Implement a more general interface for data obtained using different
+    methods.
+"""
+
 import numpy as np
 from sys import argv
 from spectacle import io, linearity as lin
@@ -19,7 +37,7 @@ saturation = 0.95 * max_value
 
 if calibration_mode == "polarisers":
     # Load the mean stacks for each polariser angle
-    angles,  means = io.load_means (folder, retrieve_value=io.split_pol_angle)
+    angles,  means = io.load_means(folder, retrieve_value=io.split_pol_angle)
     print("Read data")
 
     # Convert polariser angles to intensities using the observed angle between
@@ -32,7 +50,7 @@ if calibration_mode == "polarisers":
 
 elif calibration_mode == "exposure_time":
     # Load the mean stacks for each exposure time
-    intensities, means = io.load_means (folder, retrieve_value=io.split_exposure_time)
+    intensities, means = io.load_means(folder, retrieve_value=io.split_exposure_time)
     print("Read data")
 
     # Errors are currently not used

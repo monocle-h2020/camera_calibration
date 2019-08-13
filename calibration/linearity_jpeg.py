@@ -1,3 +1,21 @@
+"""
+Determines the linearity of the response of each pixel in a camera using JPEG
+data. The Pearson r coefficient is used as a measure of linearity. Two methods
+for measuring linearity are currently supported:
+    * "polarisers" (`p` on the command-line), two linear polarisers with
+    varying angles.
+    * "exposure_times" (`t` on the command-line), the same image taken with
+    varying exposure times.
+
+Command line arguments:
+    * `folder`: folder containing stacked linearity data
+    * `mode`: the calibration mode (`p` for polarisers, `t` for exposure times)
+
+To do:
+    * Implement a more general interface for data obtained using different
+    methods.
+"""
+
 import numpy as np
 from sys import argv
 from spectacle import io, linearity as lin
