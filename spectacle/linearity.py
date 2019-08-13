@@ -5,6 +5,15 @@ from scipy.stats import pearsonr
 polariser_angle = 74
 linearity_limit = 0.98
 
+modes = {"p": "polarisers", "t": "exposure_time"}
+
+def calibration_mode(mode_abbreviated):
+    try:
+        mode_full = modes[mode_abbreviated]
+    except KeyError:
+        raise ValueError(f"Invalid linearity calibration mode `{mode_abbreviated}` given; must be one of `{modes.keys()}`")
+    else:
+        return mode_full
 
 def malus(angle, offset=polariser_angle):
     return (np.cos(np.radians(angle-offset)))**2
