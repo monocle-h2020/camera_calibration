@@ -20,11 +20,14 @@ root, images, stacks, products, results = io.folders(folder)
 
 # Load the standard deviation stacks for each ISO value
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
+print(f"Loaded bias data for {len(isos)} ISO values from '{folder}'")
 
 # Find the lowest ISO value in the data and select the respective read noise
 # map
-lowest_iso = isos.argmin()
-readnoise_map = stds[lowest_iso]
+lowest_iso_index = isos.argmin()
+readnoise_map = stds[lowest_iso_index]
 
 # Save the read noise map to the `products` folder
-np.save(products/"readnoise.npy", readnoise_map)
+save_to = root/"products/readnoise.npy"
+np.save(save_to, readnoise_map)
+print(f"Saved read noise map at ISO {isos[lowest_iso_index]} to '{save_to}'")
