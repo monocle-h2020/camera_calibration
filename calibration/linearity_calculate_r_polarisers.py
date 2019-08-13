@@ -33,5 +33,6 @@ except ValueError:
     print("No JPEG data")
 else:
     print("Read JPEG means")
+    intensities = lin.malus(angles, offset_angle)
     r_jpeg, saturated_jpeg = lin.calculate_pearson_r_values_jpeg(intensities, jmeans)
     np.save(products/"linearity_pearson_r_jpeg.npy", r_jpeg)
