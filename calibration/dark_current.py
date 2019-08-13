@@ -1,3 +1,14 @@
+"""
+Create a dark current map using dark data (zero light, varying exposure times).
+A map in ADU/s is created.
+
+Command line arguments:
+    * `folder`: folder containing stacked dark data
+
+To do:
+    * Save maps for all ISOs and use these in the calibration process.
+"""
+
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
