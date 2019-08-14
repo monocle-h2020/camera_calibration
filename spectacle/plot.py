@@ -202,6 +202,16 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     _saveshow(saveto)
 
 
+def show_image_RGBG2(data, saveto=None, **kwargs):
+    for j, c in enumerate(RGBG2):
+        try:
+            saveto_c = saveto.parent / (saveto.stem + "_" + c + saveto.suffix)
+        except AttributeError:
+            saveto_c = None
+
+        show_image(data[j], saveto=saveto_c, colour=c, **kwargs)
+
+
 def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     fig, axs = plt.subplots(ncols=4, sharex=True, sharey=True, figsize=(7,2), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     for ax, data_c, c in zip(axs, data, "RGBG"):

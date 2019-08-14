@@ -27,7 +27,6 @@ for iso, mean in zip(isos, means):
     plot.histogram_RGB(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"histogram_iso{iso}.pdf", nrbins=100)
 
     plot.show_image(gauss, colorbar_label="Bias (ADU)", saveto=savefolder/f"gauss_iso{iso}.pdf")
-    for j, c in enumerate(plot.RGBG2):
-        plot.show_image(gauss_RGBG[j], colorbar_label="Bias (ADU)", saveto=savefolder/f"{c}_gauss_iso{iso}.pdf", colour=c, vmin=vmin, vmax=vmax)
+    plot.show_image_RGBG2(gauss_RGBG, colorbar_label="Bias (ADU)", saveto=savefolder/f"gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
 
     plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Bias (ADU)", saveto=savefolder/f"all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)
