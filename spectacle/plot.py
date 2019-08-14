@@ -11,6 +11,7 @@ cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.G
          "rr": plt.cm.Reds_r, "gr": plt.cm.Greens_r, "br": plt.cm.Blues_r, "g2r": plt.cm.Greens_r,
          None: plt.cm.viridis}
 
+
 def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
         plt.show()
@@ -19,15 +20,18 @@ def _saveshow(saveto=None, close=True, **kwargs):
     if close:
         plt.close()
 
+
 def _rgbplot(x, y, func=plt.plot, **kwargs):
     RGB = ["R", "G", "B"]
     for j in range(3):
         func(x, y[j], c=RGB[j], **kwargs)
 
+
 def _rgbgplot(x, y, func=plt.plot, **kwargs):
     RGBY = ["R", "G", "B", "Y"]
     for j in range(4):
         func(x, y[j], c=RGBY[j], **kwargs)
+
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
     plt.figure(figsize=(10, 5), tight_layout=True)
@@ -40,6 +44,7 @@ def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kw
     except:
         pass
     _saveshow(saveto)
+
 
 def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital value (ADU)", xlabel="Wavelength (nm)", **kwargs):
     plt.figure(figsize=(6.6, 3), tight_layout=True)
@@ -55,25 +60,13 @@ def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital val
         pass
     _saveshow(saveto)
 
+
 def plot_photo(data, saveto=None, **kwargs):
     plt.imshow(data.astype("uint8"), **kwargs)
     plt.xlabel("$y$")
     plt.ylabel("$x$")
     _saveshow(saveto)
 
-def imshow_tight(data, figsize=(15,15), saveto=None, **kwargs):
-    plt.figure(figsize=figsize, tight_layout=True)
-    plt.imshow(data, **kwargs)
-    plt.axis("off")
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    _saveshow(saveto, transparent=True)
-
-def bitmap(data, dpi=96, saveto=None, **kwargs):
-    plt.figure(figsize=(data.shape[1]/dpi, data.shape[0]/dpi), dpi=dpi, tight_layout=True)
-    plt.imshow(data, interpolation="none", aspect="equal", **kwargs)
-    plt.axis("off")
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    _saveshow(saveto, transparent=True, dpi=dpi)
 
 def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.figure(figsize=(3.3,3))
@@ -87,6 +80,7 @@ def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.tight_layout()
     _saveshow(saveto)
 
+
 def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, saveto=None):
     plt.scatter(y, coefficients, c='r')
     plt.plot(y, coefficients_fit, c='k', lw=3)
@@ -96,6 +90,7 @@ def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, sav
     plt.xlabel("$y$")
     plt.ylabel(f"$p_{nr}$")
     _saveshow(saveto)
+
 
 def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
     for j in range(coefficients_fit.shape[1]):
@@ -108,18 +103,9 @@ def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
             saveto1 = saveto
         _wavelength_coefficients_single(y, coefficients[:,j], coefficients_fit[:,j], nr=j, saveto=saveto1)
 
-def histogram(data, saveto=None, **kwargs):
-    counts = np.bincount(data.flatten())
-    plt.scatter(np.arange(len(counts)), counts, **kwargs)
-    plt.yscale("log")
-    plt.ylim(ymin=0.9)
-    plt.xlim(0, len(counts)*1.01)
-    plt.xlabel("RGB value")
-    plt.ylabel("Number of pixels")
-    plt.tight_layout(True)
-    _saveshow(saveto)
 
 def RGBG(RGBG, saveto=None, size=13, **kwargs):
+    # replace with `show_RGBG`
     R, G, B, G2 = raw.split_RGBG(RGBG)
     frac = RGBG.shape[1]/RGBG.shape[2]
     fig, axs = plt.subplots(2,2,sharex=True,sharey=True,figsize=(size,size*frac))
@@ -132,6 +118,7 @@ def RGBG(RGBG, saveto=None, size=13, **kwargs):
     fig.subplots_adjust(hspace=.001, wspace=.001)
     _saveshow(saveto, transparent=True)
 
+
 def _to_8_bit(data, maxvalue=4096, boost=1):
     converted = data.astype(np.float) / maxvalue * 255
     converted = boost * converted - (boost-1) * 30
@@ -139,6 +126,7 @@ def _to_8_bit(data, maxvalue=4096, boost=1):
     converted[converted < 0]   = 0
     converted = converted.astype(np.uint8)
     return converted
+
 
 def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=5, xlabel="Pixel $x$", show_axes=False, **kwargs):
     """
@@ -153,6 +141,7 @@ def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=5, xlabel="Pix
     if not show_axes:
         plt.axis("off")
     _saveshow(saveto, transparent=True)
+
 
 def RGBG_stacked_with_graph(RGBG, x=raw.x, maxvalue=4096, boost=5, saveto=None, xlabel="Pixel $x$", **kwargs):
     R, G, B, G2 = raw.split_RGBG(RGBG)  # change to RGBG
@@ -178,23 +167,6 @@ def RGBG_stacked_with_graph(RGBG, x=raw.x, maxvalue=4096, boost=5, saveto=None, 
     fig.tight_layout()
     _saveshow(saveto, transparent=True)
 
-def Bayer(RGB_array, size=10, saveto=None, **kwargs):
-    plt.figure(figsize=(size, size))
-    plt.imshow(RGB_array, aspect="equal", interpolation="none", **kwargs)
-    plt.axis("off")
-    _saveshow(saveto, transparent=True, dpi=900)
-
-def hexbin_colour(colour, *args, **kwargs):
-    plt.hexbin(*args, cmap=cmaps[colour], **kwargs)
-
-def linearity(I, C, colour, gridsize=250, bins="log", extent=(0,1,0,4095), saveto=None, **kwargs):
-    plt.figure(figsize=(10, 7))
-    hexbin_colour(colour, I, C, gridsize=gridsize, bins=bins, extent=extent, **kwargs)
-    plt.xlabel("Intensity")
-    plt.ylabel(colour + " value")
-    plt.xlim(*extent[:2])
-    plt.ylim(*extent[2:])
-    _saveshow(saveto)
 
 def colorbar(mappable, location="bottom", label=""):
     orientation = "horizontal" if location in ("top", "bottom") else "vertical"
@@ -205,6 +177,7 @@ def colorbar(mappable, location="bottom", label=""):
     cbar = fig.colorbar(mappable, cax=cax, orientation=orientation, ticklocation=location)
     cbar.set_label(label)
     return cbar
+
 
 def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     cmap = cmaps[colour+"r"] if colour else plt.cm.viridis
@@ -217,6 +190,7 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     colorbar_here.locator = ticker.MaxNLocator(nbins=5)
     colorbar_here.update_ticks()
     _saveshow(saveto)
+
 
 def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     fig, axs = plt.subplots(ncols=4, sharex=True, sharey=True, figsize=(7,2), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
@@ -231,16 +205,6 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
         colorbar_here.update_ticks()
     _saveshow(saveto)
 
-def hist_bias_ron(data, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
-    plt.figure(figsize=(10,7), tight_layout=True)
-    plt.hist(data.ravel(), bins=np.linspace(*xlim, nrbins), color='k')
-    plt.xlabel(xlabel)
-    plt.xlim(*xlim)
-    plt.ylim(0.9, data.size)
-    plt.yscale("log")
-    plt.ylabel("Frequency")
-    plt.grid(ls="--")
-    _saveshow(saveto)
 
 def hist_bias_ron_kRGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
     data_KRGB = [data_RGBG.ravel(), data_RGBG[0].ravel(), data_RGBG[1::2].ravel(), data_RGBG[2].ravel()]
@@ -255,6 +219,7 @@ def hist_bias_ron_kRGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)",
     axs[0].set_yscale("log")
     axs[2].set_ylabel(25*" "+"Probability density")
     _saveshow(saveto)
+
 
 def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
     for j in range(4):
@@ -282,6 +247,7 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
         ax2.set_title(f"$r = {r:.3f}$")
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
+
 
 def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
     for j in range(4):
