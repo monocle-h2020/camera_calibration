@@ -24,7 +24,7 @@ for iso, mean in zip(isos, means):
     gauss_RGBG = gaussMd(mean_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
 
-    plot.hist_bias_ron_kRGB(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"histogram_iso{iso}.pdf", nrbins=100)
+    plot.histogram_RGB(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=savefolder/f"histogram_iso{iso}.pdf", nrbins=100)
 
     plot.show_image(gauss, colorbar_label="Bias (ADU)", saveto=savefolder/f"gauss_iso{iso}.pdf")
     for j, c in enumerate("RGBG"):

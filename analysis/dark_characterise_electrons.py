@@ -60,7 +60,7 @@ plot.show_image(dark_gauss, colorbar_label="Dark current (e-/s)", saveto=results
 print("Saved Gauss map")
 
 dark_RGBG, _= raw.pull_apart(dark_reshaped, colours)
-plot.hist_bias_ron_kRGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (e-/s)", saveto=results/f"dark/electrons_histogram_RGB_iso{ISO}.pdf")
+plot.histogram_RGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (e-/s)", saveto=results/f"dark/electrons_histogram_RGB_iso{ISO}.pdf")
 del dark_RGBG
 print("Saved RGB histogram")
 

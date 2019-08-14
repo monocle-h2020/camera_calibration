@@ -17,7 +17,7 @@ gains = np.load(file)
 gains_RGBG,_ = raw.pull_apart(gains, colours)
 gains_gauss = gauss_nan(gains_RGBG, sigma=(0,5,5))
 
-plot.hist_bias_ron_kRGB(gains_RGBG, xlim=(0,8), xlabel="Gain (ADU/e$^-$)", saveto=results_gain/f"hist_iso{ISO}.pdf")
+plot.histogram_RGB(gains_RGBG, xlim=(0,8), xlabel="Gain (ADU/e$^-$)", saveto=results_gain/f"hist_iso{ISO}.pdf")
 print("Made histogram")
 
 vmin, vmax = np.nanmin(gains_gauss), np.nanmax(gains_gauss)

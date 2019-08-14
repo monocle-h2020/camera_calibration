@@ -19,7 +19,7 @@ for iso, std in zip(isos, stds):
     gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
     vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
 
-    plot.hist_bias_ron_kRGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (ADU)", saveto=results_readnoise/f"ADU_histogram_iso{iso}.pdf")
+    plot.histogram_RGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (ADU)", saveto=results_readnoise/f"ADU_histogram_iso{iso}.pdf")
 
     plot.show_image(gauss, colorbar_label="Read noise (ADU)", saveto=results_readnoise/f"ADU_gauss_iso{iso}.pdf")
     for j, c in enumerate("RGBG"):

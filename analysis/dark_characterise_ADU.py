@@ -30,7 +30,7 @@ print("Saved Gauss map")
 # Split the data into the RGBG2 filters and make histograms (aggregate and per
 # filter)
 dark_RGBG, _= raw.pull_apart(dark_current, colours)
-plot.hist_bias_ron_kRGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (norm. ADU/s)", saveto=root/f"results/dark/histogram_RGB.pdf")
+plot.histogram_RGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (norm. ADU/s)", saveto=root/f"results/dark/histogram_RGB.pdf")
 print("Saved RGB histogram")
 
 # Convolve the data in each filter (RGBG2) with a Gaussian kernel and plot

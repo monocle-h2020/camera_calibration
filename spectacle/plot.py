@@ -206,7 +206,7 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     _saveshow(saveto)
 
 
-def hist_bias_ron_kRGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
+def histogram_RGB(data_RGBG, xlim=(0, 30), nrbins=500, xlabel="Bias (ADU)", saveto=None):
     data_KRGB = [data_RGBG.ravel(), data_RGBG[0].ravel(), data_RGBG[1::2].ravel(), data_RGBG[2].ravel()]
     fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     for data, colour, ax in zip(data_KRGB, "kRGB", axs):
