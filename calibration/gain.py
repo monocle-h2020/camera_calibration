@@ -49,8 +49,8 @@ for i in range(means.shape[1]):
             # Keep a NaN value if fitting is not possible for whatever reason
             pass
 
-    # Progress counter: give percentage done every 100th row
-    if i%100:
+    # Progress counter: give percentage done every 42nd row
+    if i % 42 == 0:
         print(f"{100 * i / means.shape[1]:.1f}%", end=" ", flush=True)
 
 save_to = root/f"products/gain/gain_iso{ISO}.npy"
