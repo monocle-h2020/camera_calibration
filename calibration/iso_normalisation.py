@@ -1,24 +1,26 @@
+"""
+Create a look-up table for the ISO-gain normalisation function of a camera,
+using mean images of the same scene taken at various ISO speeds.
+
+Command line arguments:
+    * `folder`: folder containing stacked data for different ISO speeds
+"""
+
 import numpy as np
 from sys import argv
-from matplotlib import pyplot as plt
-from spectacle import io, plot, iso, calibrate
-from spectacle.general import Rsquare
-from scipy.optimize import curve_fit
+from spectacle import io, iso, calibrate
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 phone = io.load_metadata(root)
 min_iso = phone["software"]["ISO min"]
 max_iso = phone["software"]["ISO max"]
-
 results_iso = results/"iso"
-print("Loaded information")
-
-colours      = io.load_colour(stacks  )
+colours      = io.load_colour(stacks)
 print("Loaded metadata")
 
-isos, means = io.load_means (folder, retrieve_value=io.split_iso)
-isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
+isos, means = io.load_means(folder, retrieve_value=io.split_iso)
+isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 print("Loaded data")
 
 means = calibrate.correct_bias(root, means)
@@ -36,24 +38,12 @@ ratios_errs = ratios.std (axis=(1,2))
 model_type, model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=min_iso, max_iso=max_iso)
 
 iso_range = np.arange(0, max_iso+1, 1)
-plt.figure(figsize=(3.3,3), tight_layout=True)
-plt.errorbar(isos, ratios_mean, yerr=ratios_errs, fmt="ko", label="Data")
-plt.plot(iso_range, model(iso_range), c='k', label=f"Fit")
-plt.title(f"$R^2 = {R2:.6f}$")
-plt.ylim(ymin=0)
-plt.xlim(0, 1.01*phone["software"]["ISO max"])
-plt.xlabel("ISO speed")
-plt.ylabel("Normalization")
-plt.legend(loc="lower right")
-plt.savefig(results_iso/"normalization.pdf")
-plt.show()
-plt.close()
 
 lookup_table = np.stack([iso_range, model(iso_range)])
 data         = np.stack([isos, ratios_mean, ratios_errs])
 
 np.save(products/"iso_lookup_table.npy", lookup_table)
-np.save(products/"iso_data.npy"        , data)
+np.save(products/"iso_data.npy", data)
 
 model_array = np.stack([len(parameters) * [model_type], parameters, errors])
 np.savetxt(products/"iso_model.dat", model_array, fmt="%s")
