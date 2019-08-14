@@ -1,3 +1,10 @@
+"""
+Analyse bias maps (in ADU) generated using the calibration functions.
+
+Command line arguments:
+    * `folder`: the folder containing the bias maps to be analysed.
+"""
+
 from sys import argv
 from matplotlib import pyplot as plt
 from spectacle import raw, plot, io, analyse

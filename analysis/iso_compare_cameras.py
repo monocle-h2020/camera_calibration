@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from spectacle import io
 
 folders = io.path_from_input(argv)
-plot_colours = ["black", "red", "xkcd:purple", "xkcd:olive", "xkcd:lilac", "xkcd:custard", "xkcd:peach"]
+plot_colours = ["black", "xkcd:lime green", "blue", "xkcd:peach"]
 
 plt.figure(figsize=(4, 3), tight_layout=True)
 

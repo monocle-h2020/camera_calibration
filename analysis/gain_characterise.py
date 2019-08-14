@@ -1,3 +1,10 @@
+"""
+Analyse gain maps (in ADU/electron) generated using the calibration functions.
+
+Command line arguments:
+    * `file`: the location of the gain map to be analysed.
+"""
+
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
