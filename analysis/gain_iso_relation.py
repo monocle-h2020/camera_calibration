@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, iso
+from spectacle import io, iso, plot
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
@@ -17,7 +17,7 @@ midx, midy = np.array(gain_image.shape)[1:]//2
 gain_per_iso = lookup_table[1] * gain_image[:, midx, midy][:, np.newaxis]
 
 plt.figure(figsize=(4,4), tight_layout=True)
-for j, c in enumerate("rgbg"):
+for j, c in enumerate(plot.rgbg):
     plt.scatter(ISO, gain_image[j, midx, midy], c=c, s=75)
     plt.plot(lookup_table[0], gain_per_iso[j], c=c)
 plt.ylim(ymin=0)

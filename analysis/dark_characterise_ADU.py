@@ -38,13 +38,11 @@ print("Saved RGB histogram")
 dark_RGBG_gauss = gaussMd(dark_RGBG, sigma=(0,5,5))
 vmin, vmax = dark_RGBG_gauss.min(), dark_RGBG_gauss.max()
 plot.show_RGBG(dark_RGBG_gauss, colorbar_label="Dark current (norm. ADU/s)", saveto=root/f"results/dark/map_RGBG2.pdf", vmin=vmin, vmax=vmax)
-for j, c in enumerate("RGBG"):
-    X = "2" if j == 3 else ""
-    plot.show_image(dark_RGBG_gauss[j], colorbar_label="Dark current (norm. ADU/s)", saveto=root/f"results/dark/map_{c}{X}.pdf", colour=c, vmin=vmin, vmax=vmax)
+for j, c in enumerate(plot.RGBG2):
+    plot.show_image(dark_RGBG_gauss[j], colorbar_label="Dark current (norm. ADU/s)", saveto=root/f"results/dark/map_{c}.pdf", colour=c, vmin=vmin, vmax=vmax)
 
 # Print statistics of the dark current per filter
-RGBG2 = ["R", "G", "B", "G2"]
-stats = analyse.statistics(dark_RGBG, prefix_column=RGBG2, prefix_column_header="Filter")
+stats = analyse.statistics(dark_RGBG, prefix_column=plot.RGBG2, prefix_column_header="Filter")
 print(stats)
 
 # Check how many pixels are over some threshold in dark current

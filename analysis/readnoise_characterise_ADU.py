@@ -22,8 +22,7 @@ for iso, std in zip(isos, stds):
     plot.histogram_RGB(std_RGBG, xlim=(0, 25), xlabel="Read noise (ADU)", saveto=results_readnoise/f"ADU_histogram_iso{iso}.pdf")
 
     plot.show_image(gauss, colorbar_label="Read noise (ADU)", saveto=results_readnoise/f"ADU_gauss_iso{iso}.pdf")
-    for j, c in enumerate("RGBG"):
-        X = "2" if j == 3 else ""
-        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (ADU)", saveto=results_readnoise/f"ADU_{c}{X}_gauss_iso{iso}.pdf", colour=c, vmin=vmin, vmax=vmax)
+    for j, c in enumerate(plot.RGBG2):
+        plot.show_image(gauss_RGBG[j], colorbar_label="Read noise (ADU)", saveto=results_readnoise/f"ADU_{c}_gauss_iso{iso}.pdf", colour=c, vmin=vmin, vmax=vmax)
 
     plot.show_RGBG(gauss_RGBG, colorbar_label=35*" "+"Read noise (ADU)", saveto=results_readnoise/f"ADU_all_gauss_iso{iso}.pdf", vmin=vmin, vmax=vmax)

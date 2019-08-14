@@ -5,11 +5,21 @@ from . import raw
 from .wavelength import fluorescent_lines
 from .linearity import pearson_r_single
 
+
+# Colour maps for red/green/blue
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.Greens,
          "r": plt.cm.Reds, "g": plt.cm.Greens, "b": plt.cm.Blues, "g2": plt.cm.Greens,
          "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r, "G2r": plt.cm.Greens_r,
          "rr": plt.cm.Reds_r, "gr": plt.cm.Greens_r, "br": plt.cm.Blues_r, "g2r": plt.cm.Greens_r,
          None: plt.cm.viridis}
+
+
+# Constants for easy iteration
+rgb = "rgb"
+RGB = "RGB"
+rgbg = "rgbg"
+rgbg2 = ["r", "g", "b", "g2"]
+RGBG2 = ["R", "G", "B", "G2"]
 
 
 def _saveshow(saveto=None, close=True, **kwargs):
