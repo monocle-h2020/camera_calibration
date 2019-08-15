@@ -3,7 +3,7 @@ Module for common functions in analysing camera data or calibration data.
 """
 
 from . import plot, raw
-from .general import gaussMd
+from .general import gaussMd, symmetric_percentiles
 
 import numpy as np
 from astropy.table import Table
@@ -51,11 +51,11 @@ def plot_gauss_maps(data, bayer_data, kernel_width_RGBG2=5, **kwargs):
     mosaicked data and demosaicked RGBG2 data are convolved and plotted.
     The kernel width is `kernel_width_RGBG2` for the RGBG2 data and
     `2*kernel_width_RGBG2` for the mosaicked data.
-    
+
     Any additional **kwargs are passed to both `plot.show_image` and
     `plot.show_image_RGBG2`.
     """
-    
+
     # Demosaick data by splitting the RGBG2 channels into separate arrays
     data_RGBG2,_ = raw.pull_apart(data, bayer_data)
 
@@ -66,21 +66,21 @@ def plot_gauss_maps(data, bayer_data, kernel_width_RGBG2=5, **kwargs):
     kernel_width_mosaic = 2 * kernel_width_RGBG2
     data_gaussed = gaussMd(data, kernel_width_mosaic)
     data_RGBG2_gaussed = gaussMd(data_RGBG2, (0, kernel_width_RGBG2, kernel_width_RGBG2))
-    
+
     plot.show_image(data_gaussed, **kwargs)
     plot.show_image_RGBG2(data_RGBG2_gaussed, **kwargs)
-    
+
 
 def plot_histogram_RGB(data, bayer_data, **kwargs):
     """
     Plot an RGB histogram of the `data`, demosaicked according to the
     `bayer_data`.
-    
+
     Any additional **kwargs are passed to `plot.histogram_RGB`.
     """
-    
+
     # Demosaick data by splitting the RGBG2 channels into separate arrays
     data_RGBG2,_ = raw.pull_apart(data, bayer_data)
-    
+
     # Plot the RGB histogram
     plot.histogram_RGB(data_RGBG2, **kwargs)

@@ -23,12 +23,15 @@ isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 stats = analyse.statistics(stds, prefix_column=isos, prefix_column_header="ISO")
 print(stats)
 
+# Range on the x axis for the histograms
+xmin, xmax = 0, analyse.symmetric_percentiles(stds, percent=0.001)[1]
+
 # Loop over the data and make plots at each ISO value
 for ISO, std in zip(isos, stds):
     save_to_histogram = save_to/f"readnoise_ADU_histogram_iso{ISO}.pdf"
     save_to_maps = save_to/f"readnoise_ADU_map_iso{ISO}.pdf"
 
-    analyse.plot_histogram_RGB(std, colours, xlim=(0, 15), xlabel="Read noise (norm. ADU)", saveto=save_to_histogram)
+    analyse.plot_histogram_RGB(std, colours, xlim=(xmin, xmax), xlabel="Read noise (norm. ADU)", saveto=save_to_histogram)
     analyse.plot_gauss_maps(std, colours, colorbar_label="Read noise (norm. ADU)", saveto=save_to_maps)
 
     print(f"Saved plots for ISO speed {ISO}")

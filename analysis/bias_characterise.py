@@ -26,8 +26,7 @@ stats = analyse.statistics(means, prefix_column=isos, prefix_column_header="ISO"
 print(stats)
 
 # Range on the x axis for the histograms
-xmax = phone["software"]["bias"] + 25
-xmin = max(phone["software"]["bias"] - 25, 0)
+xmin, xmax = analyse.symmetric_percentiles(means, percent=0.001)
 
 # Loop over the data and make plots at each ISO value
 for ISO, mean in zip(isos, means):

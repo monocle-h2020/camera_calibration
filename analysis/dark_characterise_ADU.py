@@ -25,9 +25,12 @@ print("Loaded data")
 analyse.plot_gauss_maps(dark_current, colours, colorbar_label="Dark current (norm. ADU/s)", saveto=root/f"results/dark/dark_current_map.pdf")
 print("Saved Gauss map")
 
+# Range on the x axis for the histogram
+xmin, xmax = analyse.symmetric_percentiles(dark_current, percent=0.001)
+
 # Split the data into the RGBG2 filters and make histograms (aggregate and per
 # filter)
-analyse.plot_histogram_RGB(dark_current, colours, xlim=(-25, 50), xlabel="Dark current (norm. ADU/s)", saveto=root/f"results/dark/dark_current_histogram.pdf")
+analyse.plot_histogram_RGB(dark_current, colours, xlim=(xmin, xmax), xlabel="Dark current (norm. ADU/s)", saveto=root/f"results/dark/dark_current_histogram.pdf")
 print("Saved RGB histogram")
 
 # Check how many pixels are over some threshold in dark current
