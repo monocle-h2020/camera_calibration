@@ -15,6 +15,10 @@ cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.G
          None: plt.cm.viridis}
 
 
+# Colours for plotting lines with high contrast
+line_colours = ["black", "xkcd:lime green", "blue", "xkcd:peach"]
+
+
 # Constants for easy iteration
 rgb = "rgb"
 RGB = "RGB"

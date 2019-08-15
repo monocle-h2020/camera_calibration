@@ -9,20 +9,17 @@ Command line arguments:
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io
+from spectacle import io, plot
 
 # Get the data folders from the command line
 folders = io.path_from_input(argv)
 save_to = io.results_folder/"iso_comparison.pdf"
 
-# Colours to use for the different curves
-plot_colours = ["black", "xkcd:lime green", "blue", "xkcd:peach"]
-
 # Create the figure to hold the plot
 plt.figure(figsize=(4, 3), tight_layout=True)
 
 # Loop over each camera, load its data, and plot them in the figure
-for c, folder in zip(plot_colours, folders):
+for c, folder in zip(plot.line_colours, folders):
     # Get the data folder for this camera
     root, images, stacks, products, results = io.folders(folder)
     
