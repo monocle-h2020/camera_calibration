@@ -1,48 +1,64 @@
+"""
+Create a flat-field map using the mean flat-field images.
+
+Command line arguments:
+    * `folder`: folder containing stacked flat-field data
+"""
+
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, plot, flat
+from spectacle import raw, io, plot, flat, calibrate
 from spectacle.general import gaussMd, Rsquare, RMS
 
+# Get the data folder from the command line
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
-phone = io.load_metadata(root)
-
 label = meanfile.stem.split("_mean")[0]
-print("Loaded information")
 
+# Get metadata
+phone = io.load_metadata(root)
 bias = phone["software"]["bias"]
+colours = io.load_colour(stacks)
+print("Loaded metadata")
 
+# Load the data
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")
-
 mean = np.load(meanfile)
 stds = np.load(stdsfile)
-colours = io.load_colour(stacks)
 
-mean -= bias
+# Bias correction
+mean = calibrate.correct_bias(root, mean)
 
-mRGBG, offsets = raw.pull_apart(mean, colours)
-sRGBG, offsets = raw.pull_apart(stds, colours)
+# Demosaick the data
+mean_RGBG, offsets = raw.pull_apart(mean, colours)
+stds_RGBG, offsets = raw.pull_apart(stds, colours)
 
-# rescale to normalised values
-normalisation = gaussMd(mRGBG, sigma=(0,5,5)).max(axis=(1,2))[:,np.newaxis,np.newaxis]
-mRGBG = mRGBG / normalisation
-sRGBG = sRGBG / normalisation
+# Normalise the RGBG2 channels
+mean_RGBG_gauss = gaussMd(mean_RGBG, sigma=(0,5,5))
+normalisation_factors = mean_RGBG_gauss.max(axis=(1,2))
+normalisation_array = normalisation_factors[:,np.newaxis,np.newaxis]
+mean_RGBG = mean_RGBG / normalisation_array
+stds_RGBG = stds_RGBG / normalisation_array
 
-flat_field = raw.put_together_from_colours(mRGBG, colours)
+# Re-mosaick the now-normalised flat-field data
+flat_field = raw.put_together_from_colours(mean_RGBG, colours)
+
+# Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
 flat_field_gauss = gaussMd(flat_field, 10)
 
-# selection for further analysis
+# Only use the inner X pixels
 flat_field_gauss = flat_field_gauss[flat.clip_border]
 
-vmin, vmax = np.nanmin(mRGBG), 1
-plot.show_RGBG(mRGBG, colorbar_label=25*" "+"Relative sensitivity", vmin=vmin, vmax=1, saveto=results/f"flat/{label}.pdf")
+# Plot the normalised RGBG2 channels
+vmin, vmax = np.nanmin(mean_RGBG), 1
+plot.show_RGBG(mean_RGBG, colorbar_label=25*" "+"Relative sensitivity", vmin=vmin, vmax=vmax, saveto=results/f"flat/{label}.pdf")
 print("Made RGBG images")
 
-print("Minima:", mRGBG.min(axis=(1,2)))
+print("Minima:", mean_RGBG.min(axis=(1,2)))
 
 plt.figure(figsize=(3,2), tight_layout=True)
-img = plt.imshow(mRGBG[0], cmap=plot.cmaps["Rr"])
+img = plt.imshow(mean_RGBG[0], cmap=plot.cmaps["Rr"])
 plt.xticks([])
 plt.yticks([])
 colorbar_here = plot.colorbar(img, location="right")
@@ -55,7 +71,7 @@ plt.close()
 print("Made single plot of sensitivity")
 
 plt.figure(figsize=(3,2), tight_layout=True)
-img = plt.imshow(1/mRGBG[0], cmap=plot.cmaps["Rr"])
+img = plt.imshow(1/mean_RGBG[0], cmap=plot.cmaps["Rr"])
 plt.xticks([])
 plt.yticks([])
 colorbar_here = plot.colorbar(img, location="right")
