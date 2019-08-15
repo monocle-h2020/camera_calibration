@@ -11,28 +11,39 @@ from matplotlib import pyplot as plt
 from spectacle import raw, io, plot, analyse
 from spectacle.general import gauss_nan
 
+# Get the data folder from the command line
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.load_metadata(root)
-
 savefolder = root/"results/gain"
-
 ISO = io.split_iso(file)
-colours = io.load_colour(stacks)
-print("Loaded information")
 
+# Get metadata
+phone = io.load_metadata(root)
+colours = io.load_colour(stacks)
+print("Loaded metadata")
+
+# Load the data
 gains = np.load(file)
+print("Loaded data")
+
+# Demosaick data by splitting the RGBG2 channels into separate arrays
 gains_RGBG,_ = raw.pull_apart(gains, colours)
+
+# Convolve the data with a Gaussian kernel
 gains_combined_gauss = gauss_nan(gains, sigma=10)
 gains_gauss = gauss_nan(gains_RGBG, sigma=(0,5,5))
 
+# Plot an RGB histogram of the data
 analyse.plot_histogram_RGB(gains, colours, xlim=(0, 8), xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
 print("Made histogram")
 
+# Plot Gauss-convolved maps of the data
+# Note: cannot use analyse.plot_gauss_maps because of NaNs
 plot.show_image(gains_combined_gauss, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
 plot.show_image_RGBG2(gains_gauss, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
 print("Made maps")
 
+# Plot a miniature RGB histogram
 fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
 axs[0].hist(gains_RGBG[0]   .ravel(), bins=np.linspace(0, 3.5, 250), color="r", edgecolor="r", density=True)
 axs[1].hist(gains_RGBG[1::2].ravel(), bins=np.linspace(0, 3.5, 250), color="g", edgecolor="g", density=True)

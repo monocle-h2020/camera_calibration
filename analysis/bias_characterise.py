@@ -15,13 +15,13 @@ root, images, stacks, products, results = io.folders(folder)
 # Get metadata
 phone = io.load_metadata(root)
 colours = io.load_colour(stacks)
-savefolder = results/"bias"
+save_to = results/"bias"
 
 # Load the data
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)
 print("Loaded data")
 
-# Print statistics of the bias at each ISO
+# Print statistics at each ISO
 stats = analyse.statistics(means, prefix_column=isos, prefix_column_header="ISO")
 print(stats)
 
@@ -31,8 +31,10 @@ xmin = max(phone["software"]["bias"] - 25, 0)
 
 # Loop over the data and make plots at each ISO value
 for ISO, mean in zip(isos, means):
-    saveto_histogram = savefolder/f"bias_histogram_iso{ISO}.pdf"
-    saveto_maps = savefolder/f"bias_map_iso{ISO}.pdf"
-    
-    analyse.plot_histogram_RGB(mean, colours, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=saveto_histogram)
-    analyse.plot_gauss_maps(mean, colours, colorbar_label="Bias (ADU)", saveto=saveto_maps)
+    save_to_histogram = save_to/f"bias_histogram_iso{ISO}.pdf"
+    save_to_maps = save_to/f"bias_map_iso{ISO}.pdf"
+
+    analyse.plot_histogram_RGB(mean, colours, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=save_to_histogram)
+    analyse.plot_gauss_maps(mean, colours, colorbar_label="Bias (ADU)", saveto=save_to_maps)
+
+    print(f"Saved plots for ISO speed {ISO}")
