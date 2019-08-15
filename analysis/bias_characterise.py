@@ -49,5 +49,4 @@ for iso, mean in zip(isos, means):
     saveto_map = savefolder/f"bias_map_iso{iso}.pdf"
     plot.show_image(gauss_combined, colorbar_label="Bias (ADU)", saveto=saveto_map)
     plot.show_image_RGBG2(gauss_RGBG, colorbar_label="Bias (ADU)", saveto=saveto_map, vmin=vmin, vmax=vmax)
-    plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Bias (ADU)", saveto=savefolder/f"bias_map_iso{iso}_RGBG2.pdf", vmin=vmin, vmax=vmax)
     print(f"Saved RGBG2 maps to '{saveto_map}'")

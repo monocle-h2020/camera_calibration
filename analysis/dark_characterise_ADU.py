@@ -37,7 +37,6 @@ print("Saved RGB histogram")
 # images of the result
 dark_RGBG_gauss = gaussMd(dark_RGBG, sigma=(0,5,5))
 vmin, vmax = dark_RGBG_gauss.min(), dark_RGBG_gauss.max()
-plot.show_RGBG(dark_RGBG_gauss, colorbar_label="Dark current (norm. ADU/s)", saveto=root/f"results/dark/map_RGBG2.pdf", vmin=vmin, vmax=vmax)
 plot.show_image_RGBG2(dark_RGBG_gauss, colorbar_label="Dark current (norm. ADU/s)", saveto=root/f"results/dark/map.pdf", vmin=vmin, vmax=vmax)
 
 # Print statistics of the dark current per filter

@@ -26,5 +26,3 @@ for ISO, std in zip(isos, stds_normalised):
 
     plot.show_image(gauss, colorbar_label="Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_gauss_iso{ISO}.pdf")
     plot.show_image_RGBG2(gauss_RGBG, colorbar_label="Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_gauss_iso{ISO}.pdf", vmin=vmin, vmax=vmax)
-
-    plot.show_RGBG(gauss_RGBG, colorbar_label=25*" "+"Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_all_gauss_iso{ISO}.pdf", vmin=vmin, vmax=vmax)

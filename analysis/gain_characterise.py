@@ -30,7 +30,6 @@ plot.histogram_RGB(gains_RGBG, xlim=(0,8), xlabel="Gain (ADU/e$^-$)", saveto=sav
 print("Made histogram")
 
 vmin, vmax = symmetric_percentiles(gains_gauss)
-plot.show_RGBG(gains_gauss, colorbar_label=25*" "+"Gain (ADU/e$^-$)", vmin=vmin, vmax=vmax, saveto=savefolder/f"map_iso{ISO}.pdf")
 plot.show_image(gains_combined_gauss, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
 plot.show_image_RGBG2(gains_gauss, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf", vmin=vmin, vmax=vmax)
 print("Made maps")
