@@ -1,8 +1,5 @@
-import numpy as np
 from sys import argv
-from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, analyse, calibrate, iso
-from spectacle.general import gaussMd
+from spectacle import io, analyse, calibrate
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
@@ -17,12 +14,6 @@ table = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_he
 print(table)
 
 for ISO, std in zip(isos, stds_normalised):
-    gauss = gaussMd(std, sigma=10)
-    std_RGBG, _= raw.pull_apart(std, colours)
-    gauss_RGBG = gaussMd(std_RGBG, sigma=(0,5,5))
-    vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
-
-    plot.histogram_RGB(std_RGBG, xlim=(0, 15), xlabel="Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_histogram_iso{ISO}.pdf")
-
-    plot.show_image(gauss, colorbar_label="Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_gauss_iso{ISO}.pdf")
-    plot.show_image_RGBG2(gauss_RGBG, colorbar_label="Read noise (norm. ADU)", saveto=results_readnoise/f"normalised_gauss_iso{ISO}.pdf", vmin=vmin, vmax=vmax)
+    analyse.plot_histogram_RGB(std, colours, xlim=(0, 15), xlabel="Read noise (norm. ADU)", saveto=results_readnoise/f"readnoise_normalised_histogram_iso{ISO}.pdf")
+    analyse.plot_gauss_maps(std, colours, colorbar_label="Read noise (norm. ADU)", saveto=results_readnoise/f"readnoise_normalised_map_iso{ISO}.pdf")
+    

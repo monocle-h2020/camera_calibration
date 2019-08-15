@@ -4,6 +4,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
 from .wavelength import fluorescent_lines
 from .linearity import pearson_r_single
+from .general import symmetric_percentiles
 
 
 # Colour maps for red/green/blue
@@ -202,7 +203,15 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     _saveshow(saveto)
 
 
-def show_image_RGBG2(data, saveto=None, **kwargs):
+def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
+    # Default vmin and vmax if none are given by the user
+    if vmin == "auto" or vmax == "auto":
+        if vmin == "auto":
+            vmin = symmetric_percentiles(data)[0]
+        if vmax == "auto":
+            vmax = symmetric_percentiles(data)[1]
+    kwargs.update({"vmin": vmin, "vmax": vmax})
+    
     for j, c in enumerate(RGBG2):
         try:
             saveto_c = saveto.parent / (saveto.stem + "_" + c + saveto.suffix)

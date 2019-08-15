@@ -6,8 +6,7 @@ Command line arguments:
 """
 
 from sys import argv
-from spectacle import raw, plot, io, analyse
-from spectacle.general import gaussMd
+from spectacle import io, analyse
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -31,22 +30,9 @@ xmax = phone["software"]["bias"] + 25
 xmin = max(phone["software"]["bias"] - 25, 0)
 
 # Loop over the data and make plots at each ISO value
-for iso, mean in zip(isos, means):
-    # Split the data into the Bayer RGBG2 filters and make an RGB histogram
-    mean_RGBG, _ = raw.pull_apart(mean, colours)
-    saveto_histogram = savefolder/f"histogram_iso{iso}.pdf"
-    plot.histogram_RGB(mean_RGBG, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=saveto_histogram, nrbins=100)
-    print(f"Saved RGB histogram to '{saveto_histogram}'")
-   
-    # Convolve the maps with a Gaussian kernel
-    gauss_combined = gaussMd(mean, sigma=10)
-    gauss_RGBG = gaussMd(mean_RGBG, sigma=(0,5,5))
+for ISO, mean in zip(isos, means):
+    saveto_histogram = savefolder/f"bias_histogram_iso{ISO}.pdf"
+    saveto_maps = savefolder/f"bias_map_iso{ISO}.pdf"
     
-    # Find limits for the colorbar, to be used in every map image
-    vmin, vmax = gauss_RGBG.min(), gauss_RGBG.max()
-    
-    # Plot images of the Gauss-convolved map
-    saveto_map = savefolder/f"bias_map_iso{iso}.pdf"
-    plot.show_image(gauss_combined, colorbar_label="Bias (ADU)", saveto=saveto_map)
-    plot.show_image_RGBG2(gauss_RGBG, colorbar_label="Bias (ADU)", saveto=saveto_map, vmin=vmin, vmax=vmax)
-    print(f"Saved RGBG2 maps to '{saveto_map}'")
+    analyse.plot_histogram_RGB(mean, colours, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=saveto_histogram)
+    analyse.plot_gauss_maps(mean, colours, colorbar_label="Bias (ADU)", saveto=saveto_maps)
