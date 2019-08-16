@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
+from matplotlib import pyplot as plt
 from spectacle import io, linearity as lin
-from spectacle.general import symmetric_percentiles
 
 folders = io.path_from_input(argv)
 roots = [io.folders(folder)[0] for folder in folders]
@@ -21,19 +21,33 @@ def load_jpeg(path):
 r_raw  = [  np.load(raw_path ) for raw_path  in r_raw_paths ]
 r_jpeg = [load_jpeg(jpeg_path) for jpeg_path in r_jpeg_paths]
 
-print("0.1% -- 99.9% range")
+lower_limit = 0.85
 
-print(f"       Camera: |      RAW       |       J_R      |      J_G       |      J_B       | RAW < {lin.linearity_limit}")
-for camera, raw_, jpeg_ in zip(cameras, r_raw, r_jpeg):
-    print(f"{camera:>13}:", end="   ")
-    raw = raw_[~np.isnan(raw_)].ravel()
-    low, high = symmetric_percentiles(raw)
-    print(f"{low:.3f} -- {high:.3f}", end="   ")
-    if jpeg_ is None:
-        print("      --               --               --         ", end="")
-    else:
-        for j_ in jpeg_:
-            jpeg = j_[~np.isnan(j_)].ravel()
-            low, high = symmetric_percentiles(jpeg)
-            print(f"{low:.3f} -- {high:.3f}", end="   ")
-    print(f"{np.where(raw < lin.linearity_limit)[0].shape[0]:>8}")
+bins = np.linspace(lower_limit, 1.0, 150)
+
+fig, axs = plt.subplots(nrows=len(r_raw), sharex=True, sharey=True, squeeze=True, tight_layout=True, figsize=(8,1.1*len(r_raw)), gridspec_kw={"wspace":0, "hspace":0})
+for ax, raw_, jpeg_, camera in zip(axs, r_raw, r_jpeg, cameras):
+    raw = raw_[~np.isnan(raw_)]
+    print(camera)
+    below_limit = np.where(raw < lower_limit)[0]
+    print(f"RAW pixels with r < {lower_limit}: {len(below_limit)}")
+    ax.hist(raw.ravel(), bins=bins, color='k', edgecolor="None")
+    if jpeg_ is not None:
+        for j_, c in zip(jpeg_, "rgb"):
+            jpeg_c = j_[~np.isnan(j_)]
+            below_limit = np.where(jpeg_c < lower_limit)[0]
+            print(f"JPEG {c} pixels with r < {lower_limit}: {len(below_limit)}")
+            ax.hist(jpeg_c.ravel(), bins=bins, color=c, edgecolor="None", alpha=0.7)
+    ax.set_ylabel(camera)
+    ax.axvline(lin.linearity_limit, c='k', ls="--")
+    bad_pixels = np.where(raw < lin.linearity_limit)[0]
+    print(f"RAW pixels with r < {lin.linearity_limit}: {len(bad_pixels)}")
+axs[0] .set_xlim(lower_limit, 1)
+axs[0] .set_yscale("log")
+axs[0] .set_ylim(ymin=10)
+for ax in axs:
+    ax.set_yticks([1e2, 1e4, 1e6])
+axs[-1].set_xlabel("Pearson $r$")
+fig.savefig(io.results_folder/"linearity.pdf")
+plt.show()
+plt.close()
