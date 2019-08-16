@@ -36,6 +36,29 @@ mean_bias_corrected = calibrate.correct_bias(root, mean_raw)
 mean_normalised, stds_normalised = flat.normalise_RGBG2(mean_bias_corrected, stds_raw, colours)
 print("Normalised data")
 
+# Calculate the signal-to-noise ratio (SNR) per pixel
+SNR = mean_normalised / stds_normalised
+print("Calculated signal-to-noise-ratio")
+
+# Make a histogram of the SNR
+save_to_histogram_SNR = savefolder/f"data_histogram_SNR_{label}.pdf"
+SNR_top_percentile = analyse.symmetric_percentiles(SNR)[1]
+bins_SNR = np.linspace(0, SNR_top_percentile, 100)
+
+plt.figure(figsize=(4,2), tight_layout=True)
+plt.hist(SNR.ravel(), bins=bins_SNR, color='k')
+plt.xlim(bins_SNR[0], bins_SNR[-1])
+plt.xlabel("Signal-to-noise ratio")
+plt.ylabel("Counts")
+plt.savefig(save_to_histogram_SNR)
+plt.close()
+print(f"Saved histogram of signal-to-noise ratio to '{save_to_histogram_SNR}'")
+
+# Make Gaussian maps of the SNR
+save_to_maps_SNR = savefolder/f"data_SNR_{label}.pdf"
+analyse.plot_gauss_maps(SNR, colours, colorbar_label="Signal-to-noise ratio", saveto=save_to_maps_SNR)
+print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
+
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
 flat_field_gauss = gaussMd(mean_normalised, 10)
 
