@@ -2,6 +2,7 @@ import numpy as np
 from .general import gaussMd, curve_fit, generate_XY
 from . import raw
 
+parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
 
 _clip_border = np.s_[250:-250, 250:-250]
 
