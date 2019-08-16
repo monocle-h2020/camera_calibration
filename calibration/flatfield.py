@@ -35,11 +35,12 @@ mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, colours)
 flat_field_gauss = gaussMd(mean_normalised, 10)
 
 # Only use the inner X pixels
-flat_field_gauss = flat_field_gauss[flat.clip_border]
+flat_raw_clipped = flat.clip_data(mean_normalised)
+flat_gauss_clipped = flat.clip_data(flat_field_gauss)
 
 # Calculate the correction factor
-correction = 1 / flat_field_gauss
-correction_raw = 1 / mean_normalised[flat.clip_border]
+correction = 1 / flat_gauss_clipped
+correction_raw = 1 / flat_raw_clipped
 print(f"Maximum correction factor (raw): {correction_raw.max():.2f}")
 print(f"Maximum correction factor (gauss): {correction.max():.2f}")
 

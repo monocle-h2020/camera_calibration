@@ -3,7 +3,14 @@ from .general import gaussMd, curve_fit, generate_XY
 from . import raw
 
 
-clip_border = np.s_[250:-250, 250:-250]
+_clip_border = np.s_[250:-250, 250:-250]
+
+
+def clip_data(data, borders=_clip_border):
+    """
+    Clip the outer edges of the data set to be within the `borders`.
+    """
+    return data[borders]
 
 
 def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
