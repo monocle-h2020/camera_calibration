@@ -10,6 +10,6 @@ The following scripts were used to generate the figures from the SPECTACLE paper
 * Fig.  6: `iso_normalisation_multiple.py`
 * Fig.  7: 
 * Fig.  8: 
-* Fig.  9: 
+* Fig.  9: `flatfield_compare_maps.py`
 * Fig. 10: `spectral_response_plot_multiple.py`
 * Fig. 11: 
