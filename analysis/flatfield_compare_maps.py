@@ -2,8 +2,8 @@
 Compare two flat-field correction maps, from data or modelled.
 
 Command line arguments:
-    * `file1`: the location of the mean flat-field data stack.
-    * `file2`: the location of the modelled flat-field map.
+    * `file1`: the location of the first flat-field map.
+    * `file2`: the location of the second flat-field map.
 
 To do:
     * Input labels for plots
