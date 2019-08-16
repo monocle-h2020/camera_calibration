@@ -1,5 +1,6 @@
 import numpy as np
-from .general import distances_px, curve_fit, generate_XY
+from .general import gaussMd, curve_fit, generate_XY
+from . import raw
 
 
 clip_border = np.s_[250:-250, 250:-250]
@@ -70,3 +71,31 @@ def read_flat_field_correction(root, shape):
     parameters, errors = np.load(root/"products/flat_parameters.npy")
     correction_map = apply_vignette_radial(shape, parameters)
     return correction_map
+
+
+def normalise_RGBG2(mean, stds, bayer_pattern):
+    """
+    Normalise the Bayer RGBG2 channels to 1.
+    """
+    # Demosaick the data
+    mean_RGBG, offsets = raw.pull_apart(mean, bayer_pattern)
+    stds_RGBG, offsets = raw.pull_apart(stds, bayer_pattern)
+
+    # Convolve with a Gaussian kernel to find the maxima without being
+    # sensitive to outliers
+    mean_RGBG_gauss = gaussMd(mean_RGBG, sigma=(0,5,5))
+
+    # Find the maximum per channel and cast these into an array of the same
+    # shape as the data
+    normalisation_factors = mean_RGBG_gauss.max(axis=(1,2))
+    normalisation_array = normalisation_factors[:,np.newaxis,np.newaxis]
+
+    # Normalise the mean and standard deviation data to 1
+    mean_RGBG = mean_RGBG / normalisation_array
+    stds_RGBG = stds_RGBG / normalisation_array
+
+    # Re-mosaick the now-normalised flat-field data
+    mean_remosaicked = raw.put_together_from_colours(mean_RGBG, bayer_pattern)
+    stds_remosaicked = raw.put_together_from_colours(stds_RGBG, bayer_pattern)
+
+    return mean_remosaicked, stds_remosaicked

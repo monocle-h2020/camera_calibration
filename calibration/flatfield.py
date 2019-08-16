@@ -7,7 +7,7 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import raw, io, flat, calibrate
+from spectacle import io, flat, calibrate
 from spectacle.general import gaussMd
 
 # Get the data folder from the command line
@@ -29,29 +29,18 @@ stds = np.load(stdsfile)
 # Bias correction
 mean = calibrate.correct_bias(root, mean)
 
-# Demosaick the data
-mean_RGBG, offsets = raw.pull_apart(mean, colours)
-stds_RGBG, offsets = raw.pull_apart(stds, colours)
-
-# Normalise the RGBG2 channels
-mean_RGBG_gauss = gaussMd(mean_RGBG, sigma=(0,5,5))
-normalisation_factors = mean_RGBG_gauss.max(axis=(1,2))
-normalisation_array = normalisation_factors[:,np.newaxis,np.newaxis]
-mean_RGBG = mean_RGBG / normalisation_array
-stds_RGBG = stds_RGBG / normalisation_array
-
-# Re-mosaick the now-normalised flat-field data
-flat_field = raw.put_together_from_colours(mean_RGBG, colours)
+# Normalise the RGBG2 channels to a maximum of 1 each
+mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, colours)
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
-flat_field_gauss = gaussMd(flat_field, 10)
+flat_field_gauss = gaussMd(mean_normalised, 10)
 
 # Only use the inner X pixels
 flat_field_gauss = flat_field_gauss[flat.clip_border]
 
 # Calculate the correction factor
 correction = 1 / flat_field_gauss
-correction_raw = 1 / flat_field[flat.clip_border]
+correction_raw = 1 / mean_normalised[flat.clip_border]
 print(f"Maximum correction factor (raw): {correction_raw.max():.2f}")
 print(f"Maximum correction factor (gauss): {correction.max():.2f}")
 
