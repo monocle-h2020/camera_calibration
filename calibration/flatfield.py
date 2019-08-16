@@ -17,7 +17,6 @@ label = meanfile.stem.split("_mean")[0]
 
 # Get metadata
 phone = io.load_metadata(root)
-bias = phone["software"]["bias"]
 colours = io.load_colour(stacks)
 print("Loaded metadata")
 
