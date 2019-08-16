@@ -2,7 +2,11 @@
 Create a flat-field map using the mean flat-field images.
 
 Command line arguments:
-    * `folder`: folder containing stacked flat-field data
+    * `folder`: folder containing stacked flat-field data.
+
+To do:
+    * Save map as simply `flat_field.npy` or with a label depending on user
+    input.
 """
 
 import numpy as np

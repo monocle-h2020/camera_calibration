@@ -12,6 +12,7 @@ from . import bias_readnoise, dark, flat, io, iso
 # calibration scripts, for simpler access
 from .bias_readnoise import load_bias_map, load_readnoise_map
 from .dark import load_dark_current_map
+from .flat import load_flat_field_correction_map, clip_data
 
 def correct_bias(root, data):
     """
@@ -67,16 +68,21 @@ def normalise_iso(root, data, iso_values):
     return data_normalised
 
 
-def correct_flatfield(root, data, shape):
+def correct_flatfield(root, data):
     """
-    Correction for flat-fielding using a flat-field model retrieved from
-    `root`/products/flat_parameters.npy.
+    Correction for flat-fielding using a flat-field correction map read from
+    `root`/products/flat_field.npy
 
     To do:
-        - Get shape from metadata
         - Choose between model and map (separate functions?)
     """
-    correction_factor = flat.read_flat_field_correction(root, shape)
-    data_corrected = data * correction_factor
+    # Load the correction map
+    correction_map = flat.load_flat_field_correction_map(root)
+
+    # Remove the outer edges of the data
+    data_clipped = flat.clip_data(data)
+
+    # Correct the data
+    data_corrected = data_clipped * correction_map
 
     return data_corrected

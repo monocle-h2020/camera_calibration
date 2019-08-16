@@ -9,6 +9,9 @@ _clip_border = np.s_[250:-250, 250:-250]
 def clip_data(data, borders=_clip_border):
     """
     Clip the outer edges of the data set to be within the `borders`.
+
+    To do:
+        * Use camera-dependent default value
     """
     return data[borders]
 
@@ -77,6 +80,15 @@ def read_flat_field_correction(root, shape):
     """
     parameters, errors = np.load(root/"products/flat_parameters.npy")
     correction_map = apply_vignette_radial(shape, parameters)
+    return correction_map
+
+
+def load_flat_field_correction_map(root):
+    """
+    Load the flat-field correction map contained in
+    `root`/products/flat_field.npy
+    """
+    correction_map = np.load(root/"products/flat_field.npy")
     return correction_map
 
 
