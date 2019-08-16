@@ -14,6 +14,7 @@ from spectacle.general import gaussMd
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
 label = meanfile.stem.split("_mean")[0]
+save_folder = root/"products/"
 
 # Get metadata
 phone = io.load_metadata(root)
@@ -24,12 +25,14 @@ print("Loaded metadata")
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")
 mean = np.load(meanfile)
 stds = np.load(stdsfile)
+print("Loaded data")
 
 # Bias correction
 mean = calibrate.correct_bias(root, mean)
 
 # Normalise the RGBG2 channels to a maximum of 1 each
 mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, colours)
+print("Normalised data")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
 flat_field_gauss = gaussMd(mean_normalised, 10)
@@ -41,29 +44,43 @@ flat_gauss_clipped = flat.clip_data(flat_field_gauss)
 # Calculate the correction factor
 correction = 1 / flat_gauss_clipped
 correction_raw = 1 / flat_raw_clipped
-print(f"Maximum correction factor (raw): {correction_raw.max():.2f}")
-print(f"Maximum correction factor (gauss): {correction.max():.2f}")
 
-popt, standard_errors = flat.fit_vignette_radial(correction)
+# Save the correction factor maps
+save_to_correction = save_folder/f"flatfield_correction_{label}.npy"
+save_to_correction_raw = save_folder/f"flatfield_correction_{label}_raw.npy"
+np.save(save_to_correction, correction)
+np.save(save_to_correction_raw, correction_raw)
+print(f"Saved the flat-field correction maps to '{save_to_correction}' (Gaussed) and '{save_to_correction_raw}' (raw)")
 
-np.save(products/f"flat_{label}_parameters.npy", np.stack([popt, standard_errors]))
-np.save(products/f"flat_{label}_correction.npy", correction)
-np.save(products/f"flat_{label}_correction_raw.npy", correction_raw)
-print("Saved look-up table & parameters")
+# Fit a radial vignetting model
+print("Fitting...")
+parameters, standard_errors = flat.fit_vignette_radial(correction)
 
+# Save the best-fitting model parameters
+save_to_parameters = save_folder/f"flat_{label}_parameters.npy"
+np.save(save_to_parameters, np.stack([parameters, standard_errors]))
+print(f"Saved best-fitting model parameters to '{save_to_parameters}'")
+
+# Output the best-fitting model parameters and errors
 print("Parameter +- Error    ; Relative error")
-for p, s in zip(popt, standard_errors):
+for p, s in zip(parameters, standard_errors):
     print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
 
-g_fit = flat.apply_vignette_radial(correction.shape, popt)
+# Apply the best-fitting model to the data to generate a correction map
+correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
 
-mid1, mid2 = np.array(correction.shape)//2
-x = np.arange(0, correction.shape[0])
-y = np.arange(0, correction.shape[1])
+# Save the moddelled correction map
+save_to_correction_modelled = save_folder/f"flatfield_correction_{label}_modelled.npy"
+np.save(save_to_correction_modelled, correction_modelled)
+print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled}'")
 
-difference = correction - g_fit
-diff_max = max([abs(difference.max()), abs(difference.min())])
-
+#mid1, mid2 = np.array(correction.shape)//2
+#x = np.arange(0, correction.shape[0])
+#y = np.arange(0, correction.shape[1])
+#
+#difference = correction - g_fit
+#diff_max = max([abs(difference.max()), abs(difference.min())])
+#
 #plt.figure(figsize=(5,5), tight_layout=True)
 #img = plt.imshow(difference)
 #plt.xticks([])
