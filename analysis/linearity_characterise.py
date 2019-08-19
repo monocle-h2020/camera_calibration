@@ -1,5 +1,6 @@
 """
 Analyse Pearson r (linearity) maps generated using the calibration scripts.
+This script generates map images and histograms.
 
 Command line arguments:
     * `file_raw`: the file containing the Pearson r map to be analysed.
