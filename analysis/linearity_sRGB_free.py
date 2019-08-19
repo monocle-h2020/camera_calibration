@@ -7,15 +7,17 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 phone = io.load_metadata(root)
 
-times, jmeans = io.load_jmeans(folder, retrieve_value=io.split_exposure_time)
-print("Read means")
+# Load the data
+intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)
+intensities, intensity_errors = intensities_with_errors.T
+print("Loaded data")
 
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
 
 print("Fitting sRGB...")
 
-normalisations, gammas, R2s = lin.fit_sRGB_generic(times, jmeans)
+normalisations, gammas, R2s = lin.fit_sRGB_generic(intensities, jmeans)
 
 for param, label_simple in zip([normalisations, gammas, R2s], ["normalization", "gamma", "R2"]):
     np.save(results/f"linearity/{label_simple}.npy", param)

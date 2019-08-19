@@ -14,12 +14,15 @@ center = np.s_[mid1:mid1+2, mid2:mid2+2]
 
 colours_here = colours[center].ravel()
 
-times, means = io.load_means (folder, retrieve_value=io.split_exposure_time, selection=center)
+# Load the RAW data
+intensities_with_errors, means = io.load_means(folder, retrieve_value=lin.filename_to_intensity, selection=center)
+intensities, intensity_errors = intensities_with_errors.T
 means = means.reshape((len(means), -1))
-print("Loaded DNG data")
+print("Loaded RAW data")
 
 try:
-    times, jmeans = io.load_jmeans(folder, retrieve_value=io.split_exposure_time, selection=center)
+    intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity, selection=center)
+    intensities, intensity_errors = intensities_with_errors.T
 except ValueError:
     jpeg = False
 else:
@@ -27,7 +30,7 @@ else:
     jmeans = jmeans.reshape((len(jmeans), -1, 3))
     print("Loaded JPEG data")
 
-intensities = times / times.max()
+intensities = intensities / intensities.max()
 
 max_value = 2**phone["camera"]["bits"]
 
