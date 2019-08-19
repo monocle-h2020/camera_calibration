@@ -1,6 +1,8 @@
 import numpy as np
-from .general import Rsquare, curve_fit, RMS
 from scipy.stats import pearsonr
+
+from .general import Rsquare, curve_fit, RMS
+from . import io
 
 # minimum Pearson r value to be considered linear (see SPECTACLE paper)
 linearity_limit = 0.98
@@ -179,3 +181,27 @@ def calculate_pearson_r_values_jpeg(x, y, **kwargs):
         r[j], saturated[j] = calculate_pearson_r_values(x, y[..., j], saturate=240)
     r = np.stack(r)
     return r, saturated
+
+
+def filename_to_intensity(filename):
+    """
+    Split filenames according to one of the standards (see below) and convert
+    them to intensities.
+
+    Currently supported standards:
+        * Polariser angles: io.split_pol_angle
+        * Exposure time: io.split_exposure_time
+    """
+    if "pol" in filename.stem:
+        angle = io.split_pol_angle(filename)
+        offset_angle = np.loadtxt(filename.parent/"default_angle.dat").ravel()[0]
+        intensity = malus(angle, offset_angle)
+        intensity_error = malus_error(angle, offset_angle, sigma_angle0=1, sigma_angle1=1)
+    elif "t" in filename.stem:
+        time = io.split_exposure_time(filename)
+        intensity = time
+        intensity_error = 0.  # temporary
+    else:
+        raise ValueError(f"Unknown filename format {filename}")
+
+    return intensity, intensity_error

@@ -1,21 +1,15 @@
 import numpy as np
 from sys import argv
 from spectacle import io, linearity as lin
-from spectacle.general import Rsquare, curve_fit, RMS
-from matplotlib import pyplot as plt
 
 folder, gamma = io.path_from_input(argv)
 gamma = float(str(gamma))
 root, images, stacks, products, results = io.folders(folder)
 phone = io.load_metadata(root)
 
-angles, jmeans = io.load_jmeans(folder, retrieve_value=io.split_pol_angle)
+intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)
+intensities, intensity_errors = intensities_with_errors.T
 print("Read means")
-
-offset_angle = io.load_angle(stacks)
-print("Read angles")
-intensities = lin.malus(angles, offset_angle)
-intensities_errors = lin.malus_error(angles, offset_angle, sigma_angle0=1, sigma_angle1=1)
 
 max_value = 2**phone["camera"]["bits"]
 saturation = 0.95 * max_value
