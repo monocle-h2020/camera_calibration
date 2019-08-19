@@ -1,5 +1,5 @@
 """
-Compare JPEG linearity data to an sRGB model with a given gamma factor and
+Compare JPEG linearity data to sRGB models with given gamma factors and
 calculate the best-fitting normalisation as well as the R^2 value of the best-
 fitting model and the RMS difference between model and data.
 
