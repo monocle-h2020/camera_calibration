@@ -1,5 +1,7 @@
 """
-Plot a histogram comparing Pearson r (linearity) values for various cameras.
+Analyse Pearson r (linearity) maps for multiple cameras, generated using the
+calibration scripts. This script returns some statistics on each and generates
+a histogram comparing them.
 
 This script assumes the r maps to be located at
 "root/products/linearity_raw.npy".
