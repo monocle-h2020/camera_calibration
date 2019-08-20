@@ -2,8 +2,8 @@
 Compare two flat-field correction models.
 
 Command line arguments:
-    * `file1`: the location of the mean flat-field data stack.
-    * `file2`: the location of the modelled flat-field map.
+    * `file1`: the location of the file containing the first model parameters.
+    * `file2`: the location of the file containing the second model parameters.
 
 To do:
     * Input labels for plots
