@@ -1,6 +1,9 @@
 """
 Analyse gain maps (in ADU/electron) generated using the calibration functions.
 
+Note: this script currently only looks at raw gain maps (ADU/electron at a
+specific ISO speed), not normalised gain maps (normalised ADU/electron).
+
 Command line arguments:
     * `file`: the location of the gain map to be analysed.
 """

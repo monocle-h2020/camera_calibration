@@ -53,6 +53,15 @@ for i in range(means.shape[1]):
     if i % 42 == 0:
         print(f"{100 * i / means.shape[1]:.1f}%", end=" ", flush=True)
 
-save_to = root/f"products/gain/gain_iso{ISO}.npy"
-np.save(save_to, gain_map)
-print(f"Saved result to '{save_to}'")
+# Save the gain map
+save_to_original_map = root/f"products/gain/gain_iso{ISO}.npy"
+np.save(save_to_original_map, gain_map)
+print(f"Saved gain map to '{save_to_original_map}'")
+
+# Normalise the gain map to the minimum ISO value
+gain_map_normalised = calibrate.normalise_iso(root, gain_map, ISO)
+
+# Save the normalised gain map
+save_to_normalised_map = root/f"results/gain_map.npy"
+np.save(save_to_normalised_map, gain_map_normalised)
+print(f"Saved normalised gain map to '{save_to_normalised_map}'")

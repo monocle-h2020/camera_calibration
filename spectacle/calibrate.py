@@ -6,13 +6,15 @@ calibrations, this is the module to use.
 """
 
 # Import other SPECTACLE submodules to use in functions
-from . import bias_readnoise, dark, flat, io, iso
+from . import bias_readnoise, dark, flat, gain, io, iso
 
 # Import functions from other SPECTACLE submodules which may be used in
 # calibration scripts, for simpler access
 from .bias_readnoise import load_bias_map, load_readnoise_map
 from .dark import load_dark_current_map
 from .flat import load_flat_field_correction_map, clip_data
+from .gain import load_gain_map
+from .iso import load_iso_lookup_table
 
 def correct_bias(root, data):
     """
@@ -66,6 +68,20 @@ def normalise_iso(root, data, iso_values):
         data_normalised = iso.normalise_multiple_iso(data, iso_values, lookup_table)
 
     return data_normalised
+
+
+def convert_to_photoelectrons(root, data):
+    """
+    Convert ISO-normalised data to photoelectrons using a normalised gain map
+    (in normalised ADU per photoelectron) from `root`/results/gain_map.npy.
+    """
+    # Load the gain map
+    gain_map = gain.load_gain_map(root)  # norm. ADU / e-
+
+    # Convert the data to photoelectrons
+    data_converted = data / gain_map  # e-
+
+    return data_converted
 
 
 def correct_flatfield(root, data):
