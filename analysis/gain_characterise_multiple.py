@@ -32,22 +32,24 @@ isos = [io.split_iso(file) for file in files]
 data_arrays = [np.load(file) for file in files]
 print("Loaded data")
 
+# Demosaick the data (split into the Bayer RGBG2 channels)
+data_RGBG_arrays = [raw.pull_apart(data, colours)[0] for data, colours in zip(data_arrays, colours_arrays)]
+print("Demosaicked data")
+
+# Convolve the RGBG2 data with a Gaussian kernel
+data_RGBG_gauss_arrays = [gauss_nan(RGBG, sigma=(0,5,5)) for RGBG in data_RGBG_arrays]
+print("Gaussed data")
+
 # Plot a Gaussed map for each channel
 # Loop over the Bayer RGBG2 channels
 for j, c in enumerate(plot.RGBG2):
     # Create a figure to plot into
     fig, axs = plt.subplots(ncols=len(files), figsize=(3*len(files), 2.3), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-    # Loop over the gain maps and plot them into the figure
-    for camera, iso, ax, data, colours in zip(cameras, isos, axs, data_arrays, colours_arrays):
-
-        # Demosaick the data (split into the channels)
-        RGBG,_ = raw.pull_apart(data, colours)
-
-        # Convolve the data with a Gaussian kernel
-        gauss = gauss_nan(RGBG, sigma=(0,5,5))
+    # Loop over the demosaicked/gaussed gain maps and plot them into the figure
+    for camera, iso, ax, data_RGBG, data_RGBG_gauss in zip(cameras, isos, axs, data_RGBG_arrays, data_RGBG_gauss_arrays):
 
         # Plot channel j into this figure
-        im = ax.imshow(gauss[j], cmap=plot.cmaps[c+"r"])
+        im = ax.imshow(data_RGBG_gauss[j], cmap=plot.cmaps[c+"r"])
 
         # Plot parameters
         ax.set_xticks([])
@@ -67,7 +69,7 @@ for j, c in enumerate(plot.RGBG2):
         cbar = plot.colorbar(im, location=loc, label="Gain (ADU/e$^-$)")
 
         # Print the range of gain values found in this map
-        percentile_low, percentile_high = analyse.symmetric_percentiles(RGBG)
+        percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
         print(f"{camera:<10}: ISO {iso:>4}")
         print(f"{c:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
@@ -82,15 +84,12 @@ bins = np.linspace(0.4, 2.8, 250)
 fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(3*len(files), 2.3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
 
 # Loop over the cameras
-for i, (camera, iso, ax_arr, data, colours) in enumerate(zip(cameras, isos, axs.T, data_arrays, colours_arrays)):
-
-    # Demosaick the data (split into the channels)
-    RGBG,_ = raw.pull_apart(data, colours)
+for i, (camera, iso, ax_arr, data_RGBG) in enumerate(zip(cameras, isos, axs.T, data_RGBG_arrays)):
 
     # Combine the G and G2 channels and remove NaN values
-    R = RGBG[0].ravel()    ; R = R[~np.isnan(R)]
-    G = RGBG[1::2].ravel() ; G = G[~np.isnan(G)]
-    B = RGBG[2].ravel()    ; B = B[~np.isnan(B)]
+    R = data_RGBG[0].ravel()    ; R = R[~np.isnan(R)]
+    G = data_RGBG[1::2].ravel() ; G = G[~np.isnan(G)]
+    B = data_RGBG[2].ravel()    ; B = B[~np.isnan(B)]
 
     # Plot the RGB data
     for ax, D, c in zip(ax_arr, [R, G, B], plot.RGB):
