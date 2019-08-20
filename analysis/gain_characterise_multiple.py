@@ -84,7 +84,7 @@ bins = np.linspace(0.4, 2.8, 250)
 fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(3*len(files), 2.3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
 
 # Loop over the cameras
-for i, (camera, iso, ax_arr, data_RGBG) in enumerate(zip(cameras, isos, axs.T, data_RGBG_arrays)):
+for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays):
 
     # Combine the G and G2 channels and remove NaN values
     R = data_RGBG[0].ravel()    ; R = R[~np.isnan(R)]
@@ -95,8 +95,14 @@ for i, (camera, iso, ax_arr, data_RGBG) in enumerate(zip(cameras, isos, axs.T, d
     for ax, D, c in zip(ax_arr, [R, G, B], plot.RGB):
         ax.hist(D, bins=bins, color=c, edgecolor=c, density=True)
         ax.grid(True)
-        if i > 0:  # Only include ticks on the y-axis for the left-most plot
+
+        # Remove ticks from the left y-axis of all plots except the left-most
+        if ax not in axs[:,0]:
             ax.tick_params(left=False)
+
+        # Add ticks to the right y-axis of the right-most plot
+        if ax in axs[:,-1]:
+            ax.tick_params(right=True, labelright=True)
 
     # Add a title to the top plot in each column
     ax_arr[0].set_title(f"{camera} (ISO {iso})")
@@ -104,8 +110,10 @@ for i, (camera, iso, ax_arr, data_RGBG) in enumerate(zip(cameras, isos, axs.T, d
     # Add a label to the x-axis of the bottom plot in each column
     ax_arr[-1].set_xlabel("Gain (ADU/e$^-$)")
 
-# Add a label to y-axis of the left-most, middle plot
+# Add a label to y-axis of the left-most and right-most, middle plots
 axs[1,0].set_ylabel("Frequency")
+axs[1,-1].yaxis.set_label_position("right")
+axs[1,-1].set_ylabel("Frequency")
 
 # Plot parameters (shared)
 axs[0,0].set_xlim(bins[0], bins[-1])
@@ -113,7 +121,7 @@ axs[0,0].set_yticks([0.5, 1.5])
 axs[0,0].set_xticks(np.arange(0.5, 3, 0.5))
 
 # Save the figure
-save_to_histogram = io.results_folder/"gain_hist.pdf"
+save_to_histogram = io.results_folder/"gain_histogram.pdf"
 fig.savefig(save_to_histogram)
 plt.close()
 print(f"Saved RGB histogram to '{save_to_histogram}'")
