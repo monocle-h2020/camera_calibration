@@ -14,7 +14,6 @@ file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
 
 # Get metadata
-phone = io.load_metadata(root)
 colours = io.load_colour(stacks)
 
 # Load the data

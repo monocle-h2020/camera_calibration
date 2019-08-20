@@ -29,7 +29,6 @@ else:
     print("JPEG data are not available")
 
 # Get metadata
-phone = io.load_metadata(root)
 colours = io.load_colour(stacks)
 savefolder = root/"results/linearity/"
 

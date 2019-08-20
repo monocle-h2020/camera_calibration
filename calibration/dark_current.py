@@ -17,9 +17,6 @@ from spectacle import io, calibrate, dark
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
-# Get metadata
-phone = io.load_metadata(root)
-
 # Get the ISO speed at which the data were taken from the folder name
 ISO = io.split_iso(folder)
 

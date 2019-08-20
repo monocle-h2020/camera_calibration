@@ -18,7 +18,6 @@ savefolder = root/"results/gain"
 ISO = io.split_iso(file)
 
 # Get metadata
-phone = io.load_metadata(root)
 colours = io.load_colour(stacks)
 print("Loaded metadata")
 

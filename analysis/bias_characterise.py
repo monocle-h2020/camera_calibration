@@ -13,7 +13,6 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
 # Get metadata
-phone = io.load_metadata(root)
 colours = io.load_colour(stacks)
 save_to = results/"bias"
 

@@ -21,7 +21,6 @@ label = meanfile.stem.split("_mean")[0]
 save_folder = root/"products/"
 
 # Get metadata
-phone = io.load_metadata(root)
 colours = io.load_colour(stacks)
 print("Loaded metadata")
 

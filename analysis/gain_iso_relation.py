@@ -5,7 +5,6 @@ from spectacle import io, iso, plot
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.load_metadata(root)
 
 results_gain = results/"gain"
 
