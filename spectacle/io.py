@@ -3,9 +3,8 @@ import exifread
 import numpy as np
 from pathlib import Path
 from matplotlib import pyplot as plt
-import json
 from .config import spectacle_folder, results_folder
-
+from .metadata import load_metadata
 
 def path_from_input(argv):
     """
@@ -112,23 +111,6 @@ def load_exif(filename):
     with open(filename, "rb") as f:
         exif = exifread.process_file(f)
     return exif
-
-
-def load_json(path):
-    """
-    Read a JSON file.
-    """
-    file = open(path)
-    dump = json.load(file)
-    return dump
-
-
-def load_metadata(root):
-    """
-    Read the metadata JSON located in the `root` folder.
-    """
-    metadata = load_json(root/"info.json")
-    return metadata
 
 
 def absolute_filename(file):
