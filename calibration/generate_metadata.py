@@ -26,6 +26,14 @@ exif = io.load_exif(file)
 print("Loaded data")
 
 # Get additional data from command line input from the user
+iso_min = input("What is the *lowest* ISO speed available on this device?\n")
+iso_max = input("What is the *highest* ISO speed available on this device?\n")
+iso_min = int(iso_min) ; iso_max = int(iso_max)
+
+exposure_min = input("What is the *lowest* exposure time, in seconds, available on this device?\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
+exposure_max = input("What is the *highest* exposure time, in seconds, available on this device?\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
+
+print("")
 
 # Bit depth - find the maximum value and the corresponding bit depth
 maximum_value = raw_file.raw_image.max()
@@ -51,3 +59,11 @@ image = {
         "bit depth": bit_depth
         }
 print("Image properties:", image)
+
+# Settings
+settings = {
+        "ISO min": iso_min,
+        "ISO max": iso_max,
+        "t_exp min": exposure_min,
+        "t_exp max": exposure_max}
+print("Camera settings:", settings)
