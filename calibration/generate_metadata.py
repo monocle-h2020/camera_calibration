@@ -13,7 +13,7 @@ To do:
     * Generate entire file structure for camera - or separate script?
 """
 
-from spectacle import io
+from spectacle import io, metadata
 from sys import argv
 
 # Get the data folder from the command line
@@ -24,6 +24,8 @@ raw_file = io.load_raw_file(file)
 bayer_map = io.load_raw_colors(file)
 exif = io.load_exif(file)
 print("Loaded data")
+
+save_to = io.Path("metadata.json")
 
 # Get additional data from command line input from the user
 iso_min = input("What is the *lowest* ISO speed available on this device?\n")
@@ -67,3 +69,7 @@ settings = {
         "t_exp min": exposure_min,
         "t_exp max": exposure_max}
 print("Camera settings:", settings)
+
+# Combine all metadata into a single object and write it to file
+metadata_combined = {"device": device, "image": image, "settings": settings}
+metadata.write_json(metadata_combined, save_to)

@@ -10,6 +10,14 @@ def load_json(path):
     return dump
 
 
+def write_json(data, save_to):
+    """
+    Write a JSON file containing `data` to a path `save_to`.
+    """
+    with open(save_to, "w") as file:
+        json.dump(data, file)
+
+
 def load_metadata(root):
     """
     Read the metadata JSON located in the `root` folder.
