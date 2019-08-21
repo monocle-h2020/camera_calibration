@@ -21,7 +21,6 @@ file = io.path_from_input(argv)
 
 # Get the data
 raw_file = io.load_raw_file(file)
-bayer_map = io.load_raw_colors(file)
 exif = io.load_exif(file)
 print("Loaded data")
 
@@ -55,21 +54,22 @@ print("Device properties:", device)
 
 # Image proprties
 image = {
-        "raw extension": file.suffix,
+        "shape": raw_file.raw_image.shape,
+        "raw_extension": file.suffix,
         "bias": raw_file.black_level_per_channel,
-        "bayer pattern": raw_file.raw_pattern.tolist(),
-        "bit depth": bit_depth
+        "bayer_pattern": raw_file.raw_pattern.tolist(),
+        "bit_depth": bit_depth
         }
 print("Image properties:", image)
 
 # Settings
 settings = {
-        "ISO min": iso_min,
-        "ISO max": iso_max,
-        "t_exp min": exposure_min,
-        "t_exp max": exposure_max}
+        "ISO_min": iso_min,
+        "ISO_max": iso_max,
+        "exposure_min": exposure_min,
+        "exposure_max": exposure_max}
 print("Camera settings:", settings)
 
 # Combine all metadata into a single object and write it to file
-metadata_combined = {"device": device, "image": image, "settings": settings}
-metadata.write_json(metadata_combined, save_to)
+camera = metadata.Camera(device, image, settings)
+camera.write_to_file(save_to)
