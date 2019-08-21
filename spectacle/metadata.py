@@ -14,6 +14,7 @@ class Camera(object):
         self.settings = self.Settings(**settings)
 
         self.bayer_map = self.generate_bayer_map()
+        self.saturation = 2**self.image.bit_depth - 1
 
     def __repr__(self):
         device_name = f"{self.device.manufacturer} {self.device.name}"
