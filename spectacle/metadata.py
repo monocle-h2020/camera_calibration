@@ -2,6 +2,18 @@ import numpy as np
 import json
 from collections import namedtuple
 
+def _convert_exposure_time(exposure):
+    if isinstance(exposure, (float, int)):
+        return exposure
+    elif isinstance(exposure, str):
+        if "/" in exposure:  # if this is a fraction
+            num, den = [float(x) for x in exposure.split("/")]
+            return num/den
+        elif "." in exposure:  # not a fraction but floating
+            return float(exposure)
+        else:  # simple case
+            return float(exposure)
+
 
 class Camera(object):
     Device = namedtuple("Device", ["manufacturer", "name"])
@@ -9,6 +21,9 @@ class Camera(object):
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
     def __init__(self, device_properties, image_properties, settings):
+        settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
+        settings["exposure_max"] = _convert_exposure_time(settings["exposure_max"])
+
         self.device = self.Device(**device_properties)
         self.image = self.Image(**image_properties)
         self.settings = self.Settings(**settings)
