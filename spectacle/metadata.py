@@ -33,6 +33,9 @@ class Camera(object):
         bayer_map[1::2, 1::2] = self.image.bayer_pattern[1][1]
         return bayer_map
 
+    def generate_ISO_range(self):
+        return np.arange(self.settings.ISO_min, self.settings.ISO_max+1, 1)
+
     def write_to_file(self, path):
         write_json(self._as_dict(), path)
 
