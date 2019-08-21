@@ -13,6 +13,8 @@ class Camera(object):
         self.image = self.Image(**image_properties)
         self.settings = self.Settings(**settings)
 
+        self.bayer_map = self.generate_bayer_map()
+
     def __repr__(self):
         device_name = f"{self.device.manufacturer} {self.device.name}"
         return device_name
@@ -22,6 +24,14 @@ class Camera(object):
                       "image": self.image._asdict(),
                       "settings": self.settings._asdict()}
         return dictionary
+
+    def generate_bayer_map(self):
+        bayer_map = np.zeros(self.image.shape, dtype=int)
+        bayer_map[0::2, 0::2] = self.image.bayer_pattern[0][0]
+        bayer_map[0::2, 1::2] = self.image.bayer_pattern[0][1]
+        bayer_map[1::2, 0::2] = self.image.bayer_pattern[1][0]
+        bayer_map[1::2, 1::2] = self.image.bayer_pattern[1][1]
+        return bayer_map
 
     def write_to_file(self, path):
         write_json(self._as_dict(), path)
