@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 files = io.path_from_input(argv)
 roots = [io.folders(file)[0] for file in files]
-cameras = [io.load_metadata(root)["device"]["name"] for root in roots]
+cameras = [io.load_metadata(root) for root in roots]
 print("Read meta-data")
 
 gammas_best = [np.load(root/"results/linearity/gamma.npy") for root in roots]
@@ -32,7 +32,7 @@ for axs_row, camera, gamma, RMS22, RMS24 in zip(axs_table, cameras, gammas_best,
             P = param[..., j].ravel()
             P = P[~np.isnan(P)]
             ax.hist(P, bins=b, color=c, edgecolor="none", alpha=0.7)
-    axs_row[0].set_ylabel(camera)
+    axs_row[0].set_ylabel(camera.device.name)
     axs_row[0].set_ylim(ymin=0)
 print("Setting plot parameters")
 for title, ax in zip(titles, axs_table[0]):

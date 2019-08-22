@@ -15,10 +15,8 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
 # Get metadata
-phone = io.load_metadata(root)
-min_iso, max_iso = phone["software"]["ISO min"], phone["software"]["ISO max"]
+camera = io.load_metadata(root)
 save_to_folder = root/"products/"
-colours = io.load_colour(stacks)
 print("Loaded metadata")
 
 # Load the mean and standard deviation stacks for each ISO value
@@ -35,17 +33,17 @@ median_relative_error = np.median(relative_errors)
 print(f"Median relative error in photometry: {median_relative_error*100:.1f} %")
 
 # Check that we have data at the lowest ISO speed for this camera
-assert isos.min() == min_iso, f"Lowest ISO speed in the data ({isos.min()}) is greater than the minimum ISO speed available on this camera ({min_iso})."
+assert isos.min() == camera.settings.ISO_min, f"Lowest ISO speed in the data ({isos.min()}) is greater than the minimum ISO speed available on this camera ({camera.settings.ISO_min})."
 
 # Convert the mean values at each ISO to normalised units, compared to the
 # lowest ISO speed
 ratios = means / means[isos.argmin()]
 ratios_mean = ratios.mean(axis=(1,2))
 ratios_errs = ratios.std (axis=(1,2))
-print(f"Normalised data to minimum ISO ({min_iso})")
+print(f"Normalised data to minimum ISO ({camera.settings.ISO_min})")
 
 # Fit a model to the ISO normalisation curve
-model_type, model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=min_iso, max_iso=max_iso)
+model_type, model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=camera.settings.ISO_min, max_iso=camera.settings.ISO_max)
 
 # Save the best-fitting model parameters and their errors
 model_array = np.stack([len(parameters) * [model_type], parameters, errors])
@@ -55,7 +53,7 @@ print(f"Saved model parameters to '{save_to_model}'")
 
 # Apply the best-fitting model to the full ISO range of this camera to create
 # a look-up table, then save it
-iso_range = np.arange(0, max_iso+1, 1)
+iso_range = np.arange(0, camera.settings.ISO_max+1, 1)
 lookup_table = np.stack([iso_range, model(iso_range)])
 save_to_lookup_table = save_to_folder/"iso_lookup_table.npy"
 np.save(save_to_lookup_table, lookup_table)

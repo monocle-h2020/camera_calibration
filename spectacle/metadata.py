@@ -83,5 +83,5 @@ def load_metadata(root):
     """
     Read the metadata JSON located in the `root` folder.
     """
-    metadata = load_json(root/"info.json")
+    metadata = Camera.read_from_file(root/"metadata.json")
     return metadata

@@ -2,7 +2,7 @@
 Analyse the ISO normalisation functions for multiple camera.
 
 Command line arguments:
-    * `folder`: the folders containing the ISO normalisation data 
+    * `folder`: the folders containing the ISO normalisation data
     (multiple arguments possible)
 """
 
@@ -22,9 +22,9 @@ plt.figure(figsize=(4, 3), tight_layout=True)
 for c, folder in zip(plot.line_colours, folders):
     # Get the data folder for this camera
     root, images, stacks, products, results = io.folders(folder)
-    
+
     # Get metadata
-    phone = io.load_metadata(root)
+    camera = io.load_metadata(root)
     products_iso = products/"iso"
 
     # Load the normalisation data and look-up table
@@ -32,10 +32,10 @@ for c, folder in zip(plot.line_colours, folders):
     data = np.load(products/"iso_data.npy")
 
     # Plot the normalisation data and look-up table
-    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=phone["device"]["name"])
+    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=camera.device.name)
     plt.plot(*lookup_table, c=c)
 
-    print(phone["device"]["manufacturer"], phone["device"]["name"])
+    print(camera)
 
 # Finish the plot with axes labels, legend, etc.
 plt.xlabel("ISO speed")

@@ -1,16 +1,15 @@
 import numpy as np
 from sys import argv
-from spectacle import raw, plot, io, wavelength
+from spectacle import raw, plot, io, wavelength, calibrate
 
 file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
-phone = io.load_metadata(root)
 
 img  = io.load_raw_file(file)
 exif = io.load_exif(file)
 
-bias = phone["software"]["bias"]
-values = img.raw_image.astype(np.float32) - bias
+values = img.raw_image.astype(np.float32)
+values = calibrate.correct_bias(root, values)
 
 image_cut  = values        [760:1000, 2150:3900]
 colors_cut = img.raw_colors[760:1000, 2150:3900]

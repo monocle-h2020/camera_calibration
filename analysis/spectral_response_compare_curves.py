@@ -7,7 +7,6 @@ from spectacle.general import RMS
 files = io.path_from_input(argv)
 
 folders = [io.folders(file)[0] for file in files]
-cameras = [io.load_metadata(folder)["device"]["name"] for folder in folders]
 
 curves = [np.load(f) for f in files]
 

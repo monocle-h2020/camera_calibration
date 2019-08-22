@@ -21,7 +21,7 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
 roots = [io.folders(f)[0] for f in folders]
-phones = [io.load_metadata(root) for root in roots]
+cameras = [io.load_metadata(root) for root in roots]
 save_to = io.results_folder
 
 # Lists to hold the data for each device
@@ -31,9 +31,9 @@ mean_raw_all = []
 mean_jpeg_all = []
 
 # Loop over the given folders
-for folder, phone in zip(folders, phones):
+for folder, camera in zip(folders, cameras):
     # Get metadata
-    print("\n", phone["device"]["name"])
+    print("\n", camera)
     root, images, stacks, products, results = io.folders(folder)
     colours = io.load_colour(stacks)
 
@@ -78,7 +78,7 @@ for j, c in enumerate(plot.rgbg2):
     fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(3.3*len(folders), 3.5), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.8})
 
     # Loop over the cameras and their associated data
-    for phone, ax_column, intensities, intensity_errors, means_raw, means_jpeg in zip(phones, axs.T, intensities_all, intensities_error_all, mean_raw_all, mean_jpeg_all):
+    for camera, ax_column, intensities, intensity_errors, means_raw, means_jpeg in zip(cameras, axs.T, intensities_all, intensities_error_all, mean_raw_all, mean_jpeg_all):
         # Select the mean data from the relevant channel only
         # This is very clunky (double for-loop and still using an index anyway)
         # It might be better to change the way data are loaded (e.g. per
@@ -86,24 +86,21 @@ for j, c in enumerate(plot.rgbg2):
         mean_raw_c = means_raw[:, j]
         mean_jpeg_c = means_jpeg[:, j]
 
-        # RAW saturation value
-        max_value = 2**phone["camera"]["bits"] - 1
-
         # Calculate Pearson r values of the RAW and JPEG data
         # These are added to the plot titles
-        r_raw = lin.pearson_r_single(intensities, mean_raw_c, saturate=max_value*0.95)
+        r_raw = lin.pearson_r_single(intensities, mean_raw_c, saturate=0.95*camera.saturation)
         r_jpeg = lin.pearson_r_single(intensities, mean_jpeg_c, saturate=240)
 
         # Plot title, including device name and r values calculated above
-        title = phone["device"]["name"] + "\n" + "$r_{JPEG} = " + f"{r_jpeg:.3f}" + "$   $r_{RAW} = " + f"{r_raw:.3f}" + "$"
+        title = camera.device.name + "\n" + "$r_{JPEG} = " + f"{r_jpeg:.3f}" + "$   $r_{RAW} = " + f"{r_raw:.3f}" + "$"
 
         # Fit a linear function to the RAW response and an sRGB function to the
         # JPEG response, to plot as lines
         x = np.linspace(0, 1, 250)
 
-        non_saturated_indices_raw = np.where(mean_raw_c < max_value * 0.95)
+        non_saturated_indices_raw = np.where(mean_raw_c < 0.95*camera.saturation)
         fit_raw = np.polyfit(intensities[non_saturated_indices_raw], mean_raw_c[non_saturated_indices_raw], 1)
-        line_raw = np.clip(np.polyval(fit_raw, x), 0, max_value)
+        line_raw = np.clip(np.polyval(fit_raw, x), 0, camera.saturation)
 
         non_saturated_indices_jpeg = np.where(mean_jpeg_c < 240)
         fit_jpeg, pc = lin.curve_fit(lin.sRGB_generic, intensities[non_saturated_indices_jpeg], mean_jpeg_c[non_saturated_indices_jpeg], p0=[1, 2.2])
@@ -111,9 +108,9 @@ for j, c in enumerate(plot.rgbg2):
 
         # Calculate the residuals of the RAW/JPEG response compared to the
         # linear/sRGB fit, and relative to the dynamic range
-        y_raw = np.clip(np.polyval(fit_raw, intensities), 0, max_value)
+        y_raw = np.clip(np.polyval(fit_raw, intensities), 0, camera.saturation)
         residuals_raw = mean_raw_c - y_raw
-        residuals_raw_percentage = 100 * (residuals_raw / max_value)
+        residuals_raw_percentage = 100 * (residuals_raw / camera.saturation)
 
         y_jpeg = lin.sRGB_generic(intensities, *fit_jpeg)
         residuals_jpeg = mean_jpeg_c - y_jpeg
@@ -143,7 +140,7 @@ for j, c in enumerate(plot.rgbg2):
         ax_raw.plot(x, line_raw, c='k')  # best-fitting model
 
         # RAW plot parameters
-        ax_raw.set_ylim(0, max_value*1.02)
+        ax_raw.set_ylim(0, camera.saturation*1.02)
         ax_raw.locator_params(axis="y", nbins=5)  # automatic yticks
         ax_raw.grid(True, axis="y")
         ax_raw.set_ylabel("RAW value")

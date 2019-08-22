@@ -6,9 +6,7 @@ from matplotlib import pyplot as plt
 folder, wvl1, wvl2 = io.path_from_input(argv)
 wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
-
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 
 def load_cal_NERC(filename, norm=True):
     data = np.genfromtxt(filename, skip_header=1, skip_footer=10)
@@ -35,17 +33,17 @@ def load_spectrum(subfolder, blocksize=100):
     stds  = means.copy()
     for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
         m = np.load(mean_file)
-        mean_RGBG, _ = raw.pull_apart(m, colours)
+        mean_RGBG, _ = raw.pull_apart(m, camera.bayer_map)
         midx, midy = np.array(mean_RGBG.shape[1:])//2
         sub = mean_RGBG[:,midx-d:midx+d+1,midy-d:midy+d+1]
         m = sub.mean(axis=(1,2))
-        m[m >= 0.95 * 2**phone["camera"]["bits"]] = np.nan
+        m[m >= 0.95 * camera.saturation] = np.nan
         means[j] = m
         stds[j] = sub.std(axis=(1,2))
         wvls[j] = mean_file.stem.split("_")[0]
         print(wvls[j])
     print(subfolder)
-    means -= phone["software"]["bias"]
+    means -= phone["software"]["bias"]  # UPDATE WITH NEW BIAS CORRECTION
     spectrum = np.stack([wvls, *means.T, *stds.T]).T
     return spectrum
 
@@ -75,7 +73,7 @@ plt.xlim(wvl1,wvl2)
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Spectral response (ADU)")
 plt.ylim(ymin=0)
-plt.title(f"{phone['device']['name']}: Raw spectral curves")
+plt.title(f"{camera.device.name}: Raw spectral curves")
 plt.savefig(results/"spectral_response/raw_spectra.pdf")
 plt.show()
 plt.close()
@@ -104,7 +102,7 @@ plt.xlim(wvl1,wvl2)
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Spectral response (ADU)")
 plt.ylim(ymin=0)
-plt.title(f"{phone['device']['name']}: Calibrated spectral curves")
+plt.title(f"{camera.device.name}: Calibrated spectral curves")
 plt.savefig(results/"spectral_response/calibrated_spectra.pdf")
 plt.show()
 plt.close()
@@ -147,7 +145,7 @@ plt.xlim(wvl1,wvl2)
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Spectral response (ADU)")
 plt.ylim(ymin=0)
-plt.title(f"{phone['device']['name']}: Normalised spectral curves")
+plt.title(f"{camera.device.name}: Normalised spectral curves")
 plt.savefig(results/"spectral_response/normalised_spectra.pdf")
 plt.show()
 plt.close()
@@ -175,7 +173,7 @@ plt.xlabel("Wavelength (nm)")
 plt.ylabel("Spectral response (normalized)")
 plt.ylim(0, 1.02)
 plt.grid()
-plt.title(f"{phone['device']['name']}: Combined spectral curves")
+plt.title(f"{camera.device.name}: Combined spectral curves")
 plt.savefig(results/"spectral_response/combined_spectra.pdf")
 plt.show()
 plt.close()

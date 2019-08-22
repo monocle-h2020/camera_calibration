@@ -1,5 +1,7 @@
 This folder contains scripts for obtaining calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075).
 
+`generate_metadata.py` is used to generate a metadata file based on a single saturated image and some user inputs. This metadata file contains information, such as the Bayer colour pattern of the camera, that is necessary for all further calibration and analysis steps.
+
 `bias.py` is used to generate a bias map (bias offset in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
 
 `readnoise.py` is used to generate a read noise map (read noise in each pixel). This is not used in the image calibration process, but can be used to characterise the noise response of a camera.

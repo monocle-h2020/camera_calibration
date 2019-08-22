@@ -5,7 +5,6 @@ from matplotlib import pyplot as plt
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
 
 normalisations, gammas, R2s = [np.load(results/f"linearity/{label_simple}.npy") for label_simple in ["normalization", "gamma", "R2"]]
 

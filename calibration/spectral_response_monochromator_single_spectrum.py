@@ -1,14 +1,12 @@
 import numpy as np
 from sys import argv
-from spectacle import io, raw, plot
+from spectacle import io, raw, plot, calibrate
 from matplotlib import pyplot as plt
 
 folder, wvl1, wvl2 = io.path_from_input(argv)
 wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
-
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 
 mean_files = sorted(folder.glob("*_mean.npy"))
 stds_files = sorted(folder.glob("*_stds.npy"))
@@ -20,14 +18,14 @@ stds  = means.copy()
 
 for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
     m = np.load(mean_file)
-    mean_RGBG, _ = raw.pull_apart(m, colours)
+    mean_RGBG, _ = raw.pull_apart(m, camera.bayer_map)
     sub = mean_RGBG[:,756-50:756+51,1008-50:1008+51]
     wvls[j] = mean_file.stem.split("_")[0]
     means[j] = sub.mean(axis=(1,2))
     stds[j] = sub.std(axis=(1,2))
     print(wvls[j])
 
-means -= phone["software"]["bias"]
+means = calibrate.correct_bias(root, means)
 
 SNR = means/stds
 

@@ -18,9 +18,7 @@ savefolder = root/"results/flat/"
 label = meanfile.stem.split("_mean")[0]
 
 # Get metadata
-phone = io.load_metadata(root)
-saturation = 2**phone["camera"]["bits"]
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 print("Loaded metadata")
 
 # Load the data
@@ -33,7 +31,7 @@ print("Loaded data")
 mean_bias_corrected = calibrate.correct_bias(root, mean_raw)
 
 # Normalise the RGBG2 channels to a maximum of 1 each
-mean_normalised, stds_normalised = flat.normalise_RGBG2(mean_bias_corrected, stds_raw, colours)
+mean_normalised, stds_normalised = flat.normalise_RGBG2(mean_bias_corrected, stds_raw, camera.bayer_map)
 print("Normalised data")
 
 # Calculate the signal-to-noise ratio (SNR) per pixel
@@ -56,7 +54,7 @@ print(f"Saved histogram of signal-to-noise ratio to '{save_to_histogram_SNR}'")
 
 # Make Gaussian maps of the SNR
 save_to_maps_SNR = savefolder/f"data_SNR_{label}.pdf"
-analyse.plot_gauss_maps(SNR, colours, colorbar_label="Signal-to-noise ratio", saveto=save_to_maps_SNR)
+analyse.plot_gauss_maps(SNR, camera.bayer_map, colorbar_label="Signal-to-noise ratio", saveto=save_to_maps_SNR)
 print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
@@ -66,7 +64,7 @@ flat_field_gauss = gaussMd(mean_normalised, 10)
 save_to_histogram_data = savefolder/f"data_histogram_{label}.pdf"
 data_sets = [mean_raw, mean_normalised, mean_bias_corrected, flat_field_gauss]
 titles = ["Raw", "Normalised", "Bias-corrected", "Gaussed"]
-bins_adu = np.linspace(0, saturation, 250)
+bins_adu = np.linspace(0, camera.saturation, 250)
 bins_flat = np.linspace(0, 1.05, 100)
 bins_combined = [bins_adu, bins_flat, bins_adu, bins_flat]
 fig, axs = plt.subplots(nrows=2, ncols=2, tight_layout=True, sharex="col", sharey="col")
@@ -101,13 +99,13 @@ print(f"Saved histogram of difference (Gaussed - Normalised data) to '{save_to_h
 # Plot Gaussian maps of the flat-field data
 save_to_maps_normalised = savefolder/f"data_normalised_{label}.pdf"
 save_to_maps_gaussed = savefolder/f"data_gaussed_{label}.pdf"
-analyse.plot_gauss_maps(mean_normalised, colours, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_normalised)
-analyse.plot_gauss_maps(flat_field_gauss, colours, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
+analyse.plot_gauss_maps(mean_normalised, camera.bayer_map, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_normalised)
+analyse.plot_gauss_maps(flat_field_gauss, camera.bayer_map, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
 print(f"Saved Gaussed maps to '{save_to_maps_normalised}' and '{save_to_maps_gaussed}'")
 
 # Clip the data
 flat_field_gauss_clipped = flat.clip_data(flat_field_gauss)
-colours_clipped = flat.clip_data(colours)
+colours_clipped = flat.clip_data(camera.bayer_map)
 
 # Convert the data to a correction factor g
 correction_factor = 1 / flat_field_gauss_clipped

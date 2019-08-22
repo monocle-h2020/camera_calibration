@@ -5,11 +5,11 @@ from spectacle import raw, plot, io
 from spectacle.general import gaussMd
 
 files = io.path_from_input(argv)
-stacks_folders = [io.folders(path)[2] for path in files]
-colours = [io.load_colour(stacks) for stacks in stacks_folders]
+roots = [io.folders(path)[0] for path in files]
+cameras = [io.load_metadata(root) for root in roots]
 
 data_all = [np.load(path) for path in files]
-RGBGs_all = [raw.pull_apart(data, colour)[0] for data, colour in zip(data_all, colours)]
+RGBGs_all = [raw.pull_apart(data, camera.bayer_map)[0] for data, camera in zip(data_all, cameras)]
 gauss_all = [gaussMd(RGBG, sigma=(0,5,5)) for RGBG in RGBGs_all]
 
 vmin = min(gauss.min() for gauss in gauss_all)

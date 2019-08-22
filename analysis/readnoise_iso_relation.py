@@ -9,7 +9,6 @@ root, images, stacks, products, results = io.folders(folder)
 results_readnoise = results/"readnoise"
 
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
-colours     = io.load_colour(stacks)
 
 lookup_table = iso.load_iso_lookup_table(root)
 

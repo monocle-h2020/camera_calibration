@@ -21,7 +21,7 @@ savefolder = root/"results/gain"
 ISO = io.split_iso(file)
 
 # Get metadata
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 print("Loaded metadata")
 
 # Load the data
@@ -29,7 +29,7 @@ gains = np.load(file)
 print("Loaded data")
 
 # Demosaick data by splitting the RGBG2 channels into separate arrays
-gains_RGBG,_ = raw.pull_apart(gains, colours)
+gains_RGBG,_ = raw.pull_apart(gains, camera.bayer_map)
 
 # Convolve the data with a Gaussian kernel
 gains_combined_gauss = gauss_nan(gains, sigma=10)
@@ -37,7 +37,7 @@ gains_gauss = gauss_nan(gains_RGBG, sigma=(0,5,5))
 
 # Plot an RGB histogram of the data
 xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
-analyse.plot_histogram_RGB(gains, colours, xlim=(xmin, xmax), xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
+analyse.plot_histogram_RGB(gains, camera.bayer_map, xlim=(xmin, xmax), xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
 print("Made histogram")
 
 # Plot Gauss-convolved maps of the data

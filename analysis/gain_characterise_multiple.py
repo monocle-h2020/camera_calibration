@@ -22,8 +22,7 @@ files = io.path_from_input(argv)
 roots = [io.folders(file)[0] for file in files]
 
 # Get metadata
-cameras = [io.load_metadata(root)["device"]["name"] for root in roots]
-colours_arrays = [io.load_colour(root/"stacks") for root in roots]
+cameras = [io.load_metadata(root) for root in roots]
 
 # Find the ISO speed for each gain map, to include in the plot titles
 isos = [io.split_iso(file) for file in files]
@@ -33,7 +32,7 @@ data_arrays = [np.load(file) for file in files]
 print("Loaded data")
 
 # Demosaick the data (split into the Bayer RGBG2 channels)
-data_RGBG_arrays = [raw.pull_apart(data, colours)[0] for data, colours in zip(data_arrays, colours_arrays)]
+data_RGBG_arrays = [raw.pull_apart(data, camera.bayer_map)[0] for data, camera in zip(data_arrays, cameras)]
 print("Demosaicked data")
 
 # Convolve the RGBG2 data with a Gaussian kernel
@@ -54,7 +53,7 @@ for j, c in enumerate(plot.RGBG2):
         # Plot parameters
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.set_title(f"{camera} (ISO {iso})")
+        ax.set_title(f"{camera.device.name} (ISO {iso})")
 
         # Include a colorbar
         # Left-most map has a colorbar on the left
@@ -70,7 +69,7 @@ for j, c in enumerate(plot.RGBG2):
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
-        print(f"{camera:<10}: ISO {iso:>4}")
+        print(f"{camera.device.name:<10}: ISO {iso:>4}")
         print(f"{c:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
@@ -105,7 +104,7 @@ for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays
             ax.tick_params(right=True, labelright=True)
 
     # Add a title to the top plot in each column
-    ax_arr[0].set_title(f"{camera} (ISO {iso})")
+    ax_arr[0].set_title(f"{camera.device.name} (ISO {iso})")
 
     # Add a label to the x-axis of the bottom plot in each column
     ax_arr[-1].set_xlabel("Gain (ADU/e$^-$)")
