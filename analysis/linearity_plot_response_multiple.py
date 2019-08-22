@@ -35,17 +35,16 @@ for folder, camera in zip(folders, cameras):
     # Get metadata
     print("\n", camera)
     root, images, stacks, products, results = io.folders(folder)
-    colours = io.load_colour(stacks)
 
     # Find the indices of the central pixels
-    array_size = np.array(colours.shape)
+    array_size = np.array(camera.image.shape)
     mid1, mid2 = array_size // 2
     center = np.s_[mid1:mid1+2, mid2:mid2+2]
 
     # Bayer channels of the central pixels
     # These will be used to pre-sort the data into the RGBG2 channels for every
     # camera
-    colours_here = colours[center].ravel()
+    colours_here = camera.bayer_map[center].ravel()
     colours_sort = np.argsort(colours_here)
 
     # Load the RAW data
