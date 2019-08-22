@@ -6,8 +6,8 @@ from spectacle import io
 
 folder_main = io.path_from_input(argv[:2])
 root, images, stacks, products, results = io.folders(folder_main)
-phone = io.load_metadata(root)
-raw_pattern = f"*{phone['software']['raw extension']}"
+camera = io.load_metadata(root)
+raw_pattern = f"*{camera.image.raw_extension}"
 
 blocksize = int(argv[2])
 files = list(folder_main.glob(raw_pattern))

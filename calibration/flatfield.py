@@ -21,7 +21,7 @@ label = meanfile.stem.split("_mean")[0]
 save_folder = root/"products/"
 
 # Get metadata
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 print("Loaded metadata")
 
 # Load the data
@@ -34,7 +34,7 @@ print("Loaded data")
 mean = calibrate.correct_bias(root, mean)
 
 # Normalise the RGBG2 channels to a maximum of 1 each
-mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, colours)
+mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, camera.bayer_map)
 print("Normalised data")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations

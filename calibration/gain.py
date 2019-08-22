@@ -15,13 +15,11 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
 # Get the camera metadata
-phone = io.load_metadata(root)
-fit_max = 0.95 * 2**phone["camera"]["bits"]
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
+print("Loaded metadata")
 
 # Get the ISO speed of these data from the folder name
 ISO = io.split_iso(folder)
-print("Loaded metadata")
 
 # Load the data
 names, means = io.load_means(folder)
@@ -39,6 +37,7 @@ gain_map = np.tile(np.nan, means.shape[1:])
 readnoise_map = gain_map.copy()
 
 # Loop over the pixels in the array and fit each response individually
+fit_max = 0.95 * camera.saturation
 for i in range(means.shape[1]):
     for j in range(means.shape[2]):
         m = means[:,i,j] ; v = variance[:,i,j]

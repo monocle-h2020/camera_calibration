@@ -13,7 +13,7 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
 # Get metadata
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 save_to = results/"bias"
 
 # Load the data
@@ -32,7 +32,7 @@ for ISO, mean in zip(isos, means):
     save_to_histogram = save_to/f"bias_histogram_iso{ISO}.pdf"
     save_to_maps = save_to/f"bias_map_iso{ISO}.pdf"
 
-    analyse.plot_histogram_RGB(mean, colours, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=save_to_histogram)
-    analyse.plot_gauss_maps(mean, colours, colorbar_label="Bias (ADU)", saveto=save_to_maps)
+    analyse.plot_histogram_RGB(mean, camera.bayer_map, xlim=(xmin, xmax), xlabel="Bias (ADU)", saveto=save_to_histogram)
+    analyse.plot_gauss_maps(mean, camera.bayer_map, colorbar_label="Bias (ADU)", saveto=save_to_maps)
 
     print(f"Saved plots for ISO speed {ISO}")

@@ -5,12 +5,9 @@ from os import walk, makedirs
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
+camera = io.load_metadata(root)
 
-colour_path = stacks/"colour.npy"
-colour_exists = colour_path.exists()
-
-raw_pattern = f"*{phone['software']['raw extension']}"
+raw_pattern = f"*{camera.image.raw_extension}"
 
 for tup in walk(folder):
     folder_here = io.Path(tup[0])
@@ -28,9 +25,6 @@ for tup in walk(folder):
 
     np.save(f"{goal}_mean.npy", mean)
     np.save(f"{goal}_stds.npy", stds)
-    if not colour_exists:
-        np.save(colour_path, colors)
-        colours_exists = True
 
     print(f"{folder_here}  -->  {goal}_x.npy")
 

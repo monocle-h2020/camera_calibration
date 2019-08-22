@@ -29,7 +29,7 @@ else:
     print("JPEG data are not available")
 
 # Get metadata
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 savefolder = root/"results/linearity/"
 
 # Load the data
@@ -41,7 +41,7 @@ if jpeg_data_available:
 
 # Make Gaussian maps of the RAW data
 save_to_maps = savefolder/f"map_raw.pdf"
-analyse.plot_gauss_maps(r_raw, colours, colorbar_label="Pearson $r$", saveto=save_to_maps)
+analyse.plot_gauss_maps(r_raw, camera.bayer_map, colorbar_label="Pearson $r$", saveto=save_to_maps)
 print(f"Saved maps of RAW Pearson r to '{save_to_maps}'")
 
 # Make a Gaussian map of the JPEG data, if available
@@ -72,7 +72,7 @@ if jpeg_data_available:
 # Make an RGB histogram of the RAW r values
 save_to_histogram_RGB = savefolder/f"histogram_RGB_raw.pdf"
 xmin, xmax = analyse.symmetric_percentiles(r_raw)[0], 1.
-analyse.plot_histogram_RGB(r_raw, colours, xlim=(xmin, xmax), xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
+analyse.plot_histogram_RGB(r_raw, camera.bayer_map, xlim=(xmin, xmax), xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make a histogram comparing RAW and JPEG r values

@@ -2,7 +2,7 @@
 Analyse the ISO normalisation function for a single camera.
 
 Command line arguments:
-    * `folder`: the folder containing the ISO normalisation data to be 
+    * `folder`: the folder containing the ISO normalisation data to be
     analysed.
 """
 
@@ -16,8 +16,7 @@ file = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(file)
 
 # Get metadata
-phone = io.load_metadata(root)
-iso_max = phone["software"]["ISO max"]
+camera = io.load_metadata(root)
 save_to = root/"results/iso/iso_normalisation.pdf"
 
 # Load the normalisation data and look-up table
@@ -31,7 +30,7 @@ plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c='k')
 plt.plot(*lookup_table, c='k')
 plt.xlabel("ISO speed")
 plt.ylabel("Normalisation")
-plt.xlim(0, iso_max*1.05)
+plt.xlim(0, camera.settings.ISO_max * 1.05)
 plt.ylim(ymin=0)
 plt.grid(True)
 plt.savefig(save_to)

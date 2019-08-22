@@ -6,7 +6,7 @@ calibrations, this is the module to use.
 """
 
 # Import other SPECTACLE submodules to use in functions
-from . import bias_readnoise, dark, flat, gain, io, iso
+from . import bias_readnoise, dark, flat, gain, io, iso, metadata
 
 # Import functions from other SPECTACLE submodules which may be used in
 # calibration scripts, for simpler access
@@ -15,6 +15,7 @@ from .dark import load_dark_current_map
 from .flat import load_flat_field_correction_map, clip_data
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
+from .metadata import load_metadata
 
 def correct_bias(root, data):
     """

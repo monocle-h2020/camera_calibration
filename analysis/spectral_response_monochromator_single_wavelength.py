@@ -1,25 +1,24 @@
 import numpy as np
 from sys import argv
-from spectacle import io, raw
+from spectacle import io, raw, calibrate
 from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)
 wvl = wvl.stem
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
+camera = io.load_metadata(root)
 
-colours     = io.load_colour(stacks)
-
-m = np.load(folder/f"{wvl}_mean.npy") - phone["software"]["bias"]
+m = np.load(folder/f"{wvl}_mean.npy")
+m = calibrate.correct_bias(root, m)
 s = np.load(folder/f"{wvl}_stds.npy")
 
 s[s < 0.001] = -1  # prevent infinities
 
 SNR = m/s
 
-m_RGBG, offsets = raw.pull_apart(m, colours)
-s_RGBG, offsets = raw.pull_apart(s, colours)
-SNR_RGBG, offsets = raw.pull_apart(SNR, colours)
+m_RGBG, offsets = raw.pull_apart(m, camera.bayer_map)
+s_RGBG, offsets = raw.pull_apart(s, camera.bayer_map)
+SNR_RGBG, offsets = raw.pull_apart(SNR, camera.bayer_map)
 
 mean_stack = m_RGBG.mean(axis=(1,2))
 std_stack  = m_RGBG.std (axis=(1,2))

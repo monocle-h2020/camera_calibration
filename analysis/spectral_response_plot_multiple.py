@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 files = io.path_from_input(argv)
 
 folders = [io.folders(file)[0] for file in files]
-cameras = [io.load_metadata(folder)["device"]["name"] for folder in folders]
+cameras = [io.load_metadata(folder) for folder in folders]
 
 curves = [np.load(f) for f in files]
 
@@ -25,11 +25,11 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         error = curve[5+j]
         over_20_percent = np.where(mean >= 0.2)[0]
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
-        print(f"{camera:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
+        print(f"{camera.device.name:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
         plt.plot(wavelength, mean, c=c, ls=style)
         #plt.fill_between(wavelength, mean-error, mean+error, color=c, alpha=0.5)
-    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera)
-    print(f"{camera:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
+    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera.device.name)
+    print(f"{camera.device.name:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
 plt.grid(True)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(390, 700)
@@ -55,9 +55,9 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         error = errors_RGB[j]
         over_20_percent = np.where(mean >= 0.2)[0]
         min_wvl, max_wvl = wavelength[over_20_percent[0]], wavelength[over_20_percent[-1]]
-        print(f"{camera:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
+        print(f"{camera.device.name:>15} {c} RMS: {RMS(error):.3f}, >20% transmission at {min_wvl:.0f}-{max_wvl:.0f} nm, effective bandwidth {spectral.effective_bandwidth(wavelength, mean):>3.0f} nm")
         plt.plot(wavelength, mean, c=c, ls=style)
-    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.device.name)
 plt.grid(True)
 plt.xticks(np.arange(0,1000,50))
 plt.xlim(390, 700)

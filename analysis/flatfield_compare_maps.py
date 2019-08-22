@@ -22,7 +22,7 @@ savefolder = root/"results/flat/"
 label = "comparison_" + file1.stem + "_X_" + file2.stem
 
 # Get metadata
-colours = io.load_colour(stacks)
+camera = io.load_metadata(root)
 print("Loaded metadata")
 
 # Load the data
@@ -34,7 +34,7 @@ print("Loaded data")
 assert map1.shape == map2.shape, f"Mis-match in shape of maps: {map1.shape} vs. {map2.shape}"
 
 # Clip the Bayer data to the same shape as the maps
-colours_clip = flat.clip_data(colours)
+colours_clip = flat.clip_data(camera.bayer_map)
 
 # Calculate the difference between the maps
 difference = map1 - map2

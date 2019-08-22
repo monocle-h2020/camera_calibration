@@ -15,17 +15,15 @@ folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
 
 # Get metadata
-phone = io.load_metadata(root)
-colours = io.load_colour(stacks)
-max_value = 2**phone["camera"]["bits"] - 1
+camera = io.load_metadata(root)
 
 # Find the indices of the central pixels
-array_size = np.array(colours.shape)
+array_size = np.array(camera.image.shape)
 mid1, mid2 = array_size // 2
 center = np.s_[mid1:mid1+2, mid2:mid2+2]
 
 # Bayer channels of the central pixels
-colours_here = colours[center].ravel()
+colours_here = camera.bayer_map[center].ravel()
 
 # Load the RAW data
 intensities_with_errors, means = io.load_means(folder, retrieve_value=lin.filename_to_intensity, selection=center)
@@ -48,6 +46,6 @@ else:
 intensities = intensities / intensities.max()
 
 if jpeg:
-    plot.plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, max_value=max_value, savefolder=results/"linearity")
+    plot.plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, max_value=camera.saturation, savefolder=results/"linearity")
 else:
-    plot.plot_linearity_dng(intensities, means, colours_here, max_value=max_value, savefolder=results/"linearity")
+    plot.plot_linearity_dng(intensities, means, colours_here, max_value=camera.saturation, savefolder=results/"linearity")

@@ -6,18 +6,17 @@ from spectacle.general import Rsquare, gaussMd, gauss_nan
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
 ISO = io.split_iso(folder)
 
 times, means= io.load_means(folder, retrieve_value=io.split_exposure_time)
 print("Loaded means")
-colours     = io.load_colour(stacks)
+camera = io.load_metadata(root)
 print(f"Loaded data: {len(times)} exposure times")
 
 ISO_gain, gain = io.read_gain_table(results/"gain"/"table_iso50.npy")  # hard-coded for now
 gain_normalised = calibrate.normalise_iso(root, gain, ISO)
 gain_gauss = gauss_nan(gain_normalised, sigma=(0,5,5))
-gain_image = raw.put_together_from_colours(gain_gauss, colours)
+gain_image = raw.put_together_from_colours(gain_gauss, camera.bayer_map)
 
 means = means / gain_image
 
@@ -27,7 +26,7 @@ mean_err  = mean_std / np.sqrt(means[0].size - 1)
 
 fit_ensemble, cov_ensemble = np.polyfit(times, mean_mean, 1, w=1/mean_err, cov=True)
 
-time_max = 1/phone["software"]["1/t max"]
+time_max = camera.settings.exposure_max
 time_range = np.linspace(0, 1.05*time_max, 10)
 time_range_fit = np.polyval(fit_ensemble, time_range)
 time_range_fit_err = np.sqrt(time_range**2 * cov_ensemble[0,0] + cov_ensemble[1,1])
@@ -59,7 +58,7 @@ dark_gauss = gaussMd(dark_reshaped, 25)
 plot.show_image(dark_gauss, colorbar_label="Dark current (e-/s)", saveto=results/f"dark/electrons_map_iso{ISO}.pdf")
 print("Saved Gauss map")
 
-dark_RGBG, _= raw.pull_apart(dark_reshaped, colours)
+dark_RGBG, _= raw.pull_apart(dark_reshaped, camera.bayer_map)
 plot.histogram_RGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (e-/s)", saveto=results/f"dark/electrons_histogram_RGB_iso{ISO}.pdf")
 del dark_RGBG
 print("Saved RGB histogram")
