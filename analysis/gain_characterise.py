@@ -11,8 +11,7 @@ Command line arguments:
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, plot, analyse
-from spectacle.general import gauss_nan
+from spectacle import raw, io, analyse
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
@@ -28,13 +27,6 @@ print("Loaded metadata")
 gains = np.load(file)
 print("Loaded data")
 
-# Demosaick data by splitting the RGBG2 channels into separate arrays
-gains_RGBG,_ = raw.pull_apart(gains, camera.bayer_map)
-
-# Convolve the data with a Gaussian kernel
-gains_combined_gauss = gauss_nan(gains, sigma=10)
-gains_gauss = gauss_nan(gains_RGBG, sigma=(0,5,5))
-
 # Plot an RGB histogram of the data
 xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
 analyse.plot_histogram_RGB(gains, camera.bayer_map, xlim=(xmin, xmax), xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
@@ -42,9 +34,11 @@ print("Made histogram")
 
 # Plot Gauss-convolved maps of the data
 # Note: cannot use analyse.plot_gauss_maps because of NaNs
-plot.show_image(gains_combined_gauss, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
-plot.show_image_RGBG2(gains_gauss, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
+analyse.plot_gauss_maps(gains, camera.bayer_map, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
 print("Made maps")
+
+# Demosaick data by splitting the RGBG2 channels into separate arrays
+gains_RGBG,_ = raw.pull_apart(gains, camera.bayer_map)
 
 # Plot a miniature RGB histogram
 fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
