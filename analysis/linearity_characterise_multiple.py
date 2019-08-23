@@ -19,7 +19,7 @@ from spectacle import io, linearity as lin, plot
 
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
-roots = [io.folders(folder)[0] for folder in folders]
+roots = [io.find_root_folder(folder) for folder in folders]
 r_raw_paths = [root/"products/linearity_raw.npy" for root in roots]
 r_jpeg_paths = [root/"products/linearity_jpeg.npy" for root in roots]
 save_to = io.results_folder

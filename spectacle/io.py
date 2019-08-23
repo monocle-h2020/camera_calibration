@@ -251,19 +251,17 @@ def load_angle(stacks):
     return offset_angle
 
 
-def folders(input_path):
+def find_root_folder(input_path):
     """
-    For a given `input_path`, return the appropriate subfolders, following the
-    default format explained in the data template.
+    For a given `input_path`, find the root folder, containing the standard
+    sub-folders (calibration, analysis, stacks, etc.)
     """
     assert isinstance(input_path, Path), f"Input path '{input_path}' is not a pathlib Path object"
     assert spectacle_folder in input_path.parents, f"Input path '{input_path}' is not in the SPECTACLE data folder '{spectacle_folder}'"
     subfolder = input_path.relative_to(spectacle_folder).parts[0]
-    phone_root = spectacle_folder / subfolder
+    root = spectacle_folder / subfolder
 
-    subfolder_names = ["", "images", "stacks", "products", "results"]
-    subfolders = [phone_root/name for name in subfolder_names]
-    return subfolders
+    return root
 
 
 def replace_word_in_path(path, old, new):

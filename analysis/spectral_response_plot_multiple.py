@@ -6,8 +6,8 @@ from matplotlib import pyplot as plt
 
 files = io.path_from_input(argv)
 
-folders = [io.folders(file)[0] for file in files]
-cameras = [io.load_metadata(folder) for folder in folders]
+roots = [io.find_root_folder(file) for file in files]
+cameras = [io.load_metadata(root) for root in roots]
 
 curves = [np.load(f) for f in files]
 

@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
 meanfile = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(meanfile)
+root = io.find_root_folder(meanfile)
 savefolder = root/"results/flat/"
 label = meanfile.stem.split("_mean")[0]
 

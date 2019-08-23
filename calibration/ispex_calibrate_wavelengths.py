@@ -3,7 +3,7 @@ from sys import argv
 from spectacle import general, io, plot, wavelength, raw2
 
 file = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(file)
+root = io.find_root_folder(file)
 
 img = io.load_raw_file(file)
 image_cut  = img.raw_image [760:1470, 2150:3900]

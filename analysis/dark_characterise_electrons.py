@@ -14,7 +14,7 @@ from spectacle import io, analyse, calibrate
 
 # Get the data file from the command line
 file = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(file)
+root = io.find_root_folder(file)
 save_folder = root/f"results/dark/"
 
 # Get metadata

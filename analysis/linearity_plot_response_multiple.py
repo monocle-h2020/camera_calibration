@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
-roots = [io.folders(f)[0] for f in folders]
+roots = [io.find_root_folder(f) for f in folders]
 cameras = [io.load_metadata(root) for root in roots]
 save_to = io.results_folder
 
@@ -34,7 +34,7 @@ mean_jpeg_all = []
 for folder, camera in zip(folders, cameras):
     # Get metadata
     print("\n", camera)
-    root, images, stacks, products, results = io.folders(folder)
+    root = io.find_root_folder(folder)
 
     # Find the indices of the central pixels
     array_size = np.array(camera.image.shape)

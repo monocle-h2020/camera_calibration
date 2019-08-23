@@ -5,7 +5,7 @@ from time import time
 from spectacle import io
 
 folder_main = io.path_from_input(argv[:2])
-root, images, stacks, products, results = io.folders(folder_main)
+root = io.find_root_folder(folder_main)
 camera = io.load_metadata(root)
 raw_pattern = f"*{camera.image.raw_extension}"
 

@@ -16,7 +16,7 @@ from spectacle import io
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 
 # Load the standard deviation stacks for each ISO value
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)

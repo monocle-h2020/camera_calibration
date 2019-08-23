@@ -12,7 +12,7 @@ from spectacle import io, linearity as lin
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 
 # Get metadata
 camera = io.load_metadata(root)

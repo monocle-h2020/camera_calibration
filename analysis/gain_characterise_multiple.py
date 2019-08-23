@@ -19,7 +19,7 @@ from spectacle.general import gauss_nan
 
 # Get the data folder from the command line
 files = io.path_from_input(argv)
-roots = [io.folders(file)[0] for file in files]
+roots = [io.find_root_folder(file) for file in files]
 
 # Get metadata
 cameras = [io.load_metadata(root) for root in roots]

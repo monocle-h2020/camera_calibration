@@ -4,7 +4,7 @@ from spectacle import io
 from os import walk, makedirs
 
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 camera = io.load_metadata(root)
 
 raw_pattern = f"*{camera.image.raw_extension}"

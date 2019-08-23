@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 folder, wvl1, wvl2 = io.path_from_input(argv)
 wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 camera = io.load_metadata(root)
 
 def load_cal_NERC(filename, norm=True):

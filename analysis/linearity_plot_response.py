@@ -12,7 +12,7 @@ from spectacle import io, plot, linearity as lin
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -46,6 +46,6 @@ else:
 intensities = intensities / intensities.max()
 
 if jpeg:
-    plot.plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, max_value=camera.saturation, savefolder=results/"linearity")
+    plot.plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, max_value=camera.saturation, savefolder=root/"results/linearity")
 else:
-    plot.plot_linearity_dng(intensities, means, colours_here, max_value=camera.saturation, savefolder=results/"linearity")
+    plot.plot_linearity_dng(intensities, means, colours_here, max_value=camera.saturation, savefolder=root/"results/linearity")

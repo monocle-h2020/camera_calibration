@@ -22,7 +22,7 @@ except TypeError:
     jpeg_data_available = False
 else:
     jpeg_data_available = True
-root, images, stacks, products, results = io.folders(file_raw)
+root = io.find_root_folder(file_raw)
 if jpeg_data_available:
     print("JPEG data have been provided")
 else:

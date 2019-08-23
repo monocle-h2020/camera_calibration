@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 
 # Get the data folders from the command line
 folders = io.path_from_input(argv)
-roots = [io.folders(folder)[0] for folder in folders]
+roots = [io.find_root_folder(folder) for folder in folders]
 save_to = io.results_folder/"jpeg_sRGB_comparison.pdf"
 
 # Get metadata

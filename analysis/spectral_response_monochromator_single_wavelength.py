@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)
 wvl = wvl.stem
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 camera = io.load_metadata(root)
 
 m = np.load(folder/f"{wvl}_mean.npy")

@@ -15,7 +15,7 @@ from spectacle import io, flat
 
 # Get the data folder from the command line
 file1, file2 = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(file1)
+root = io.find_root_folder(file1)
 
 # Load the data
 parameters1, errors1 = np.load(file1)

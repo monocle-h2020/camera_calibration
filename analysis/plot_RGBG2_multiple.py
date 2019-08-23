@@ -15,7 +15,7 @@ from spectacle.general import gaussMd
 
 # Get the data folder from the command line
 files = io.path_from_input(argv)
-roots = [io.folders(path)[0] for path in files]
+roots = [io.find_root_folder(path) for path in files]
 
 # Future command line arguments
 save_to = io.results_folder/"RGBG.pdf"

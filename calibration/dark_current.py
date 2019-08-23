@@ -15,7 +15,7 @@ from spectacle import io, calibrate, dark
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 
 # Get the ISO speed at which the data were taken from the folder name
 ISO = io.split_iso(folder)

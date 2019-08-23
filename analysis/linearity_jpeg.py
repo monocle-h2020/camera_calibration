@@ -12,7 +12,7 @@ from spectacle import io, linearity as lin
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 
 # Load the data
 intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)

@@ -21,15 +21,15 @@ plt.figure(figsize=(4, 3), tight_layout=True)
 # Loop over each camera, load its data, and plot them in the figure
 for c, folder in zip(plot.line_colours, folders):
     # Get the data folder for this camera
-    root, images, stacks, products, results = io.folders(folder)
+    root = io.find_root_folder(folder)
 
     # Get metadata
     camera = io.load_metadata(root)
-    products_iso = products/"iso"
+    products_iso = root/"products/iso"
 
     # Load the normalisation data and look-up table
-    lookup_table = np.load(products/"iso_lookup_table.npy")
-    data = np.load(products/"iso_data.npy")
+    lookup_table = np.load(root/"products/iso_lookup_table.npy")
+    data = np.load(root/"products/iso_data.npy")
 
     # Plot the normalisation data and look-up table
     plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=camera.device.name)

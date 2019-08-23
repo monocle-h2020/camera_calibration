@@ -11,7 +11,7 @@ from spectacle import io, analyse, calibrate
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
+root = io.find_root_folder(folder)
 save_to = root/"results/readnoise"
 
 # Get metadata

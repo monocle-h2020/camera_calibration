@@ -6,8 +6,6 @@ from spectacle.general import RMS
 
 files = io.path_from_input(argv)
 
-folders = [io.folders(file)[0] for file in files]
-
 curves = [np.load(f) for f in files]
 
 wavelength_grid = np.arange(390, 700, 0.5)
