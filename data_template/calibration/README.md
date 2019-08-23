@@ -1,1 +1,1 @@
-This folder will contain calibration data, such as look-up tables, maps, and model parameters.
+This folder contains calibration data, such as look-up tables, maps, and model parameters.
