@@ -1,13 +1,1 @@
-This folder contains stacked *bias* images (NPY) directly from the camera.
-
-There will be files for different ISO values. Each of these is stacked from one data set.
-
-ISO values are based on app values, not exif values.
-
-The format should be as follows:
-.../stacks/bias/iso<ISO>_<type>.npy
-where <ISO> is the ISO value and <type> the image type (see below).
-
-Two types of stacked images will be present:
- - ..._mean.npy: mean per pixel of a data set
- - ..._stds.npy: standard deviation per pixel of a data set
+This folder contains stacked (mean/standard deviation per pixel) data in numpy binary (.npy) format. If using the `stack_mean_std.py` script, the filenames of these stacks are based on the names of the folders containing the original data.

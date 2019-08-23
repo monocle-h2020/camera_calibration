@@ -1,7 +1,1 @@
-This folder contains raw *monochromator* stacks (NPY).
-
-There will be subfolders for different grating/filter combinations. These in turn contain image stacks, corresponding to different wavelengths.
-
-The format should be as follows:
-.../stacks/monochromator/<grating_filter>/<wavelength>_<type>.npy
-where <grating_filter> is a combination of grating and filter, <wavelength> is a wavelength in nm, and <type> is the stack type (mean/stds).
+This folder contains stacked (mean/standard deviation per pixel) data in numpy binary (.npy) format. If using the `stack_mean_std.py` script, the filenames of these stacks are based on the names of the folders containing the original data.

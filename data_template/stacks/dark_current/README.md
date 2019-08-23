@@ -1,14 +1,1 @@
-This folder contains stacked *dark* images (NPY) directly from the camera.
-
-There will be subfolders for different ISO values. Each ISO subfolder contains stacked images for different exposure times.
-
-ISO values and exposure times are based on app values, not on camera values.
-
-The format should be as follows:
-.../stacks/dark/iso<ISO>/<invtime>_<type>.npy
-where <ISO> is the ISO value, <invtime> is 1/exposure time and <type> the image type (see below).
-
-Two types of stacked images will be present:
- - ..._mean.npy: mean per pixel of a data set
- - ..._stds.npy: standard deviation per pixel of a data set 
- 
+This folder contains stacked (mean/standard deviation per pixel) data in numpy binary (.npy) format. If using the `stack_mean_std.py` script, the filenames of these stacks are based on the names of the folders containing the original data.
