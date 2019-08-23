@@ -1,80 +1,42 @@
+"""
+Analyse dark current maps (in normalised ADU/s) generated using the calibration
+functions. The dark current is converted from normalised ADU/s to electrons/s
+using a gain map.
+
+Command line arguments:
+    * `file`: the location of the dark current map to be analysed.
+"""
+
+
 import numpy as np
 from sys import argv
-from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, calibrate
-from spectacle.general import Rsquare, gaussMd, gauss_nan
+from spectacle import io, analyse, calibrate
 
-folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
-ISO = io.split_iso(folder)
+# Get the data file from the command line
+file = io.path_from_input(argv)
+root, images, stacks, products, results = io.folders(file)
+save_folder = root/f"results/dark/"
 
-times, means= io.load_means(folder, retrieve_value=io.split_exposure_time)
-print("Loaded means")
+# Get metadata
 camera = io.load_metadata(root)
-print(f"Loaded data: {len(times)} exposure times")
 
-ISO_gain, gain = io.read_gain_table(results/"gain"/"table_iso50.npy")  # hard-coded for now
-gain_normalised = calibrate.normalise_iso(root, gain, ISO)
-gain_gauss = gauss_nan(gain_normalised, sigma=(0,5,5))
-gain_image = raw.put_together_from_colours(gain_gauss, camera.bayer_map)
+# Load the data
+dark_current_normADU = np.load(file)
+print("Loaded data")
 
-means = means / gain_image
+# Convert the data to photoelectrons per second
+dark_current_electrons = calibrate.convert_to_photoelectrons(root, dark_current_normADU)
 
-mean_mean = means.mean(axis=(1,2))
-mean_std  = means.std (axis=(1,2))
-mean_err  = mean_std / np.sqrt(means[0].size - 1)
+# Convolve the map with a Gaussian kernel and plot an image of the result
+save_to_maps = save_folder/"dark_current_map_electrons.pdf"
+analyse.plot_gauss_maps(dark_current_electrons, camera.bayer_map, colorbar_label="Dark current (e-/s)", saveto=save_to_maps)
+print(f"Saved Gauss map to '{save_to_maps}'")
 
-fit_ensemble, cov_ensemble = np.polyfit(times, mean_mean, 1, w=1/mean_err, cov=True)
+# Range on the x axis for the histogram
+xmin, xmax = analyse.symmetric_percentiles(dark_current_electrons, percent=0.001)
 
-time_max = camera.settings.exposure_max
-time_range = np.linspace(0, 1.05*time_max, 10)
-time_range_fit = np.polyval(fit_ensemble, time_range)
-time_range_fit_err = np.sqrt(time_range**2 * cov_ensemble[0,0] + cov_ensemble[1,1])
-times_fit = np.polyval(fit_ensemble, times)
-R2 = Rsquare(mean_mean, times_fit)
-print(f"Fit ensemble: R^2 = {R2:.2f}")
-
-plt.figure(figsize=(3.3, 3), tight_layout=True)
-plt.errorbar(times, mean_mean, yerr=mean_err, fmt="ko")
-plt.plot(time_range, time_range_fit, c="k")
-plt.fill_between(time_range, time_range_fit-time_range_fit_err, time_range_fit+time_range_fit_err, color="0.5", zorder=0)
-plt.xlabel("Exposure time (s)")
-plt.ylabel("Mean (e-)")
-plt.xlim(0, time_max)
-plt.ticklabel_format(useOffset=False)
-plt.title(f"Ensemble fit : $R^2 = {R2:.2f}$")
-plt.savefig(results/f"dark/electrons_ensemble_iso{ISO}.pdf")
-plt.show()
-plt.close()
-print("Saved ensemble scatter plot")
-
-mean_reshaped = means.reshape((means.shape[0], -1))  # as list
-fit_separate = np.polyfit(times, mean_reshaped, 1)  # linear fit to every pixel
-print("Fitted data")
-dark_separate, bias_separate = fit_separate
-dark_reshaped = dark_separate.reshape(means[0].shape)
-
-dark_gauss = gaussMd(dark_reshaped, 25)
-plot.show_image(dark_gauss, colorbar_label="Dark current (e-/s)", saveto=results/f"dark/electrons_map_iso{ISO}.pdf")
-print("Saved Gauss map")
-
-dark_RGBG, _= raw.pull_apart(dark_reshaped, camera.bayer_map)
-plot.histogram_RGB(dark_RGBG, xlim=(-25, 50), xlabel="Dark current (e-/s)", saveto=results/f"dark/electrons_histogram_RGB_iso{ISO}.pdf")
-del dark_RGBG
-print("Saved RGB histogram")
-
-plt.figure(figsize=(3.3, 3), tight_layout=True)
-plt.hist(dark_separate, bins=np.linspace(-50,50,250), color='k', edgecolor='k')
-plt.yscale("log")
-plt.xlabel("Dark current (e-/s)")
-plt.ylabel("Frequency")
-plt.savefig(results/f"dark/electrons_histogram_iso{ISO}.pdf")
-plt.show()
-plt.close()
-print("Saved e- histogram")
-
-print("ISO", ISO)
-print(f"Mean  = {dark_separate.mean():+.3f} e-/s")
-print(f"Std   = {dark_separate. std():+.3f} e-/s")
-print(f"RMS   = {np.sqrt(np.mean(dark_separate**2)):+.3f} e-/s")
-print(f"P_99.9= {np.percentile(np.abs(dark_separate.ravel()), 99.9):+.3f} e-/s")
+# Split the data into the RGBG2 filters and make histograms (aggregate and per
+# filter)
+save_to_histogram = save_folder/"dark_current_histogram_ADU.pdf"
+analyse.plot_histogram_RGB(dark_current_electrons, camera.bayer_map, xlim=(xmin, xmax), xlabel="Dark current (e-/s)", saveto=save_to_histogram)
+print(f"Saved RGB histogram to '{save_to_histogram}'")
