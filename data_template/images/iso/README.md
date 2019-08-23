@@ -1,9 +1,7 @@
-This folder contains raw images (DNG) directly from the camera.
+This folder contains ISO images.
 
-There will be subfolders for different ISO values.
+Since these data are used to determine the ISO speed normalisation curve, it is recommended to separate data by ISO speed. Please note that the ISO speed in EXIF data may not be accurate, as shown in the SPECTACLE paper.
 
-ISO values are based on app values, not on camera values.
-
-The format should be as follows:
-.../images/iso/iso<ISO>/<filename>.<raw>
-where <ISO> is the ISO value, <filename> are the individual filenames, and <raw> is the RAW file extension.
+The following format is recommended:
+.../images/iso/iso<ISO>/*
+where <ISO> is the ISO value, and * denotes the location of the image files.

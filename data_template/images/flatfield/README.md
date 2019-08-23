@@ -1,7 +1,9 @@
-This folder contains raw *monochromator* images (DNG) directly from the camera.
+This folder contains flat-field images.
 
-There will be subfolders for different ISO settings, each containing flat-field images.
+Since many flat-fielding methods exist, it is recommended to split data from different methods into different folders.
 
-The format should be as follows:
-.../images/flat/iso<ISO>/*.<raw>
-where <ISO> is the ISO speed and <raw> is the RAW format.
+The following format is recommended:
+.../images/flat/<method>/*
+where <method> is the method used in flatfielding (e.g. an integrating sphere, the sun, etc.), and * denotes the location of the image files.
+
+The SPECTACLE code base currently does not account for differences in flat-field due to changes in aperture or focus.

@@ -1,11 +1,7 @@
-This folder contains raw *gain* images (DNG) directly from the camera.
+This folder contains gain images.
 
-There will be subfolders for different ISO values. Each ISO subfolder is further split into subfolders for different lighting conditions.
+Since gain is ISO speed dependent, it is recommended to separate data by ISO speed. Please note that the ISO speed in EXIF data may not be accurate, as shown in the SPECTACLE paper.
 
-ISO values are based on app values, not on camera values.
-
-The format should be as follows:
-.../images/gain/iso<ISO>/<name>/<filename>.<raw>
-where <ISO> is the ISO value, <name> can be any string identifying a dataset (e.g. lighting conditions, exposure time, timestamp, ...), <filename> are the individual filenames, and <raw> is the RAW file extension.
-
-This folder may contain a softlink to the '../linearity' folder containing similar data for a certain ISO value. This softlink will follow the naming format described above.
+The following format is recommended:
+.../images/gain/iso<ISO>/*
+where <ISO> is the ISO value, and * denotes the location of the image files.

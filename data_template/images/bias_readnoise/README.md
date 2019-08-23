@@ -1,9 +1,7 @@
-This folder contains raw *bias* images (DNG) directly from the camera.
+This folder contains bias images. Both bias and read noise characteristics are determined from these.
 
-There will be subfolders for different ISO values. Each of these is flat and contains a number of images for that particular ISO value.
+Since bias and read noise are ISO speed dependent, it is recommended to separate data by ISO speed. Please note that the ISO speed in EXIF data may not be accurate, as shown in the SPECTACLE paper.
 
-ISO values are based on app values, not exif values.
-
-The format should be as follows:
-.../images/bias/iso<ISO>/
-where <ISO> is the ISO value.
+The following format is recommended:
+.../images/bias/iso<ISO>/*
+where <ISO> is the ISO value, and * denotes the location of the image files.

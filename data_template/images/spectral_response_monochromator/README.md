@@ -1,7 +1,7 @@
-This folder contains raw *monochromator* images (DNG) directly from the camera.
+This folder contains monochromator images. These are used to determine the spectral response of the camera.
 
-There will be subfolders for different grating/filter combinations. These in turn contain subfolders with images, the subfolders corresponding to wavelengths.
+It is recommended to separate data according to different grating/filter combinations, and further split them according to wavelength.
 
-The format should be as follows:
-.../images/monochromator/<grating_filter>/<wavelength>/*.<raw>
-where <grating_filter> is a combination of grating and filter, <wavelength> is a wavelength in nm, and <raw> is the RAW format.
+The following format is recommended:
+.../images/monochromator/<grating_filter>/<wavelength>/*
+where <grating_filter> is a combination of grating and filter, <wavelength> is a wavelength in nm, and * denotes the location of the image files.

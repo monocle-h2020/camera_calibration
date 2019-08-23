@@ -1,18 +1,7 @@
-This folder contains raw *linearity* images (DNG & JPG) directly from the camera.
+This folder contains linearity images. Both linearity and JPEG characteristics are determined from these.
 
-There will be subfolders for different lighting conditions. 
-When using the linear polariser method, subfolders should be identified according to polariser angle, and a text file giving the polariser angle for full transmission should be included as "linearity/default_angle.dat"
-When using the exposure time method, subfolders shoudl be identified according to exposure time. Note that reduction for this has NOT been implemented yet.
+It is recommended to separate data by exposure. Multiple methods of obtaining different exposures are currently supported, namely:
 
-The format should be as follows:
-.../images/linearity/<name>/
-where <name> can be any string identifying a dataset.
+* Linear polarisers: subfolders should be identified according to polariser angle, and a text file giving the polariser angle for full transmission should be included at "linearity/default_angle.dat". The following format is recommended: .../images/linearity/pol<pangle>/*, where <pangle> is the angle indicated on the rotating polariser, and * denotes the location of the image files.
 
-When using the linear polariser method:
-.../images/linearity/pol<pangle>/
-where <pangle> is the indicated angle on the first polariser
-
-When using the exposure time method:
-# NOT YET IMPLEMENTED
-
-This folder may be included in the '../gain/' folder via softlink.
+* Exposure time: subfolders should be identified according to exposure time. The following format is recommended: .../images/linearity/t_<exposure_time>/*, where <exposure_time> is the exposure time (e.g. `t_1` for an exposure of 1 second, or `t_1_5.2` for an exposure of 1/5.2 seconds) and * denotes the location of the image files.
