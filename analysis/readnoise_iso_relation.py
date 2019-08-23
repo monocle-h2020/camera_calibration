@@ -1,39 +1,46 @@
+"""
+Plot the relationship between ISO speed and read noise, based on read noise
+maps generated at various ISO speeds.
+
+Command line arguments:
+    * `folder`: the folder containing the read noise maps to be analysed.
+"""
+
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from spectacle import raw, plot, io, analyse, iso, calibrate
 from spectacle.general import gaussMd
 
+# Get the data folder from the command line
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-results_readnoise = results/"readnoise"
+save_to = root/"results/readnoise/readnoise_ISO_relation.pdf"
 
-isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
+# Get metadata
+camera = io.load_metadata(root)
 
-lookup_table = iso.load_iso_lookup_table(root)
+# Load the data
+isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 
-stds_mean = stds.mean(axis=(1,2))
-stds_stds = stds.std (axis=(1,2))
-
-plt.errorbar(isos, stds_mean, yerr=stds_stds, fmt="ko")
-plt.xlabel("ISO speed")
-plt.ylabel("Read noise (ADU)")
-plt.xlim(0, lookup_table[0, -1]*1.05)
-plt.ylim(ymin=0)
-plt.savefig(results_readnoise/"iso_dependence.pdf")
-plt.show()
-plt.close()
-
+# Normalise the data using the ISO look-up table
 stds_normalised = calibrate.normalise_iso(root, stds, isos)
 
-stds_mean = stds_normalised.mean(axis=(1,2))
-stds_stds = stds_normalised.std (axis=(1,2))
+# Print statistics at each ISO
+stats = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")
+print(stats)
 
-plt.errorbar(isos, stds_mean, yerr=stds_stds, fmt="ko")
+# Plot the mean read noise as a function of ISO speed
+std_mean = stds_normalised.mean(axis=(1,2))
+std_std = stds_normalised.std(axis=(1,2))
+
+plt.figure(figsize=(3,2), tight_layout=True)
+plt.errorbar(isos, std_mean, yerr=std_std, fmt="ko")
 plt.xlabel("ISO speed")
-plt.ylabel("Read noise (norm. ADU)")
-plt.xlim(0, lookup_table[0, -1]*1.05)
+plt.ylabel("Mean read noise\n(norm. ADU)")
+plt.xlim(0, 1.05*camera.settings.ISO_max)
 plt.ylim(ymin=0)
-plt.savefig(results_readnoise/"normalised_iso_dependence.pdf")
-plt.show()
+plt.grid(True, ls="--", alpha=0.3)
+plt.savefig(save_to)
 plt.close()
+print(f"Saved plot to '{save_to}'")
