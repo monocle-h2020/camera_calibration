@@ -1,4 +1,4 @@
-This folder will contain raw *monochromator* stacks (NPY).
+This folder contains raw *monochromator* stacks (NPY).
 
 There will be subfolders for different grating/filter combinations. These in turn contain image stacks, corresponding to different wavelengths.
 

@@ -1,4 +1,4 @@
-This folder will contain raw *linearity* images (DNG & JPG) directly from the camera.
+This folder contains raw *linearity* images (DNG & JPG) directly from the camera.
 
 There will be subfolders for different lighting conditions. 
 When using the linear polariser method, subfolders should be identified according to polariser angle, and a text file giving the polariser angle for full transmission should be included as "linearity/default_angle.dat"

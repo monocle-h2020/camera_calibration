@@ -1,1 +1,1 @@
-This folder will contain scientific results on spectral responses.
+This folder contains scientific results on spectral responses.

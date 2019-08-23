@@ -1,4 +1,4 @@
-This folder will contain raw *monochromator* images (DNG) directly from the camera.
+This folder contains raw *monochromator* images (DNG) directly from the camera.
 
 There will be subfolders for different ISO settings, each containing flat-field images.
 

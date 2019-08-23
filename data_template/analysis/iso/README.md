@@ -1,1 +1,1 @@
-This folder will contain scientific results on ISO speed ratings.
+This folder contains scientific results on ISO speed ratings.

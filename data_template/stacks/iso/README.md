@@ -1,4 +1,4 @@
-This folder will contain stacked images (NPY).
+This folder contains stacked images (NPY).
 
 ISO values are based on app values, not on camera values.
 

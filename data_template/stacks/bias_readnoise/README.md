@@ -1,4 +1,4 @@
-This folder will contain stacked *bias* images (NPY) directly from the camera.
+This folder contains stacked *bias* images (NPY) directly from the camera.
 
 There will be files for different ISO values. Each of these is stacked from one data set.
 

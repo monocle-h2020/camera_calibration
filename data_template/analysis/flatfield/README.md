@@ -1,1 +1,1 @@
-This folder will contain scientific results on flat-fielding.
+This folder contains scientific results on flat-fielding.

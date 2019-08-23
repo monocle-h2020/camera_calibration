@@ -1,4 +1,4 @@
-This folder will contain stacked *dark* images (NPY) directly from the camera.
+This folder contains stacked *dark* images (NPY) directly from the camera.
 
 There will be subfolders for different ISO values. Each ISO subfolder contains stacked images for different exposure times.
 

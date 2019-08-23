@@ -1,4 +1,4 @@
-This folder will contain raw *flat-field* stacks (NPY).
+This folder contains raw *flat-field* stacks (NPY).
 
 Files in this folder correspond to flat-field stacks taken at different ISO speeds.
 

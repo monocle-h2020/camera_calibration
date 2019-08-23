@@ -1,4 +1,4 @@
-This folder will contain raw images (DNG) directly from the camera.
+This folder contains raw images (DNG) directly from the camera.
 
 There will be subfolders for different ISO values.
 

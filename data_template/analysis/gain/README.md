@@ -1,1 +1,1 @@
-This folder will contain scientific results on the gain.
+This folder contains scientific results on the gain.

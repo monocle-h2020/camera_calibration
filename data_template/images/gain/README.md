@@ -1,4 +1,4 @@
-This folder will contain raw *gain* images (DNG) directly from the camera.
+This folder contains raw *gain* images (DNG) directly from the camera.
 
 There will be subfolders for different ISO values. Each ISO subfolder is further split into subfolders for different lighting conditions.
 

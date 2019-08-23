@@ -1,4 +1,4 @@
-This folder will contain stacked *linearity* images (NPY) directly from the camera.
+This folder contains stacked *linearity* images (NPY) directly from the camera.
 
 There will be files for different lighting conditions. 
 When using the linear polariser method, subfolders should be identified according to polariser angle, and a text file giving the polariser angle for full transmission should be included as "linearity/default_angle.dat"
