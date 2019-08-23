@@ -27,8 +27,8 @@ print("Loaded data")
 print("Fitting sRGB model with free gamma...")
 normalisations, gammas, R2s = lin.fit_sRGB_generic(intensities, jmeans)
 
-# Save the output
-for param, label_simple in zip([normalisations, gammas, R2s], ["normalization", "gamma", "R2"]):
-    save_to = save_folder/f"sRGB_free_{label_simple}.npy"
-    np.save(save_to, param)
-    print(f"Saved {label_simple} results to '{save_to}'")
+# Combine the results into a single array and save it to file
+result_combined = np.stack([normalisations, gammas, R2s])
+save_to = save_folder/"sRGB_model_free.npy"
+np.save(save_to, result_combined)
+print(f"Saved results to '{save_to}'")

@@ -30,10 +30,10 @@ print("Loaded data")
 for gamma in gammas:
     # Fit the model
     print(f"\nFitting sRGB model with gamma = {gamma} ...")
-    normalizations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gamma(intensities, jmeans, gamma=gamma)
+    normalisations, Rsquares, RMSes, RMSes_relative = lin.sRGB_compare_gamma(intensities, jmeans, gamma=gamma)
 
-    # Save the output
-    for param, label_simple in zip([normalizations, Rsquares, RMSes, RMSes_relative], ["normalization", "R2", "RMS", "RMS_rel"]):
-        save_to = save_folder/f"sRGB_gamma{gamma}_{label_simple}.npy"
-        np.save(save_to, param)
-        print(f"Saved {label_simple} results to '{save_to}'")
+    # Combine the results into a single array and save it to file
+    result_combined = np.stack([normalisations, Rsquares, RMSes, RMSes_relative])
+    save_to = save_folder/f"sRGB_comparison_gamma{gamma}.npy"
+    np.save(save_to, result_combined)
+    print(f"Saved results to '{save_to}'")
