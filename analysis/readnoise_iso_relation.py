@@ -6,11 +6,9 @@ Command line arguments:
     * `folder`: the folder containing the read noise maps to be analysed.
 """
 
-import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, analyse, iso, calibrate
-from spectacle.general import gaussMd
+from spectacle import io, analyse, calibrate
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
