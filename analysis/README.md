@@ -3,7 +3,7 @@ This folder contains scripts for analysing camera data and calibration data usin
 Documentation is included in each script, in the form of a header explaining the purpose of the script and how to call it, as well as line-by-line documentation of the code itself.
 
 The following scripts were used to generate the figures from the SPECTACLE paper:
-* Fig.  2: [linearity_characterise_multiple.py](linearity_characterise_multiple.py), based on output from [linearity_raw.py](../calibration/linearity_raw.py) and [linearity_jpeg.py](linearity_jpeg.py)
+* Fig.  2: [linearity_characterise_multiple.py](linearity_characterise_multiple.py), based on output from [linearity_raw.py](linearity_raw.py) and [linearity_jpeg.py](linearity_jpeg.py)
 * Fig.  3: [linearity_plot_response_multiple.py](linearity_plot_response_multiple.py)
 * Fig.  4: [jpeg_sRGB_comparison_plot_multiple.py](jpeg_sRGB_comparison_plot_multiple.py), based on output from [jpeg_sRGB_gamma_free.py](jpeg_sRGB_gamma_free.py) and [jpeg_sRGB_gamma_fixed.py](jpeg_sRGB_gamma_fixed.py)
 * Fig.  5: [plot_RGBG2_multiple.py](plot_RGBG2_multiple.py)
