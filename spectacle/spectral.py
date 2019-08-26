@@ -1,5 +1,6 @@
 import numpy as np
-from . import calibrate, io, raw
+from matplotlib import pyplot as plt
+from . import calibrate, io, raw, plot
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     response_normalised = response / response.max(axis=axis)
@@ -88,3 +89,25 @@ def load_monochromator_data(root, folder, blocksize=100):
     spectrum = np.stack([wvls, *means.T, *stds.T]).T
     return spectrum
 
+
+def plot_monochromator_curves(wavelength, mean, std, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
+    plt.figure(figsize=(10,5))
+    # Loop over the provided spectra
+    for m, s in zip(mean, std):
+        # Loop over the RGBG2 channels
+        for j, c in enumerate("rybg"):
+            # Plot the mean response per wavelength
+            plt.plot(wavelength, m[:,j], c=c)
+
+            # Plot the error per wavelength as a shaded area around the mean
+            plt.fill_between(wavelength, m[:,j]-s[:,j], m[:,j]+s[:,j], color=c, alpha=0.3)
+
+    # Plot parameters
+    plt.xticks(np.arange(0, 1000, 50))
+    plt.xlim(wavelength_min, wavelength_max)
+    plt.xlabel("Wavelength (nm)")
+    plt.ylabel(f"Spectral response ({unit})")
+    plt.ylim(ymin=0)
+    plt.title(title)
+    plt.grid(True)
+    plot._saveshow(saveto)

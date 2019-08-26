@@ -9,8 +9,7 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, raw, plot, spectral
-from matplotlib import pyplot as plt
+from spectacle import io, spectral
 
 # Get the data folder and minimum and maximum wavelengths from the command line
 folder, wvl1, wvl2 = io.path_from_input(argv)
@@ -53,20 +52,7 @@ for i, spec in enumerate(spectra):
     all_stds[i][min_in_all:max_in_all+1] = spec[:,5:]
 
 # Plot the raw spectral curves - should be saved as a data stack instead
-plt.figure(figsize=(10,5))
-for mean, std in zip(all_means, all_stds):
-    for j, c in enumerate("rgby"):
-        plt.plot(all_wvl, mean[:,j], c=c)
-        plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(wvl1,wvl2)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Spectral response (ADU)")
-plt.ylim(ymin=0)
-plt.title(f"{camera.device.name}: Raw spectral curves")
-plt.savefig(root/"analysis/spectral_response/raw_spectra.pdf")
-plt.show()
-plt.close()
+spectral.plot_monochromator_curves(all_wvl, all_means, all_stds, title=f"{camera.device.name}: Raw spectral curves", saveto=root/"analysis/spectral_response/raw_spectra.pdf")
 
 # Calibrate the data
 # First, create a copy of the array to put the calibrated data into
@@ -93,20 +79,7 @@ for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     all_stds_calibrated[i] = calibrated_std
 
 # Plot the calibrated spectral curves - should be saved as a data stack instead
-plt.figure(figsize=(10,5))
-for mean, std in zip(all_means_calibrated, all_stds_calibrated):
-    for j, c in enumerate("rgby"):
-        plt.plot(all_wvl, mean[:,j], c=c)
-        plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(wvl1,wvl2)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Spectral response (ADU)")
-plt.ylim(ymin=0)
-plt.title(f"{camera.device.name}: Calibrated spectral curves")
-plt.savefig(root/"analysis/spectral_response/calibrated_spectra.pdf")
-plt.show()
-plt.close()
+spectral.plot_monochromator_curves(all_wvl, all_means_calibrated, all_stds_calibrated, title=f"{camera.device.name}: Calibrated spectral curves", saveto=root/"analysis/spectral_response/calibrated_spectra.pdf")
 
 # Normalise the calibrated data
 # Create a copy of the array to put the normalised data into
@@ -161,20 +134,7 @@ for i in normalise_order:
     all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
 
 # Plot the normalised spectral curves - should be saved as a data stack instead
-plt.figure(figsize=(10,5))
-for mean, std in zip(all_means_normalised, all_stds_normalised):
-    for j, c in enumerate("rgby"):
-        plt.plot(all_wvl, mean[:,j], c=c)
-        plt.fill_between(all_wvl, mean[:,j]-std[:,j], mean[:,j]+std[:,j], color=c, alpha=0.3)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(wvl1,wvl2)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Spectral response (ADU)")
-plt.ylim(ymin=0)
-plt.title(f"{camera.device.name}: Normalised spectral curves")
-plt.savefig(root/"analysis/spectral_response/normalised_spectra.pdf")
-plt.show()
-plt.close()
+spectral.plot_monochromator_curves(all_wvl, all_means_normalised, all_stds_normalised, title=f"{camera.device.name}: Normalised spectral curves", saveto=root/"analysis/spectral_response/normalised_spectra.pdf")
 
 # Combine the spectra into one
 # Calculate the signal-to-noise ratio (SNR) at each wavelength in each spectrum
@@ -200,20 +160,8 @@ response_normalised = (flat_means_mask / flat_means_mask.max()).data
 errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
 
 # Plot the final spectral curves - should be saved as a data stack instead
-plt.figure(figsize=(10,5))
-for j, c in enumerate("rybg"):
-    plt.plot(all_wvl, response_normalised[:,j], c=c)
-    plt.fill_between(all_wvl, response_normalised[:,j]-errors_normalised[:,j], response_normalised[:,j]+errors_normalised[:,j], color=c, alpha=0.3)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(wvl1,wvl2)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Spectral response (normalized)")
-plt.ylim(0, 1.02)
-plt.grid()
-plt.title(f"{camera.device.name}: Combined spectral curves")
-plt.savefig(root/"analysis/spectral_response/combined_spectra.pdf")
-plt.show()
-plt.close()
+# Arguments in [] so they can be looped over (a bit of a hacky solution)
+spectral.plot_monochromator_curves(all_wvl, [response_normalised], [errors_normalised], title=f"{camera.device.name}: Combined spectral curves", unit="normalised", saveto=root/"analysis/spectral_response/combined_spectra.pdf")
 
 # Combine the result into one big array and save it
 result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
