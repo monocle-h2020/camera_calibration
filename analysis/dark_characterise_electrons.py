@@ -37,6 +37,6 @@ xmin, xmax = analyse.symmetric_percentiles(dark_current_electrons, percent=0.001
 
 # Split the data into the RGBG2 filters and make histograms (aggregate and per
 # filter)
-save_to_histogram = save_folder/"dark_current_histogram_ADU.pdf"
+save_to_histogram = save_folder/"dark_current_histogram_electrons.pdf"
 analyse.plot_histogram_RGB(dark_current_electrons, camera.bayer_map, xlim=(xmin, xmax), xlabel="Dark current (e-/s)", saveto=save_to_histogram)
 print(f"Saved RGB histogram to '{save_to_histogram}'")
