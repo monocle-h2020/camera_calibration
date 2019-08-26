@@ -13,7 +13,7 @@ from spectacle import io, analyse, calibrate
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to = root/"results/readnoise/readnoise_ISO_relation.pdf"
+save_to = root/"analysis/readnoise/readnoise_ISO_relation.pdf"
 
 # Get metadata
 camera = io.load_metadata(root)

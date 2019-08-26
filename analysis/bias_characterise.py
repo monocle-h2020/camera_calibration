@@ -11,10 +11,10 @@ from spectacle import io, analyse
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+save_to = root/"analysis/bias/"
 
 # Get metadata
 camera = io.load_metadata(root)
-save_to = root/"results/bias"
 
 # Load the data
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)

@@ -30,7 +30,7 @@ else:
 
 # Get metadata
 camera = io.load_metadata(root)
-savefolder = root/"results/linearity/"
+savefolder = root/"analysis/linearity/"
 
 # Load the data
 r_raw = np.load(file_raw)

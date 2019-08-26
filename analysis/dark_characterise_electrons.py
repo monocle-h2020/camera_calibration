@@ -15,7 +15,7 @@ from spectacle import io, analyse, calibrate
 # Get the data file from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-save_folder = root/f"results/dark/"
+save_folder = root/f"analysis/dark_current/"
 
 # Get metadata
 camera = io.load_metadata(root)

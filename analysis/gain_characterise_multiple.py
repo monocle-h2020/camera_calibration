@@ -20,6 +20,7 @@ from spectacle.general import gauss_nan
 # Get the data folder from the command line
 files = io.path_from_input(argv)
 roots = [io.find_root_folder(file) for file in files]
+save_folder = io.results_folder
 
 # Get metadata
 cameras = [io.load_metadata(root) for root in roots]
@@ -73,7 +74,7 @@ for j, c in enumerate(plot.RGBG2):
         print(f"{c:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
-    save_to_map_c = io.results_folder/f"gain_map_{c}.pdf"
+    save_to_map_c = save_folder/f"gain_map_{c}.pdf"
     fig.savefig(save_to_map_c)
     plt.close()
     print(f"Saved gain map for the {c} channel to '{save_to_map_c}'")
@@ -120,7 +121,7 @@ axs[0,0].set_yticks([0.5, 1.5])
 axs[0,0].set_xticks(np.arange(0.5, 3, 0.5))
 
 # Save the figure
-save_to_histogram = io.results_folder/"gain_histogram.pdf"
+save_to_histogram = save_folder/"gain_histogram.pdf"
 fig.savefig(save_to_histogram)
 plt.close()
 print(f"Saved RGB histogram to '{save_to_histogram}'")
