@@ -28,6 +28,6 @@ print(f"Loaded bias data for {len(isos)} ISO values from '{folder}'")
 lowest_iso_index = isos.argmin()
 readnoise_map = stds[lowest_iso_index]
 
-# Save the read noise map to the `products` folder
+# Save the read noise map
 np.save(save_to, readnoise_map)
 print(f"Saved read noise map at ISO {isos[lowest_iso_index]} to '{save_to}'")
