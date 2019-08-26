@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-save_to = root/"results/jpeg/sRGB_model_histogram.pdf"
+save_to = root/"analysis/jpeg/sRGB_model_histogram.pdf"
 
 # Load the data
 normalisations, gammas, R2s = np.load(file)

@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-savefolder = root/"results/jpeg/"
+savefolder = root/"analysis/jpeg/"
 
 # Load the data
 normalisations, Rsquares, RMSes, RMSes_relative = np.load(file)
