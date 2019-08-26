@@ -4,9 +4,9 @@ calibration scripts. This script returns some statistics on each and generates
 a histogram comparing them.
 
 This script assumes the r maps to be located at
-"root/products/linearity_raw.npy".
-If "root/products/linearity_jpeg.npy" exists, JPEG r values are included in the
-histogram.
+root/"intermediaries/linearity/linearity_raw.npy"
+If root/"intermediaries/linearity/linearity_jpeg.npy" exists, JPEG r values are
+also included in the histogram.
 
 Command line arguments:
     * `folders`: any number of data folders containing Pearson r maps
@@ -20,8 +20,8 @@ from spectacle import io, linearity as lin, plot
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
 roots = [io.find_root_folder(folder) for folder in folders]
-r_raw_paths = [root/"products/linearity_raw.npy" for root in roots]
-r_jpeg_paths = [root/"products/linearity_jpeg.npy" for root in roots]
+r_raw_paths = [root/"intermediaries/linearity/linearity_raw.npy" for root in roots]
+r_jpeg_paths = [root/"intermediaries/linearity/linearity_jpeg.npy" for root in roots]
 save_to = io.results_folder
 
 # Get metadata

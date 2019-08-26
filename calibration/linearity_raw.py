@@ -13,6 +13,7 @@ from spectacle import io, linearity as lin
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+save_to = root/"intermediaries/linearity/linearity_raw.npy"
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -28,6 +29,5 @@ r, saturated = lin.calculate_pearson_r_values(intensities, means, saturate=camer
 print("... Done!")
 
 # Save the results
-save_to = root/"products/linearity_raw.npy"
 np.save(save_to, r)
 print(f"Saved results to '{save_to}'")

@@ -13,6 +13,7 @@ from spectacle import io, linearity as lin
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+save_to = root/"intermediaries/linearity/linearity_jpeg.npy"
 
 # Load the data
 intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)
@@ -25,6 +26,5 @@ r, saturated = lin.calculate_pearson_r_values_jpeg(intensities, jmeans, saturate
 print("... Done!")
 
 # Save the results
-save_to = root/"products/linearity_jpeg.npy"
 np.save(save_to, r)
 print(f"Saved results to '{save_to}'")
