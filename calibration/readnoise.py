@@ -17,6 +17,7 @@ from spectacle import io
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+save_to = root/"calibration/readnoise.npy"
 
 # Load the standard deviation stacks for each ISO value
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
@@ -28,6 +29,5 @@ lowest_iso_index = isos.argmin()
 readnoise_map = stds[lowest_iso_index]
 
 # Save the read noise map to the `products` folder
-save_to = root/"products/readnoise.npy"
 np.save(save_to, readnoise_map)
 print(f"Saved read noise map at ISO {isos[lowest_iso_index]} to '{save_to}'")

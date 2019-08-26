@@ -32,9 +32,15 @@ def load_bias_metadata(root, return_filename=False):
         return bias_value
 
 
-def load_readnoise_map(root):
+def load_readnoise_map(root, return_filename=False):
     """
-    Load the bias map located at `root`/products/readnoise.npy
+    Load the bias map located at `root`/calibration/readnoise.npy
+    If `return_filename` is True, also return the exact filename the metadata
+    were retrieved from.
     """
-    readnoise_map = np.load(root/"products/readnoise.npy")
-    return readnoise_map
+    filename = root/"calibration/readnoise.npy"
+    readnoise_map = np.load(filename)
+    if return_filename:
+        return readnoise_map, filename
+    else:
+        return readnoise_map
