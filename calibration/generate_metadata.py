@@ -19,13 +19,12 @@ from sys import argv
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
+save_to = root/"metadata.json"
 
 # Get the data
 raw_file = io.load_raw_file(file)
 exif = io.load_exif(file)
 print("Loaded data")
-
-save_to = root/"metadata.json"
 
 # Get additional data from command line input from the user
 iso_min = input("What is the *lowest* ISO speed available on this device?\n")
