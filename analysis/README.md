@@ -1,4 +1,4 @@
-This folder contains scripts for analysing camera data and calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075).
+This folder contains scripts for analysing camera data and calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075). These scripts are used to create plots, tables, etc. which provide insight into the performance and characteristics of the camera.
 
 Documentation is included in each script, in the form of a header explaining the purpose of the script and how to call it, as well as line-by-line documentation of the code itself.
 

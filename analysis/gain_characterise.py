@@ -42,9 +42,10 @@ gains_RGBG,_ = raw.pull_apart(gains, camera.bayer_map)
 
 # Plot a miniature RGB histogram
 fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-axs[0].hist(gains_RGBG[0]   .ravel(), bins=np.linspace(0, 3.5, 250), color="r", edgecolor="r", density=True)
-axs[1].hist(gains_RGBG[1::2].ravel(), bins=np.linspace(0, 3.5, 250), color="g", edgecolor="g", density=True)
-axs[2].hist(gains_RGBG[2]   .ravel(), bins=np.linspace(0, 3.5, 250), color="b", edgecolor="b", density=True)
+shared_kwargs = {"bins": np.linspace(0, 3.5, 250), "density": True}
+axs[0].hist(gains_RGBG[0]   .ravel(), color="r", edgecolor="r", **shared_kwargs)
+axs[1].hist(gains_RGBG[1::2].ravel(), color="g", edgecolor="g", **shared_kwargs)
+axs[2].hist(gains_RGBG[2]   .ravel(), color="b", edgecolor="b", **shared_kwargs)
 for ax in axs[:2]:
     ax.xaxis.set_ticks_position("none")
 for ax in axs:
