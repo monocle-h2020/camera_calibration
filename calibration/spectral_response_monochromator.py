@@ -37,9 +37,6 @@ all_wvl = np.unique(np.concatenate([spec[:,0] for spec in spectra]))
 all_means = np.tile(np.nan, (len(spectra), len(all_wvl), 4))
 all_stds = all_means.copy()
 
-# Normalisation factor of each channel in each spectrum
-norms = np.zeros((len(spectra), 4)) ; norms[0] = 1
-
 # Add the data from the separate spectra into one big array
 # If a spectrum is missing a wavelength, keep that value NaN
 # Note: data may be missing at lower or higher wavelengths, but not within the
