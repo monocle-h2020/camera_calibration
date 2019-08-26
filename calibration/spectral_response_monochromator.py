@@ -28,7 +28,7 @@ print("Loaded metadata")
 folders = sorted(folder.glob("*"))
 
 # Load the data from each subfolder
-spectra = [spectral.load_monochromator_data(subfolder) for subfolder in folders]
+spectra = [spectral.load_monochromator_data(root, subfolder) for subfolder in folders]
 print("Loaded data")
 
 # Find and load the calibration data
