@@ -13,6 +13,7 @@ from spectacle import io, calibrate
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+save_to_normalised_map = root/"calibration/gain.npy"
 
 # Get the camera metadata
 camera = io.load_metadata(root)
@@ -20,6 +21,7 @@ print("Loaded metadata")
 
 # Get the ISO speed of these data from the folder name
 ISO = io.split_iso(folder)
+save_to_original_map = root/f"intermediaries/gain/gain_map_iso{ISO}.npy"
 
 # Load the data
 names, means = io.load_means(folder)
@@ -53,7 +55,6 @@ for i in range(means.shape[1]):
         print(f"{100 * i / means.shape[1]:.1f}%", end=" ", flush=True)
 
 # Save the gain map
-save_to_original_map = root/f"products/gain/gain_iso{ISO}.npy"
 np.save(save_to_original_map, gain_map)
 print(f"Saved gain map to '{save_to_original_map}'")
 
@@ -61,6 +62,5 @@ print(f"Saved gain map to '{save_to_original_map}'")
 gain_map_normalised = calibrate.normalise_iso(root, gain_map, ISO)
 
 # Save the normalised gain map
-save_to_normalised_map = root/f"results/gain_map.npy"
 np.save(save_to_normalised_map, gain_map_normalised)
 print(f"Saved normalised gain map to '{save_to_normalised_map}'")
