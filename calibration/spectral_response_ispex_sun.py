@@ -31,8 +31,8 @@ plt.savefig(io.results_folder/"SMARTS_vs_BB.pdf")
 plt.show()
 
 file = io.path_from_input(argv)
-root = io.find_root_folder(folder)
-coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.npy")
+root = io.find_root_folder(file)
+coefficients = wavelength.load_coefficients(root/"calibration/ispex_wavelength_solution.npy")
 
 img  = io.load_raw_file(file)
 exif = io.load_exif(file)
