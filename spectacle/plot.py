@@ -215,7 +215,7 @@ def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
         if vmax == "auto":
             vmax = symmetric_percentiles(data)[1]
     kwargs.update({"vmin": vmin, "vmax": vmax})
-    
+
     for j, c in enumerate(RGBG2):
         try:
             saveto_c = saveto.parent / (saveto.stem + "_" + c + saveto.suffix)
@@ -223,12 +223,12 @@ def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
             saveto_c = None
 
         show_image(data[j], saveto=saveto_c, colour=c, **kwargs)
-        
+
     try:
         saveto_RGBG2 = saveto.parent / (saveto.stem + "_RGBG2" + saveto.suffix)
     except AttributeError:
         saveto_RGBG2 = None
-    
+
     show_RGBG(data, saveto=saveto_RGBG2, **kwargs)
 
 
@@ -270,7 +270,7 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
         else:
             label = "g2"
         try:
-            saveto = savefolder/f"linearity_DNG_singlepixel_{label}.pdf"
+            saveto = savefolder/f"linearity_response_RAW_{label}.pdf"
         except:
             saveto = None
 
@@ -300,7 +300,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
             i = 1
             label = "g2"
         try:
-            saveto = savefolder/f"linearity_DNG_JPEG_singlepixel_{label}.pdf"
+            saveto = savefolder/f"linearity_response_RAW_JPEG_{label}.pdf"
         except:
             saveto = None
 
