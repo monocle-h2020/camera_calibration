@@ -1,6 +1,7 @@
 import rawpy
 import exifread
 import numpy as np
+import os
 from pathlib import Path
 from matplotlib import pyplot as plt
 from .config import spectacle_folder, results_folder
@@ -312,3 +313,12 @@ def read_spectral_bandwidths(products):
     """
     bandwidths = np.loadtxt(products/"spectral_bandwidths.dat")
     return bandwidths
+
+
+def find_subfolders(path):
+    """
+    Find the subfolders of a given `path`
+    """
+    current_path, subfolders, files = next(os.walk(path))
+    subfolders_as_paths = [path/subfolder for subfolder in subfolders]
+    return subfolders_as_paths

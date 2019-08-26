@@ -22,7 +22,7 @@ camera = io.load_metadata(root)
 print("Loaded metadata")
 
 # Get the subfolders in the given data folder
-folders = sorted(folder.glob("*"))
+folders = io.find_subfolders(folder)
 
 # Load the data from each subfolder
 spectra = [spectral.load_monochromator_data(root, subfolder) for subfolder in folders]
@@ -172,7 +172,7 @@ plt.xlabel("Wavelength (nm)")
 plt.ylabel("Spectral response (ADU)")
 plt.ylim(ymin=0)
 plt.title(f"{camera.device.name}: Normalised spectral curves")
-plt.savefig(root/"analyis/spectral_response/normalised_spectra.pdf")
+plt.savefig(root/"analysis/spectral_response/normalised_spectra.pdf")
 plt.show()
 plt.close()
 
