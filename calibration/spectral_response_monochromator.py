@@ -1,13 +1,10 @@
 """
-Create a bias map using the mean bias (zero-light, shortest-exposure images)
-images. Bias data for all ISOs are loaded, but the map is only saved for the
-lowest ISO.
+Determine the spectral response curves of a camera based on data from a
+monochromator. The data are expected to be in subfolders of a main folder, each
+subfolder corresponding to a monochromator setting (e.g. filter/grating).
 
 Command line arguments:
-    * `folder`: folder containing stacked bias data
-
-To do:
-    * Save maps for all ISOs and use these in the calibration process.
+    * `folder`: folder containing monochromator data (in subfolders)
 """
 
 import numpy as np
