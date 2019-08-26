@@ -19,20 +19,19 @@ from .metadata import load_metadata
 
 def correct_bias(root, data):
     """
-    Perform a bias correction on data using a bias map from
-    `root`/products/bias.npy.
+    Perform a bias correction on data using a bias map from the calibration
+    folder.
 
     To do:
-        - Use EXIF value if no map available
         - ISO selection
     """
     try:
-        bias = bias_readnoise.load_bias_map(root)
+        bias, origin = bias_readnoise.load_bias_map(root, return_filename=True)
     except FileNotFoundError:
-        bias = bias_readnoise.load_bias_metadata(root)
-        print(f"Using bias value from metadata in `{root}/info.json`")
+        bias, origin = bias_readnoise.load_bias_metadata(root, return_filename=True)
+        print(f"Using bias value from metadata in '{origin}'")
     else:
-        print(f"Using bias map from `{root}/products/bias_map.npy`")
+        print(f"Using bias map from '{origin}'")
     data_corrected = data - bias
 
     return data_corrected

@@ -17,6 +17,7 @@ from spectacle import io
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+save_to = root/"calibration/bias.npy"
 
 # Load the mean stacks for each ISO value
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)
@@ -26,7 +27,6 @@ print(f"Loaded bias data for {len(isos)} ISO values from '{folder}'")
 lowest_iso_index = isos.argmin()
 bias_map = means[lowest_iso_index]
 
-# Save the bias map to the `products` folder
-save_to = root/"products/bias.npy"
+# Save the bias map for calibration purposes
 np.save(save_to, bias_map)
 print(f"Saved bias map at ISO {isos[lowest_iso_index]} to '{save_to}'")

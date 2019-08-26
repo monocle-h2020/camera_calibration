@@ -79,9 +79,15 @@ def write_json(data, save_to):
         json.dump(data, file)
 
 
-def load_metadata(root):
+def load_metadata(root, return_filename=False):
     """
     Read the metadata JSON located in the `root` folder.
+    If `return_filename` is True, also return the exact filename the bias map
+    was retrieved from.
     """
-    metadata = Camera.read_from_file(root/"metadata.json")
-    return metadata
+    filename = root/"metadata.json"
+    metadata = Camera.read_from_file(filename)
+    if return_filename:
+        return metadata, filename
+    else:
+        return metadata
