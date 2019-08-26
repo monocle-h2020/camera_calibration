@@ -40,12 +40,13 @@ def correct_bias(root, data):
 def correct_dark_current(root, data, exposure_time):
     """
     Perform a dark current correction on data using a dark current map from
-    `root`/products/dark_normalised.npy
+    `root`/calibration/dark_current_normalised.npy
 
     To do:
         - Easy way to parse exposure times in scripts
     """
-    dark_current = dark.load_dark_current_map(root)
+    dark_current, origin = dark.load_dark_current_map(root, return_filename=True)
+    print(f"Using dark current map from '{origin}'")
     dark_total = dark_current * exposure_time
     data_corrected = data - dark_total
 
