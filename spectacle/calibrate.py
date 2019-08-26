@@ -56,12 +56,13 @@ def correct_dark_current(root, data, exposure_time):
 def normalise_iso(root, data, iso_values):
     """
     Normalise data using an ISO normalisation look-up table from
-    `root`/products/iso_lookup_table.npy.
+    `root`/calibration/iso_normalisation_lookup_table.npy
 
     If `iso` is a single number, use `normalise_single_iso`. Otherwise, use
     `normalise_multiple_iso`.
     """
-    lookup_table = iso.load_iso_lookup_table(root)
+    lookup_table, origin = iso.load_iso_lookup_table(root, return_filename=True)
+    print(f"Using ISO speed normalisation look-up table from '{origin}'")
 
     if isinstance(iso_values, (int, float)):
         data_normalised = iso.normalise_single_iso  (data, iso_values, lookup_table)

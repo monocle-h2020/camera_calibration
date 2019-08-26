@@ -68,23 +68,48 @@ def normalise_multiple_iso(data, isos, lookup_table):
     return as_array
 
 
-def load_iso_lookup_table(root):
+def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at
-    `root`/products/iso_lookup_table.npy
+    `root`/calibration/iso_normalisation_lookup_table.npy
+    If `return_filename` is True, also return the exact filename the bias map
+    was retrieved from.
     """
-    table = np.load(root/"products/iso_lookup_table.npy")
-    return table
+    filename = root/"calibration/iso_normalisation_lookup_table.npy"
+    table = np.load(filename)
+    if return_filename:
+        return table, filename
+    else:
+        return table
 
-
-def load_iso_model(root):
+def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
-    in `root`/products/iso_model.dat
+    in `root`/calibration/iso_normalisation_model.dat
+    If `return_filename` is True, also return the exact filename the bias map
+    was retrieved from.
     """
-    as_array = np.loadtxt(root/"products/iso_model.dat", dtype=str)
+    filename = root/"calibration/iso_normalisation_model.dat"
+    as_array = np.loadtxt(filename, dtype=str)
     model_type = as_array[0,0]
     parameters = as_array[1].astype(np.float64)
     errors     = as_array[2].astype(np.float64)
     model = model_generator[model_type](*parameters)
-    return model
+    if return_filename:
+        return model, filename
+    else:
+        return model
+
+def load_iso_data(root, return_filename=False):
+    """
+    Load ISO normalisation data from
+    `root`/intermediaries/iso_normalisation/iso_data.npy
+    If `return_filename` is True, also return the exact filename the bias map
+    was retrieved from.
+    """
+    filename = root/"intermediaries/iso_normalisation/iso_data.npy"
+    data = np.load(filename)
+    if return_filename:
+        return data, filename
+    else:
+        return data

@@ -6,22 +6,21 @@ Command line arguments:
     analysed.
 """
 
-import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io
+from spectacle import io, iso
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
+save_to = root/"analysis/iso_normalisation/iso_normalisation_curve.pdf"
 
 # Get metadata
 camera = io.load_metadata(root)
-save_to = root/"results/iso/iso_normalisation.pdf"
 
 # Load the normalisation data and look-up table
-lookup_table = np.load(products/"iso_lookup_table.npy")
-data = np.load(products/"iso_data.npy")
+lookup_table = iso.load_iso_lookup_table(root)
+data = iso.load_iso_data(root)
 print("Loaded data")
 
 # Plot the normalisation data and look-up table

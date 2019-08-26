@@ -6,10 +6,9 @@ Command line arguments:
     (multiple arguments possible)
 """
 
-import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, plot
+from spectacle import io, plot, iso
 
 # Get the data folders from the command line
 folders = io.path_from_input(argv)
@@ -25,11 +24,10 @@ for c, folder in zip(plot.line_colours, folders):
 
     # Get metadata
     camera = io.load_metadata(root)
-    products_iso = root/"products/iso"
 
     # Load the normalisation data and look-up table
-    lookup_table = np.load(root/"products/iso_lookup_table.npy")
-    data = np.load(root/"products/iso_data.npy")
+    lookup_table = iso.load_iso_lookup_table(root)
+    data = iso.load_iso_data(root)
 
     # Plot the normalisation data and look-up table
     plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=camera.device.name)
