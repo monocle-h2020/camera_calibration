@@ -20,7 +20,7 @@ root = io.find_root_folder(meanfile)
 label = meanfile.stem.split("_mean")[0]
 
 # Replace the calibration file? TO DO: make this a command line argument
-overwrite_calibration = False
+overwrite_calibration = True
 
 # Define save locations for results
 save_to_correction = root/f"intermediaries/flatfield/flatfield_correction_{label}.npy"
