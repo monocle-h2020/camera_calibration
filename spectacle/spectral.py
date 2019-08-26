@@ -44,6 +44,7 @@ def load_monochromator_data(root, folder, blocksize=100):
 
     # Load metadata
     camera = io.load_metadata(root)
+    bias = calibrate.load_bias_map(root)
 
     # Half-blocksize, to slice the arrays with
     d = blocksize//2
@@ -58,8 +59,9 @@ def load_monochromator_data(root, folder, blocksize=100):
         # Load the mean data
         m = np.load(mean_file)
 
-        # Bias correction
-        m = calibrate.correct_bias(root, m)
+        # Bias correction; don't use calibrate.correct_bias to prevent loading
+        # the data from file every time
+        m = m - bias
 
         # Demosaick the data
         mean_RGBG, _ = raw.pull_apart(m, camera.bayer_map)
@@ -79,7 +81,7 @@ def load_monochromator_data(root, folder, blocksize=100):
         stds[j] = sub.std(axis=(1,2))
         wvls[j] = mean_file.stem.split("_")[0]
 
-        print(wvls[j])
+        print(wvls[j], end=" ")
 
     print(folder)
 
