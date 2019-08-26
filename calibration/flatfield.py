@@ -18,7 +18,18 @@ from spectacle.general import gaussMd
 meanfile = io.path_from_input(argv)
 root = io.find_root_folder(meanfile)
 label = meanfile.stem.split("_mean")[0]
-save_folder = root/"products/"
+
+# Replace the calibration file? TO DO: make this a command line argument
+overwrite_calibration = False
+
+# Define save locations for results
+save_to_correction = root/f"intermediaries/flatfield/flatfield_correction_{label}.npy"
+save_to_correction_raw = root/f"intermediaries/flatfield/flatfield_correction_{label}_raw.npy"
+save_to_correction_modelled_intermediary = root/f"intermediaries/flatfield/flatfield_correction_{label}_modelled.npy"
+save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.npy"
+
+save_to_correction_modelled_calibration = root/"calibration/flatfield_correction_modelled.npy"
+save_to_parameters_calibration = root/"calibration/flatfield_parameters.npy"
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -49,8 +60,6 @@ correction = 1 / flat_gauss_clipped
 correction_raw = 1 / flat_raw_clipped
 
 # Save the correction factor maps
-save_to_correction = save_folder/f"flatfield_correction_{label}.npy"
-save_to_correction_raw = save_folder/f"flatfield_correction_{label}_raw.npy"
 np.save(save_to_correction, correction)
 np.save(save_to_correction_raw, correction_raw)
 print(f"Saved the flat-field correction maps to '{save_to_correction}' (Gaussed) and '{save_to_correction_raw}' (raw)")
@@ -60,9 +69,11 @@ print("Fitting...")
 parameters, standard_errors = flat.fit_vignette_radial(correction)
 
 # Save the best-fitting model parameters
-save_to_parameters = save_folder/f"flat_{label}_parameters.npy"
-np.save(save_to_parameters, np.stack([parameters, standard_errors]))
-print(f"Saved best-fitting model parameters to '{save_to_parameters}'")
+np.save(save_to_parameters_intermediary, np.stack([parameters, standard_errors]))
+print(f"Saved best-fitting model parameters to '{save_to_parameters_intermediary}'")
+if overwrite_calibration:
+    np.save(save_to_parameters_calibration, np.stack([parameters, standard_errors]))
+    print(f"Saved best-fitting model parameters to '{save_to_parameters_calibration}'")
 
 # Output the best-fitting model parameters and errors
 print("Parameter +- Error    ; Relative error")
@@ -73,6 +84,8 @@ for p, s in zip(parameters, standard_errors):
 correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
 
 # Save the moddelled correction map
-save_to_correction_modelled = save_folder/f"flatfield_correction_{label}_modelled.npy"
-np.save(save_to_correction_modelled, correction_modelled)
-print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled}'")
+np.save(save_to_correction_modelled_intermediary, correction_modelled)
+print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled_intermediary}'")
+if overwrite_calibration:
+    np.save(save_to_correction_modelled_calibration, correction_modelled)
+    print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled_calibration}'")

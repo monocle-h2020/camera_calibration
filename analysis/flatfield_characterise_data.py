@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 meanfile = io.path_from_input(argv)
 root = io.find_root_folder(meanfile)
-savefolder = root/"results/flat/"
+savefolder = root/"analysis/flatfield/"
 label = meanfile.stem.split("_mean")[0]
 
 # Get metadata

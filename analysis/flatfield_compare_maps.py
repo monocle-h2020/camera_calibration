@@ -18,7 +18,7 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 file1, file2 = io.path_from_input(argv)
 root = io.find_root_folder(file1)
-savefolder = root/"results/flat/"
+savefolder = root/"analysis/flatfield/"
 label = "comparison_" + file1.stem + "_X_" + file2.stem
 
 # Get metadata

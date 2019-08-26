@@ -77,21 +77,28 @@ def apply_vignette_radial(shape, parameters):
 def read_flat_field_correction(root, shape):
     """
     Load the flat-field correction model, the parameters of which are contained
-    in `root`/products/flat_parameters.npy
+    in `root`/calibration/flatfield_parameters.npy
     """
-    parameters, errors = np.load(root/"products/flat_parameters.npy")
+    filename = root/"calibration/flatfield_parameters.npy"
+    parameters, errors = np.load(filename)
     correction_map = apply_vignette_radial(shape, parameters)
     return correction_map
 
 
-def load_flat_field_correction_map(root):
+def load_flat_field_correction_map(root, return_filename=False):
     """
     Load the flat-field correction map contained in
-    `root`/products/flat_field.npy
-    """
-    correction_map = np.load(root/"products/flat_field.npy")
-    return correction_map
+    `root`/calibration/flatfield_correction_modelled.npy
 
+    If `return_filename` is True, also return the exact filename the bias map
+    was retrieved from.
+    """
+    filename = root/"calibration/flatfield_correction_modelled.npy"
+    correction_map = np.load(filename)
+    if return_filename:
+        return correction_map, filename
+    else:
+        return correction_map
 
 def normalise_RGBG2(mean, stds, bayer_pattern):
     """
