@@ -5,31 +5,31 @@ them into a format that can be uploaded to the database.
 
 from sys import argv
 import numpy as np
-from phonecal import io
+from spectacle import io
 from os import makedirs
 
-# Load data
+# Get the data folder from the command line
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
-phone = io.read_json(root/"info.json")
+root = io.find_root_folder(folder)
+
+# Load metadata
+camera = io.load_metadata(root)
+print("Loaded metadata")
 
 # Create results folder
-identifier = "-".join([phone["device"]["manufacturer"], phone["device"]["name"], phone["device"]["code"]])
+identifier = f"{camera.device.manufacturer}-{camera.device.name}"
 identifier = identifier.replace(" ", "_")
-save_folder = root/"spectacle"/identifier
+save_folder = io.results_folder/"spectacle"/identifier
 
 makedirs(save_folder, exist_ok=True)  # create folder if it does not yet exist
+print(f"Found/Created save folder '{save_folder}'")
 
 # General properties
 
-generic_header =f"\
+generic_header = f"\
 SPECTACLE data sheet. More information can be found in our paper (https://doi.org/10.1364/OE.27.019075) and on our website (http://spectacle.ddq.nl/). \n\
-Camera manufacturer: {phone['device']['manufacturer']}\n\
-Camera device: {phone['device']['name']}\n\
-Camera product code: {phone['device']['code']}\n\
-Sensor manufacturer: {phone['camera']['manufacturer']}\n\
-Sensor series: {phone['camera']['series']}\n\
-Sensor model: {phone['camera']['model']}\n"
+Camera manufacturer: {camera.device.manufacturer}\n\
+Camera device: {camera.device.name}\n"
 
 # Linearity
 
