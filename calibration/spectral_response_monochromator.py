@@ -48,8 +48,11 @@ for i, spec in enumerate(spectra):
     all_means[i][min_in_all:max_in_all+1] = spec[:,1:5]
     all_stds[i][min_in_all:max_in_all+1] = spec[:,5:]
 
-# Plot the raw spectral curves - should be saved as a data stack instead
-spectral.plot_monochromator_curves(all_wvl, all_means, all_stds, title=f"{camera.device.name}: Raw spectral curves", saveto=root/"analysis/spectral_response/raw_spectra.pdf")
+# Save the raw curves to file
+np.save(root/"intermediaries/spectral_response/monochromator_wavelengths.npy", all_wvl)
+np.save(root/"intermediaries/spectral_response/monochromator_raw_means.npy", all_means)
+np.save(root/"intermediaries/spectral_response/monochromator_raw_stds.npy", all_stds)
+print(f"Saved raw curves to '{root/'intermediaries/spectral_response/'}'")
 
 # Calibrate the data
 # First, create a copy of the array to put the calibrated data into
@@ -75,8 +78,10 @@ for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     calibrated_std[all_wvl_indices] = std[all_wvl_indices] / cal[1, cal_indices, np.newaxis]
     all_stds_calibrated[i] = calibrated_std
 
-# Plot the calibrated spectral curves - should be saved as a data stack instead
-spectral.plot_monochromator_curves(all_wvl, all_means_calibrated, all_stds_calibrated, title=f"{camera.device.name}: Calibrated spectral curves", saveto=root/"analysis/spectral_response/calibrated_spectra.pdf")
+# Save the calibrated curves to file
+np.save(root/"intermediaries/spectral_response/monochromator_calibrated_means.npy", all_means_calibrated)
+np.save(root/"intermediaries/spectral_response/monochromator_calibrated_stds.npy", all_stds_calibrated)
+print(f"Saved calibrated curves to '{root/'intermediaries/spectral_response/'}'")
 
 # Normalise the calibrated data
 # Create a copy of the array to put the normalised data into
@@ -130,8 +135,10 @@ for i in normalise_order:
     all_means_normalised[i] = all_means_calibrated[i] / fit_norms
     all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
 
-# Plot the normalised spectral curves - should be saved as a data stack instead
-spectral.plot_monochromator_curves(all_wvl, all_means_normalised, all_stds_normalised, title=f"{camera.device.name}: Normalised spectral curves", saveto=root/"analysis/spectral_response/normalised_spectra.pdf")
+# Save the normalised curves to file
+np.save(root/"intermediaries/spectral_response/monochromator_normalised_means.npy", all_means_normalised)
+np.save(root/"intermediaries/spectral_response/monochromator_normalised_stds.npy", all_stds_normalised)
+print(f"Saved normalised curves to '{root/'intermediaries/spectral_response/'}'")
 
 # Combine the spectra into one
 # Calculate the signal-to-noise ratio (SNR) at each wavelength in each spectrum
@@ -156,14 +163,14 @@ SNR_final = flat_means_mask / flat_errs_mask
 response_normalised = (flat_means_mask / flat_means_mask.max()).data
 errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
 
-# Plot the final spectral curves - should be saved as a data stack instead
-# Arguments in [] so they can be looped over (a bit of a hacky solution)
-spectral.plot_monochromator_curves(all_wvl, [response_normalised], [errors_normalised], title=f"{camera.device.name}: Combined spectral curves", unit="normalised", saveto=root/"analysis/spectral_response/combined_spectra.pdf")
-
 # Combine the result into one big array and save it
 result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
 np.save(root/"intermediaries/spectral_response/monochromator_curve.npy", result)
-np.save(root/"calibration/spectral_response.npy", result)
+print(f"Saved final curves to '{root/'intermediaries/spectral_response/'}'")
+
+save_to = root/"calibration/spectral_response.npy"
+np.save(save_to, result)
+print(f"Saved spectral response curves to '{save_to}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
 bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
