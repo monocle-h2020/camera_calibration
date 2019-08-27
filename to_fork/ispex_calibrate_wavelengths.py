@@ -16,7 +16,7 @@ from spectacle import general, io, plot, wavelength, raw2
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-save_to = root/"calibration/ispex_wavelength_solution.npy"
+save_to = root/"intermediaries/spectral_response/ispex_wavelength_solution.npy"
 
 # Load the data
 img = io.load_raw_file(file)
