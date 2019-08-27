@@ -52,3 +52,10 @@ final_stds = [final_curves[5:].T]
 
 spectral.plot_monochromator_curves(wavelengths, final_mean, final_stds, title=f"{camera.device.name}: Combined spectral curves", unit="normalised", saveto=save_folder/"monochromator_final_spectrum.pdf")
 print("Saved final spectrum plot")
+
+# Calculate the signal-to-noise ratio (SNR) and plot it
+SNR = final_mean[0] / final_stds[0]
+SNR_err = np.zeros_like(SNR)  # don't plot errors on the SNR
+
+spectral.plot_monochromator_curves(wavelengths, [SNR], [SNR_err], title=f"{camera.device.name}: Signal-to-noise ratio", unit="SNR", saveto=save_folder/"monochromator_SNR.pdf")
+print("Saved SNR plot")
