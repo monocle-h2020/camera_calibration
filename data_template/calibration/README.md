@@ -1,0 +1,1 @@
+This folder contains calibration data, such as look-up tables, maps, and model parameters.
