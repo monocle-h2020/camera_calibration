@@ -12,6 +12,9 @@ from os import makedirs
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 
+calibration = root/"calibration/"
+analysis = root/"analysis/"
+
 # Load metadata
 camera = io.load_metadata(root)
 print("Loaded metadata")
@@ -46,15 +49,19 @@ Camera device: {camera.device.name}\n"
 # Flat-field correction
 
 # Spectral response
-fetch_folder = results/"spectral_response"
+# Provided in NPY-format (for use with numpy) and CSV format (for those who do
+# not use numpy)
+filename_spectral_response = calibration/"spectral_response.npy"
 try:
-    spectral_response = np.load(fetch_folder/"monochromator_curve.npy")
+    spectral_response = np.load(filename_spectral_response)
 except FileNotFoundError:
-    print("No spectral response curve found")
-    spectral_response = np.tile(np.nan, (9, 156))
-
-spectral_response = spectral_response.T  # transpose to have columns for wavelength, R, G, ...
-header = "This file contains spectral response data. \n\
+    print(f"No spectral response curve found at '{filename_spectral_response}'")
+else:
+    # Load the data and save it as a CSV
+    spectral_response = spectral_response.T  # transpose to have columns for wavelength, R, G, ...
+    header_spectral_response = "This file contains spectral response data. \n\
 wavelength (nm),R,G,B,G2,R_error,G_error,B_error,G2_error"
 
-np.savetxt(save_folder/f"spectral_response_{identifier}.csv", spectral_response, delimiter=",", fmt="%.8f", header=generic_header+header)
+    np.savetxt(save_folder/f"spectral_response_{identifier}.csv", spectral_response, delimiter=",", fmt="%.8f", header=generic_header+header_spectral_response)
+
+    # Copy the NPY-format data as well
