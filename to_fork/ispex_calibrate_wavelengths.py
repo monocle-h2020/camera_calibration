@@ -11,7 +11,7 @@ into the iSPEX repository.
 
 import numpy as np
 from sys import argv
-from spectacle import general, io, plot, wavelength, raw2
+from spectacle import general, io, plot, wavelength, raw2, calibrate, flat
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
@@ -22,12 +22,24 @@ save_to = root/"intermediaries/spectral_response/ispex_wavelength_solution.npy"
 img = io.load_raw_file(file)
 print("Loaded data")
 
+# Bias correction
+values = calibrate.correct_bias(root, img.raw_image)
+
+# Flat-field correction (includes clipping data)
+values = calibrate.correct_flatfield(root, values)
+
+# Clip the Bayer map to be the same shape
+bayer_map = flat.clip_data(img.raw_colors)
+
 # Cut out the spectrum
 # Note that these limits are hard-coded
-image_cut  = img.raw_image [760:1470, 2150:3900]
-colors_cut = img.raw_colors[760:1470, 2150:3900]
-x = np.arange(2150, 3900)
-y = np.arange(760 , 1470)
+xmin, xmax = 1900, 3500
+ymin, ymax = 510, 1220
+cut = np.s_[ymin:ymax, xmin:xmax]
+image_cut  = values[cut]
+colors_cut = bayer_map[cut]
+x = np.arange(xmin, xmax)
+y = np.arange(ymin, ymax)
 
 # Split the image into RBG (not RGBG2!) using the new pull_apart method
 RGB = raw2.pull_apart2(image_cut, colors_cut)
@@ -41,7 +53,7 @@ RGB_gauss = general.gauss_nan(RGB, sigma=(0,0,10))
 plot.show_RGBG(RGB_gauss)
 
 # Find the locations of the line peaks in every row
-lines = wavelength.find_fluorescent_lines(RGB_gauss) + x[0]
+lines = wavelength.find_fluorescent_lines(RGB_gauss) + xmin
 
 # Fit a parabola (smile) to the found positions
 lines_fit = wavelength.fit_fluorescent_lines(lines, y)
