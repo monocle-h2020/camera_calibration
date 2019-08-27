@@ -10,7 +10,7 @@ import numpy as np
 from sys import argv
 from spectacle import io, spectral
 
-# Get the data folder and minimum and maximum wavelengths from the command line
+# Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 
