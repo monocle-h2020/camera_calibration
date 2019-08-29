@@ -1,4 +1,4 @@
-A library and pre-made scripts for processing camera calibration data. We are currently reworking and documenting much of the code to be more user-friendly. Progress on this can be seen on the `module` branch.
+A library and pre-made scripts for processing camera calibration data. We are currently reworking and documenting much of the code to be more user-friendly. Progress on this can be seen on the [spectacle branch](https://github.com/monocle-h2020/camera_calibration/tree/spectacle).
 
 A first release should be ready within several days.
 
