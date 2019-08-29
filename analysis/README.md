@@ -12,6 +12,6 @@ The following scripts were used to generate the figures from the SPECTACLE paper
 * Fig.  8: [gain_characterise_multiple.py](gain_characterise_multiple.py), based on output from [gain.py](../calibration/gain.py)
 * Fig.  9: [flatfield_compare_maps.py](flatfield_compare_maps.py), based on output from [flatfield.py](../calibration/flatfield.py)
 * Fig. 10: [spectral_response_plot_multiple.py](spectral_response_plot_multiple.py), based on output from [spectral_response_monochromator.py](../calibration/spectral_response_monochromator.py) and [spectral_response_ispex_sun.py](../calibration/spectral_response_ispex_sun.py)
-* Fig. 11: 
+* Fig. 11: This script was generated using a highly hard-coded version of [spectral_response_ispex_sun.py](../calibration/spectral_response_ispex_sun.py). However, it is more easily replicated using the more general [spectral_response_plot_multiple.py](spectral_response_plot_multiple.py) script.
 
 Please note that for the paper, some parameters such as axis labels may have been manually edited.
