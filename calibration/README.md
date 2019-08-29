@@ -24,9 +24,11 @@ A read noise map is generated using [readnoise.py](readnoise.py). This map has t
 
 The read noise map depends on ISO speed and is unique to each camera. Even two cameras of the same model do not share a read noise map. For this reason, a unique read noise map must be generated for each device. However, for many purposes this is not necessary as the inter-pixel differences in read noise are often relatively minor. In this case, a mean value may be used, which is derived from measurements.
 
-`readnoise.py` is used to generate a read noise map (read noise in each pixel). This is not used in the image calibration process, but can be used to characterise the noise response of a camera.
+## ISO speed normalisation
 
-`iso_normalisation.py` is used to generate a look-up table for normalising data taken at different ISO speeds. This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
+An ISO speed normalisation look-up table is generated using [iso_normalisation.py](iso_normalisation.py), based on image stacks taken at different ISO speeds. This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
+
+The ISO speed normalisation calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
 
 `dark_current.py` is used to generate a dark current map (dark current in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_dark_current`.
 
