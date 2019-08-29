@@ -30,7 +30,11 @@ An ISO speed normalisation look-up table is generated using [iso_normalisation.p
 
 The ISO speed normalisation calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
 
-`dark_current.py` is used to generate a dark current map (dark current in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_dark_current`.
+## Dark current
+
+A dark current map is generated using [dark_current.py](dark_current.py). This map has the mean dark current per second in each pixel, normalised for ISO speed. This can be corrected using the `spectacle` function `spectacle.calibrate.correct_dark_current`.
+
+The dark current calibration requires an ISO speed normalisation look-up table.
 
 `gain.py` is used to generate a gain map (gain in ADU per electron in each pixel). This is not used in the further calibration but can be used to analyse, for example, dark current and read noise in terms of electrons instead of ADU.
 
