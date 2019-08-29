@@ -10,9 +10,13 @@ Most of these scripts require the use of image stacks, generated using the [stac
 
 ## Metadata
 
-Some metadata are necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels. These metadata files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_metadata.py](generate_metadata.py) script. This script is used to generate a metadata file based on a single saturated image and some user inputs. 
+Some metadata are necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels. These metadata files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_metadata.py](generate_metadata.py) script. This script is used to generate a metadata file based on a single saturated image and some user inputs.
 
-`bias.py` is used to generate a bias map (bias offset in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
+## Bias
+
+A bias map is generated using [bias.py](bias.py). This map has the mean bias value per pixel at the lowest ISO speed given. This is corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
+
+The bias map depends on ISO speed and is unique to each camera. Even two cameras of the same model do not share a bias map. For this reason, a unique bias map must be generated for each device to take full advantage of the bias correction. However, for many purposes this is not necessary as the inter-pixel differences in bias are often relatively minor. In this case, a mean value may be used, either derived from measurement or given in metadata.
 
 `readnoise.py` is used to generate a read noise map (read noise in each pixel). This is not used in the image calibration process, but can be used to characterise the noise response of a camera.
 
