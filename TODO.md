@@ -27,3 +27,4 @@ This is a to-do list for the `spectacle` module.
 - [ ] Add detailed information on parameters to calibration scripts.
 - [ ] Add detailed information on parameters to analysis scripts.
 - [ ] Merge [stack_mean_std.py](tools/stack_mean_std.py) and [stack_heavy.py](tools/stack_heavy.py).
+- [ ] Analyse the deviations between ISO normalisation look-up tables and the expected behaviour (normalisation of 1/ISO).
