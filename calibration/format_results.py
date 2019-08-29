@@ -1,6 +1,8 @@
 """
 This script uses the results obtained using the SPECTACLE method and combines
 them into a format that can be uploaded to the database.
+
+Please note that this script is still work-in-progress.
 """
 
 from sys import argv
