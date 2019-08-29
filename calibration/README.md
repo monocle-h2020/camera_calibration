@@ -44,7 +44,11 @@ The gain calibration requires a bias correction. This may be done using a bias m
 
 The gain calibration requires an ISO speed normalisation look-up table.
 
-`flatfield.py` is used to generate a look-up table and model for the flat-field response (sensitivity) per pixel. This can be corrected using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
+## Flat-field
+
+A flat-field model and map are generated using [flatfield.py](flatfield.py). This map has the flat-field response (sensivity) in each pixel, while the model describes the map in a seven-parameter model, as described in the SPECTACLE paper. The flat-field response is corrected for using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
+
+The flat-field calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
 
 ## Spectral response
 

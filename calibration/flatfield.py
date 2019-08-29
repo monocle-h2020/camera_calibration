@@ -1,6 +1,9 @@
 """
 Create a flat-field map using the mean flat-field images.
 
+A bias correction is applied to the data. If available, a bias map is used for
+this; otherwise, a mean value from metadata.
+
 Command line arguments:
     * `folder`: folder containing stacked flat-field data.
 

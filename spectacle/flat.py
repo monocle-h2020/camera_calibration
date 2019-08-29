@@ -1,3 +1,7 @@
+"""
+Code relating to flat-fielding, such as fitting or applying a vignetting model.
+"""
+
 import numpy as np
 from .general import gaussMd, curve_fit, generate_XY
 from . import raw

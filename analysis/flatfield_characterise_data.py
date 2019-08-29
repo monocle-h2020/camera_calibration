@@ -1,6 +1,9 @@
 """
 Analyse a flat-field data set.
 
+A bias correction is applied to the data. If available, a bias map is used for
+this; otherwise, a mean value from metadata.
+
 Command line arguments:
     * `file`: the location of the mean flat-field data stack to be analysed.
 """
