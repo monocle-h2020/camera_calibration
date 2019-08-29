@@ -6,7 +6,7 @@ calibrations, this is the module to use.
 """
 
 # Import other SPECTACLE submodules to use in functions
-from . import bias_readnoise, dark, flat, gain, io, iso, metadata
+from . import bias_readnoise, dark, flat, gain, io, iso, metadata, spectral
 
 # Import functions from other SPECTACLE submodules which may be used in
 # calibration scripts, for simpler access
@@ -16,6 +16,7 @@ from .flat import load_flat_field_correction_map, clip_data
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
 from .metadata import load_metadata
+from .spectral import load_spectral_response
 
 def correct_bias(root, data):
     """
@@ -106,3 +107,42 @@ def correct_flatfield(root, data):
     data_corrected = data_clipped * correction_map
 
     return data_corrected
+
+
+def correct_spectral_response(root, wavelengths, data):
+    """
+    Correction for the spectral response of the camera, using curves read from
+    `root`/calibration/spectral_response.npy
+
+    The spectral responses are interpolated to the wavelengths given by the
+    user. Spectral responses outside the range of the calibration data are
+    assumed to be 0.
+
+    The data are assumed to consist of 3 (RGB) or 4 (RGBG2) rows and a column
+    for every wavelength. If not, an error is thrown.
+    """
+    # Load the spectral response curves
+    spectral_response, origin = spectral.load_spectral_response(root, return_filename=True)
+    print(f"Using spectral response curves from '{origin}'")
+
+    # Pick out the wavelengths and RGBG2 channels of the spectral response curves
+    spectral_response_wavelengths = spectral_response[0]
+    spectral_response_RGBG2 = spectral_response[1:5]
+
+    # Check that the data are the right shape
+    assert data.shape[1] == wavelengths.shape[0], f"Wavelengths ({wavelengths.shape[0]}) and data ({data.shape[1]}) have different numbers of wavelength values."
+    assert data.shape[0] in (3, 4), f"Incorrect number of channels ({data.shape[0]}) in data; expected 3 (RGB) or 4 (RGBG2)."
+
+    # Convert the spectral response to the same shape as the input data
+    spectral_response_interpolated = spectral.interpolate_spectral_data(spectral_response_wavelengths, spectral_response_RGBG2, wavelengths)
+
+    # Convert the spectral response into the correct channels (RGB or RGBG2)
+    if data.shape[0] == 3:  # RGB data
+        spectral_response_final = spectral.convert_RGBG2_to_RGB(spectral_response_interpolated)
+    else:  # RGBG2 data
+        spectral_response_final = spectral_response_interpolated.copy()
+
+    # Normalise the input data by the spectral response and return the result
+    data_normalised = data / spectral_response_final
+
+    return data_normalised
