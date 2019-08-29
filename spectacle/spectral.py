@@ -111,3 +111,58 @@ def plot_monochromator_curves(wavelength, mean, std, wavelength_min=390, wavelen
     plt.title(title)
     plt.grid(True)
     plot._saveshow(saveto)
+
+
+def load_spectral_response(root, return_filename=False):
+    """
+    Load the spectral response curves located at
+    `root`/calibration/spectral_response.npy.
+    If `return_filename` is True, also return the exact filename the bias map
+    was retrieved from.
+    """
+    filename = root/"calibration/spectral_response.npy"
+    spectral_response = np.load(filename)
+    if return_filename:
+        return spectral_response, filename
+    else:
+        return spectral_response
+
+
+def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwargs):
+    """
+    Interpolate spectral data `old_data` at `old_wavelengths` to a set of
+    `new_wavelengths`. Handles multi-channel (RGB or RGBG2) data.
+
+    Assumes the `old_data` have the shape (number_of_channels, number_of_wavelengths)
+
+    Any additional **kwargs are passed to numpy.interp
+    """
+    # Interpolate the data separately in a list comprehension
+    interpolated_data = [np.interp(new_wavelengths, old_wavelengths, channel, **kwargs) for channel in old_data]
+
+    # Stack the interpolated data into a numpy array
+    interpolated_data = np.stack(interpolated_data)
+
+    return interpolated_data
+
+
+def convert_RGBG2_to_RGB(RGBG2_data):
+    """
+    Convert data in Bayer RGBG2 format to RGB format, by averaging the G and G2
+    channels.
+
+    Assumes the `RGBG2_data` have the shape (4, number_of_wavelengths)
+
+    To do:
+        - Error propagation
+    """
+    # Split the channels
+    R, G, B, G2 = RGBG2_data
+
+    # Take the average of the G and G2 channels
+    G_combined = np.mean([G, G2], axis=0)
+
+    # Stack the new RGB responses together and return the result
+    RGB_data = np.stack([R, G_combined, B])
+
+    return RGB_data
