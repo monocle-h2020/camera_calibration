@@ -36,7 +36,13 @@ A dark current map is generated using [dark_current.py](dark_current.py). This m
 
 The dark current calibration requires an ISO speed normalisation look-up table.
 
-`gain.py` is used to generate a gain map (gain in ADU per electron in each pixel). This is not used in the further calibration but can be used to analyse, for example, dark current and read noise in terms of electrons instead of ADU.
+## Gain
+
+A gain map is generated using [gain.py](gain.py). This map has the gain (in normalised ADU/photoelectron) in each pixel. This is not used in further calibration, but can be used to convert a signal to photoelectrons with the `spectacle` function `spectacle.calibrate.convert_to_photoelectrons`.
+
+The gain calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
+
+The gain calibration requires an ISO speed normalisation look-up table.
 
 `flatfield.py` is used to generate a look-up table and model for the flat-field response (sensitivity) per pixel. This can be corrected using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
 
