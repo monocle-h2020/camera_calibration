@@ -8,7 +8,9 @@ This README file contains a brief description of each calibration script. For fu
 
 Most of these scripts require the use of image stacks, generated using the [stack_mean_std.py](../tools/stack_mean_std.py) script, rather than individual RAW images. This is either because they are based on statistical properties of such image stacks (e.g. for read noise) or because they are highly noise-sensitive (e.g. for gain).
 
-`generate_metadata.py` is used to generate a metadata file based on a single saturated image and some user inputs. This metadata file contains information, such as the Bayer colour pattern of the camera, that is necessary for all further calibration and analysis steps.
+## Metadata
+
+Some metadata are necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels. These metadata files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_metadata.py](generate_metadata.py) script. This script is used to generate a metadata file based on a single saturated image and some user inputs. 
 
 `bias.py` is used to generate a bias map (bias offset in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
 
