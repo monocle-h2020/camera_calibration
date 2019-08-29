@@ -1,4 +1,12 @@
+# Calibration
+
 This folder contains scripts for obtaining calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075). Results from these scripts, such as look-up tables and maps, are then used to calibrate data in other applications.
+
+This README file contains a brief description of each calibration script. For further documentation, please refer to that included in the scripts themselves.
+
+## General
+
+Most of these scripts require the use of image stacks, generated using the [stack_mean_std.py](../tools/stack_mean_std.py) script, rather than individual RAW images. This is either because they are based on statistical properties of such image stacks (e.g. for read noise) or because they are highly noise-sensitive (e.g. for gain).
 
 `generate_metadata.py` is used to generate a metadata file based on a single saturated image and some user inputs. This metadata file contains information, such as the Bayer colour pattern of the camera, that is necessary for all further calibration and analysis steps.
 
