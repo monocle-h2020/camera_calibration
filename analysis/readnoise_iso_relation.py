@@ -2,6 +2,8 @@
 Plot the relationship between ISO speed and read noise, based on read noise
 maps generated at various ISO speeds.
 
+This script requires an ISO normalisation look-up table to have been generated.
+
 Command line arguments:
     * `folder`: the folder containing the read noise maps to be analysed.
 """

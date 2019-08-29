@@ -18,6 +18,12 @@ A bias map is generated using [bias.py](bias.py). This map has the mean bias val
 
 The bias map depends on ISO speed and is unique to each camera. Even two cameras of the same model do not share a bias map. For this reason, a unique bias map must be generated for each device to take full advantage of the bias correction. However, for many purposes this is not necessary as the inter-pixel differences in bias are often relatively minor. In this case, a mean value may be used, either derived from measurement or given in metadata.
 
+## Read noise
+
+A read noise map is generated using [readnoise.py](readnoise.py). This map has the mean read noise per pixel at the lowest ISO speed given. This is not corrected for in the image calibration process, but can be used in an error budget.
+
+The read noise map depends on ISO speed and is unique to each camera. Even two cameras of the same model do not share a read noise map. For this reason, a unique read noise map must be generated for each device. However, for many purposes this is not necessary as the inter-pixel differences in read noise are often relatively minor. In this case, a mean value may be used, which is derived from measurements.
+
 `readnoise.py` is used to generate a read noise map (read noise in each pixel). This is not used in the image calibration process, but can be used to characterise the noise response of a camera.
 
 `iso_normalisation.py` is used to generate a look-up table for normalising data taken at different ISO speeds. This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
