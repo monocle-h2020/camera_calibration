@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
+from .xyz import wavelengths as cie_wavelengths, x as cie_x, y as cie_y, z as cie_z
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     response_normalised = response / response.max(axis=axis)
@@ -166,3 +167,23 @@ def convert_RGBG2_to_RGB(RGBG2_data):
     RGB_data = np.stack([R, G_combined, B])
 
     return RGB_data
+
+
+def calculate_XYZ_matrix(wavelengths, spectral_response):
+    """
+    Calculate the matrix used to convert data from a camera with given
+    `spectral_response` curves to CIE XYZ colour space.
+
+    `spectral_response` can have 3 (RGB) or 4 (RGBG2) channels. In the RGBG2
+    case, it is first converted to RGB.
+
+    The data are assumed to consist of 3 (RGB) or 4 (RGBG2) rows and a column
+    for every wavelength. If not, an error is thrown.
+    """
+    # Convert the input spectral response to RGB
+    assert spectral_response.shape[0] in (3, 4), f"Incorrect number of channels ({spectral_response.shape[0]}) in data; expected 3 (RGB) or 4 (RGBG2)."
+    if spectral_response.shape[0] == 3:  # Already RGB
+        spectral_response_RGB = spectral_response.copy()
+    else:  # RGBG2
+        spectral_response_RGB = convert_RGBG2_to_RGB(spectral_response)
+
