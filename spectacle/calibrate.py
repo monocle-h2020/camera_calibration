@@ -134,7 +134,7 @@ def correct_spectral_response(root, wavelengths, data):
     assert data.shape[0] in (3, 4), f"Incorrect number of channels ({data.shape[0]}) in data; expected 3 (RGB) or 4 (RGBG2)."
 
     # Convert the spectral response to the same shape as the input data
-    spectral_response_interpolated = spectral.interpolate_spectral_data(spectral_response_wavelengths, spectral_response_RGBG2, wavelengths)
+    spectral_response_interpolated = spectral.interpolate_spectral_data(spectral_response_wavelengths, spectral_response_RGBG2, wavelengths, left=0, right=0)
 
     # Convert the spectral response into the correct channels (RGB or RGBG2)
     if data.shape[0] == 3:  # RGB data
