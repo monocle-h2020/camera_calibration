@@ -1,0 +1,1 @@
+This folder contains intermediary results from spectral response calibration/analysis, such as response curves from different methods.
