@@ -13,19 +13,29 @@ _clip_border = np.s_[250:-250, 250:-250]
 
 def clip_data(data, borders=_clip_border):
     """
-    Clip the outer edges of the data set to be within the `borders`.
+    Make data outside the `borders` NaN, to remove artefacts from mechanical
+    vignetting.
 
     To do:
-        * Use camera-dependent default value
+        * Use camera-dependent default borders.
     """
-    return data[borders]
+    # Create an empty array
+    data_with_nan = np.tile(np.nan, data.shape)
+
+    # Add the data within the borders to the empty array
+    data_with_nan[borders] = data[borders]
+
+    return data_with_nan
 
 
-def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
+def vignette_radial(shape, XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     """
     Vignetting function as defined in Adobe DNG standard 1.4.0.0
     Reference:
         https://www.adobe.com/content/dam/acom/en/products/photoshop/pdfs/dng_spec_1.4.0.0.pdf
+
+    Adapted to use a given image shape for conversion to relative coordinates,
+    rather than deriving this from the inputs XY.
 
     Parameters
     ----------
@@ -39,8 +49,8 @@ def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     """
     x, y = XY
 
-    x0, y0 = x[0], y[0] # top left corner
-    x1, y1 = x[-1], y[-1]  # bottom right corner
+    x0, y0 = 0, 0 # top left corner
+    x1, y1 = shape[1], shape[0]  # bottom right corner
     cx = x0 + cx_hat * (x1 - x0)
     cy = y0 + cy_hat * (y1 - y0)
     # (cx, cy) is the optical center in absolute (pixel) units
@@ -63,9 +73,24 @@ def fit_vignette_radial(correction_observed, **kwargs):
     Fit a radial vignetting function to the observed correction factors
     `correction_observed`. Any additional **kwargs are passed to `curve_fit`.
     """
+    # Coordinates for each pixel
     X, Y, XY = generate_XY(correction_observed.shape)
-    popt, pcov = curve_fit(vignette_radial, XY, correction_observed.ravel(), p0=[1, 2, -5, 5, -2, 0.5, 0.5], **kwargs)
+
+    # Flatten the data
+    correction_flattened = correction_observed.ravel()
+
+    # Find non-NaN elements
+    indices_not_nan = np.where(~np.isnan(correction_flattened))[0]
+    XY = XY[:, indices_not_nan]
+    correction_flattened = correction_flattened[indices_not_nan]
+
+    # Radial vignetting function with fixed shape, so this is not fitted
+    vignette_radial_fixed_shape = lambda XY, *parameters: vignette_radial(correction_observed.shape, XY, *parameters)
+
+    # Fit a vignette profile
+    popt, pcov = curve_fit(vignette_radial_fixed_shape, XY, correction_flattened, p0=[1, 2, -5, 5, -2, 0.5, 0.5], **kwargs)
     standard_errors = np.sqrt(np.diag(pcov))
+
     return popt, standard_errors
 
 
@@ -74,7 +99,7 @@ def apply_vignette_radial(shape, parameters):
     Apply a radial vignetting function to obtain a correction factor map.
     """
     X, Y, XY = generate_XY(shape)
-    correction = vignette_radial(XY, *parameters).reshape(shape)
+    correction = vignette_radial(shape, XY, *parameters).reshape(shape)
     return correction
 
 

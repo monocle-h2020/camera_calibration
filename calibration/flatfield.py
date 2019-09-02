@@ -56,22 +56,22 @@ print("Normalised data")
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
 flat_field_gauss = gaussMd(mean_normalised, 10)
 
-# Only use the inner X pixels
-flat_raw_clipped = flat.clip_data(mean_normalised)
-flat_gauss_clipped = flat.clip_data(flat_field_gauss)
-
 # Calculate the correction factor
-correction = 1 / flat_gauss_clipped
-correction_raw = 1 / flat_raw_clipped
+correction = 1 / flat_field_gauss
+correction_raw = 1 / mean_normalised
 
 # Save the correction factor maps
 np.save(save_to_correction, correction)
 np.save(save_to_correction_raw, correction_raw)
 print(f"Saved the flat-field correction maps to '{save_to_correction}' (Gaussed) and '{save_to_correction_raw}' (raw)")
 
+# Only use the inner X pixels
+correction_clipped = flat.clip_data(correction)
+correction_raw_clipped = flat.clip_data(correction_raw)
+
 # Fit a radial vignetting model
 print("Fitting...")
-parameters, standard_errors = flat.fit_vignette_radial(correction)
+parameters, standard_errors = flat.fit_vignette_radial(correction_clipped)
 
 # Save the best-fitting model parameters
 np.save(save_to_parameters_intermediary, np.stack([parameters, standard_errors]))

@@ -110,12 +110,11 @@ print(f"Saved Gaussed maps to '{save_to_maps_normalised}' and '{save_to_maps_gau
 
 # Clip the data
 flat_field_gauss_clipped = flat.clip_data(flat_field_gauss)
-colours_clipped = flat.clip_data(camera.bayer_map)
 
 # Convert the data to a correction factor g
 correction_factor = 1 / flat_field_gauss_clipped
 
 # Plot Gaussian maps of the correction factors
 save_to_maps_correction_factor = savefolder/f"data_correction_factor_{label}.pdf"
-analyse.plot_gauss_maps(correction_factor, colours_clipped, colorbar_label="Correction factor", saveto=save_to_maps_correction_factor)
+analyse.plot_gauss_maps(correction_factor, camera.bayer_map, colorbar_label="Correction factor", saveto=save_to_maps_correction_factor)
 print(f"Saved correction factor maps to '{save_to_maps_correction_factor}'")
