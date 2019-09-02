@@ -1,8 +1,13 @@
 """
 Analyse a flat-field data set.
 
+A bias correction is applied to the data. If available, a bias map is used for
+this; otherwise, a mean value from metadata.
+
 Command line arguments:
-    * `file`: the location of the mean flat-field data stack to be analysed.
+    * `meanfile`: location of an NPY stack of mean flat-field data. It is
+    assumed that for a meanfile "X_mean.npy", a standard deviation stack can be
+    found at "X_stds.npy" in the same folder.
 """
 
 import numpy as np

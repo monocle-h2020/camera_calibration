@@ -2,8 +2,9 @@
 Analyse the ISO normalisation function for a single camera.
 
 Command line arguments:
-    * `folder`: the folder containing the ISO normalisation data to be
-    analysed.
+    * `folder`: the folders containing the ISO normalisation look-up tables
+    and reduced data. These should be in NPY files generated using
+    ../calibration/iso_normalisation.py.
 """
 
 from sys import argv

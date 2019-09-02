@@ -2,8 +2,10 @@
 Plot multiple spectral response curves, from different cameras and/or methods.
 
 Command line arguments:
-    * `files`: up to four files containing spectral response curves
-    (more may be given but will not be plotted)
+    * `files`: up to four files containing spectral response curves. These
+    should be NPY files generated using
+    ../calibration/spectral_response_monochromator.py or a similar script.
+    (more than four files may be given, but only the first four will be shown)
 
 TO DO:
     * increase the number of input files possible

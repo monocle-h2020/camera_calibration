@@ -6,7 +6,8 @@ fitting model and the RMS difference between model and data.
 These calculations are all done for each individual pixel.
 
 Command line arguments:
-    * `folder`: the folder containing linearity data stacks.
+    * `folder`: the folder containing linearity data stacks. These should be
+    NPY stacks taken at different exposure conditions, with the same ISO speed.
     * `gamma`: the gamma value of the sRGB model to compare to the data. Any
     number of gamma values can be provided.
 """

@@ -1,5 +1,9 @@
+"""
+Code relating to dark current correction, such as fitting a trend or loading
+a map.
+"""
+
 import numpy as np
-from . import io
 
 def fit_dark_current_linear(exposure_times, data):
     """

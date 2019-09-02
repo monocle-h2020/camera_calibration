@@ -1,18 +1,54 @@
+# Calibration
+
 This folder contains scripts for obtaining calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075). Results from these scripts, such as look-up tables and maps, are then used to calibrate data in other applications.
 
-`generate_metadata.py` is used to generate a metadata file based on a single saturated image and some user inputs. This metadata file contains information, such as the Bayer colour pattern of the camera, that is necessary for all further calibration and analysis steps.
+This README file contains a brief description of each calibration script. For further documentation, please refer to that included in the scripts themselves.
 
-`bias.py` is used to generate a bias map (bias offset in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
+## General
 
-`readnoise.py` is used to generate a read noise map (read noise in each pixel). This is not used in the image calibration process, but can be used to characterise the noise response of a camera.
+Most of these scripts require the use of image stacks, generated using the [stack_mean_std.py](../tools/stack_mean_std.py) script, rather than individual RAW images. This is either because they are based on statistical properties of such image stacks (e.g. for read noise) or because they are highly noise-sensitive (e.g. for gain).
 
-`iso_normalisation.py` is used to generate a look-up table for normalising data taken at different ISO speeds. This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
+## Metadata
 
-`dark_current.py` is used to generate a dark current map (dark current in each pixel). This can be corrected using the `spectacle` function `spectacle.calibrate.correct_dark_current`.
+Some metadata are necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels. These metadata files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_metadata.py](generate_metadata.py) script. This script is used to generate a metadata file based on a single saturated image and some user inputs.
 
-`gain.py` is used to generate a gain map (gain in ADU per electron in each pixel). This is not used in the further calibration but can be used to analyse, for example, dark current and read noise in terms of electrons instead of ADU.
+## Bias
 
-`flatfield.py` is used to generate a look-up table and model for the flat-field response (sensitivity) per pixel. This can be corrected using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
+A bias map is generated using [bias.py](bias.py). This map has the mean bias value per pixel at the lowest ISO speed given. This is corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
+
+The bias map depends on ISO speed and is unique to each camera. Even two cameras of the same model do not share a bias map. For this reason, a unique bias map must be generated for each device to take full advantage of the bias correction. However, for many purposes this is not necessary as the inter-pixel differences in bias are often relatively minor. In this case, a mean value may be used, either derived from measurement or given in metadata.
+
+## Read noise
+
+A read noise map is generated using [readnoise.py](readnoise.py). This map has the mean read noise per pixel at the lowest ISO speed given. This is not corrected for in the image calibration process, but can be used in an error budget.
+
+The read noise map depends on ISO speed and is unique to each camera. Even two cameras of the same model do not share a read noise map. For this reason, a unique read noise map must be generated for each device. However, for many purposes this is not necessary as the inter-pixel differences in read noise are often relatively minor. In this case, a mean value may be used, which is derived from measurements.
+
+## ISO speed normalisation
+
+An ISO speed normalisation look-up table is generated using [iso_normalisation.py](iso_normalisation.py), based on image stacks taken at different ISO speeds. This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
+
+The ISO speed normalisation calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
+
+## Dark current
+
+A dark current map is generated using [dark_current.py](dark_current.py). This map has the mean dark current per second in each pixel, normalised for ISO speed. This can be corrected using the `spectacle` function `spectacle.calibrate.correct_dark_current`.
+
+The dark current calibration requires an ISO speed normalisation look-up table.
+
+## Gain
+
+A gain map is generated using [gain.py](gain.py). This map has the gain (in normalised ADU/photoelectron) in each pixel. This is not used in further calibration, but can be used to convert a signal to photoelectrons with the `spectacle` function `spectacle.calibrate.convert_to_photoelectrons`.
+
+The gain calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
+
+The gain calibration requires an ISO speed normalisation look-up table.
+
+## Flat-field
+
+A flat-field model and map are generated using [flatfield.py](flatfield.py). This map has the flat-field response (sensivity) in each pixel, while the model describes the map in a seven-parameter model, as described in the SPECTACLE paper. The flat-field response is corrected for using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
+
+The flat-field calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
 
 ## Spectral response
 

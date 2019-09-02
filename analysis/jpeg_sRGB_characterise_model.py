@@ -3,7 +3,8 @@ Characterise an sRGB model fitted to JPEG linearity data using the
 `jpeg_sRGB_gamma_free.py` script.
 
 Command line arguments:
-    * `file`: the file containing the fitting results.
+    * `file`: the file containing the free-gamma fitting results. This should
+    be an NPY file generated using jpeg_sRGB_gamma_free.py.
 """
 
 import numpy as np

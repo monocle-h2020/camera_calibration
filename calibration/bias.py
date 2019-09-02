@@ -4,7 +4,8 @@ images. Bias data for all ISOs are loaded, but the map is only saved for the
 lowest ISO.
 
 Command line arguments:
-    * `folder`: folder containing stacked bias data
+    * `folder`: folder containing NPY stacks of bias data taken at different
+    ISO speeds.
 
 To do:
     * Save maps for all ISOs and use these in the calibration process.

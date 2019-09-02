@@ -22,7 +22,7 @@ To apply calibrations to new data, simply load the [`spectacle.calibrate`](spect
 
 ## Analysis
 
-A large number of pre-made scripts for the analysis of camera data, calibration data, and metadata are provided in the [analysis](analysis) subfolder. These are sorted by the parameter they probe, such as linearity or dark current. Please refer to the README in the [analysis](analysis) subfolder and documentation in the scripts themselves for further information.
+A large number of pre-made scripts for the analysis of camera data, calibration data, and metadata are provided in the [analysis](analysis) subfolder. These are sorted by the parameter they probe, such as linearity or dark current. Please refer to the README in the [analysis](analysis) subfolder and documentation in the scripts themselves for further information. A number of common methods for analysing these data have also been bundled into the [`spectacle.analyse`](spectacle/analyse.py) submodule.
 
 ## Calibration
 

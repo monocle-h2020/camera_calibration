@@ -1,4 +1,6 @@
-Template for storing SPECTACLE data:
+# Data template
+
+This is a template for storing data to be used in SPECTACLE calibration/analysis.
 
 - analysis: scientific results, such as plots and tables.
 - calibration: calibration data, such as look-up tables, maps, and model parameters.

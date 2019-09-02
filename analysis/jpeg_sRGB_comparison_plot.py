@@ -3,7 +3,8 @@ Characterise an sRGB model with fixed gamma fitted to JPEG linearity data using
 the `jpeg_sRGB_gamma_fixed.py` script.
 
 Command line arguments:
-    * `file`: the file containing the comparison results.
+    * `file`: the file containing the fixed-gamma comparison results. This
+    should be an NPY file generated using jpeg_sRGB_gamma_fixed.py.
 """
 
 import numpy as np

@@ -4,6 +4,8 @@ Compare two flat-field correction maps, from data or modelled.
 Command line arguments:
     * `file1`: the location of the first flat-field map.
     * `file2`: the location of the second flat-field map.
+    These flat-field maps should be NPY stacks generated using
+    ../calibration/flatfield.py
 
 To do:
     * Input labels for plots

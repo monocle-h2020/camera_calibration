@@ -2,8 +2,11 @@
 Analyse read noise maps (in normalised ADU) generated using the calibration
 functions.
 
+This script requires an ISO normalisation look-up table to have been generated.
+
 Command line arguments:
-    * `folder`: the folder containing the read noise maps to be analysed.
+    * `folder`: folder containing NPY stacks of bias data taken at different
+    ISO speeds.
 """
 
 from sys import argv

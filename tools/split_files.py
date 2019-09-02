@@ -1,3 +1,18 @@
+"""
+Split a large number of RAW (and JPEG, if available) files into separate
+subfolders, for example corresponding to different exposure conditions or to
+different ISO speeds.
+
+The subfolders are created in the same folder as the data, and labelled using
+the system time and an increasing number. This ensures the subfolders are
+in the same order as the original data.
+
+Command line arguments:
+    * `folder_main`: folder containing RAW (and JPEG, if available) files which
+    should be split into subfolders.
+    * `blocksize`: the number of files to put in each folder (e.g. 10, 15).
+"""
+
 from sys import argv
 from shutil import move
 import os

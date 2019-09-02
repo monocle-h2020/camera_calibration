@@ -1,3 +1,7 @@
+"""
+Code relating to gain calibration, such as loading gain maps.
+"""
+
 import numpy as np
 
 def load_gain_map(root, return_filename=False):

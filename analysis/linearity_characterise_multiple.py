@@ -9,7 +9,9 @@ If root/"intermediaries/linearity/linearity_jpeg.npy" exists, JPEG r values are
 also included in the histogram.
 
 Command line arguments:
-    * `folders`: any number of data folders containing Pearson r maps
+    * `folders`: folders containing the Pearson r maps. These r maps should be
+    NPY stacks generated using linearity_raw.py and/or linearity_jpeg.py.
+    (multiple arguments possible)
 """
 
 import numpy as np

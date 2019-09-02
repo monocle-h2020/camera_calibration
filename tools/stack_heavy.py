@@ -1,3 +1,23 @@
+"""
+Walk through a folder and create NPY stacks based on the images found. This
+script will walk through all the subfolders of a given folder and generate
+NPY stacks one level above the lowest level found. For example, in a given file
+structure `level1/level2/level3/image1.dng`, stacks will be generated at
+`level1/level2/level3_mean.npy` and `level1/level2/level3_stds.npy`.
+
+By default, image stacks are saved in the `root/stacks/` folder.
+
+This script is intended for particularly large data sets. For smaller ones,
+use the `stack_mean_std.py` script instead.
+
+Command line arguments:
+    * `folder`: folder containing data. Any RAW (and optionally JPEG) images in
+    this folder and any of its subfolders will be stacked, as described above.
+
+This script will be merged into `stack_mean_std.py`, so please refer to that
+script for further documentation.
+"""
+
 import numpy as np
 from sys import argv
 from spectacle import io

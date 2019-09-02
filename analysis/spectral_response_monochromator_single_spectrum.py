@@ -6,7 +6,9 @@ This script is intended as a quick check of data quality in case the main
 monochromator processing scripts do not work or produce unexpected results.
 
 Command line arguments:
-    * `folder`: folder containing monochromator data
+    * `folder`: folder containing monochromator data. This should contain NPY
+    stacks of monochromator data taken at different wavelengths with a single
+    settings (e.g. filter/grating).
 """
 
 import numpy as np
