@@ -6,6 +6,8 @@ import numpy as np
 import json
 from collections import namedtuple
 
+from .raw import pull_apart
+
 def _convert_exposure_time(exposure):
     """
     Convert an exposure time, in various formats, into a floating-point number.
@@ -109,6 +111,13 @@ class Camera(object):
         Write metadata to a file.
         """
         write_json(self._as_dict(), path)
+
+    def demosaick(self, *args, **kwargs):
+        """
+        Demosaick data using this camera's Bayer pattern.
+        """
+        RGBG_data, offsets = pull_apart(*args, color_pattern=self.bayer_map, **kwargs)
+        return RGBG_data
 
     @classmethod
     def read_from_file(cls, path):
