@@ -44,7 +44,7 @@ def correct_bias(root, *data):
     return data_corrected
 
 
-def correct_dark_current(root, data, exposure_time):
+def correct_dark_current(root, exposure_time, *data):
     """
     Perform a dark current correction on data using a dark current map from
     `root`/calibration/dark_current_normalised.npy
@@ -52,10 +52,19 @@ def correct_dark_current(root, data, exposure_time):
     To do:
         - Easy way to parse exposure times in scripts
     """
+    # Load dark current map
     dark_current, origin = dark.load_dark_current_map(root, return_filename=True)
     print(f"Using dark current map from '{origin}'")
+
+    # Calculate the total dark current (in ADU) per pixel
     dark_total = dark_current * exposure_time
-    data_corrected = data - dark_total
+
+    # Correct each given array
+    data_corrected = [data_array - dark_total for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
 
