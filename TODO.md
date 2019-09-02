@@ -13,9 +13,6 @@ This is a to-do list for the `spectacle` module.
 
 ### READMEs
 
-- [ ] Expand top-level README with a general overview of the module.
-- [ ] Expand [analysis subfolder](analysis) README with a brief description of the scripts included in it.
-
 ### Module
 
 - [ ] Add detailed information on inputs, outputs, and possible errors to all `spectacle` methods.
