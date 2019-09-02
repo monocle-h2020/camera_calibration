@@ -50,7 +50,7 @@ The dark current in a camera may be analysed using using [dark_characterise_ADU.
 
 ## ISO speed normalisation
 
-The ISO speed normalisation may be analysed using [iso_normalisation_single.py](iso_normalisation_single.py) (single camera) or [iso_normalisation_multiple.py](iso_normalisation_multiple.py) (multiple cameras) to generate plots similar to Fig. 6 in the paper.
+The ISO speed normalisation may be analysed using [iso_normalisation.py](iso_normalisation.py) (single camera) or [iso_normalisation_multiple.py](iso_normalisation_multiple.py) (multiple cameras) to generate plots similar to Fig. 6 in the paper.
 
 ## Gain
 
