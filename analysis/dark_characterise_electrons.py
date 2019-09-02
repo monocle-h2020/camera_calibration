@@ -4,7 +4,8 @@ functions. The dark current is converted from normalised ADU/s to electrons/s
 using a gain map.
 
 Command line arguments:
-    * `file`: the location of the dark current map to be analysed.
+    * `file`: the location of the dark current map to be analysed. This map
+    should be an NPY file generated using ../calibration/dark_current.py.
 """
 
 

@@ -9,7 +9,8 @@ An ISO speed normalisation is applied to the data. This means this script
 requires an ISO speed look-up table to exist.
 
 Command line arguments:
-    * `folder`: folder containing stacked gain data for a single ISO speed
+    * `folder`: folder containing NPY stacks of gain data taken at different
+    exposure conditions, all with the same ISO speed.
 """
 
 import numpy as np

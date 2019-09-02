@@ -6,7 +6,8 @@ fitting model.
 These calculations are all done for each individual pixel.
 
 Command line arguments:
-    * `folder`: the folder containing linearity data stacks.
+    * `folder`: the folder containing linearity data stacks. These should be
+    NPY stacks taken at different exposure conditions, with the same ISO speed.
 """
 
 import numpy as np

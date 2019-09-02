@@ -4,7 +4,8 @@ has four columns (one per channel) and N rows, with N the number of data
 files provided. All subplots share a common colorbar (in red/green/blue).
 
 Command line arguments:
-    * `file`: any number of files to be plotted.
+    * `files`: NPY stacks to be plotted.
+    (multiple arguments possible)
 """
 
 import numpy as np

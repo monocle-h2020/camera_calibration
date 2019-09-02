@@ -2,7 +2,8 @@
 Analyse read noise maps (in ADU) generated using the calibration functions.
 
 Command line arguments:
-    * `folder`: the folder containing the read noise maps to be analysed.
+    * `folder`: folder containing NPY stacks of bias data taken at different
+    ISO speeds.
 """
 
 from sys import argv

@@ -3,7 +3,8 @@ Analyse dark current maps (in normalised ADU/s) generated using the calibration
 functions.
 
 Command line arguments:
-    * `file`: the location of the dark current map to be analysed.
+    * `file`: the location of the dark current map to be analysed. This map
+    should be an NPY file generated using ../calibration/dark_current.py.
 """
 
 import numpy as np

@@ -3,9 +3,11 @@ Analyse Pearson r (linearity) maps generated using the calibration scripts.
 This script generates map images and histograms.
 
 Command line arguments:
-    * `file_raw`: the file containing the Pearson r map to be analysed.
+    * `file_raw`: the file containing the Pearson r map to be analysed. This r
+    map should be an NPY stack generated using linearity_raw.py.
     Optional:
     * `file_jpeg`: the file containing the JPEG Pearson r map to be analysed.
+    This r map should be an NPY stacks generated using linearity_jpeg.py.
 """
 
 import numpy as np

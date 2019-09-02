@@ -7,7 +7,7 @@ depth of the camera (which is important in further calibration steps) cannot
 be determined.
 
 Command line arguments:
-    * `file`: the image to be used.
+    * `file`: location of a RAW image from which the data can be extracted.
 
 To do:
     * Generate entire file structure for camera - or separate script?

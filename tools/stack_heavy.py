@@ -10,6 +10,10 @@ By default, image stacks are saved in the `root/stacks/` folder.
 This script is intended for particularly large data sets. For smaller ones,
 use the `stack_mean_std.py` script instead.
 
+Command line arguments:
+    * `folder`: folder containing data. Any RAW (and optionally JPEG) images in
+    this folder and any of its subfolders will be stacked, as described above.
+
 This script will be merged into `stack_mean_std.py`, so please refer to that
 script for further documentation.
 """

@@ -4,6 +4,8 @@ Compare two flat-field correction models.
 Command line arguments:
     * `file1`: the location of the file containing the first model parameters.
     * `file2`: the location of the file containing the second model parameters.
+    These flat-field models should be in NPY files generated using
+    ../calibration/flatfield.py
 
 To do:
     * Input labels for plots

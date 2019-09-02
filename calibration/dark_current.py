@@ -7,11 +7,12 @@ An ISO speed normalisation is applied to the data. This means this script
 requires an ISO speed look-up table to exist.
 
 Command line arguments:
-    * `folder`: folder containing stacked dark data.
+    * `folder`: folder containing NPY stacks of dark-current data taken at
+    different exposure times.
 
 To do:
     * Save maps for all ISOs and use these in the calibration process.
-    * Generic filenames, if data are not labelled by ISO
+    * Generic filenames, if data are not labelled by ISO.
 """
 
 import numpy as np

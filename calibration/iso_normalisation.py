@@ -6,7 +6,8 @@ A bias correction is applied to the data. If available, a bias map is used for
 this; otherwise, a mean value from metadata.
 
 Command line arguments:
-    * `folder`: folder containing stacked data for different ISO speeds
+    * `folder`: folder containing NPY stacks of identical exposures taken at
+    different ISO speeds.
 """
 
 import numpy as np

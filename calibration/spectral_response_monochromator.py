@@ -4,7 +4,10 @@ monochromator. The data are expected to be in subfolders of a main folder, each
 subfolder corresponding to a monochromator setting (e.g. filter/grating).
 
 Command line arguments:
-    * `folder`: folder containing monochromator data (in subfolders)
+    * `folder`: folder containing subfolders with monochromator data. The sub-
+    folders correspond to different monochromator settings (e.g. gratings or
+    filters). Each subfolder in turn contains NPY stacks of monochromator data
+    taken at different wavelengths.
 """
 
 import numpy as np

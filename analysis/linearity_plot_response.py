@@ -3,7 +3,8 @@ Plot the camera response at various incoming intensities for the central pixels
 in a stack of images.
 
 Command line arguments:
-    * `folder`: the folder containing the stacked images to be analysed.
+    * `folder`: the folder containing linearity data stacks. These should be
+    NPY stacks taken at different exposure conditions, with the same ISO speed.
 """
 
 import numpy as np

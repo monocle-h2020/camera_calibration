@@ -11,6 +11,10 @@ By default, image stacks are saved in the `root/stacks/` folder.
 
 For particularly large data sets, use the `stack_heavy.py` script instead.
 
+Command line arguments:
+    * `folder`: folder containing data. Any RAW (and optionally JPEG) images in
+    this folder and any of its subfolders will be stacked, as described above.
+
 TO DO:
     * Allow input/output folders that are not in `images` or `stacks`
 """
