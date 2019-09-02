@@ -18,7 +18,7 @@ from .iso import load_iso_lookup_table
 from .metadata import load_metadata
 from .spectral import load_spectral_response, convert_RGBG2_to_RGB
 
-def correct_bias(root, data):
+def correct_bias(root, *data):
     """
     Perform a bias correction on data using a bias map from the calibration
     folder.
@@ -33,7 +33,13 @@ def correct_bias(root, data):
         print(f"Using bias value from metadata in '{origin}'")
     else:
         print(f"Using bias map from '{origin}'")
-    data_corrected = data - bias
+
+    # Correct each given array
+    data_corrected = [data_array - bias for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
 
