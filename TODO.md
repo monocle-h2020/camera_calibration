@@ -2,7 +2,6 @@ This is a to-do list for the `spectacle` module.
 
 ## Module
 
-- [ ] Finalise version 1.0.
 - [ ] Upload to PyPI.
 
 ## Scripts
