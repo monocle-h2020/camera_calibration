@@ -88,7 +88,7 @@ def normalise_iso(root, iso_values, *data):
     return data_corrected
 
 
-def convert_to_photoelectrons(root, data):
+def convert_to_photoelectrons(root, *data):
     """
     Convert ISO-normalised data to photoelectrons using a normalised gain map
     (in normalised ADU per photoelectron) from `root`/calibration/gain.npy
