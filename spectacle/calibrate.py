@@ -103,7 +103,7 @@ def convert_to_photoelectrons(root, data):
     return data_converted
 
 
-def correct_flatfield(root, data):
+def correct_flatfield(root, data, clip=False):
     """
     Correction for flat-fielding using a flat-field correction map read from
     `root`/calibration/flatfield_correction_modelled.npy
@@ -115,11 +115,14 @@ def correct_flatfield(root, data):
     correction_map, origin = flat.load_flat_field_correction_map(root, return_filename=True)
     print(f"Using flat-field map from '{origin}'")
 
-    # Remove the outer edges of the data
-    data_clipped = flat.clip_data(data)
+    if clip:
+        # Remove the outer edges of the data
+        data_to_correct = flat.clip_data(data)
+    else:
+        data_to_correct = data
 
     # Correct the data
-    data_corrected = data_clipped * correction_map
+    data_corrected = data_to_correct * correction_map
 
     return data_corrected
 
