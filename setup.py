@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
       name="pyspectacle",
-      version="1.1.1",
+      version="1.1.2",
       description="SPECTACLE camera calibration module",
       long_description = long_description,
       url="https://github.com/monocle-h2020/camera_calibration",
