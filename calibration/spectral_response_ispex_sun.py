@@ -89,12 +89,12 @@ y_thick = np.arange(ymin_thick, ymax_thick)
 
 image_thin   = values        [thin_slit ]
 colors_thin  = img.raw_colors[thin_slit ]
-RGBG_thin, _ = raw.pull_apart(image_thin, colors_thin)
+RGBG_thin = raw.demosaick(colors_thin, image_thin)
 plot.show_RGBG(RGBG_thin)
 
 image_thick  = values        [thick_slit]
 colors_thick = img.raw_colors[thick_slit]
-RGBG_thick, _ = raw.pull_apart(image_thick, colors_thick)
+RGBG_thick = raw.demosaick(colors_thick, image_thick)
 plot.show_RGBG(RGBG_thick)
 
 # Extract areas slightly above and below the spectrum for noise removal
@@ -105,8 +105,8 @@ values_above = values[above_thin]
 colors_above = img.raw_colors[above_thin]
 values_below = values[below_thick]
 colors_below = img.raw_colors[below_thick]
-RGBG_above,_ = raw.pull_apart(values_above, colors_above)
-RGBG_below,_ = raw.pull_apart(values_below, colors_below)
+RGBG_above = raw.demosaick(colors_above, values_above)
+RGBG_below = raw.demosaick(colors_below, values_below)
 above = RGBG_above.mean(axis=1)
 below = RGBG_below.mean(axis=1)
 
@@ -117,8 +117,8 @@ RGBG_thick -= below[:,np.newaxis,:]
 # Calculate the wavelength corresponding to each pixel
 wavelengths_thin  = wavelength.calculate_wavelengths(coefficients, x, y_thin)
 wavelengths_thick = wavelength.calculate_wavelengths(coefficients, x, y_thick)
-wavelengths_thin_RGBG , _ = raw.pull_apart(wavelengths_thin , colors_thin )
-wavelengths_thick_RGBG, _ = raw.pull_apart(wavelengths_thick, colors_thick)
+wavelengths_thin_RGBG = raw.demosaick(colors_thin, wavelengths_thin)
+wavelengths_thick_RGBG = raw.demosaick(colors_thick, wavelengths_thick)
 
 # Combine the data into a single spectrum per slit
 lambdarange, all_interpolated_thin  = wavelength.interpolate_multi(wavelengths_thin_RGBG , RGBG_thin )

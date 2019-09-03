@@ -11,7 +11,7 @@ Command line arguments:
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, plot, io, analyse
+from spectacle import plot, io, analyse
 from spectacle.general import gaussMd
 
 # Get the data folder from the command line
@@ -29,7 +29,7 @@ cameras = [io.load_metadata(root) for root in roots]
 data_all = [np.load(path) for path in files]
 
 # Demosaick the data
-RGBGs_all = [raw.pull_apart(data, camera.bayer_map)[0] for data, camera in zip(data_all, cameras)]
+RGBGs_all = [camera.demosaick(data) for data, camera in zip(data_all, cameras)]
 
 # Convolve the data with a Gaussian kernel
 gauss_all = [gaussMd(RGBG, sigma=(0,5,5)) for RGBG in RGBGs_all]

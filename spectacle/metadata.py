@@ -6,7 +6,7 @@ import numpy as np
 import json
 from collections import namedtuple
 
-from .raw import pull_apart
+from . import raw
 
 def _convert_exposure_time(exposure):
     """
@@ -39,9 +39,6 @@ class Camera(object):
     Class that represents a camera, providing some metadata used in common
     calibration/analysis tasks. Some class methods for common tasks are also
     included, such as generating a Bayer map.
-
-    To do:
-        * Add a demosaicking method
     """
     # Properties a Camera can have
     Device = namedtuple("Device", ["manufacturer", "name"])
@@ -112,11 +109,11 @@ class Camera(object):
         """
         write_json(self._as_dict(), path)
 
-    def demosaick(self, *args, **kwargs):
+    def demosaick(self, *data, **kwargs):
         """
         Demosaick data using this camera's Bayer pattern.
         """
-        RGBG_data, offsets = pull_apart(*args, color_pattern=self.bayer_map, **kwargs)
+        RGBG_data = raw.demosaick(self.bayer_map, *data, **kwargs)
         return RGBG_data
 
     @classmethod

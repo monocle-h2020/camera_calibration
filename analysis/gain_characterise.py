@@ -39,7 +39,7 @@ analyse.plot_gauss_maps(gains, camera.bayer_map, colorbar_label="Gain (ADU/e$^-$
 print("Made maps")
 
 # Demosaick data by splitting the RGBG2 channels into separate arrays
-gains_RGBG,_ = raw.pull_apart(gains, camera.bayer_map)
+gains_RGBG = camera.demosaick(gains)
 
 # Plot a miniature RGB histogram
 fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})

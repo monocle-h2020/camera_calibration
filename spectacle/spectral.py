@@ -65,7 +65,7 @@ def load_monochromator_data(root, folder, blocksize=100):
         m = m - bias
 
         # Demosaick the data
-        mean_RGBG, _ = raw.pull_apart(m, camera.bayer_map)
+        mean_RGBG = camera.demosaick(m)
 
         # Select the central blocksize x blocksize pixels
         midx, midy = np.array(mean_RGBG.shape[1:])//2

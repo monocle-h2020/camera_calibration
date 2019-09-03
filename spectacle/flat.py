@@ -135,8 +135,8 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     Normalise the Bayer RGBG2 channels to 1.
     """
     # Demosaick the data
-    mean_RGBG, offsets = raw.pull_apart(mean, bayer_pattern)
-    stds_RGBG, offsets = raw.pull_apart(stds, bayer_pattern)
+    mean_RGBG = raw.demosaick(bayer_pattern, mean)
+    stds_RGBG = raw.demosaick(bayer_pattern, stds)
 
     # Convolve with a Gaussian kernel to find the maxima without being
     # sensitive to outliers

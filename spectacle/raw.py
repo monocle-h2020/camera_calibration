@@ -14,6 +14,22 @@ def _find_offset(color_pattern, colour):
     return pos
 
 
+def demosaick(bayer_map, *data, **kwargs):
+    """
+    Simplified demosaicking method for RGBG data.
+    Uses a Bayer map `bayer_map` (RGBG channel for each pixel) and any number
+    of input arrays `data`. Any additional **kwargs are passed to pull_apart.
+    """
+    # Demosaick the data
+    data_RGBG = [pull_apart(data_array, bayer_map, **kwargs)[0] for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_RGBG) == 1:
+        data_RGBG = data_RGBG[0]
+
+    return data_RGBG
+
+
 def pull_apart(raw_img, color_pattern, color_desc=b"RGBG"):
     if color_desc != b"RGBG":
         raise ValueError(f"Image is of type {raw_img.color_desc} instead of RGBG")
