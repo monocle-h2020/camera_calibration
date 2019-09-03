@@ -88,7 +88,7 @@ def plot_histogram_RGB(data, bayer_data, **kwargs):
     """
 
     # Demosaick data by splitting the RGBG2 channels into separate arrays
-    data_RGBG2,_ = raw.demosaick(bayer_data, data)
+    data_RGBG2 = raw.demosaick(bayer_data, data)
 
     # Plot the RGB histogram
     plot.histogram_RGB(data_RGBG2, **kwargs)
