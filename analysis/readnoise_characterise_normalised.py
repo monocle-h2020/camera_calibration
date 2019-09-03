@@ -38,7 +38,7 @@ for ISO, std in zip(isos, stds_normalised):
     save_to_histogram = save_to/f"readnoise_normalised_histogram_iso{ISO}.pdf"
     save_to_maps = save_to/f"readnoise_normalised_map_iso{ISO}.pdf"
 
-    analyse.plot_histogram_RGB(std, camera.bayer_map, xlim=(xmin, xmax), xlabel="Read noise (norm. ADU)", saveto=save_to_histogram)
+    analyse.plot_histogram_RGB(std, camera.bayer_map, xmin=xmin, xmax=xmax, xlabel="Read noise (norm. ADU)", saveto=save_to_histogram)
     analyse.plot_gauss_maps(std, camera.bayer_map, colorbar_label="Read noise (norm. ADU)", saveto=save_to_maps)
 
     print(f"Saved plots for ISO speed {ISO}")

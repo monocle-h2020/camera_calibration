@@ -74,7 +74,7 @@ if jpeg_data_available:
 # Make an RGB histogram of the RAW r values
 save_to_histogram_RGB = savefolder/f"histogram_RGB_raw.pdf"
 xmin, xmax = analyse.symmetric_percentiles(r_raw)[0], 1.
-analyse.plot_histogram_RGB(r_raw, camera.bayer_map, xlim=(xmin, xmax), xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
+analyse.plot_histogram_RGB(r_raw, camera.bayer_map, xmin=xmin, xmax=xmax, xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make a histogram comparing RAW and JPEG r values

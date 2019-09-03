@@ -30,7 +30,7 @@ print("Loaded data")
 
 # Plot an RGB histogram of the data
 xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
-analyse.plot_histogram_RGB(gains, camera.bayer_map, xlim=(xmin, xmax), xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
+analyse.plot_histogram_RGB(gains, camera.bayer_map, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
 print("Made histogram")
 
 # Plot Gauss-convolved maps of the data

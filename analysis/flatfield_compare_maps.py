@@ -59,7 +59,7 @@ print(f"Saved histogram to '{save_to_histogram}'")
 # Plot an RGB histogram of the difference between the maps
 save_to_histogram_RGB = savefolder/f"{label}_histogram_RGB.pdf"
 xmin, xmax = analyse.symmetric_percentiles(difference)
-analyse.plot_histogram_RGB(difference, colours_clip, xlim=(xmin, xmax), xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
+analyse.plot_histogram_RGB(difference, colours_clip, xmin=xmin, xmax=xmax, xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make Gaussian maps of the difference between data and model
