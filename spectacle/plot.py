@@ -246,7 +246,7 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     _saveshow(saveto)
 
 
-def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", saveto=None):
+def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", saveto=None):
     if xmin == "auto":
         xmin = symmetric_percentiles(data_RGBG)[0]
     if xmax == "auto":
@@ -260,7 +260,7 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", sa
         ax.xaxis.set_ticks_position("none")
     axs[0].set_xlim(xmin, xmax)
     axs[3].set_xlabel(xlabel)
-    axs[0].set_yscale("log")
+    axs[0].set_yscale(yscale)
     axs[2].set_ylabel(25*" "+"Probability density")
     _saveshow(saveto)
 

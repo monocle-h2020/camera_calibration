@@ -25,7 +25,7 @@ stats = analyse.statistics(stds, prefix_column=isos, prefix_column_header="ISO")
 print(stats)
 
 # Range on the x axis for the histograms
-xmin, xmax = 0, analyse.symmetric_percentiles(stds, percent=0.001)[1]
+xmin, xmax = 0., analyse.symmetric_percentiles(stds)[1]
 
 # Loop over the data and make plots at each ISO value
 for ISO, std in zip(isos, stds):

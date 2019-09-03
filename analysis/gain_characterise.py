@@ -12,7 +12,7 @@ Command line arguments:
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, analyse
+from spectacle import io, analyse
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
