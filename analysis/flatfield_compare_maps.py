@@ -55,12 +55,12 @@ print(f"Saved histogram to '{save_to_histogram}'")
 
 # Plot an RGB histogram of the difference between the maps
 save_to_histogram_RGB = savefolder/f"{label}_histogram_RGB.pdf"
-analyse.plot_histogram_RGB(difference, camera.bayer_map, xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
+camera.plot_histogram_RGB(difference, xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make Gaussian maps of the difference between data and model
 save_to_maps = savefolder/f"{label}_map.pdf"
-analyse.plot_gauss_maps(difference, camera.bayer_map, colorbar_label="$\Delta g$", saveto=save_to_maps)
+camera.plot_gauss_maps(difference, colorbar_label="$\Delta g$", saveto=save_to_maps)
 print(f"Saved Gaussian maps to '{save_to_maps}'")
 
 # Plot both maps and the difference between them

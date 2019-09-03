@@ -25,7 +25,7 @@ print("Loaded data")
 
 # Convolve the map with a Gaussian kernel and plot an image of the result
 save_to_maps = save_folder/"dark_current_map_ADU.pdf"
-analyse.plot_gauss_maps(dark_current, camera.bayer_map, colorbar_label="Dark current (norm. ADU/s)", saveto=save_to_maps)
+camera.plot_gauss_maps(dark_current, colorbar_label="Dark current (norm. ADU/s)", saveto=save_to_maps)
 print(f"Saved Gauss map to '{save_to_maps}'")
 
 # Range on the x axis for the histogram
@@ -34,7 +34,7 @@ xmin, xmax = analyse.symmetric_percentiles(dark_current, percent=0.001)
 # Split the data into the RGBG2 filters and make histograms (aggregate and per
 # filter)
 save_to_histogram = save_folder/"dark_current_histogram_ADU.pdf"
-analyse.plot_histogram_RGB(dark_current, camera.bayer_map, xmin=xmin, xmax=xmax, xlabel="Dark current (norm. ADU/s)", saveto=save_to_histogram)
+camera.plot_histogram_RGB(dark_current, xmin=xmin, xmax=xmax, xlabel="Dark current (norm. ADU/s)", saveto=save_to_histogram)
 print(f"Saved RGB histogram to '{save_to_histogram}'")
 
 # Check how many pixels are over some threshold in dark current

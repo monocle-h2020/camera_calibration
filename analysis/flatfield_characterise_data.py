@@ -59,7 +59,7 @@ print(f"Saved histogram of signal-to-noise ratio to '{save_to_histogram_SNR}'")
 
 # Make Gaussian maps of the SNR
 save_to_maps_SNR = savefolder/f"data_SNR_{label}.pdf"
-analyse.plot_gauss_maps(SNR, camera.bayer_map, colorbar_label="Signal-to-noise ratio", saveto=save_to_maps_SNR)
+camera.plot_gauss_maps(SNR, colorbar_label="Signal-to-noise ratio", saveto=save_to_maps_SNR)
 print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
@@ -104,8 +104,8 @@ print(f"Saved histogram of difference (Gaussed - Normalised data) to '{save_to_h
 # Plot Gaussian maps of the flat-field data
 save_to_maps_normalised = savefolder/f"data_normalised_{label}.pdf"
 save_to_maps_gaussed = savefolder/f"data_gaussed_{label}.pdf"
-analyse.plot_gauss_maps(mean_normalised, camera.bayer_map, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_normalised)
-analyse.plot_gauss_maps(flat_field_gauss, camera.bayer_map, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
+camera.plot_gauss_maps(mean_normalised, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_normalised)
+camera.plot_gauss_maps(flat_field_gauss, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
 print(f"Saved Gaussed maps to '{save_to_maps_normalised}' and '{save_to_maps_gaussed}'")
 
 # Clip the data
@@ -116,5 +116,5 @@ correction_factor = 1 / flat_field_gauss_clipped
 
 # Plot Gaussian maps of the correction factors
 save_to_maps_correction_factor = savefolder/f"data_correction_factor_{label}.pdf"
-analyse.plot_gauss_maps(correction_factor, camera.bayer_map, colorbar_label="Correction factor", saveto=save_to_maps_correction_factor)
+camera.plot_gauss_maps(correction_factor, colorbar_label="Correction factor", saveto=save_to_maps_correction_factor)
 print(f"Saved correction factor maps to '{save_to_maps_correction_factor}'")

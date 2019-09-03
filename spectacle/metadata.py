@@ -6,7 +6,7 @@ import numpy as np
 import json
 from collections import namedtuple
 
-from . import raw
+from . import raw, analyse
 
 def _convert_exposure_time(exposure):
     """
@@ -115,6 +115,20 @@ class Camera(object):
         """
         RGBG_data = raw.demosaick(self.bayer_map, *data, **kwargs)
         return RGBG_data
+
+    def plot_gauss_maps(self, data, **kwargs):
+        """
+        Plot Gaussian maps using analyse.plot_gauss_maps.
+        Uses this camera's Bayer pattern.
+        """
+        analyse.plot_gauss_maps(data, self.bayer_map, **kwargs)
+
+    def plot_histogram_RGB(self, data, **kwargs):
+        """
+        Plot an RGB histogram maps using analyse.plot_gauss_maps.
+        Uses this camera's Bayer pattern.
+        """
+        analyse.plot_histogram_RGB(data, self.bayer_map, **kwargs)
 
     @classmethod
     def read_from_file(cls, path):

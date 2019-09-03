@@ -33,7 +33,7 @@ for ISO, mean in zip(isos, means):
     save_to_histogram = save_to/f"bias_histogram_iso{ISO}.pdf"
     save_to_maps = save_to/f"bias_map_iso{ISO}.pdf"
 
-    analyse.plot_histogram_RGB(mean, camera.bayer_map, xmin=xmin, xmax=xmax, xlabel="Bias (ADU)", saveto=save_to_histogram)
-    analyse.plot_gauss_maps(mean, camera.bayer_map, colorbar_label="Bias (ADU)", saveto=save_to_maps)
+    camera.plot_histogram_RGB(mean, xmin=xmin, xmax=xmax, xlabel="Bias (ADU)", saveto=save_to_histogram)
+    camera.plot_gauss_maps(mean, colorbar_label="Bias (ADU)", saveto=save_to_maps)
 
     print(f"Saved plots for ISO speed {ISO}")

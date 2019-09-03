@@ -30,12 +30,11 @@ print("Loaded data")
 
 # Plot an RGB histogram of the data
 xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
-analyse.plot_histogram_RGB(gains, camera.bayer_map, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
+camera.plot_histogram_RGB(gains, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
 print("Made histogram")
 
 # Plot Gauss-convolved maps of the data
-# Note: cannot use analyse.plot_gauss_maps because of NaNs
-analyse.plot_gauss_maps(gains, camera.bayer_map, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
+camera.plot_gauss_maps(gains, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
 print("Made maps")
 
 # Demosaick data by splitting the RGBG2 channels into separate arrays
