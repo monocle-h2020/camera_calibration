@@ -13,7 +13,7 @@ To do:
 
 import numpy as np
 from sys import argv
-from spectacle import io, flat, analyse, plot
+from spectacle import io, analyse, plot
 from spectacle.general import RMS
 from matplotlib import pyplot as plt
 
@@ -35,9 +35,6 @@ print("Loaded data")
 # Check that the two maps have the same shape
 assert map1.shape == map2.shape, f"Mis-match in shape of maps: {map1.shape} vs. {map2.shape}"
 
-# Clip the Bayer data to the same shape as the maps
-colours_clip = flat.clip_data(camera.bayer_map)
-
 # Calculate the difference between the maps
 difference = map1 - map2
 print("Calculated difference map")
@@ -58,12 +55,12 @@ print(f"Saved histogram to '{save_to_histogram}'")
 
 # Plot an RGB histogram of the difference between the maps
 save_to_histogram_RGB = savefolder/f"{label}_histogram_RGB.pdf"
-analyse.plot_histogram_RGB(difference, colours_clip, xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
+analyse.plot_histogram_RGB(difference, camera.bayer_map, xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make Gaussian maps of the difference between data and model
 save_to_maps = savefolder/f"{label}_map.pdf"
-analyse.plot_gauss_maps(difference, colours_clip, colorbar_label="$\Delta g$", saveto=save_to_maps)
+analyse.plot_gauss_maps(difference, camera.bayer_map, colorbar_label="$\Delta g$", saveto=save_to_maps)
 print(f"Saved Gaussian maps to '{save_to_maps}'")
 
 # Plot both maps and the difference between them
