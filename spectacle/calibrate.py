@@ -56,11 +56,8 @@ def correct_dark_current(root, exposure_time, *data):
     dark_current, origin = dark.load_dark_current_map(root, return_filename=True)
     print(f"Using dark current map from '{origin}'")
 
-    # Calculate the total dark current (in ADU) per pixel
-    dark_total = dark_current * exposure_time
-
     # Correct each given array
-    data_corrected = [data_array - dark_total for data_array in data]
+    data_corrected = [dark.correct_dark_current_from_map(dark_current, data_array, exposure_time) for data_array in data]
 
     # If only a single array was given, don't return a list
     if len(data_corrected) == 1:
