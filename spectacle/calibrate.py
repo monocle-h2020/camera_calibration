@@ -96,8 +96,12 @@ def convert_to_photoelectrons(root, data):
     gain_map, origin = gain.load_gain_map(root, return_filename=True)  # norm. ADU / e-
     print(f"Using normalised gain map from '{origin}'")
 
-    # Convert the data to photoelectrons
-    data_converted = data / gain_map  # e-
+    # Correct each given array
+    data_converted = [gain.convert_to_photoelectrons_from_map(gain_map, data_array) for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_converted) == 1:
+        data_converted = data_converted[0]
 
     return data_converted
 

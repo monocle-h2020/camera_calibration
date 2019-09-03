@@ -17,3 +17,13 @@ def load_gain_map(root, return_filename=False):
         return gain_map, filename
     else:
         return gain_map
+
+
+def convert_to_photoelectrons_from_map(gain_map, data):
+    """
+    Convert `data` from normalised ADU to photoelectrons using a map of gain
+    in each pixel `gain_map`.
+    """
+    data_converted = data / gain_map
+
+    return data_converted
