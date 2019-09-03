@@ -8,6 +8,9 @@ Command line arguments:
 
 This should either be made generic (for any spectrometric data) or be forked
 into the iSPEX repository.
+
+NOTE: May not function correctly due to changes to flat-fielding methods. This
+will be fixed with the general overhaul for iSPEX 2.
 """
 
 import numpy as np

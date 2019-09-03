@@ -23,6 +23,9 @@ This script requires the following additional data:
 
 Command line arguments:
     * `file`: iSPEX spectrum (RAW image)
+
+NOTE: May not function correctly due to changes to flat-fielding methods. This
+will be fixed with the general overhaul for iSPEX 2.
 """
 
 import numpy as np
