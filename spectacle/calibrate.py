@@ -16,6 +16,7 @@ from .flat import load_flat_field_correction_map, clip_data
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
 from .metadata import load_metadata
+from .raw import demosaick
 from .spectral import load_spectral_response, convert_RGBG2_to_RGB
 
 def correct_bias(root, *data):
