@@ -66,7 +66,7 @@ np.save(save_to_original_map, gain_map)
 print(f"Saved gain map to '{save_to_original_map}'")
 
 # Normalise the gain map to the minimum ISO value
-gain_map_normalised = calibrate.normalise_iso(root, gain_map, ISO)
+gain_map_normalised = calibrate.normalise_iso(root, ISO, gain_map)
 
 # Save the normalised gain map
 np.save(save_to_normalised_map, gain_map_normalised)

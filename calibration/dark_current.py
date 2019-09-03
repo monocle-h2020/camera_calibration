@@ -41,7 +41,7 @@ np.save(save_to_ADU, dark_current)
 print(f"Saved dark current map at ISO {ISO} to '{save_to_ADU}'")
 
 # ISO normalisation
-dark_current_normalised = calibrate.normalise_iso(root, dark_current, ISO)
+dark_current_normalised = calibrate.normalise_iso(root, ISO, dark_current)
 
 # Save the normalised dark current map
 np.save(save_to_normalised, dark_current_normalised)

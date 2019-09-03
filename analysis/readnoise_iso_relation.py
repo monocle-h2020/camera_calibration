@@ -25,7 +25,7 @@ camera = io.load_metadata(root)
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 
 # Normalise the data using the ISO look-up table
-stds_normalised = calibrate.normalise_iso(root, stds, isos)
+stds_normalised = calibrate.normalise_iso(root, isos, stds)
 
 # Print statistics at each ISO
 stats = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")

@@ -108,6 +108,19 @@ def normalise_multiple_iso(data, isos, lookup_table):
     return as_array
 
 
+def normalise_iso_general(lookup_table, isos, data):
+    """
+    Normalise data for ISO speed in general. Uses either `normalise_single_iso`
+    or `normalise_multiple_iso` based on the number of isos given.
+    """
+    if isinstance(isos, (int, float)):
+        data_normalised = normalise_single_iso  (data, isos, lookup_table)
+    else:
+        data_normalised = normalise_multiple_iso(data, isos, lookup_table)
+
+    return data_normalised
+
+
 def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at

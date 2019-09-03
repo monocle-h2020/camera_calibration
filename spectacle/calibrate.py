@@ -66,7 +66,7 @@ def correct_dark_current(root, exposure_time, *data):
     return data_corrected
 
 
-def normalise_iso(root, data, iso_values):
+def normalise_iso(root, iso_values, *data):
     """
     Normalise data using an ISO normalisation look-up table from
     `root`/calibration/iso_normalisation_lookup_table.npy
@@ -77,12 +77,14 @@ def normalise_iso(root, data, iso_values):
     lookup_table, origin = iso.load_iso_lookup_table(root, return_filename=True)
     print(f"Using ISO speed normalisation look-up table from '{origin}'")
 
-    if isinstance(iso_values, (int, float)):
-        data_normalised = iso.normalise_single_iso  (data, iso_values, lookup_table)
-    else:
-        data_normalised = iso.normalise_multiple_iso(data, iso_values, lookup_table)
+    # Correct each given array
+    data_corrected = [iso.normalise_iso_general(lookup_table, iso_values, data_array) for data_array in data]
 
-    return data_normalised
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
+
+    return data_corrected
 
 
 def convert_to_photoelectrons(root, data):
