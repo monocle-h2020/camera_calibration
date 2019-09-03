@@ -129,6 +129,7 @@ def load_flat_field_correction_map(root, return_filename=False):
     else:
         return correction_map
 
+
 def normalise_RGBG2(mean, stds, bayer_pattern):
     """
     Normalise the Bayer RGBG2 channels to 1.
@@ -155,3 +156,21 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     stds_remosaicked = raw.put_together_from_colours(stds_RGBG, bayer_pattern)
 
     return mean_remosaicked, stds_remosaicked
+
+
+def correct_flatfield_from_map(flatfield, data, clip=False):
+    """
+    Apply a flat-field correction from a flat-field map `flatfield` to an
+    array `data`.
+
+    If `clip`, clip the data (make the outer borders NaN).
+    """
+    if clip:
+        data_to_correct = clip_data(data)
+    else:
+        data_to_correct = data
+
+    # Correct the data
+    data_corrected = data_to_correct * flatfield
+
+    return data_corrected
