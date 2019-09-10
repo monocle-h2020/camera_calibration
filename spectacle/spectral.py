@@ -166,3 +166,14 @@ def convert_RGBG2_to_RGB(RGBG2_data):
     RGB_data = np.stack([R, G_combined, B])
 
     return RGB_data
+
+
+def effective_wavelengths(wavelengths, spectral_responses):
+    """
+    Calculate the effective wavelength of each band in `spectral_responses` by
+    taking a weighted mean over the spectral range.
+    """
+    # Calculate the weighted mean
+    weighted_means = [np.average(wavelengths, weights=spectral_band) for spectral_band in spectral_responses]
+
+    return weighted_means
