@@ -43,6 +43,16 @@ def load_raw_colors(filename):
     return img.raw_colors
 
 
+def load_raw_image_postprocessed(filename, **kwargs):
+    """
+    Load a raw file using rawpy's `imread` function and post-process it.
+    Return the post-processed image data.
+    """
+    img = load_raw_file(filename)
+    img_post = img.postprocess(**kwargs)
+    return img_post
+
+
 def load_raw_image_multi(folder, pattern="*.dng"):
     """
     Load many raw files simultaneously and put their image data in a single
