@@ -116,12 +116,33 @@ def plot_monochromator_curves(wavelength, mean, std, wavelength_min=390, wavelen
 def load_spectral_response(root, return_filename=False):
     """
     Load the spectral response curves located at
-    `root`/calibration/spectral_response.npy.
+    `root`/calibration/spectral_response.csv.
+
+    If no CSV is available, try an NPY file for backwards compatibility.
+    This is deprecated and will no longer be supported in future releases.
+
     If `return_filename` is True, also return the exact filename the bias map
     was retrieved from.
     """
-    filename = root/"calibration/spectral_response.npy"
-    spectral_response = np.load(filename)
+    # Try to use a CSV file
+    filename = root/"calibration/spectral_response.csv"
+    try:
+        spectral_response = np.loadtxt(filename, delimiter=",").T
+
+    # If no CSV file is available, check for an NPY file (deprecated)
+    except IOError:
+        try:
+            filename = root/"calibration/spectral_response.npy"
+            spectral_response = np.load(filename)
+
+        # If still no luck - don't load anything, return an error
+        except IOError:
+            raise IOError(f"Could not load CSV or NPY spectral response file from {root/'calibration/'}.")
+
+        # If an NPY file was used instead of a CSV file, raise a warning about deprecation
+        else:
+            raise DeprecationWarning("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.")
+
     if return_filename:
         return spectral_response, filename
     else:
