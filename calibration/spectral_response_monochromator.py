@@ -171,8 +171,8 @@ result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.
 np.save(root/"intermediaries/spectral_response/monochromator_curve.npy", result)
 print(f"Saved final curves to '{root/'intermediaries/spectral_response/'}'")
 
-save_to = root/"calibration/spectral_response.npy"
-np.save(save_to, result)
+save_to = root/"calibration/spectral_response.csv"
+np.savetxt(save_to, result.T, delimiter=",", header="Wavelength, R, G, B, G2, R_err, G_err, B_err, G2_err")
 print(f"Saved spectral response curves to '{save_to}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
