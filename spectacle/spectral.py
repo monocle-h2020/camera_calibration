@@ -136,7 +136,7 @@ def load_spectral_response(root, return_filename=False):
             spectral_response = np.load(filename)
 
         # If still no luck - don't load anything, return an error
-        except IOError:
+        except FileNotFoundError:
             raise IOError(f"Could not load CSV or NPY spectral response file from {root/'calibration/'}.")
 
         # If an NPY file was used instead of a CSV file, raise a warning about deprecation
