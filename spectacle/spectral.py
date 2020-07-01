@@ -143,6 +143,8 @@ def load_spectral_response(root, return_filename=False):
         else:
             raise DeprecationWarning("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.")
 
+    print(f"Using spectral response curves from '{filename}'")
+
     if return_filename:
         return spectral_response, filename
     else:
