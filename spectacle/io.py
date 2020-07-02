@@ -4,8 +4,15 @@ import numpy as np
 import os
 from pathlib import Path
 from matplotlib import pyplot as plt
-from .config import spectacle_folder, results_folder
 from .metadata import load_metadata
+
+# Default save folder for results
+results_folder = Path.home() / "SPECTACLE_results"
+if results_folder.exists():
+    print(f"Requested SPECTACLE results folder '{results_folder}' already exists.")
+else:
+    os.makedirs(results_folder)
+    print(f"Created SPECTACLE results folder: {results_folder}")
 
 def path_from_input(argv):
     """

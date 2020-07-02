@@ -34,6 +34,10 @@ from sys import argv
 from spectacle import raw, plot, io, wavelength, calibrate
 from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 
+# Get the data folder from the command line
+file = io.path_from_input(argv)
+root = io.find_root_folder(file)
+
 # Load the SMARTS2 reference spectrum
 wvl, smartsz, smartsy, smartsx = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)
 
@@ -58,12 +62,8 @@ plt.plot(wvl, smartsx, c='r', label="SMARTS2 (Diffuse)")
 plt.plot(wvl, smartsx_smooth, c='b', label="SMARTS2 (smoothed)")
 plt.xlim(390, 700)
 plt.legend(loc="best")
-plt.savefig(io.results_folder/"SMARTS_vs_BB.pdf")
+plt.savefig(root/"analysis/spectral_response/SMARTS_vs_BB.pdf")
 plt.show()
-
-# Get the data folder from the command line
-file = io.path_from_input(argv)
-root = io.find_root_folder(file)
 
 # Load the iSPEX wavelength solution
 coefficients = wavelength.load_coefficients(root/"intermediaries/spectral_response/ispex_wavelength_solution.npy")
@@ -171,26 +171,26 @@ def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, tit
 # Load the monochromator curve for comparison
 curves = np.load(root/"intermediaries/spectral_response/monochromator_curve.npy")
 
-plot_spectral_response(wvl, stacked_thin, stacked_thick, curves, "Original", saveto=io.results_folder/"ispex_original.pdf")
+plot_spectral_response(wvl, stacked_thin, stacked_thick, curves, "Original", saveto=root/"analysis/spectral_response/ispex_original.pdf")
 
 BB_thin  = stacked_thin  / BB
 BB_thin  /= BB_thin [1:].max()
 BB_thick = stacked_thick / BB
 BB_thick /= BB_thick[1:].max()
 
-plot_spectral_response(wvl, BB_thin, BB_thick, curves, "Black-body", saveto=io.results_folder/"ispex_black_body.pdf")
+plot_spectral_response(wvl, BB_thin, BB_thick, curves, "Black-body", saveto=root/"analysis/spectral_response/ispex_black_body.pdf")
 
 SMARTS_thin  = stacked_thin / smartsx_smooth
 SMARTS_thin  /= SMARTS_thin [1:].max()
 SMARTS_thick = stacked_thick / smartsx_smooth
 SMARTS_thick /= SMARTS_thick[1:].max()
 
-plot_spectral_response(wvl, SMARTS_thin, SMARTS_thick, curves, "SMARTS2", saveto=io.results_folder/"ispex_smarts2.pdf")
+plot_spectral_response(wvl, SMARTS_thin, SMARTS_thick, curves, "SMARTS2", saveto=root/"analysis/spectral_response/ispex_smarts2.pdf")
 
 BB_spec = np.stack([BB_thin, BB_thick]).mean(axis=0)
 SMARTS_spec = np.stack([SMARTS_thin, SMARTS_thick]).mean(axis=0)
 
-plot_spectral_response(wvl, SMARTS_spec, BB_spec, curves, title="BB and SMARTS2", label_thin="SMARTS2", label_thick="black-body", saveto=io.results_folder/"ispex_both.pdf")
+plot_spectral_response(wvl, SMARTS_spec, BB_spec, curves, title="BB and SMARTS2", label_thin="SMARTS2", label_thick="black-body", saveto=root/"analysis/spectral_response/ispex_both.pdf")
 
 transwvl, transmission = np.load("reference_spectra/transmission.npy")
 
@@ -199,7 +199,7 @@ BB_trans = BB_trans / BB_trans[1:].max()
 SMARTS_trans = SMARTS_spec / transmission
 SMARTS_trans = SMARTS_trans / SMARTS_trans[1:].max()
 
-plot_spectral_response(wvl, SMARTS_trans, BB_trans, curves, title="Transmission corrected", label_thin="SMARTS2", label_thick="black-body", saveto=io.results_folder/"ispex_transmission.pdf")
+plot_spectral_response(wvl, SMARTS_trans, BB_trans, curves, title="Transmission corrected", label_thin="SMARTS2", label_thick="black-body", saveto=root/"analysis/spectral_response/ispex_transmission.pdf")
 
 def fix_trans(profile, factor):
     return profile * factor
@@ -213,6 +213,6 @@ BB_factors[1] = 1.
 BB_fixed = BB_trans.copy() ; BB_fixed[1:] *= BB_factors
 print("BB factors:", BB_factors)
 
-plot_spectral_response(wvl, SMARTS_fixed, BB_fixed, curves, title="Multiplied by constant", label_thin="SMARTS2", label_thick="black-body", saveto=io.results_folder/"ispex_fixed.pdf")
+plot_spectral_response(wvl, SMARTS_fixed, BB_fixed, curves, title="Multiplied by constant", label_thin="SMARTS2", label_thick="black-body", saveto=root/"analysis/spectral_response/ispex_fixed.pdf")
 
-plot_spectral_response(wvl, SMARTS_trans, BB_trans, curves, label_thin="SMARTS2", label_thick="black-body", saveto=io.results_folder/"spectral_responses_ispex.pdf")
+plot_spectral_response(wvl, SMARTS_trans, BB_trans, curves, label_thin="SMARTS2", label_thick="black-body", saveto=root/"analysis/spectral_response/spectral_responses_ispex.pdf")
