@@ -268,9 +268,11 @@ def find_root_folder(input_path):
     sub-folders (calibration, analysis, stacks, etc.)
     """
     input_path = Path(input_path)
-    assert spectacle_folder in input_path.parents, f"Input path '{input_path}' is not in the SPECTACLE data folder '{spectacle_folder}'"
-    subfolder = input_path.relative_to(spectacle_folder).parts[0]
-    root = spectacle_folder / subfolder
+
+    # Loop through the input_path's parents until a metadata JSON file is found
+    for parent in input_path.parents:
+        if (parent/"metadata.json").exists():
+            root = parent
 
     return root
 
