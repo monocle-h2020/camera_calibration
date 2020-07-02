@@ -2,7 +2,7 @@ This is a to-do list for the `spectacle` module.
 
 ## Module
 
-- [ ] Upload to PyPI.
+- [X] Upload to PyPI.
 
 ## Scripts
 
