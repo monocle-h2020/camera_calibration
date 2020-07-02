@@ -267,7 +267,7 @@ def find_root_folder(input_path):
     For a given `input_path`, find the root folder, containing the standard
     sub-folders (calibration, analysis, stacks, etc.)
     """
-    assert isinstance(input_path, Path), f"Input path '{input_path}' is not a pathlib Path object"
+    input_path = Path(input_path)
     assert spectacle_folder in input_path.parents, f"Input path '{input_path}' is not in the SPECTACLE data folder '{spectacle_folder}'"
     subfolder = input_path.relative_to(spectacle_folder).parts[0]
     root = spectacle_folder / subfolder
