@@ -4,7 +4,7 @@ import numpy as np
 import os
 from pathlib import Path
 from matplotlib import pyplot as plt
-from .config import spectacle_folder, results_folder
+from .config import results_folder
 from .metadata import load_metadata
 
 def path_from_input(argv):
