@@ -271,8 +271,13 @@ def find_root_folder(input_path):
 
     # Loop through the input_path's parents until a metadata JSON file is found
     for parent in input_path.parents:
+        # If a metadata file is found, use the containing folder as the root folder
         if (parent/"metadata.json").exists():
             root = parent
+            break
+    # If no metadata file was found, raise an error
+    else:
+        raise OSError(f"None of the parents of the input `{input_path}` include a 'metadata.json' file.")
 
     return root
 
