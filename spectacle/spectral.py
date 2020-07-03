@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
+from warnings import warn
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     response_normalised = response / response.max(axis=axis)
@@ -141,7 +142,7 @@ def load_spectral_response(root, return_filename=False):
 
         # If an NPY file was used instead of a CSV file, raise a warning about deprecation
         else:
-            raise DeprecationWarning("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.")
+            warn("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.", DeprecationWarning)
 
     print(f"Using spectral response curves from '{filename}'")
 
