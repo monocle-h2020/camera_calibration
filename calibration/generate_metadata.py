@@ -43,7 +43,9 @@ bit_depth_conversion = {255: 8, 511: 9, 1023: 10, 2047: 11, 4095: 12, 8191: 13,
 try:
     bit_depth = bit_depth_conversion[maximum_value]
 except KeyError:
-    raise ValueError(f"The provided image ({file}) does not have any saturated pixels (maximum value: {maximum_value}).")
+    print(f"The provided image ({file}) does not have any saturated pixels (maximum value: {maximum_value}).")
+    bit_depth = input("Please enter the bit depth manually.\nTypical values are 8 (JPEG), 10 (Samsung), 12 (Apple), 14 (Nikon).\n")
+    bit_depth = int(bit_depth)
 
 # Device properties
 device = {
