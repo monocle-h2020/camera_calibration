@@ -8,9 +8,7 @@ from .metadata import load_metadata
 
 # Default save folder for results
 results_folder = Path.home() / "SPECTACLE_results"
-if results_folder.exists():
-    print(f"Requested SPECTACLE results folder '{results_folder}' already exists.")
-else:
+if not results_folder.exists():
     os.makedirs(results_folder)
     print(f"Created SPECTACLE results folder: {results_folder}")
 
