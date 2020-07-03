@@ -27,12 +27,12 @@ exif = io.load_exif(file)
 print("Loaded data")
 
 # Get additional data from command line input from the user
-iso_min = input("What is the *lowest* ISO speed available on this device?\n")
-iso_max = input("What is the *highest* ISO speed available on this device?\n")
+iso_min = input("What is the *lowest* ISO speed available on this device? (-1 if unknown)\n")
+iso_max = input("What is the *highest* ISO speed available on this device? (-1 if unknown)\n")
 iso_min = int(iso_min) ; iso_max = int(iso_max)
 
-exposure_min = input("What is the *lowest* exposure time, in seconds, available on this device?\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
-exposure_max = input("What is the *highest* exposure time, in seconds, available on this device?\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
+exposure_min = input("What is the *lowest* exposure time, in seconds, available on this device? (-1 if unknown)\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
+exposure_max = input("What is the *highest* exposure time, in seconds, available on this device? (-1 if unknown)\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
 
 print("")
 
