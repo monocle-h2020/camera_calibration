@@ -65,7 +65,7 @@ def plot_gauss_maps(data, bayer_data, kernel_width_RGBG2=5, **kwargs):
         gauss_function = gaussMd
 
     # Demosaick data by splitting the RGBG2 channels into separate arrays
-    data_RGBG2,_ = raw.pull_apart(data, bayer_data)
+    data_RGBG2 = raw.demosaick(bayer_data, data)
 
     # Convolve the data with a Gaussian kernel
     # The two-dimensional mosaicked data are convolved over both axes
@@ -88,7 +88,7 @@ def plot_histogram_RGB(data, bayer_data, **kwargs):
     """
 
     # Demosaick data by splitting the RGBG2 channels into separate arrays
-    data_RGBG2,_ = raw.pull_apart(data, bayer_data)
+    data_RGBG2 = raw.demosaick(bayer_data, data)
 
     # Plot the RGB histogram
     plot.histogram_RGB(data_RGBG2, **kwargs)

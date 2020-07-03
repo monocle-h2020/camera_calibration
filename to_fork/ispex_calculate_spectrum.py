@@ -16,12 +16,12 @@ colors_cut = img.raw_colors[760:1000, 2150:3900]
 x = np.arange(2150, 3900)
 y = np.arange(760 , 1000)
 
-RGBG, offsets = raw.pull_apart(image_cut, colors_cut)
+RGBG = raw.demosaick(colors_cut, image_cut)
 plot.show_RGBG(RGBG)
 
 coefficients = wavelength.load_coefficients(results/"ispex/wavelength_solution.npy")
 wavelengths_cut = wavelength.calculate_wavelengths(coefficients, x, y)
-wavelengths_split, offsets = raw.pull_apart(wavelengths_cut, colors_cut)
+wavelengths_split = raw.demosaick(colors_cut, wavelengths_cut)
 
 lambdarange, all_interpolated = wavelength.interpolate_multi(wavelengths_split, RGBG)
 stacked = wavelength.stack(lambdarange, all_interpolated)

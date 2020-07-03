@@ -3,9 +3,11 @@ Analyse Pearson r (linearity) maps generated using the calibration scripts.
 This script generates map images and histograms.
 
 Command line arguments:
-    * `file_raw`: the file containing the Pearson r map to be analysed.
+    * `file_raw`: the file containing the Pearson r map to be analysed. This r
+    map should be an NPY stack generated using linearity_raw.py.
     Optional:
     * `file_jpeg`: the file containing the JPEG Pearson r map to be analysed.
+    This r map should be an NPY stacks generated using linearity_jpeg.py.
 """
 
 import numpy as np
@@ -41,7 +43,7 @@ if jpeg_data_available:
 
 # Make Gaussian maps of the RAW data
 save_to_maps = savefolder/f"map_raw.pdf"
-analyse.plot_gauss_maps(r_raw, camera.bayer_map, colorbar_label="Pearson $r$", saveto=save_to_maps)
+camera.plot_gauss_maps(r_raw, colorbar_label="Pearson $r$", saveto=save_to_maps)
 print(f"Saved maps of RAW Pearson r to '{save_to_maps}'")
 
 # Make a Gaussian map of the JPEG data, if available
@@ -71,8 +73,8 @@ if jpeg_data_available:
 
 # Make an RGB histogram of the RAW r values
 save_to_histogram_RGB = savefolder/f"histogram_RGB_raw.pdf"
-xmin, xmax = analyse.symmetric_percentiles(r_raw)[0], 1.
-analyse.plot_histogram_RGB(r_raw, camera.bayer_map, xlim=(xmin, xmax), xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
+xmax = 1.
+camera.plot_histogram_RGB(r_raw, xmax=xmax, xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make a histogram comparing RAW and JPEG r values

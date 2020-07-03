@@ -22,15 +22,14 @@ def fit(data):
     popt, pcov = curve_fit(malus_amp, angles, data, p0=[1000,74,1000])
     return popt[1]
 
-meanRGBG, offsets = raw.pull_apart(mean_reshaped, colours)
-stdsRGBG, offsets = raw.pull_apart(stds_reshaped, colours)
 
 x = np.arange(means.shape[2])
 y = np.arange(means.shape[1])
 X, Y = np.meshgrid(x, y)
 (x0, y0) = (len(x) / 2, len(y) / 2)
 D = np.sqrt((X - x0)**2 + (Y - y0)**2)
-D_split, offsets = raw.pull_apart(D, colours)
+
+meanRGBG, stdsRGBG, D_split = raw.demosaick(colours, mean_reshaped, stds_reshaped, D)
 
 outer_radii = np.arange(1000, 2000, 75)
 

@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from spectacle import io, raw, calibrate
+from spectacle import io, calibrate
 from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)
@@ -16,9 +16,7 @@ s[s < 0.001] = -1  # prevent infinities
 
 SNR = m/s
 
-m_RGBG, offsets = raw.pull_apart(m, camera.bayer_map)
-s_RGBG, offsets = raw.pull_apart(s, camera.bayer_map)
-SNR_RGBG, offsets = raw.pull_apart(SNR, camera.bayer_map)
+m_RGBG, s_RGBG, SNR_RGBG = camera.demosaick(m, s, SNR)
 
 mean_stack = m_RGBG.mean(axis=(1,2))
 std_stack  = m_RGBG.std (axis=(1,2))

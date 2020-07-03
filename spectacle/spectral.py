@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
 from .xyz import wavelengths as cie_wavelengths, x as cie_x, y as cie_y, z as cie_z
+from warnings import warn
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     response_normalised = response / response.max(axis=axis)
@@ -66,7 +67,7 @@ def load_monochromator_data(root, folder, blocksize=100):
         m = m - bias
 
         # Demosaick the data
-        mean_RGBG, _ = raw.pull_apart(m, camera.bayer_map)
+        mean_RGBG = camera.demosaick(m)
 
         # Select the central blocksize x blocksize pixels
         midx, midy = np.array(mean_RGBG.shape[1:])//2
@@ -117,12 +118,35 @@ def plot_monochromator_curves(wavelength, mean, std, wavelength_min=390, wavelen
 def load_spectral_response(root, return_filename=False):
     """
     Load the spectral response curves located at
-    `root`/calibration/spectral_response.npy.
+    `root`/calibration/spectral_response.csv.
+
+    If no CSV is available, try an NPY file for backwards compatibility.
+    This is deprecated and will no longer be supported in future releases.
+
     If `return_filename` is True, also return the exact filename the bias map
     was retrieved from.
     """
-    filename = root/"calibration/spectral_response.npy"
-    spectral_response = np.load(filename)
+    # Try to use a CSV file
+    filename = root/"calibration/spectral_response.csv"
+    try:
+        spectral_response = np.loadtxt(filename, delimiter=",").T
+
+    # If no CSV file is available, check for an NPY file (deprecated)
+    except IOError:
+        try:
+            filename = root/"calibration/spectral_response.npy"
+            spectral_response = np.load(filename)
+
+        # If still no luck - don't load anything, return an error
+        except FileNotFoundError:
+            raise IOError(f"Could not load CSV or NPY spectral response file from {root/'calibration/'}.")
+
+        # If an NPY file was used instead of a CSV file, raise a warning about deprecation
+        else:
+            warn("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.", DeprecationWarning)
+
+    print(f"Using spectral response curves from '{filename}'")
+
     if return_filename:
         return spectral_response, filename
     else:
@@ -169,6 +193,17 @@ def convert_RGBG2_to_RGB(RGBG2_data):
     return RGB_data
 
 
+def effective_wavelengths(wavelengths, spectral_responses):
+    """
+    Calculate the effective wavelength of each band in `spectral_responses` by
+    taking a weighted mean over the spectral range.
+    """
+    # Calculate the weighted mean
+    weighted_means = [np.average(wavelengths, weights=spectral_band) for spectral_band in spectral_responses]
+
+    return weighted_means
+
+
 def calculate_XYZ_matrix(wavelengths, spectral_response):
     """
     Calculate the matrix used to convert data from a camera with given
@@ -186,4 +221,3 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
         spectral_response_RGB = spectral_response.copy()
     else:  # RGBG2
         spectral_response_RGB = convert_RGBG2_to_RGB(spectral_response)
-

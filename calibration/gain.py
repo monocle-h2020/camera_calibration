@@ -2,8 +2,15 @@
 Create a gain map using gain images, fitting the mean and standard deviation
 against each other. Data for a single ISO speed are loaded and fitted.
 
+A bias correction is applied to the data. If available, a bias map is used for
+this; otherwise, a mean value from metadata.
+
+An ISO speed normalisation is applied to the data. This means this script
+requires an ISO speed look-up table to exist.
+
 Command line arguments:
-    * `folder`: folder containing stacked gain data for a single ISO speed
+    * `folder`: folder containing NPY stacks of gain data taken at different
+    exposure conditions, all with the same ISO speed.
 """
 
 import numpy as np
@@ -59,7 +66,7 @@ np.save(save_to_original_map, gain_map)
 print(f"Saved gain map to '{save_to_original_map}'")
 
 # Normalise the gain map to the minimum ISO value
-gain_map_normalised = calibrate.normalise_iso(root, gain_map, ISO)
+gain_map_normalised = calibrate.normalise_iso(root, ISO, gain_map)
 
 # Save the normalised gain map
 np.save(save_to_normalised_map, gain_map_normalised)

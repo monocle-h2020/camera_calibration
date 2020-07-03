@@ -4,8 +4,13 @@ import numpy as np
 import os
 from pathlib import Path
 from matplotlib import pyplot as plt
-from .config import spectacle_folder, results_folder
 from .metadata import load_metadata
+
+# Default save folder for results
+results_folder = Path.home() / "SPECTACLE_results"
+if not results_folder.exists():
+    os.makedirs(results_folder)
+    print(f"Created SPECTACLE results folder: {results_folder}")
 
 def path_from_input(argv):
     """
@@ -41,6 +46,16 @@ def load_raw_colors(filename):
     """
     img = load_raw_file(str(filename))
     return img.raw_colors
+
+
+def load_raw_image_postprocessed(filename, **kwargs):
+    """
+    Load a raw file using rawpy's `imread` function and post-process it.
+    Return the post-processed image data.
+    """
+    img = load_raw_file(filename)
+    img_post = img.postprocess(**kwargs)
+    return img_post
 
 
 def load_raw_image_multi(folder, pattern="*.dng"):
@@ -257,10 +272,17 @@ def find_root_folder(input_path):
     For a given `input_path`, find the root folder, containing the standard
     sub-folders (calibration, analysis, stacks, etc.)
     """
-    assert isinstance(input_path, Path), f"Input path '{input_path}' is not a pathlib Path object"
-    assert spectacle_folder in input_path.parents, f"Input path '{input_path}' is not in the SPECTACLE data folder '{spectacle_folder}'"
-    subfolder = input_path.relative_to(spectacle_folder).parts[0]
-    root = spectacle_folder / subfolder
+    input_path = Path(input_path)
+
+    # Loop through the input_path's parents until a metadata JSON file is found
+    for parent in input_path.parents:
+        # If a metadata file is found, use the containing folder as the root folder
+        if (parent/"metadata.json").exists():
+            root = parent
+            break
+    # If no metadata file was found, raise an error
+    else:
+        raise OSError(f"None of the parents of the input `{input_path}` include a 'metadata.json' file.")
 
     return root
 

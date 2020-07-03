@@ -1,3 +1,7 @@
+"""
+Code relating to flat-fielding, such as fitting or applying a vignetting model.
+"""
+
 import numpy as np
 from .general import gaussMd, curve_fit, generate_XY
 from . import raw
@@ -9,19 +13,29 @@ _clip_border = np.s_[250:-250, 250:-250]
 
 def clip_data(data, borders=_clip_border):
     """
-    Clip the outer edges of the data set to be within the `borders`.
+    Make data outside the `borders` NaN, to remove artefacts from mechanical
+    vignetting.
 
     To do:
-        * Use camera-dependent default value
+        * Use camera-dependent default borders.
     """
-    return data[borders]
+    # Create an empty array
+    data_with_nan = np.tile(np.nan, data.shape)
+
+    # Add the data within the borders to the empty array
+    data_with_nan[borders] = data[borders]
+
+    return data_with_nan
 
 
-def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
+def vignette_radial(shape, XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     """
     Vignetting function as defined in Adobe DNG standard 1.4.0.0
     Reference:
         https://www.adobe.com/content/dam/acom/en/products/photoshop/pdfs/dng_spec_1.4.0.0.pdf
+
+    Adapted to use a given image shape for conversion to relative coordinates,
+    rather than deriving this from the inputs XY.
 
     Parameters
     ----------
@@ -35,8 +49,8 @@ def vignette_radial(XY, k0, k1, k2, k3, k4, cx_hat, cy_hat):
     """
     x, y = XY
 
-    x0, y0 = x[0], y[0] # top left corner
-    x1, y1 = x[-1], y[-1]  # bottom right corner
+    x0, y0 = 0, 0 # top left corner
+    x1, y1 = shape[1], shape[0]  # bottom right corner
     cx = x0 + cx_hat * (x1 - x0)
     cy = y0 + cy_hat * (y1 - y0)
     # (cx, cy) is the optical center in absolute (pixel) units
@@ -59,9 +73,24 @@ def fit_vignette_radial(correction_observed, **kwargs):
     Fit a radial vignetting function to the observed correction factors
     `correction_observed`. Any additional **kwargs are passed to `curve_fit`.
     """
+    # Coordinates for each pixel
     X, Y, XY = generate_XY(correction_observed.shape)
-    popt, pcov = curve_fit(vignette_radial, XY, correction_observed.ravel(), p0=[1, 2, -5, 5, -2, 0.5, 0.5], **kwargs)
+
+    # Flatten the data
+    correction_flattened = correction_observed.ravel()
+
+    # Find non-NaN elements
+    indices_not_nan = np.where(~np.isnan(correction_flattened))[0]
+    XY = XY[:, indices_not_nan]
+    correction_flattened = correction_flattened[indices_not_nan]
+
+    # Radial vignetting function with fixed shape, so this is not fitted
+    vignette_radial_fixed_shape = lambda XY, *parameters: vignette_radial(correction_observed.shape, XY, *parameters)
+
+    # Fit a vignette profile
+    popt, pcov = curve_fit(vignette_radial_fixed_shape, XY, correction_flattened, p0=[1, 2, -5, 5, -2, 0.5, 0.5], **kwargs)
     standard_errors = np.sqrt(np.diag(pcov))
+
     return popt, standard_errors
 
 
@@ -70,7 +99,7 @@ def apply_vignette_radial(shape, parameters):
     Apply a radial vignetting function to obtain a correction factor map.
     """
     X, Y, XY = generate_XY(shape)
-    correction = vignette_radial(XY, *parameters).reshape(shape)
+    correction = vignette_radial(shape, XY, *parameters).reshape(shape)
     return correction
 
 
@@ -100,13 +129,14 @@ def load_flat_field_correction_map(root, return_filename=False):
     else:
         return correction_map
 
+
 def normalise_RGBG2(mean, stds, bayer_pattern):
     """
     Normalise the Bayer RGBG2 channels to 1.
     """
     # Demosaick the data
-    mean_RGBG, offsets = raw.pull_apart(mean, bayer_pattern)
-    stds_RGBG, offsets = raw.pull_apart(stds, bayer_pattern)
+    mean_RGBG = raw.demosaick(bayer_pattern, mean)
+    stds_RGBG = raw.demosaick(bayer_pattern, stds)
 
     # Convolve with a Gaussian kernel to find the maxima without being
     # sensitive to outliers
@@ -126,3 +156,21 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     stds_remosaicked = raw.put_together_from_colours(stds_RGBG, bayer_pattern)
 
     return mean_remosaicked, stds_remosaicked
+
+
+def correct_flatfield_from_map(flatfield, data, clip=False):
+    """
+    Apply a flat-field correction from a flat-field map `flatfield` to an
+    array `data`.
+
+    If `clip`, clip the data (make the outer borders NaN).
+    """
+    if clip:
+        data_to_correct = clip_data(data)
+    else:
+        data_to_correct = data
+
+    # Correct the data
+    data_corrected = data_to_correct * flatfield
+
+    return data_corrected

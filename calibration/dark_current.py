@@ -3,12 +3,16 @@ Create a dark current map using dark data (zero light, varying exposure times).
 An intermediary map in ADU/s (at this ISO speed) is generated as well as a
 calibration map in normalised ADU/s.
 
+An ISO speed normalisation is applied to the data. This means this script
+requires an ISO speed look-up table to exist.
+
 Command line arguments:
-    * `folder`: folder containing stacked dark data.
+    * `folder`: folder containing NPY stacks of dark-current data taken at
+    different exposure times.
 
 To do:
     * Save maps for all ISOs and use these in the calibration process.
-    * Generic filenames, if data are not labelled by ISO
+    * Generic filenames, if data are not labelled by ISO.
 """
 
 import numpy as np
@@ -37,7 +41,7 @@ np.save(save_to_ADU, dark_current)
 print(f"Saved dark current map at ISO {ISO} to '{save_to_ADU}'")
 
 # ISO normalisation
-dark_current_normalised = calibrate.normalise_iso(root, dark_current, ISO)
+dark_current_normalised = calibrate.normalise_iso(root, ISO, dark_current)
 
 # Save the normalised dark current map
 np.save(save_to_normalised, dark_current_normalised)

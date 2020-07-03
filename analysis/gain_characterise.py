@@ -5,13 +5,14 @@ Note: this script currently only looks at raw gain maps (ADU/electron at a
 specific ISO speed), not normalised gain maps (normalised ADU/electron).
 
 Command line arguments:
-    * `file`: the location of the gain map to be analysed.
+    * `file`: the location of the gain map to be analysed. This should be an
+    NPY file generated using ../calibration/gain.py.
 """
 
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, analyse
+from spectacle import io, analyse
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
@@ -29,16 +30,15 @@ print("Loaded data")
 
 # Plot an RGB histogram of the data
 xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
-analyse.plot_histogram_RGB(gains, camera.bayer_map, xlim=(xmin, xmax), xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
+camera.plot_histogram_RGB(gains, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
 print("Made histogram")
 
 # Plot Gauss-convolved maps of the data
-# Note: cannot use analyse.plot_gauss_maps because of NaNs
-analyse.plot_gauss_maps(gains, camera.bayer_map, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
+camera.plot_gauss_maps(gains, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
 print("Made maps")
 
 # Demosaick data by splitting the RGBG2 channels into separate arrays
-gains_RGBG,_ = raw.pull_apart(gains, camera.bayer_map)
+gains_RGBG = camera.demosaick(gains)
 
 # Plot a miniature RGB histogram
 fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})

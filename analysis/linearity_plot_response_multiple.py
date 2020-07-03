@@ -7,7 +7,8 @@ The RAW and JPEG data should be taken at the same intensities so a 1-to-1
 comparison can be made.
 
 Command line arguments:
-    * `folders`: the folders containing the stacked images to be analysed.
+    * `folder`: the folder containing linearity data stacks. These should be
+    NPY stacks taken at different exposure conditions, with the same ISO speed.
     (multiple arguments possible)
 """
 

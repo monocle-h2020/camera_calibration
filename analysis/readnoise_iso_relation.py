@@ -2,8 +2,11 @@
 Plot the relationship between ISO speed and read noise, based on read noise
 maps generated at various ISO speeds.
 
+This script requires an ISO normalisation look-up table to have been generated.
+
 Command line arguments:
-    * `folder`: the folder containing the read noise maps to be analysed.
+    * `folder`: folder containing NPY stacks of bias data taken at different
+    ISO speeds.
 """
 
 from sys import argv
@@ -22,7 +25,7 @@ camera = io.load_metadata(root)
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 
 # Normalise the data using the ISO look-up table
-stds_normalised = calibrate.normalise_iso(root, stds, isos)
+stds_normalised = calibrate.normalise_iso(root, isos, stds)
 
 # Print statistics at each ISO
 stats = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")

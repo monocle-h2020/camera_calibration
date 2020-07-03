@@ -4,7 +4,8 @@ functions. The dark current is converted from normalised ADU/s to electrons/s
 using a gain map.
 
 Command line arguments:
-    * `file`: the location of the dark current map to be analysed.
+    * `file`: the location of the dark current map to be analysed. This map
+    should be an NPY file generated using ../calibration/dark_current.py.
 """
 
 
@@ -29,14 +30,11 @@ dark_current_electrons = calibrate.convert_to_photoelectrons(root, dark_current_
 
 # Convolve the map with a Gaussian kernel and plot an image of the result
 save_to_maps = save_folder/"dark_current_map_electrons.pdf"
-analyse.plot_gauss_maps(dark_current_electrons, camera.bayer_map, colorbar_label="Dark current (e-/s)", saveto=save_to_maps)
+camera.plot_gauss_maps(dark_current_electrons, colorbar_label="Dark current (e-/s)", saveto=save_to_maps)
 print(f"Saved Gauss map to '{save_to_maps}'")
-
-# Range on the x axis for the histogram
-xmin, xmax = analyse.symmetric_percentiles(dark_current_electrons, percent=0.001)
 
 # Split the data into the RGBG2 filters and make histograms (aggregate and per
 # filter)
 save_to_histogram = save_folder/"dark_current_histogram_electrons.pdf"
-analyse.plot_histogram_RGB(dark_current_electrons, camera.bayer_map, xlim=(xmin, xmax), xlabel="Dark current (e-/s)", saveto=save_to_histogram)
+camera.plot_histogram_RGB(dark_current_electrons, xlabel="Dark current (e-/s)", saveto=save_to_histogram)
 print(f"Saved RGB histogram to '{save_to_histogram}'")

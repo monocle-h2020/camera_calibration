@@ -16,9 +16,10 @@ from .flat import load_flat_field_correction_map, clip_data
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
 from .metadata import load_metadata
-from .spectral import load_spectral_response
+from .raw import demosaick
+from .spectral import load_spectral_response, convert_RGBG2_to_RGB
 
-def correct_bias(root, data):
+def correct_bias(root, *data):
     """
     Perform a bias correction on data using a bias map from the calibration
     folder.
@@ -33,12 +34,18 @@ def correct_bias(root, data):
         print(f"Using bias value from metadata in '{origin}'")
     else:
         print(f"Using bias map from '{origin}'")
-    data_corrected = data - bias
+
+    # Correct each given array
+    data_corrected = [bias_readnoise.correct_bias_from_map(bias, data_array) for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
 
 
-def correct_dark_current(root, data, exposure_time):
+def correct_dark_current(root, exposure_time, *data):
     """
     Perform a dark current correction on data using a dark current map from
     `root`/calibration/dark_current_normalised.npy
@@ -46,15 +53,21 @@ def correct_dark_current(root, data, exposure_time):
     To do:
         - Easy way to parse exposure times in scripts
     """
+    # Load dark current map
     dark_current, origin = dark.load_dark_current_map(root, return_filename=True)
     print(f"Using dark current map from '{origin}'")
-    dark_total = dark_current * exposure_time
-    data_corrected = data - dark_total
+
+    # Correct each given array
+    data_corrected = [dark.correct_dark_current_from_map(dark_current, data_array, exposure_time) for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
 
 
-def normalise_iso(root, data, iso_values):
+def normalise_iso(root, iso_values, *data):
     """
     Normalise data using an ISO normalisation look-up table from
     `root`/calibration/iso_normalisation_lookup_table.npy
@@ -65,15 +78,17 @@ def normalise_iso(root, data, iso_values):
     lookup_table, origin = iso.load_iso_lookup_table(root, return_filename=True)
     print(f"Using ISO speed normalisation look-up table from '{origin}'")
 
-    if isinstance(iso_values, (int, float)):
-        data_normalised = iso.normalise_single_iso  (data, iso_values, lookup_table)
-    else:
-        data_normalised = iso.normalise_multiple_iso(data, iso_values, lookup_table)
+    # Correct each given array
+    data_corrected = [iso.normalise_iso_general(lookup_table, iso_values, data_array) for data_array in data]
 
-    return data_normalised
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
+
+    return data_corrected
 
 
-def convert_to_photoelectrons(root, data):
+def convert_to_photoelectrons(root, *data):
     """
     Convert ISO-normalised data to photoelectrons using a normalised gain map
     (in normalised ADU per photoelectron) from `root`/calibration/gain.npy
@@ -82,13 +97,17 @@ def convert_to_photoelectrons(root, data):
     gain_map, origin = gain.load_gain_map(root, return_filename=True)  # norm. ADU / e-
     print(f"Using normalised gain map from '{origin}'")
 
-    # Convert the data to photoelectrons
-    data_converted = data / gain_map  # e-
+    # Correct each given array
+    data_converted = [gain.convert_to_photoelectrons_from_map(gain_map, data_array) for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_converted) == 1:
+        data_converted = data_converted[0]
 
     return data_converted
 
 
-def correct_flatfield(root, data):
+def correct_flatfield(root, *data, **kwargs):
     """
     Correction for flat-fielding using a flat-field correction map read from
     `root`/calibration/flatfield_correction_modelled.npy
@@ -100,11 +119,12 @@ def correct_flatfield(root, data):
     correction_map, origin = flat.load_flat_field_correction_map(root, return_filename=True)
     print(f"Using flat-field map from '{origin}'")
 
-    # Remove the outer edges of the data
-    data_clipped = flat.clip_data(data)
+    # Correct each given array
+    data_corrected = [flat.correct_flatfield_from_map(correction_map, data_array, **kwargs) for data_array in data]
 
-    # Correct the data
-    data_corrected = data_clipped * correction_map
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
 

@@ -10,7 +10,12 @@ gamma models found. If no data is found for a particular combination of
 camera and subplot, that subplot is left empty.
 
 Command line arguments:
-    * `folder`: any number of folders containing results from sRGB model fitting
+    * `folder`: folders containing the free-gamma fitting and/or fixed-gamma
+    comparison results. These should be NPY files generated using
+    jpeg_sRGB_gamma_fixed.py and/or jpeg_sRGB_gamma_fixed.py, respectively.
+    It is not necessary for each camera to have data for each (or free) gamma
+    value.
+    (multiple arguments possible)
 """
 
 import numpy as np

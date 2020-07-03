@@ -1,3 +1,7 @@
+"""
+Code relating to bias and read noise, such as loading maps of either.
+"""
+
 import numpy as np
 from . import io
 
@@ -44,3 +48,12 @@ def load_readnoise_map(root, return_filename=False):
         return readnoise_map, filename
     else:
         return readnoise_map
+
+
+def correct_bias_from_map(bias_map, data):
+    """
+    Apply a bias correction from a bias map `bias_map` to an array `data`.
+    """
+    data_corrected = data - bias_map
+
+    return data_corrected

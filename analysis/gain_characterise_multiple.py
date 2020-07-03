@@ -7,14 +7,15 @@ Note: this script currently only looks at raw gain maps (ADU/electron at a
 specific ISO speed), not normalised gain maps (normalised ADU/electron).
 
 Command line arguments:
-    * `file`: the location of the gain map to be analysed.
+    * `file`: the location of the gain map to be analysed. This should be an
+    NPY file generated using ../calibration/gain.py.
     (multiple arguments possible)
 """
 
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, plot, analyse
+from spectacle import io, plot, analyse
 from spectacle.general import gauss_nan
 
 # Get the data folder from the command line
@@ -33,7 +34,7 @@ data_arrays = [np.load(file) for file in files]
 print("Loaded data")
 
 # Demosaick the data (split into the Bayer RGBG2 channels)
-data_RGBG_arrays = [raw.pull_apart(data, camera.bayer_map)[0] for data, camera in zip(data_arrays, cameras)]
+data_RGBG_arrays = [camera.demosaick(data) for data, camera in zip(data_arrays, cameras)]
 print("Demosaicked data")
 
 # Convolve the RGBG2 data with a Gaussian kernel

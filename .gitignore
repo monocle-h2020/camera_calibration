@@ -1,5 +1,7 @@
 *.json
 *.png
+*.jp*g
+*.dng
 *.dat
 *.npy
 *.txt

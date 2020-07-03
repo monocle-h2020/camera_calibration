@@ -3,7 +3,9 @@ Compare two spectral response curves, for example from different methods or
 different cameras.
 
 Command line arguments:
-    * `files`: two files containing spectral response curves
+    * `files`: two files containing spectral response curves. These should be
+    NPY files generated using ../calibration/spectral_response_monochromator.py
+    or a similar script.
 
 TO DO:
     * increase the number of input files possible

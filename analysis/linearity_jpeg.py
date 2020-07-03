@@ -3,7 +3,8 @@ Determines the linearity of the response of each pixel in a camera using JPEG
 data. The Pearson r coefficient is used as a measure of linearity.
 
 Command line arguments:
-    * `folder`: folder containing stacked linearity data
+    * `folder`: the folder containing linearity data stacks. These should be
+    NPY stacks taken at different exposure conditions, with the same ISO speed.
 """
 
 import numpy as np
