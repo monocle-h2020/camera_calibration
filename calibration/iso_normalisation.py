@@ -19,7 +19,7 @@ folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to_data = root/"intermediaries/iso_normalisation/iso_data.npy"
 save_to_model = root/"calibration/iso_normalisation_model.csv"
-save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.npy"
+save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -64,6 +64,6 @@ print(f"Saved model parameters to '{save_to_model}'")
 # Apply the best-fitting model to the full ISO range of this camera to create
 # a look-up table, then save it
 iso_range = np.arange(0, camera.settings.ISO_max+1, 1)
-lookup_table = np.stack([iso_range, model(iso_range)])
-np.save(save_to_lookup_table, lookup_table)
+lookup_table = np.stack([iso_range, model(iso_range)]).T
+np.savetxt(save_to_lookup_table, lookup_table, delimiter=",", header="ISO, Normalisation", fmt="%i %.6f")
 print(f"Saved look-up table to '{save_to_lookup_table}'")
