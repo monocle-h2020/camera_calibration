@@ -65,5 +65,5 @@ print(f"Saved model parameters to '{save_to_model}'")
 # a look-up table, then save it
 iso_range = np.arange(0, camera.settings.ISO_max+1, 1)
 lookup_table = np.stack([iso_range, model(iso_range)]).T
-np.savetxt(save_to_lookup_table, lookup_table, delimiter=",", header="ISO, Normalisation", fmt="%i %.6f")
+np.savetxt(save_to_lookup_table, lookup_table, header="ISO, Normalisation", fmt="%i, %.6f")
 print(f"Saved look-up table to '{save_to_lookup_table}'")
