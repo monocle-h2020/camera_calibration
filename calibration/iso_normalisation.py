@@ -51,6 +51,12 @@ print(f"Normalised data to minimum ISO ({camera.settings.ISO_min})")
 # Fit a model to the ISO normalisation curve
 model_type, model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=camera.settings.ISO_min, max_iso=camera.settings.ISO_max)
 
+# Save the observed mean normalisation factor at each ISO speed, so it can be
+# compared to the model later
+data = np.stack([isos, ratios_mean, ratios_errs])
+np.save(save_to_data, data)
+print(f"Saved normalisation data to '{save_to_data}'")
+
 # Save the best-fitting model parameters and their errors
 model_array = np.stack([len(parameters) * [model_type], parameters, errors])
 np.savetxt(save_to_model, model_array, fmt="%s")
@@ -62,9 +68,3 @@ iso_range = np.arange(0, camera.settings.ISO_max+1, 1)
 lookup_table = np.stack([iso_range, model(iso_range)])
 np.save(save_to_lookup_table, lookup_table)
 print(f"Saved look-up table to '{save_to_lookup_table}'")
-
-# Save the observed mean normalisation factor at each ISO speed, so it can be
-# compared to the model later
-data = np.stack([isos, ratios_mean, ratios_errs])
-np.save(save_to_data, data)
-print(f"Saved normalisation data to '{save_to_data}'")
