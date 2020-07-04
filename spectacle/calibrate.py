@@ -132,7 +132,7 @@ def correct_flatfield(root, *data, **kwargs):
 def correct_spectral_response(root, wavelengths, data):
     """
     Correction for the spectral response of the camera, using curves read from
-    `root`/calibration/spectral_response.npy
+    `root`/calibration/spectral_response.csv
 
     The spectral responses are interpolated to the wavelengths given by the
     user. Spectral responses outside the range of the calibration data are
