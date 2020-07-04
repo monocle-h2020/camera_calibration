@@ -139,16 +139,29 @@ def load_iso_lookup_table(root, return_filename=False):
 def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
-    in `root`/calibration/iso_normalisation_model.dat
+    in `root`/calibration/iso_normalisation_model.csv
     If `return_filename` is True, also return the exact filename the bias map
     was retrieved from.
+
+    To do: include in ISO model object
     """
-    filename = root/"calibration/iso_normalisation_model.dat"
-    as_array = np.loadtxt(filename, dtype=str)
-    model_type = as_array[0,0]
-    parameters = as_array[1].astype(np.float64)
-    errors     = as_array[2].astype(np.float64)
+    filename = root/"calibration/iso_normalisation_model.csv"
+    as_array = np.loadtxt(filename, dtype=str, delimiter=",")
+
+    model_type = as_array[0]
+    if model_type == "Linear":
+        parameters = as_array[1:3]
+        errors = as_array[3:]
+    elif model_type == "Knee":
+        parameters = as_array[1:4]
+        errors = as_array[4:]
+    else:
+        raise ValueError(f"Unknown model type `{model_type}` in file `{filename}`.")
+
+    parameters = parameters.astype(np.float64)
+    errors     = errors.astype(np.float64)
     model = model_generator[model_type](*parameters)
+
     if return_filename:
         return model, filename
     else:
