@@ -124,12 +124,12 @@ def normalise_iso_general(lookup_table, isos, data):
 def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at
-    `root`/calibration/iso_normalisation_lookup_table.npy
-    If `return_filename` is True, also return the exact filename the bias map
+    `root`/calibration/iso_normalisation_lookup_table.csv
+    If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
-    filename = root/"calibration/iso_normalisation_lookup_table.npy"
-    table = np.load(filename)
+    filename = root/"calibration/iso_normalisation_lookup_table.csv"
+    table = np.loadtxt(filename, delimiter=",").T
     if return_filename:
         return table, filename
     else:
@@ -140,7 +140,7 @@ def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
     in `root`/calibration/iso_normalisation_model.csv
-    If `return_filename` is True, also return the exact filename the bias map
+    If `return_filename` is True, also return the exact filename the model
     was retrieved from.
 
     To do: include in ISO model object
@@ -192,8 +192,8 @@ def load_iso_data(root, return_filename=False):
     """
     Load ISO normalisation data from
     `root`/intermediaries/iso_normalisation/iso_data.npy
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename the data
+    were retrieved from.
     """
     filename = root/"intermediaries/iso_normalisation/iso_data.npy"
     data = np.load(filename)
