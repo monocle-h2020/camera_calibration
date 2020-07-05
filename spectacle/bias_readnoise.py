@@ -22,18 +22,17 @@ def load_bias_map(root, return_filename=False):
 
 def load_bias_metadata(root, return_filename=False):
     """
-    Load the bias value from the camera metadata file
+    Load the bias value from the camera metadata file, and generate a Bayer-
+    tiled map from it
     If `return_filename` is True, also return the exact filename the metadata
     were retrieved from.
-    TO DO:
-        * Generate a bias map (Bayer tiling)
     """
     camera, filename = io.load_metadata(root, return_filename=True)
-    bias_value = camera.image.bias
+    bias_map = camera.generate_bias_map()
     if return_filename:
-        return bias_value, filename
+        return bias_map, filename
     else:
-        return bias_value
+        return bias_map
 
 
 def load_readnoise_map(root, return_filename=False):
