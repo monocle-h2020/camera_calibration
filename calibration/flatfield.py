@@ -31,10 +31,10 @@ overwrite_calibration = True
 save_to_correction = root/f"intermediaries/flatfield/flatfield_correction_{label}.npy"
 save_to_correction_raw = root/f"intermediaries/flatfield/flatfield_correction_{label}_raw.npy"
 save_to_correction_modelled_intermediary = root/f"intermediaries/flatfield/flatfield_correction_{label}_modelled.npy"
-save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.npy"
+save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.csv"
 
 save_to_correction_modelled_calibration = root/"calibration/flatfield_correction_modelled.npy"
-save_to_parameters_calibration = root/"calibration/flatfield_parameters.npy"
+save_to_parameters_calibration = root/"calibration/flatfield_parameters.csv"
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -79,10 +79,11 @@ for p, s in zip(parameters, standard_errors):
     print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
 
 # Save the best-fitting model parameters
-np.save(save_to_parameters_intermediary, np.stack([parameters, standard_errors]))
+result_array = np.array([*parameters, *standard_errors])[:,np.newaxis].T
+np.savetxt(save_to_parameters_intermediary, result_array, header="k0, k1, k2, k3, k4, cx, cy, k0_err, k1_err, k2_err, k3_err, k4_err, cx_err, cy_err", delimiter=",")
 print(f"Saved best-fitting model parameters to '{save_to_parameters_intermediary}'")
 if overwrite_calibration:
-    np.save(save_to_parameters_calibration, np.stack([parameters, standard_errors]))
+    np.savetxt(save_to_parameters_calibration, result_array, header="k0, k1, k2, k3, k4, cx, cy, k0_err, k1_err, k2_err, k3_err, k4_err, cx_err, cy_err", delimiter=",")
     print(f"Saved best-fitting model parameters to '{save_to_parameters_calibration}'")
 
 # Apply the best-fitting model to the data to generate a correction map
