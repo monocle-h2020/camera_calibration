@@ -21,8 +21,8 @@ from .spectral import load_spectral_response, convert_RGBG2_to_RGB
 
 def correct_bias(root, *data):
     """
-    Perform a bias correction on data using a bias map from the calibration
-    folder.
+    Perform a bias correction on data using a bias map from
+    `root`/calibration/
 
     To do:
         - ISO selection
@@ -48,7 +48,7 @@ def correct_bias(root, *data):
 def correct_dark_current(root, exposure_time, *data):
     """
     Perform a dark current correction on data using a dark current map from
-    `root`/calibration/dark_current_normalised.npy
+    `root`/calibration/
 
     To do:
         - Easy way to parse exposure times in scripts
@@ -70,7 +70,7 @@ def correct_dark_current(root, exposure_time, *data):
 def normalise_iso(root, iso_values, *data):
     """
     Normalise data using an ISO normalisation look-up table from
-    `root`/calibration/iso_normalisation_lookup_table.npy
+    `root`/calibration/
 
     If `iso` is a single number, use `normalise_single_iso`. Otherwise, use
     `normalise_multiple_iso`.
@@ -91,7 +91,7 @@ def normalise_iso(root, iso_values, *data):
 def convert_to_photoelectrons(root, *data):
     """
     Convert ISO-normalised data to photoelectrons using a normalised gain map
-    (in normalised ADU per photoelectron) from `root`/calibration/gain.npy
+    (in normalised ADU per photoelectron) from `root`/calibration/
     """
     # Load the gain map
     gain_map, origin = gain.load_gain_map(root, return_filename=True)  # norm. ADU / e-
@@ -110,7 +110,7 @@ def convert_to_photoelectrons(root, *data):
 def correct_flatfield(root, *data, **kwargs):
     """
     Correction for flat-fielding using a flat-field correction map read from
-    `root`/calibration/flatfield_correction_modelled.npy
+    `root`/calibration/
 
     To do:
         - Choose between model and map (separate functions?)
@@ -132,7 +132,7 @@ def correct_flatfield(root, *data, **kwargs):
 def correct_spectral_response(root, wavelengths, data):
     """
     Correction for the spectral response of the camera, using curves read from
-    `root`/calibration/spectral_response.csv
+    `root`/calibration/
 
     The spectral responses are interpolated to the wavelengths given by the
     user. Spectral responses outside the range of the calibration data are
