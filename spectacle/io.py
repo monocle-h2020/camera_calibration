@@ -275,7 +275,7 @@ def find_root_folder(input_path):
     input_path = Path(input_path)
 
     # Loop through the input_path's parents until a metadata JSON file is found
-    for parent in input_path.parents:
+    for parent in [input_path, *input_path.parents]:
         # If a metadata file is found, use the containing folder as the root folder
         if (parent/"metadata.json").exists():
             root = parent
