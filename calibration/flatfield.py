@@ -73,17 +73,17 @@ correction_raw_clipped = flat.clip_data(correction_raw)
 print("Fitting...")
 parameters, standard_errors = flat.fit_vignette_radial(correction_clipped)
 
+# Output the best-fitting model parameters and errors
+print("Parameter +- Error    ; Relative error")
+for p, s in zip(parameters, standard_errors):
+    print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
+
 # Save the best-fitting model parameters
 np.save(save_to_parameters_intermediary, np.stack([parameters, standard_errors]))
 print(f"Saved best-fitting model parameters to '{save_to_parameters_intermediary}'")
 if overwrite_calibration:
     np.save(save_to_parameters_calibration, np.stack([parameters, standard_errors]))
     print(f"Saved best-fitting model parameters to '{save_to_parameters_calibration}'")
-
-# Output the best-fitting model parameters and errors
-print("Parameter +- Error    ; Relative error")
-for p, s in zip(parameters, standard_errors):
-    print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
 
 # Apply the best-fitting model to the data to generate a correction map
 correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
