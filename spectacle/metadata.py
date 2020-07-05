@@ -94,6 +94,15 @@ class Camera(object):
         bayer_map[1::2, 1::2] = self.image.bayer_pattern[1][1]
         return bayer_map
 
+    def generate_bias_map(self):
+        """
+        Generate a Bayer-aware map of bias values from the camera metadata
+        """
+        bayer_map = self.generate_bayer_map()
+        for j, bias_value in enumerate(self.image.bias):
+            bayer_map[bayer_map == j] = bias_value
+        return bayer_map
+
     def generate_ISO_range(self):
         """
         Generate an array with all ISO values possible for this camera.
