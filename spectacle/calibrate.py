@@ -35,12 +35,8 @@ def correct_bias(root, *data):
     else:
         print(f"Using bias map from '{origin}'")
 
-    # Correct each given array
-    data_corrected = [bias_readnoise.correct_bias_from_map(bias, data_array) for data_array in data]
-
-    # If only a single array was given, don't return a list
-    if len(data_corrected) == 1:
-        data_corrected = data_corrected[0]
+    # Apply the bias correction
+    data_corrected = bias_readnoise.correct_bias_from_map(bias, *data)
 
     return data_corrected
 

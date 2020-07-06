@@ -49,10 +49,14 @@ def load_readnoise_map(root, return_filename=False):
         return readnoise_map
 
 
-def correct_bias_from_map(bias_map, data):
+def correct_bias_from_map(bias_map, *data):
     """
-    Apply a bias correction from a bias map `bias_map` to an array `data`.
+    Apply a bias correction from a bias map `bias_map` to arrays `data` (any number)
     """
-    data_corrected = data - bias_map
+    data_corrected = [data_array - bias_map for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
