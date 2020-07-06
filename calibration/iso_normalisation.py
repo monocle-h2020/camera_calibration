@@ -18,8 +18,8 @@ from spectacle import io, iso, calibrate
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to_data = root/"intermediaries/iso_normalisation/iso_data.npy"
-save_to_model = root/"calibration/iso_normalisation_model.dat"
-save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.npy"
+save_to_model = root/"calibration/iso_normalisation_model.csv"
+save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -51,20 +51,19 @@ print(f"Normalised data to minimum ISO ({camera.settings.ISO_min})")
 # Fit a model to the ISO normalisation curve
 model_type, model, R2, parameters, errors = iso.fit_iso_normalisation_relation(isos, ratios_mean, ratios_errs=ratios_errs, min_iso=camera.settings.ISO_min, max_iso=camera.settings.ISO_max)
 
-# Save the best-fitting model parameters and their errors
-model_array = np.stack([len(parameters) * [model_type], parameters, errors])
-np.savetxt(save_to_model, model_array, fmt="%s")
-print(f"Saved model parameters to '{save_to_model}'")
-
-# Apply the best-fitting model to the full ISO range of this camera to create
-# a look-up table, then save it
-iso_range = np.arange(0, camera.settings.ISO_max+1, 1)
-lookup_table = np.stack([iso_range, model(iso_range)])
-np.save(save_to_lookup_table, lookup_table)
-print(f"Saved look-up table to '{save_to_lookup_table}'")
-
 # Save the observed mean normalisation factor at each ISO speed, so it can be
 # compared to the model later
 data = np.stack([isos, ratios_mean, ratios_errs])
 np.save(save_to_data, data)
 print(f"Saved normalisation data to '{save_to_data}'")
+
+# Save the best-fitting model parameters and their errors
+iso.save_iso_model(save_to_model, model_type, parameters, errors)
+print(f"Saved model parameters to '{save_to_model}'")
+
+# Apply the best-fitting model to the full ISO range of this camera to create
+# a look-up table, then save it
+iso_range = np.arange(0, camera.settings.ISO_max+1, 1)
+lookup_table = np.stack([iso_range, model(iso_range)]).T
+np.savetxt(save_to_lookup_table, lookup_table, header="ISO, Normalisation", fmt="%i, %.6f")
+print(f"Saved look-up table to '{save_to_lookup_table}'")
