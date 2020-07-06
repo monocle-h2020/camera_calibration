@@ -80,7 +80,7 @@ for p, s in zip(parameters, standard_errors):
 result_array = np.array([*parameters, *standard_errors])[:,np.newaxis].T
 save_locations = [save_to_parameters_intermediary, save_to_parameters_calibration] if overwrite_calibration else [save_to_parameters_intermediary]
 for saveto in save_locations:
-    np.savetxt(saveto, result_array, header="k0, k1, k2, k3, k4, cx, cy, k0_err, k1_err, k2_err, k3_err, k4_err, cx_err, cy_err", delimiter=",")
+    np.savetxt(saveto, result_array, header=", ".join(flat.parameter_labels + flat.parameter_error_labels), delimiter=",")
     print(f"Saved best-fitting model parameters to '{saveto}'")
 
 # Apply the best-fitting model to the data to generate a correction map

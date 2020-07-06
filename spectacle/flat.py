@@ -7,6 +7,7 @@ from .general import gaussMd, curve_fit, generate_XY
 from . import raw
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
+parameter_error_labels = ["k0_err", "k1_err", "k2_err", "k3_err", "k4_err", "cx_err", "cy_err"]
 
 _clip_border = np.s_[250:-250, 250:-250]
 
