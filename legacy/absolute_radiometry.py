@@ -32,7 +32,7 @@ print("Corrected for exposure parameters")
 
 corrected_edges = corrected_exposure[flat.clip_border]
 colours_edges = colours[flat.clip_border]
-flat_field_correction = io.read_flat_field_correction(products, corrected_edges.shape)
+flat_field_correction = io.load_flat_field_correction(root, corrected_edges.shape)
 
 corrected_flat = flat_field_correction * corrected_edges  # norm. ADU sr^-1 s^-1
 print("Corrected for flat-field")
