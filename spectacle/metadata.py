@@ -7,7 +7,7 @@ import json
 from collections import namedtuple
 from pathlib import Path
 
-from . import raw, analyse, bias_readnoise
+from . import raw, analyse, bias_readnoise, dark
 
 
 def find_root_folder(input_path):
@@ -156,6 +156,18 @@ class Camera(object):
             print(f"Could not find a readnoise map in the folder `{self.root}`")
 
         return self.readnoise
+
+    def correct_dark_current(self, exposure_time, *data, **kwargs):
+        """
+        Calibrate data for dark current using this sensor's data
+        """
+        try:
+            dark_current = self.dark_current
+        except AttributeError:
+            try:
+                dark_current = dark.load_dark_current_map(self.root)
+            except (FileNotFoundError, OSError):
+                pass
 
     def generate_ISO_range(self):
         """
