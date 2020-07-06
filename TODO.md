@@ -3,6 +3,7 @@ This is a to-do list for the `spectacle` module.
 ## Module
 
 - [X] Upload to PyPI.
+- [ ] Replace `load_flat_field_correction_map` with `read_flat_field_correction` and remove the pre-made correction map from the calibration package.
 
 ## Scripts
 
