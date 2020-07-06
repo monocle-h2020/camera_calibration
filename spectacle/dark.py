@@ -41,15 +41,19 @@ def load_dark_current_map(root, return_filename=False):
         return dark_current_map
 
 
-def correct_dark_current_from_map(dark_current_map, data, exposure_time):
+def correct_dark_current_from_map(dark_current_map, exposure_time, *data):
     """
     Apply a dark current correction from a dark current map `dark_current_map`,
-    multiplied by an `exposure_time`, to an array `data`.
+    multiplied by an `exposure_time`, to arrays `data`.
     """
     # Calculate the total dark current (in ADU) per pixel
     dark_total = dark_current_map * exposure_time
 
     # Correct the data
-    data_corrected = data - dark_total
+    data_corrected = [data_array - dark_total for data_array in data]
+
+    # If only a single array was given, don't return a list
+    if len(data_corrected) == 1:
+        data_corrected = data_corrected[0]
 
     return data_corrected
