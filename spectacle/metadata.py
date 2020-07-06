@@ -82,7 +82,7 @@ class Camera(object):
         self.settings = self.Settings(**settings)
 
         # Generate/calculate commonly used values/properties
-        self.bayer_map = self.generate_bayer_map()
+        self.bayer_map = self._generate_bayer_map()
         self.saturation = 2**self.image.bit_depth - 1
 
         # Root folder
@@ -105,12 +105,9 @@ class Camera(object):
                       "settings": self.settings._asdict()}
         return dictionary
 
-    def generate_bayer_map(self):
+    def _generate_bayer_map(self):
         """
         Generate a Bayer map, with the Bayer channel (RGBG2) for each pixel.
-
-        To do:
-            * Hide method (single underscore)
         """
         bayer_map = np.zeros(self.image.shape, dtype=int)
         bayer_map[0::2, 0::2] = self.image.bayer_pattern[0][0]
@@ -123,7 +120,7 @@ class Camera(object):
         """
         Generate a Bayer-aware map of bias values from the camera metadata
         """
-        bayer_map = self.generate_bayer_map()
+        bayer_map = self._generate_bayer_map()
         for j, bias_value in enumerate(self.image.bias):
             bayer_map[bayer_map == j] = bias_value
         return bayer_map
