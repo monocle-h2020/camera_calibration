@@ -9,6 +9,7 @@ from pathlib import Path
 
 from . import raw, analyse
 
+
 def find_root_folder(input_path):
     """
     For a given `input_path`, find the root folder, containing the standard
@@ -199,8 +200,8 @@ def write_json(data, save_to):
 def load_metadata(root, return_filename=False):
     """
     Read the metadata JSON located in the `root` folder.
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename the data
+    were retrieved from.
     """
     filename = root/"metadata.json"
     metadata = Camera.read_from_file(filename)
