@@ -134,7 +134,7 @@ class Camera(object):
         except AttributeError:
             try:
                 bias_map = bias_readnoise.load_bias_map(self.root)
-            except FileNotFoundError:
+            except (FileNotFoundError, OSError):
                 bias_map = self.generate_bias_map()
                 self.bias_type = "Metadata"
             else:
@@ -144,6 +144,18 @@ class Camera(object):
         # Apply the bias correction
         data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
         return data_corrected
+
+    def load_readnoise_map(self):
+        """
+        Load a readnoise map for this sensor
+        """
+        try:
+            self.readnoise = bias_readnoise.load_readnoise_map(self.root)
+        except (FileNotFoundError, OSError):
+            self.readnoise = None
+            print(f"Could not find a readnoise map in the folder `{self.root}`")
+        finally:
+            return self.readnoise
 
     def generate_ISO_range(self):
         """
