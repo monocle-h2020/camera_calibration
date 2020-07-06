@@ -78,11 +78,10 @@ for p, s in zip(parameters, standard_errors):
 
 # Save the best-fitting model parameters
 result_array = np.array([*parameters, *standard_errors])[:,np.newaxis].T
-np.savetxt(save_to_parameters_intermediary, result_array, header="k0, k1, k2, k3, k4, cx, cy, k0_err, k1_err, k2_err, k3_err, k4_err, cx_err, cy_err", delimiter=",")
-print(f"Saved best-fitting model parameters to '{save_to_parameters_intermediary}'")
-if overwrite_calibration:
-    np.savetxt(save_to_parameters_calibration, result_array, header="k0, k1, k2, k3, k4, cx, cy, k0_err, k1_err, k2_err, k3_err, k4_err, cx_err, cy_err", delimiter=",")
-    print(f"Saved best-fitting model parameters to '{save_to_parameters_calibration}'")
+save_locations = [save_to_parameters_intermediary, save_to_parameters_calibration] if overwrite_calibration else [save_to_parameters_intermediary]
+for saveto in save_locations:
+    np.savetxt(saveto, result_array, header="k0, k1, k2, k3, k4, cx, cy, k0_err, k1_err, k2_err, k3_err, k4_err, cx_err, cy_err", delimiter=",")
+    print(f"Saved best-fitting model parameters to '{saveto}'")
 
 # Apply the best-fitting model to the data to generate a correction map
 correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
