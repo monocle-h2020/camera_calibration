@@ -30,8 +30,7 @@ def fit_dark_current_linear(exposure_times, data):
 def load_dark_current_map(root, return_filename=False):
     """
     Load the normalised dark current map located at root/`calibration/dark_current_normalised.npy`
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename used.
     """
     filename = root/"calibration/dark_current_normalised.npy"
     dark_current_map = np.load(filename)

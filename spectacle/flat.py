@@ -120,8 +120,7 @@ def load_flat_field_correction_map(root, return_filename=False):
     Load the flat-field correction map contained in
     `root`/calibration/flatfield_correction_modelled.npy
 
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename used.
     """
     filename = root/"calibration/flatfield_correction_modelled.npy"
     correction_map = np.load(filename)
