@@ -4,7 +4,7 @@ import numpy as np
 import os
 from pathlib import Path
 from matplotlib import pyplot as plt
-from .metadata import load_metadata
+from .metadata import load_metadata, find_root_folder
 
 # Default save folder for results
 results_folder = Path.home() / "SPECTACLE_results"
@@ -265,26 +265,6 @@ def load_angle(stacks):
     """
     offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
     return offset_angle
-
-
-def find_root_folder(input_path):
-    """
-    For a given `input_path`, find the root folder, containing the standard
-    sub-folders (calibration, analysis, stacks, etc.)
-    """
-    input_path = Path(input_path)
-
-    # Loop through the input_path's parents until a metadata JSON file is found
-    for parent in [input_path, *input_path.parents]:
-        # If a metadata file is found, use the containing folder as the root folder
-        if (parent/"metadata.json").exists():
-            root = parent
-            break
-    # If no metadata file was found, raise an error
-    else:
-        raise OSError(f"None of the parents of the input `{input_path}` include a 'metadata.json' file.")
-
-    return root
 
 
 def replace_word_in_path(path, old, new):

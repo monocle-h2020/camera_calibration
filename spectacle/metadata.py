@@ -8,6 +8,26 @@ from collections import namedtuple
 
 from . import raw, analyse
 
+def find_root_folder(input_path):
+    """
+    For a given `input_path`, find the root folder, containing the standard
+    sub-folders (calibration, analysis, stacks, etc.)
+    """
+    input_path = Path(input_path)
+
+    # Loop through the input_path's parents until a metadata JSON file is found
+    for parent in [input_path, *input_path.parents]:
+        # If a metadata file is found, use the containing folder as the root folder
+        if (parent/"metadata.json").exists():
+            root = parent
+            break
+    # If no metadata file was found, raise an error
+    else:
+        raise OSError(f"None of the parents of the input `{input_path}` include a 'metadata.json' file.")
+
+    return root
+
+
 def _convert_exposure_time(exposure):
     """
     Convert an exposure time, in various formats, into a floating-point number.
@@ -45,7 +65,7 @@ class Camera(object):
     Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth"])
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
-    def __init__(self, device_properties, image_properties, settings):
+    def __init__(self, device_properties, image_properties, settings, root=None):
         """
         Generate a Camera object based on input dictionaries containing the
         keys defined in Device, Image, and Settings
@@ -62,6 +82,9 @@ class Camera(object):
         # Generate/calculate commonly used values/properties
         self.bayer_map = self.generate_bayer_map()
         self.saturation = 2**self.image.bit_depth - 1
+
+        # Root folder
+        self.root = root
 
     def __repr__(self):
         """
@@ -144,9 +167,10 @@ class Camera(object):
         """
         Read metadata from a JSON file.
         """
+        root = find_root_folder(path)
         full_dictionary = load_json(path)
         device_properties, image_properties, settings = full_dictionary.values()
-        return cls(device_properties, image_properties, settings)
+        return cls(device_properties, image_properties, settings, root=root)
 
 
 def load_json(path):
