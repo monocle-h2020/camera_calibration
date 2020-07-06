@@ -92,6 +92,3 @@ correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
 # Save the moddelled correction map
 np.save(save_to_correction_modelled_intermediary, correction_modelled)
 print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled_intermediary}'")
-if overwrite_calibration:
-    np.save(save_to_correction_modelled_calibration, correction_modelled)
-    print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled_calibration}'")
