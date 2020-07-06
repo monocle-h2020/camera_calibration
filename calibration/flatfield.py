@@ -52,10 +52,10 @@ mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, camera.bayer
 print("Normalised data")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
-flat_field_gauss = gaussMd(mean_normalised, 10)
+flatfield_gauss = gaussMd(mean_normalised, 10)
 
 # Calculate the correction factor
-correction = 1 / flat_field_gauss
+correction = 1 / flatfield_gauss
 correction_raw = 1 / mean_normalised
 
 # Save the correction factor maps

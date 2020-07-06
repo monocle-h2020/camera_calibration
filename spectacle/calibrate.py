@@ -12,7 +12,7 @@ from . import bias_readnoise, dark, flat, gain, io, iso, metadata, spectral
 # calibration scripts, for simpler access
 from .bias_readnoise import load_bias_map, load_readnoise_map
 from .dark import load_dark_current_map
-from .flat import load_flat_field_correction_map, clip_data
+from .flat import load_flatfield_correction_map, clip_data, load_flatfield_correction
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
 from .metadata import load_metadata
@@ -116,7 +116,7 @@ def correct_flatfield(root, *data, **kwargs):
         - Choose between model and map (separate functions?)
     """
     # Load the correction map
-    correction_map, origin = flat.load_flat_field_correction_map(root, return_filename=True)
+    correction_map, origin = flat.load_flatfield_correction_map(root, return_filename=True)
     print(f"Using flat-field map from '{origin}'")
 
     # Correct each given array

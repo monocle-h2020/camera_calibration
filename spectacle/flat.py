@@ -103,7 +103,7 @@ def apply_vignette_radial(shape, parameters):
     return correction
 
 
-def load_flat_field_correction(root, shape):
+def load_flatfield_correction(root, shape):
     """
     Load the flat-field correction model, the parameters of which are contained
     in `root`/calibration/flatfield_parameters.csv
@@ -115,7 +115,7 @@ def load_flat_field_correction(root, shape):
     return correction_map
 
 
-def load_flat_field_correction_map(root, return_filename=False):
+def load_flatfield_correction_map(root, return_filename=False):
     """
     Load the flat-field correction map contained in
     `root`/calibration/flatfield_correction_modelled.npy
