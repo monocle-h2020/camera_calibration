@@ -5,6 +5,7 @@ Code relating to camera metadata, such as generating or reading metadata files.
 import numpy as np
 import json
 from collections import namedtuple
+from pathlib import Path
 
 from . import raw, analyse
 
