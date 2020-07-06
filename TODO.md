@@ -10,6 +10,8 @@ This is a to-do list for the `spectacle` module.
 
 ## Documentation
 
+- [ ] Add metadata on all calibration files, including origins and quality of data.
+
 ### READMEs
 
 ### Module
