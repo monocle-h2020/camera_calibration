@@ -32,8 +32,6 @@ save_to_correction = root/f"intermediaries/flatfield/flatfield_correction_{label
 save_to_correction_raw = root/f"intermediaries/flatfield/flatfield_correction_{label}_raw.npy"
 save_to_correction_modelled_intermediary = root/f"intermediaries/flatfield/flatfield_correction_{label}_modelled.npy"
 save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.csv"
-
-save_to_correction_modelled_calibration = root/"calibration/flatfield_correction_modelled.npy"
 save_to_parameters_calibration = root/"calibration/flatfield_parameters.csv"
 
 # Get metadata
