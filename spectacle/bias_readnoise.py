@@ -53,6 +53,8 @@ def correct_bias_from_map(bias_map, *data):
     """
     Apply a bias correction from a bias map `bias_map` to arrays `data` (any number)
     """
+
+    # Not casting *data to a numpy array because it may have multiple shapes
     data_corrected = [data_array - bias_map for data_array in data]
 
     # If only a single array was given, don't return a list
