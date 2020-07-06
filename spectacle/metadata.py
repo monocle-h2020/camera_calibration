@@ -7,7 +7,7 @@ import json
 from collections import namedtuple
 from pathlib import Path
 
-from . import raw, analyse
+from . import raw, analyse, bias_readnoise
 
 
 def find_root_folder(input_path):
@@ -124,6 +124,26 @@ class Camera(object):
         for j, bias_value in enumerate(self.image.bias):
             bayer_map[bayer_map == j] = bias_value
         return bayer_map
+
+    def calibrate_bias(self, *data, **kwargs):
+        """
+        Calibrate data for bias using this sensor's bias data
+        """
+        try:
+            bias_map = self.bias_map
+        except AttributeError:
+            try:
+                bias_map = bias_readnoise.load_bias_map(self.root)
+            except FileNotFoundError:
+                bias_map = self.generate_bias_map()
+                self.bias_type = "Metadata"
+            else:
+                self.bias_type = "Measured"
+            self.bias_map = bias_map
+
+        # Apply the bias correction
+        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
+        return data_corrected
 
     def generate_ISO_range(self):
         """
