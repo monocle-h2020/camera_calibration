@@ -7,6 +7,7 @@ from .general import gaussMd, curve_fit, generate_XY
 from . import raw
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
+parameter_error_labels = ["k0_err", "k1_err", "k2_err", "k3_err", "k4_err", "cx_err", "cy_err"]
 
 _clip_border = np.s_[250:-250, 250:-250]
 
@@ -103,7 +104,7 @@ def apply_vignette_radial(shape, parameters):
     return correction
 
 
-def read_flat_field_correction(root, shape):
+def load_flatfield_correction(root, shape, return_filename=False):
     """
     Load the flat-field correction model, the parameters of which are contained
     in `root`/calibration/flatfield_parameters.csv
@@ -112,18 +113,7 @@ def read_flat_field_correction(root, shape):
     data = np.loadtxt(filename, delimiter=",")
     parameters, errors = data[:7], data[7:]
     correction_map = apply_vignette_radial(shape, parameters)
-    return correction_map
 
-
-def load_flat_field_correction_map(root, return_filename=False):
-    """
-    Load the flat-field correction map contained in
-    `root`/calibration/flatfield_correction_modelled.npy
-
-    If `return_filename` is True, also return the exact filename used.
-    """
-    filename = root/"calibration/flatfield_correction_modelled.npy"
-    correction_map = np.load(filename)
     if return_filename:
         return correction_map, filename
     else:
