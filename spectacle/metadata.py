@@ -154,8 +154,8 @@ class Camera(object):
         except (FileNotFoundError, OSError):
             self.readnoise = None
             print(f"Could not find a readnoise map in the folder `{self.root}`")
-        finally:
-            return self.readnoise
+
+        return self.readnoise
 
     def generate_ISO_range(self):
         """
