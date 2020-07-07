@@ -39,6 +39,8 @@ def load_monochromator_data(root, folder, blocksize=100):
     take the mean and std of the central `blocksize`x`blocksize` pixels.
     Return the wavelengths with assorted mean values and standard deviations.
     """
+    print(f"Loading monochromator data from `{folder}`...")
+
     # Find the filenames
     mean_files = sorted(folder.glob("*_mean.npy"))
     stds_files = sorted(folder.glob("*_stds.npy"))
