@@ -59,6 +59,7 @@ def load_monochromator_data(root, folder, blocksize=100):
     stds  = means.copy()
 
     # Loop over all files
+    print("Wavelengths [nm]:", end=" ", flush=True)
     for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
         # Load the mean data
         m = np.load(mean_file)
@@ -85,9 +86,9 @@ def load_monochromator_data(root, folder, blocksize=100):
         stds[j] = sub.std(axis=(1,2))
         wvls[j] = mean_file.stem.split("_")[0]
 
-        print(wvls[j], end=" ")
+        print(wvls[j], end=" ", flush=True)
 
-    print(folder)
+    print("\n...Finished!")
 
     spectrum = np.stack([wvls, *means.T, *stds.T]).T
     return spectrum
