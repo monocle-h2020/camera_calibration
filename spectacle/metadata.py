@@ -201,6 +201,8 @@ class Camera(object):
                 pass
 
         # Whatever method was used, save the lookup table so it need not be looked up again
+        else:
+            self.iso_lookup_table = lookup_table
 
 
     def calibrate_bias(self, *data, **kwargs):
