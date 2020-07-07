@@ -31,10 +31,8 @@ overwrite_calibration = True
 save_to_correction = root/f"intermediaries/flatfield/flatfield_correction_{label}.npy"
 save_to_correction_raw = root/f"intermediaries/flatfield/flatfield_correction_{label}_raw.npy"
 save_to_correction_modelled_intermediary = root/f"intermediaries/flatfield/flatfield_correction_{label}_modelled.npy"
-save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.npy"
-
-save_to_correction_modelled_calibration = root/"calibration/flatfield_correction_modelled.npy"
-save_to_parameters_calibration = root/"calibration/flatfield_parameters.npy"
+save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.csv"
+save_to_parameters_calibration = root/"calibration/flatfield_parameters.csv"
 
 # Get metadata
 camera = io.load_metadata(root)
@@ -54,10 +52,10 @@ mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, camera.bayer
 print("Normalised data")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
-flat_field_gauss = gaussMd(mean_normalised, 10)
+flatfield_gauss = gaussMd(mean_normalised, 10)
 
 # Calculate the correction factor
-correction = 1 / flat_field_gauss
+correction = 1 / flatfield_gauss
 correction_raw = 1 / mean_normalised
 
 # Save the correction factor maps
@@ -73,17 +71,17 @@ correction_raw_clipped = flat.clip_data(correction_raw)
 print("Fitting...")
 parameters, standard_errors = flat.fit_vignette_radial(correction_clipped)
 
-# Save the best-fitting model parameters
-np.save(save_to_parameters_intermediary, np.stack([parameters, standard_errors]))
-print(f"Saved best-fitting model parameters to '{save_to_parameters_intermediary}'")
-if overwrite_calibration:
-    np.save(save_to_parameters_calibration, np.stack([parameters, standard_errors]))
-    print(f"Saved best-fitting model parameters to '{save_to_parameters_calibration}'")
-
 # Output the best-fitting model parameters and errors
 print("Parameter +- Error    ; Relative error")
 for p, s in zip(parameters, standard_errors):
     print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
+
+# Save the best-fitting model parameters
+result_array = np.array([*parameters, *standard_errors])[:,np.newaxis].T
+save_locations = [save_to_parameters_intermediary, save_to_parameters_calibration] if overwrite_calibration else [save_to_parameters_intermediary]
+for saveto in save_locations:
+    np.savetxt(saveto, result_array, header=", ".join(flat.parameter_labels + flat.parameter_error_labels), delimiter=",")
+    print(f"Saved best-fitting model parameters to '{saveto}'")
 
 # Apply the best-fitting model to the data to generate a correction map
 correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
@@ -91,6 +89,3 @@ correction_modelled = flat.apply_vignette_radial(correction.shape, parameters)
 # Save the moddelled correction map
 np.save(save_to_correction_modelled_intermediary, correction_modelled)
 print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled_intermediary}'")
-if overwrite_calibration:
-    np.save(save_to_correction_modelled_calibration, correction_modelled)
-    print(f"Saved the modelled flat-field correction map to '{save_to_correction_modelled_calibration}'")

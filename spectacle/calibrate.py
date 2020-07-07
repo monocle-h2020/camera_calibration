@@ -12,17 +12,17 @@ from . import bias_readnoise, dark, flat, gain, io, iso, metadata, spectral
 # calibration scripts, for simpler access
 from .bias_readnoise import load_bias_map, load_readnoise_map
 from .dark import load_dark_current_map
-from .flat import load_flat_field_correction_map, clip_data
+from .flat import clip_data, load_flatfield_correction
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
 from .metadata import load_metadata
 from .raw import demosaick
-from .spectral import load_spectral_response, convert_RGBG2_to_RGB
+from .spectral import load_spectral_response, load_spectral_bandwidths, convert_RGBG2_to_RGB
 
 def correct_bias(root, *data):
     """
-    Perform a bias correction on data using a bias map from the calibration
-    folder.
+    Perform a bias correction on data using a bias map from
+    `root`/calibration/
 
     To do:
         - ISO selection
@@ -48,7 +48,7 @@ def correct_bias(root, *data):
 def correct_dark_current(root, exposure_time, *data):
     """
     Perform a dark current correction on data using a dark current map from
-    `root`/calibration/dark_current_normalised.npy
+    `root`/calibration/
 
     To do:
         - Easy way to parse exposure times in scripts
@@ -70,7 +70,7 @@ def correct_dark_current(root, exposure_time, *data):
 def normalise_iso(root, iso_values, *data):
     """
     Normalise data using an ISO normalisation look-up table from
-    `root`/calibration/iso_normalisation_lookup_table.npy
+    `root`/calibration/
 
     If `iso` is a single number, use `normalise_single_iso`. Otherwise, use
     `normalise_multiple_iso`.
@@ -91,7 +91,7 @@ def normalise_iso(root, iso_values, *data):
 def convert_to_photoelectrons(root, *data):
     """
     Convert ISO-normalised data to photoelectrons using a normalised gain map
-    (in normalised ADU per photoelectron) from `root`/calibration/gain.npy
+    (in normalised ADU per photoelectron) from `root`/calibration/
     """
     # Load the gain map
     gain_map, origin = gain.load_gain_map(root, return_filename=True)  # norm. ADU / e-
@@ -110,13 +110,14 @@ def convert_to_photoelectrons(root, *data):
 def correct_flatfield(root, *data, **kwargs):
     """
     Correction for flat-fielding using a flat-field correction map read from
-    `root`/calibration/flatfield_correction_modelled.npy
-
-    To do:
-        - Choose between model and map (separate functions?)
+    `root`/calibration/
     """
+
+    # Load metadata to get the array shape
+    camera = load_metadata(root)
+
     # Load the correction map
-    correction_map, origin = flat.load_flat_field_correction_map(root, return_filename=True)
+    correction_map, origin = flat.load_flatfield_correction(root, shape=camera.image.shape, return_filename=True)
     print(f"Using flat-field map from '{origin}'")
 
     # Correct each given array
@@ -132,7 +133,7 @@ def correct_flatfield(root, *data, **kwargs):
 def correct_spectral_response(root, wavelengths, data):
     """
     Correction for the spectral response of the camera, using curves read from
-    `root`/calibration/spectral_response.npy
+    `root`/calibration/
 
     The spectral responses are interpolated to the wavelengths given by the
     user. Spectral responses outside the range of the calibration data are

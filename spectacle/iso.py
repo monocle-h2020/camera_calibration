@@ -124,41 +124,76 @@ def normalise_iso_general(lookup_table, isos, data):
 def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at
-    `root`/calibration/iso_normalisation_lookup_table.npy
-    If `return_filename` is True, also return the exact filename the bias map
+    `root`/calibration/iso_normalisation_lookup_table.csv
+    If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
-    filename = root/"calibration/iso_normalisation_lookup_table.npy"
-    table = np.load(filename)
+    filename = root/"calibration/iso_normalisation_lookup_table.csv"
+    table = np.loadtxt(filename, delimiter=",").T
     if return_filename:
         return table, filename
     else:
         return table
 
+
 def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
-    in `root`/calibration/iso_normalisation_model.dat
-    If `return_filename` is True, also return the exact filename the bias map
+    in `root`/calibration/iso_normalisation_model.csv
+    If `return_filename` is True, also return the exact filename the model
     was retrieved from.
+
+    To do: include in ISO model object
     """
-    filename = root/"calibration/iso_normalisation_model.dat"
-    as_array = np.loadtxt(filename, dtype=str)
-    model_type = as_array[0,0]
-    parameters = as_array[1].astype(np.float64)
-    errors     = as_array[2].astype(np.float64)
+    filename = root/"calibration/iso_normalisation_model.csv"
+    as_array = np.loadtxt(filename, dtype=str, delimiter=",")
+
+    model_type = as_array[0]
+    if model_type == "Linear":
+        parameters = as_array[1:3]
+        errors = as_array[3:]
+    elif model_type == "Knee":
+        parameters = as_array[1:4]
+        errors = as_array[4:]
+    else:
+        raise ValueError(f"Unknown model type `{model_type}` in file `{filename}`.")
+
+    parameters = parameters.astype(np.float64)
+    errors     = errors.astype(np.float64)
     model = model_generator[model_type](*parameters)
+
     if return_filename:
         return model, filename
     else:
         return model
 
+
+def save_iso_model(saveto, model_type, parameters, errors):
+    """
+    Save the parameters to the ISO normalisation function to `saveto`.
+
+    To do: include in ISO model object
+    """
+
+    model_array = np.array([model_type, *parameters, *errors])
+    model_array = model_array[:, np.newaxis].T
+
+    if model_type == "Linear":
+        header = "Model, a, b, a_err, b_err"
+    elif model_type == "Knee":
+        header = "Model, a, b, K, a_err, b_err, K_err"
+    else:
+        raise ValueError(f"Unknown model type `{model_type}`.")
+
+    np.savetxt(saveto, model_array, fmt="%s", delimiter=",", header=header)
+
+
 def load_iso_data(root, return_filename=False):
     """
     Load ISO normalisation data from
     `root`/intermediaries/iso_normalisation/iso_data.npy
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename the data
+    were retrieved from.
     """
     filename = root/"intermediaries/iso_normalisation/iso_data.npy"
     data = np.load(filename)

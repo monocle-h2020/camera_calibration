@@ -177,7 +177,7 @@ print(f"Saved spectral response curves to '{save_to}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
 bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
-np.savetxt(root/"calibration/spectral_bandwidths.dat", bandwidths)
+np.savetxt(root/"calibration/spectral_bandwidths.csv", bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
 for band, width in zip([*"RGB", "G2"], bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")

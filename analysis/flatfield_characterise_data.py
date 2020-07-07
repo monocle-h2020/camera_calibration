@@ -63,11 +63,11 @@ camera.plot_gauss_maps(SNR, colorbar_label="Signal-to-noise ratio", saveto=save_
 print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
-flat_field_gauss = gaussMd(mean_normalised, 10)
+flatfield_gauss = gaussMd(mean_normalised, 10)
 
 # Make histograms of the raw, bias-corrected, normalised, and Gaussed data
 save_to_histogram_data = savefolder/f"data_histogram_{label}.pdf"
-data_sets = [mean_raw, mean_normalised, mean_bias_corrected, flat_field_gauss]
+data_sets = [mean_raw, mean_normalised, mean_bias_corrected, flatfield_gauss]
 titles = ["Raw", "Normalised", "Bias-corrected", "Gaussed"]
 bins_adu = np.linspace(0, camera.saturation, 250)
 bins_flat = np.linspace(0, 1.05, 100)
@@ -90,7 +90,7 @@ print(f"Saved histograms of data to '{save_to_histogram_data}'")
 
 # Make a histogram of the difference between the normalised and Gaussed data
 save_to_histogram_difference = savefolder/f"data_gauss_difference.pdf"
-difference_normalised_gauss = flat_field_gauss - mean_normalised
+difference_normalised_gauss = flatfield_gauss - mean_normalised
 bins = np.linspace(*analyse.symmetric_percentiles(difference_normalised_gauss, percent=0.01), 100)
 plt.figure(figsize=(4,2), tight_layout=True)
 plt.hist(difference_normalised_gauss.ravel(), bins=bins, color='k')
@@ -105,14 +105,14 @@ print(f"Saved histogram of difference (Gaussed - Normalised data) to '{save_to_h
 save_to_maps_normalised = savefolder/f"data_normalised_{label}.pdf"
 save_to_maps_gaussed = savefolder/f"data_gaussed_{label}.pdf"
 camera.plot_gauss_maps(mean_normalised, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_normalised)
-camera.plot_gauss_maps(flat_field_gauss, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
+camera.plot_gauss_maps(flatfield_gauss, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
 print(f"Saved Gaussed maps to '{save_to_maps_normalised}' and '{save_to_maps_gaussed}'")
 
 # Clip the data
-flat_field_gauss_clipped = flat.clip_data(flat_field_gauss)
+flatfield_gauss_clipped = flat.clip_data(flatfield_gauss)
 
 # Convert the data to a correction factor g
-correction_factor = 1 / flat_field_gauss_clipped
+correction_factor = 1 / flatfield_gauss_clipped
 
 # Plot Gaussian maps of the correction factors
 save_to_maps_correction_factor = savefolder/f"data_correction_factor_{label}.pdf"
