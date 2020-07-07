@@ -125,38 +125,28 @@ class Camera(object):
             bayer_map[bayer_map == j] = bias_value
         return bayer_map
 
-    def calibrate_bias(self, *data, **kwargs):
+    def _load_bias_map(self):
         """
-        Calibrate data for bias using this sensor's bias data
+        Load a bias map from file or from metadata
         """
-        # If a bias map has already been loaded, use that
+        # First try using a data-based bias map from file
         try:
-            bias_map = self.bias_map
+            bias_map = bias_readnoise.load_bias_map(self.root)
 
-        # If a bias map has not been loaded yet, do so
-        except AttributeError:
+        # If a data-based bias map does not exist or cannot be loaded, use metadata instead
+        except (FileNotFoundError, OSError):
+            bias_map = self.generate_bias_map()
+            self.bias_type = "Metadata"
 
-            # First try using a data-based bias map from file
-            try:
-                bias_map = bias_readnoise.load_bias_map(self.root)
+        # If a data-based bias map was found, indicate this in the self.bias_type tag
+        else:
+            self.bias_type = "Measured"
 
-            # If a data-based bias map does not exist or cannot be loaded, use metadata instead
-            except (FileNotFoundError, OSError):
-                bias_map = self.generate_bias_map()
-                self.bias_type = "Metadata"
-
-            # If a data-based bias map was found, indicate this in the self.bias_type tag
-            else:
-                self.bias_type = "Measured"
-
-            # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
+        # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
+        finally:
             self.bias_map = bias_map
 
-        # Apply the bias correction
-        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
-        return data_corrected
-
-    def load_readnoise_map(self):
+    def _load_readnoise_map(self):
         """
         Load a readnoise map for this sensor
         """
@@ -172,6 +162,38 @@ class Camera(object):
         # The read-noise map is saved to this object and returned from the function call
         return self.readnoise
 
+    def _load_dark_current_map(self):
+        """
+        Load a dark current map from file - if none is available, return 0s
+        """
+        # Try to use a dark current map from file
+        try:
+            dark_current = dark.load_dark_current_map(self.root)
+
+        # If a dark current map does not exist, return an empty one, and warn the user
+        except (FileNotFoundError, OSError):
+            dark_current = np.zeros(self.image.shape)
+            print(f"Could not find a dark current map in the folder `{self.root}` - using all 0 instead")
+
+        # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
+        self.dark_current = dark_current
+
+    def calibrate_bias(self, *data, **kwargs):
+        """
+        Calibrate data for bias using this sensor's bias data
+        """
+        # If a bias map has already been loaded, use that
+        try:
+            bias_map = self.bias_map
+
+        # If a bias map has not been loaded yet, do so
+        except AttributeError:
+            self._load_bias_map()
+
+        # Apply the bias correction
+        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
+        return data_corrected
+
     def correct_dark_current(self, exposure_time, *data, **kwargs):
         """
         Calibrate data for dark current using this sensor's data
@@ -182,18 +204,7 @@ class Camera(object):
 
         # If a dark current map has not been loaded yet, do so
         except AttributeError:
-
-            # Try to use a dark current map from file
-            try:
-                dark_current = dark.load_dark_current_map(self.root)
-
-            # If a dark current map does not exist, return an empty one, and warn the user
-            except (FileNotFoundError, OSError):
-                dark_current = np.zeros(self.image.shape)
-                print(f"Could not find a dark curent map in the folder `{self.root}` - using all 0 instead")
-
-            # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
-            self.dark_current = dark_current
+            self._load_dark_current_map()
 
         # Apply the dark current correction
         data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, *data, **kwargs)
