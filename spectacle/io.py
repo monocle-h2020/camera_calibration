@@ -310,33 +310,6 @@ def read_gain_table(path):
     return ISO, table
 
 
-def read_spectral_responses(results):
-    """
-    Load the spectral response functions located in the `results` folder.
-    If available, use monochromator data from
-        `results`/spectral_response/monochromator_curve.npy
-    Else, use the data from
-        `results`/spectral_response/curve.npy
-    """
-    try:  # use monochromator data if available
-        as_array = np.load(results/"spectral_response/monochromator_curve.npy")
-    except FileNotFoundError:
-        as_array = np.load(results/"spectral_response/curve.npy")
-    wavelengths = as_array[0]
-    RGBG2 = as_array[1:5]
-    RGBG2_error = as_array[5:]
-    return wavelengths, RGBG2, RGBG2_error
-
-
-def read_spectral_bandwidths(products):
-    """
-    Load the effective spectal bandwidths contained in
-    `products`/spectral_bandwidths.dat
-    """
-    bandwidths = np.loadtxt(products/"spectral_bandwidths.dat")
-    return bandwidths
-
-
 def find_subfolders(path):
     """
     Find the subfolders of a given `path`
