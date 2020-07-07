@@ -129,16 +129,27 @@ class Camera(object):
         """
         Calibrate data for bias using this sensor's bias data
         """
+        # If a bias map has already been loaded, use that
         try:
             bias_map = self.bias_map
+
+        # If a bias map has not been loaded yet, do so
         except AttributeError:
+
+            # First try using a data-based bias map from file
             try:
                 bias_map = bias_readnoise.load_bias_map(self.root)
+
+            # If a data-based bias map does not exist or cannot be loaded, use metadata instead
             except (FileNotFoundError, OSError):
                 bias_map = self.generate_bias_map()
                 self.bias_type = "Metadata"
+
+            # If a data-based bias map was found, indicate this in the self.bias_type tag
             else:
                 self.bias_type = "Measured"
+
+            # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
             self.bias_map = bias_map
 
         # Apply the bias correction
@@ -149,12 +160,16 @@ class Camera(object):
         """
         Load a readnoise map for this sensor
         """
+        # Try to use a data-based read-noise map
         try:
             self.readnoise = bias_readnoise.load_readnoise_map(self.root)
+
+        # If a data-based read-noise map does not exist or cannot be loaded, return an empty (None) object and warn
         except (FileNotFoundError, OSError):
             self.readnoise = None
             print(f"Could not find a readnoise map in the folder `{self.root}`")
 
+        # The read-noise map is saved to this object and returned from the function call
         return self.readnoise
 
     def correct_dark_current(self, exposure_time, *data, **kwargs):
