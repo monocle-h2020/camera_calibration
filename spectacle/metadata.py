@@ -7,7 +7,7 @@ import json
 from collections import namedtuple
 from pathlib import Path
 
-from . import raw, analyse, bias_readnoise, dark
+from . import raw, analyse, bias_readnoise, dark, iso
 
 
 def find_root_folder(input_path):
@@ -177,6 +177,31 @@ class Camera(object):
 
         # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
         self.dark_current = dark_current
+
+    def _load_iso_normalisation(self):
+        """
+        Load an ISO normalisation look-up table from file or from parameters
+        """
+        # Try to use a lookup table from file
+        try:
+            lookup_table = iso.load_iso_lookup_table(self.root)
+
+        # If a lookup table cannot be found, try to load model parameters and generate one
+        except (FileNotFoundError, OSError):
+            # First try loading the model
+            try:
+                model = iso.load_iso_model(self.root)
+
+            # If a model is also unavailable, assume a linear relation and warn the user
+            except (FileNotFoundError, OSError):
+                pass
+
+            # If a model was found, create a lookup table
+            else:
+                pass
+
+        # Whatever method was used, save the lookup table so it need not be looked up again
+
 
     def calibrate_bias(self, *data, **kwargs):
         """
