@@ -176,13 +176,28 @@ class Camera(object):
         """
         Calibrate data for dark current using this sensor's data
         """
+        # If a dark current map has already been loaded, use that
         try:
             dark_current = self.dark_current
+
+        # If a dark current map has not been loaded yet, do so
         except AttributeError:
+
+            # Try to use a dark current map from file
             try:
                 dark_current = dark.load_dark_current_map(self.root)
+
+            # If a dark current map does not exist, return an empty one, and warn the user
             except (FileNotFoundError, OSError):
-                pass
+                dark_current = np.zeros(self.image.shape)
+                print(f"Could not find a dark curent map in the folder `{self.root}` - using all 0 instead")
+
+            # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
+            self.dark_current = dark_current
+
+        # Apply the dark current correction
+        data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, *data, **kwargs)
+        return data_corrected
 
     def generate_ISO_range(self):
         """
