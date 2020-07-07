@@ -1,7 +1,7 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, plot, flat
+from spectacle import raw, io, plot, flat, spectral
 from spectacle.general import gaussMd
 
 meanfile = io.path_from_input(argv)
@@ -41,7 +41,7 @@ pixel_area_m = (phone["camera"]["pixel_size"] * 1e-6)**2
 corrected_pixel_size = corrected_flat / pixel_area_m  # norm. ADU m^-2 sr^-1 s^-1
 print("Corrected for pixel size")
 
-effective_bandwidths = io.read_spectral_bandwidths(products) * 1e-9  # m
+effective_bandwidths = spectral.load_spectral_bandwidths(root) * 1e-9  # m
 corrected_bandwidth = raw.multiply_RGBG(corrected_pixel_size, colours_edges, 1/effective_bandwidths)  # norm. ADU m^-2 sr^-1 s^-1 m^-1
 print("Corrected for effective spectral bandwidths")
 

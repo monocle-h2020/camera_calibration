@@ -154,6 +154,22 @@ def load_spectral_response(root, return_filename=False):
         return spectral_response
 
 
+def load_spectral_bandwidths(root, return_filename=False):
+    """
+    Load the effective spectral bandwidths located at
+    `root`/calibration/spectral_bandwidths.csv.
+
+    If `return_filename` is True, also return the exact filename used.
+    """
+    filename = root/"calibration/spectral_bandwidths.csv"
+    spectral_bandwidths = np.loadtxt(filename, delimiter=", ").T
+
+    if return_filename:
+        return spectral_bandwidths, filename
+    else:
+        return spectral_bandwidths
+
+
 def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwargs):
     """
     Interpolate spectral data `old_data` at `old_wavelengths` to a set of
