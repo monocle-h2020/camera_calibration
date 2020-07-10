@@ -8,6 +8,8 @@ Command line arguments:
     folders correspond to different monochromator settings (e.g. gratings or
     filters). Each subfolder in turn contains NPY stacks of monochromator data
     taken at different wavelengths.
+    * `wvl1`, `wvl2`: the minimum and maximum wavelengths to evaluate at.
+    Defaults to 390, 700 nm, respectively, if none are given.
 """
 
 import numpy as np
