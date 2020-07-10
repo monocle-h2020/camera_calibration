@@ -265,6 +265,7 @@ def find_root_folder(input_path):
     For a given `input_path`, find the root folder, containing the standard
     sub-folders (calibration, analysis, stacks, etc.)
     """
+    # Make sure `input_path` is a Path-type object
     input_path = Path(input_path)
 
     # Loop through the input_path's parents until a metadata JSON file is found
@@ -284,6 +285,8 @@ def replace_word_in_path(path, old, new):
     """
     Replace the string `old` with the string `new` in a given `path`.
     """
+    # Make sure `path` is a Path-type object
+    path = Path(path)
     split = list(path.parts)
     split[split.index(old)] = new
     combined = Path("/".join(split))
@@ -294,6 +297,8 @@ def replace_suffix(path, new_suffix):
     """
     Replace a suffix in a path with `new_suffix`
     """
+    # Make sure `path` is a Path-type object
+    path = Path(path)
     return (path.parent / path.stem).with_suffix(new_suffix)
 
 
