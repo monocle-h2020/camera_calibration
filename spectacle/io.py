@@ -260,15 +260,6 @@ def load_jstds(folder, **kwargs):
     return values, stds
 
 
-def load_angle(stacks):
-    """
-    Load the default polariser offset angle located in
-    `stacks`/linearity/default_angle.dat
-    """
-    offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
-    return offset_angle
-
-
 def find_root_folder(input_path):
     """
     For a given `input_path`, find the root folder, containing the standard
