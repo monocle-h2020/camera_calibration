@@ -84,13 +84,6 @@ def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital val
     _saveshow(saveto)
 
 
-def plot_photo(data, saveto=None, **kwargs):
-    plt.imshow(data.astype("uint8"), **kwargs)
-    plt.xlabel("$y$")
-    plt.ylabel("$x$")
-    _saveshow(saveto)
-
-
 def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.figure(figsize=(3.3,3))
     _rgbplot(y, lines, func=plt.scatter, s=25)
@@ -116,55 +109,6 @@ def RGBG(RGBG, saveto=None, size=13, **kwargs):
     for ax in axs.ravel():
         ax.axis("off")
     fig.subplots_adjust(hspace=.001, wspace=.001)
-    _saveshow(saveto, transparent=True)
-
-
-def _to_8_bit(data, maxvalue=4096, boost=1):
-    converted = data.astype(np.float) / maxvalue * 255
-    converted = boost * converted - (boost-1) * 30
-    converted[converted > 255] = 255  # -> np.clip
-    converted[converted < 0]   = 0
-    converted = converted.astype(np.uint8)
-    return converted
-
-
-def RGBG_stacked(RGBG, maxvalue=4096, saveto=None, size=13, boost=5, xlabel="Pixel $x$", show_axes=False, **kwargs):
-    """
-    Ignore G2 for now
-    """
-    plt.figure(figsize=(size,size))
-    to_plot = _to_8_bit(RGBG[:3], maxvalue=maxvalue, boost=boost)
-    to_plot = np.moveaxis(to_plot, 0, 2)
-    plt.imshow(to_plot, **kwargs)
-    plt.xlabel(xlabel)
-    plt.ylabel("Pixel $y$")
-    if not show_axes:
-        plt.axis("off")
-    _saveshow(saveto, transparent=True)
-
-
-def RGBG_stacked_with_graph(RGBG, x=raw.x, maxvalue=4096, boost=5, saveto=None, xlabel="Pixel $x$", **kwargs):
-    R, G, B, G2 = raw.split_RGBG(RGBG)  # change to RGBG
-    stacked = np.stack((R, (G+G2)/2, B))
-    stacked_8_bit = _to_8_bit(stacked, maxvalue=maxvalue, boost=boost)
-    stacked_8_bit = np.moveaxis(stacked_8_bit, 0, 2)
-    stacked_8_bit = stacked_8_bit.swapaxes(0,1)
-
-    fig, ax1 = plt.subplots(figsize=(17,5))
-    ax1.imshow(stacked_8_bit, **kwargs)
-    ax1.set_xlabel(xlabel)
-    ax1.set_ylabel("Pixel $y$")
-    ax1.set_ylim(raw.ymax, raw.ymin)
-
-    ax2 = ax1.twinx()
-    p_eff = [pe.Stroke(linewidth=5, foreground='k'), pe.Normal()]
-    meaned = RGBG.mean(axis=2)
-    _rgbplot(x, meaned, func=ax2.plot, path_effects = p_eff)  # change to RGBG
-    ax2.set_ylabel("Mean RGBG value")
-    ax2.set_xlim(x[0], x[-1])
-    ax2.set_ylim(meaned.min()*0.99, meaned.max()*1.01)
-
-    fig.tight_layout()
     _saveshow(saveto, transparent=True)
 
 
