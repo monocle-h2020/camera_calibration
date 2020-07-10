@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe, ticker
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -215,6 +216,8 @@ def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
         if vmax == "auto":
             vmax = symmetric_percentiles(data)[1]
     kwargs.update({"vmin": vmin, "vmax": vmax})
+
+    saveto = Path(saveto)
 
     for j, c in enumerate(RGBG2):
         try:
