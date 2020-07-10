@@ -203,6 +203,18 @@ class Camera(object):
         else:
             self.iso_lookup_table = lookup_table
 
+    def normalise_iso(self, iso_values, *data):
+        """
+        Normalise data for their ISO speed using this sensor's lookup table
+        """
+        # If a lookup table has not been loaded yet, do so
+        if not hasattr(self, "iso_lookup_table"):
+            self._load_iso_normalisation()
+
+        # Apply the ISO normalisation
+        data_corrected = data
+        return data_corrected
+
     def correct_bias(self, *data, **kwargs):
         """
         Correct data for bias using this sensor's bias data
