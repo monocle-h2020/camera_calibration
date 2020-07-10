@@ -3,12 +3,13 @@ from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
 from warnings import warn
 
+
+wavelengths_interpolated = np.arange(390, 701, 1)
+
+
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     response_normalised = response / response.max(axis=axis)
     return np.trapz(response_normalised, x=wavelengths, axis=axis, **kwargs)
-
-
-wavelengths_interpolated = np.arange(390, 701, 1)
 
 
 def interpolate(wavelengths, response, interpolate_to=wavelengths_interpolated):
