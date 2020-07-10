@@ -26,7 +26,9 @@ def load_raw_file(filename):
     """
     Load a raw file using rawpy's `imread` function. Return the rawpy object.
     """
-    img = rawpy.imread(str(filename))
+    # Convert filename to str because rawpy does not support Path
+    filename_as_str = str(filename)
+    img = rawpy.imread(filename_as_str)
     return img
 
 
