@@ -46,6 +46,8 @@ def load_readnoise_map(root, return_filename=False):
         return readnoise_map
 
 
+# Future: split subtraction into helper function, use apply_multi
+
 def correct_bias_from_map(bias_map, *data):
     """
     Apply a bias correction from a bias map `bias_map` to arrays `data` (any number)
