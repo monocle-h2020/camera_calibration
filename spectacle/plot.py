@@ -28,6 +28,17 @@ rgbg2 = ["r", "g", "b", "g2"]
 RGBG2 = ["R", "G", "B", "G2"]
 
 
+def _convert_to_path(path):
+    # Convert to a Path-type object
+    try:
+        path = Path(path)
+    # If `path` cannot be made into a Path, assume it is None and continue
+    except TypeError:
+        path = None
+
+    return path
+
+
 def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
         plt.show()
@@ -194,13 +205,7 @@ def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
             vmax = symmetric_percentiles(data)[1]
     kwargs.update({"vmin": vmin, "vmax": vmax})
 
-    # Convert `saveto` to a Path-type object
-    try:
-        saveto = Path(saveto)
-
-    # If `saveto` cannot be made into a Path, assume it is None and continue
-    except TypeError:
-        saveto = None
+    saveto = _convert_to_path(saveto)
 
     for j, c in enumerate(RGBG2):
         try:
@@ -252,6 +257,8 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
 
 
 def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
+    savefolder = _convert_to_path(savefolder)
+
     for j in range(4):
         colour_index = colours_here[j]
         colour = "rgbg"[colour_index]
@@ -280,6 +287,8 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
 
 
 def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
+    savefolder = _convert_to_path(savefolder)
+
     for j in range(4):
         colour_index = colours_here[j]
         colour = "rgbg"[colour_index]
