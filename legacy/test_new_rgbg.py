@@ -43,11 +43,13 @@ def pull_apart2(raw_img, color_pattern, color_desc="RGBG", remove=True):
     return clean_stack
 
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
-results_readnoise = results/"readnoise"
+root = io.find_root_folder(folder)
+results_readnoise = root/"results/readnoise"
+
+camera = io.load_metadata(root)
 
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
-colours     = io.load_colour(stacks)
+colours = camera.bayer_map
 
 s = stds[isos.argmin()]
 

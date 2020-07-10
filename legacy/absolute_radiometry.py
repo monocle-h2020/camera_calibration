@@ -6,9 +6,9 @@ from spectacle.general import gaussMd
 
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
-phone = io.load_metadata(root)
+camera = io.load_metadata(root)
 
-colours = io.load_colour(stacks)
+colours = camera.bayer_map
 
 iso = 23
 exposure_time = 1/3

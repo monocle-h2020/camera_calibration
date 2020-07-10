@@ -260,15 +260,6 @@ def load_jstds(folder, **kwargs):
     return values, stds
 
 
-def load_colour(stacks):
-    """
-    Load the Bayer colour pattern for a camera from its respective `stacks`
-    folder.
-    """
-    colours = np.load(stacks/"colour.npy")
-    return colours
-
-
 def load_angle(stacks):
     """
     Load the default polariser offset angle located in
