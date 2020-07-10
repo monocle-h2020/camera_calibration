@@ -217,7 +217,13 @@ def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
             vmax = symmetric_percentiles(data)[1]
     kwargs.update({"vmin": vmin, "vmax": vmax})
 
-    saveto = Path(saveto)
+    # Convert `saveto` to a Path-type object
+    try:
+        saveto = Path(saveto)
+
+    # If `saveto` cannot be made into a Path, assume it is None and continue
+    except TypeError:
+        saveto = None
 
     for j, c in enumerate(RGBG2):
         try:
