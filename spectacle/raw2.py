@@ -1,13 +1,5 @@
 import numpy as np
 
-xmin = 2150
-xmax = 3900
-ymin = 760
-ymax = 1470
-x = np.arange(xmin, xmax)
-y = np.arange(ymin, ymax)
-x_small = np.arange(xmin/2, xmax/2)
-y_small = np.arange(ymin/2, ymax/2)
 
 def _find_offset(color_pattern, colour):
     pos = np.array(np.where(color_pattern == colour)).T[0]
@@ -82,8 +74,3 @@ def to_RGB_array(raw_image, color_pattern):
     RGB[G_ind[0], G_ind[1], 1] = raw_image[G_ind]
     RGB[B_ind[0], B_ind[1], 2] = raw_image[B_ind]
     return RGB
-
-
-def cut_out_spectrum(raw_image):
-    cut = raw_image[ymin:ymax, xmin:xmax]
-    return cut
