@@ -288,13 +288,13 @@ def load_json(path):
     """
     Read a JSON file.
     """
-    file = open(path)
-    try:
-        # Load the JSON file
-        dump = json.load(file)
-    except json.JSONDecodeError:
-        # If the JSON file could not be read, e.g. because it is empty, raise an error
-        raise ValueError(f"Could not read JSON file `{path}`.")
+    with open(path, "r") as file:
+        try:
+            # Load the JSON file
+            dump = json.load(file)
+        except json.JSONDecodeError:
+            # If the JSON file could not be read, e.g. because it is empty, raise an error
+            raise ValueError(f"Could not read JSON file `{path}`.")
     return dump
 
 
@@ -309,8 +309,8 @@ def write_json(data, save_to):
 def load_metadata(root, return_filename=False):
     """
     Read the metadata JSON located in the `root` folder.
-    If `return_filename` is True, also return the exact filename the data
-    were retrieved from.
+
+    If `return_filename` is True, also return the exact filename used.
     """
     filename = root/"metadata.json"
     metadata = Camera.read_from_file(filename)

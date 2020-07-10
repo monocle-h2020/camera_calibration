@@ -39,6 +39,8 @@ def load_monochromator_data(root, folder, blocksize=100):
     take the mean and std of the central `blocksize`x`blocksize` pixels.
     Return the wavelengths with assorted mean values and standard deviations.
     """
+    print(f"Loading monochromator data from `{folder}`...")
+
     # Find the filenames
     mean_files = sorted(folder.glob("*_mean.npy"))
     stds_files = sorted(folder.glob("*_stds.npy"))
@@ -57,6 +59,7 @@ def load_monochromator_data(root, folder, blocksize=100):
     stds  = means.copy()
 
     # Loop over all files
+    print("Wavelengths [nm]:", end=" ", flush=True)
     for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
         # Load the mean data
         m = np.load(mean_file)
@@ -83,9 +86,9 @@ def load_monochromator_data(root, folder, blocksize=100):
         stds[j] = sub.std(axis=(1,2))
         wvls[j] = mean_file.stem.split("_")[0]
 
-        print(wvls[j], end=" ")
+        print(wvls[j], end=" ", flush=True)
 
-    print(folder)
+    print("\n...Finished!")
 
     spectrum = np.stack([wvls, *means.T, *stds.T]).T
     return spectrum
@@ -122,8 +125,7 @@ def load_spectral_response(root, return_filename=False):
     If no CSV is available, try an NPY file for backwards compatibility.
     This is deprecated and will no longer be supported in future releases.
 
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename used.
     """
     # Try to use a CSV file
     filename = root/"calibration/spectral_response.csv"
@@ -150,6 +152,22 @@ def load_spectral_response(root, return_filename=False):
         return spectral_response, filename
     else:
         return spectral_response
+
+
+def load_spectral_bandwidths(root, return_filename=False):
+    """
+    Load the effective spectral bandwidths located at
+    `root`/calibration/spectral_bandwidths.csv.
+
+    If `return_filename` is True, also return the exact filename used.
+    """
+    filename = root/"calibration/spectral_bandwidths.csv"
+    spectral_bandwidths = np.loadtxt(filename, delimiter=", ").T
+
+    if return_filename:
+        return spectral_bandwidths, filename
+    else:
+        return spectral_bandwidths
 
 
 def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwargs):

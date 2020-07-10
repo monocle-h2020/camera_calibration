@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe, ticker
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -25,6 +26,17 @@ RGB = "RGB"
 rgbg = "rgbg"
 rgbg2 = ["r", "g", "b", "g2"]
 RGBG2 = ["R", "G", "B", "G2"]
+
+
+def _convert_to_path(path):
+    # Convert to a Path-type object
+    try:
+        path = Path(path)
+    # If `path` cannot be made into a Path, assume it is None and continue
+    except TypeError:
+        path = None
+
+    return path
 
 
 def _saveshow(saveto=None, close=True, **kwargs):
@@ -94,29 +106,6 @@ def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.axis("tight")
     plt.tight_layout()
     _saveshow(saveto)
-
-
-def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, saveto=None):
-    plt.scatter(y, coefficients, c='r')
-    plt.plot(y, coefficients_fit, c='k', lw=3)
-    plt.xlim(y[0], y[-1])
-    plt.ylim(coefficients.min(), coefficients.max())
-    plt.title(f"Coefficient {nr} of wavelength fit")
-    plt.xlabel("$y$")
-    plt.ylabel(f"$p_{nr}$")
-    _saveshow(saveto)
-
-
-def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
-    for j in range(coefficients_fit.shape[1]):
-        try:
-            # save every coefficient plot in its own file
-            # TODO: make one plot with shared x axis
-            saveto1 = saveto.split(".")
-            saveto1 = saveto1[0] + "_" + str(j) + "." + saveto1[1]
-        except AttributeError:
-            saveto1 = saveto
-        _wavelength_coefficients_single(y, coefficients[:,j], coefficients_fit[:,j], nr=j, saveto=saveto1)
 
 
 def RGBG(RGBG, saveto=None, size=13, **kwargs):
@@ -216,6 +205,8 @@ def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
             vmax = symmetric_percentiles(data)[1]
     kwargs.update({"vmin": vmin, "vmax": vmax})
 
+    saveto = _convert_to_path(saveto)
+
     for j, c in enumerate(RGBG2):
         try:
             saveto_c = saveto.parent / (saveto.stem + "_" + c + saveto.suffix)
@@ -266,6 +257,8 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
 
 
 def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
+    savefolder = _convert_to_path(savefolder)
+
     for j in range(4):
         colour_index = colours_here[j]
         colour = "rgbg"[colour_index]
@@ -275,7 +268,7 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
             label = "g2"
         try:
             saveto = savefolder/f"linearity_response_RAW_{label}.pdf"
-        except:
+        except TypeError:
             saveto = None
 
         mean_dng =  means[:, j]
@@ -294,6 +287,8 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
 
 
 def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
+    savefolder = _convert_to_path(savefolder)
+
     for j in range(4):
         colour_index = colours_here[j]
         colour = "rgbg"[colour_index]
@@ -305,7 +300,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
             label = "g2"
         try:
             saveto = savefolder/f"linearity_response_RAW_JPEG_{label}.pdf"
-        except:
+        except TypeError:
             saveto = None
 
         mean_dng =  means[:, j]

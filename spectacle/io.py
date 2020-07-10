@@ -26,7 +26,9 @@ def load_raw_file(filename):
     """
     Load a raw file using rawpy's `imread` function. Return the rawpy object.
     """
-    img = rawpy.imread(str(filename))
+    # Convert filename to str because rawpy does not support Path
+    filename_as_str = str(filename)
+    img = rawpy.imread(filename_as_str)
     return img
 
 
@@ -44,7 +46,7 @@ def load_raw_colors(filename):
     Load a raw file using rawpy's `imread` function. Return only the Bayer
     colour data.
     """
-    img = load_raw_file(str(filename))
+    img = load_raw_file(filename)
     return img.raw_colors
 
 
@@ -141,6 +143,8 @@ def expected_array_size(folder, pattern):
     Find the required array size when loading files from `folder` that follow
     the pattern `pattern`, e.g. all .DNG files.
     """
+    # Make sure `folder` is a Path-like object
+    folder = Path(folder)
     files = sorted(folder.glob(pattern))
     array = np.load(files[0])
     return np.array(array.shape)
@@ -154,6 +158,8 @@ def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[
     given in the `retrieve_value` keyword. Only return array elements included
     in `selection` (default: all).
     """
+    # Make sure `folder` is a Path-like object
+    folder = Path(folder)
     files = sorted(folder.glob(pattern))
     stacked = np.stack([np.load(f)[selection] for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
@@ -163,7 +169,12 @@ def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[
 def split_path(path, split_on):
     """
     Split a pathlib Path object `path` on a string `split_on`.
+
+    Input `path` is converted to a Path-type object, but
+    output `split_underscore` is (and must be) a str object
     """
+    # Make sure `path` is a Path-type object
+    path = Path(path)
     split_split_on = path.stem.split(split_on)[1]
     split_underscore = split_split_on.split("_")[0]
     return split_underscore
@@ -249,28 +260,12 @@ def load_jstds(folder, **kwargs):
     return values, stds
 
 
-def load_colour(stacks):
-    """
-    Load the Bayer colour pattern for a camera from its respective `stacks`
-    folder.
-    """
-    colours = np.load(stacks/"colour.npy")
-    return colours
-
-
-def load_angle(stacks):
-    """
-    Load the default polariser offset angle located in
-    `stacks`/linearity/default_angle.dat
-    """
-    offset_angle = np.loadtxt(stacks/"linearity"/"default_angle.dat").ravel()[0]
-    return offset_angle
-
-
 def replace_word_in_path(path, old, new):
     """
     Replace the string `old` with the string `new` in a given `path`.
     """
+    # Make sure `path` is a Path-type object
+    path = Path(path)
     split = list(path.parts)
     split[split.index(old)] = new
     combined = Path("/".join(split))
@@ -281,6 +276,8 @@ def replace_suffix(path, new_suffix):
     """
     Replace a suffix in a path with `new_suffix`
     """
+    # Make sure `path` is a Path-type object
+    path = Path(path)
     return (path.parent / path.stem).with_suffix(new_suffix)
 
 
@@ -288,33 +285,6 @@ def read_gain_table(path):
     table = np.load(path)
     ISO = split_iso(path)
     return ISO, table
-
-
-def read_spectral_responses(results):
-    """
-    Load the spectral response functions located in the `results` folder.
-    If available, use monochromator data from
-        `results`/spectral_response/monochromator_curve.npy
-    Else, use the data from
-        `results`/spectral_response/curve.npy
-    """
-    try:  # use monochromator data if available
-        as_array = np.load(results/"spectral_response/monochromator_curve.npy")
-    except FileNotFoundError:
-        as_array = np.load(results/"spectral_response/curve.npy")
-    wavelengths = as_array[0]
-    RGBG2 = as_array[1:5]
-    RGBG2_error = as_array[5:]
-    return wavelengths, RGBG2, RGBG2_error
-
-
-def read_spectral_bandwidths(products):
-    """
-    Load the effective spectal bandwidths contained in
-    `products`/spectral_bandwidths.dat
-    """
-    bandwidths = np.loadtxt(products/"spectral_bandwidths.dat")
-    return bandwidths
 
 
 def find_subfolders(path):

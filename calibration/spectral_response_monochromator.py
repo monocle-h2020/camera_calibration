@@ -8,6 +8,8 @@ Command line arguments:
     folders correspond to different monochromator settings (e.g. gratings or
     filters). Each subfolder in turn contains NPY stacks of monochromator data
     taken at different wavelengths.
+    * `wvl1`, `wvl2`: the minimum and maximum wavelengths to evaluate at.
+    Defaults to 390, 700 nm, respectively, if none are given.
 """
 
 import numpy as np
@@ -15,8 +17,17 @@ from sys import argv
 from spectacle import io, spectral
 
 # Get the data folder and minimum and maximum wavelengths from the command line
-folder, wvl1, wvl2 = io.path_from_input(argv)
-wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
+# Defaults
+if len(argv) == 2:
+    folder = io.path_from_input(argv)
+    wvl1 = 390
+    wvl2 = 700
+elif len(argv) == 4:
+    folder, wvl1, wvl2 = io.path_from_input(argv)
+    wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
+else:
+    raise ValueError(f"Expected 2 or 4 arguments in `argv`, got {len(argv)}.")
+
 root = io.find_root_folder(folder)
 
 # Get the camera metadata
@@ -177,7 +188,7 @@ print(f"Saved spectral response curves to '{save_to}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
 bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
-np.savetxt(root/"calibration/spectral_bandwidths.dat", bandwidths)
+np.savetxt(root/"calibration/spectral_bandwidths.csv", bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
 for band, width in zip([*"RGB", "G2"], bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")

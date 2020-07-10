@@ -8,8 +8,7 @@ def load_gain_map(root, return_filename=False):
     """
     Load the gain map located at `root`/calibration/gain.npy
 
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename used.
     """
     filename = root/"calibration/gain.npy"
     gain_map = np.load(filename)

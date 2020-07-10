@@ -2,21 +2,19 @@ This is a to-do list for the `spectacle` module.
 
 ## Module
 
-- [X] Upload to PyPI.
-- [ ] Replace `load_flat_field_correction_map` with `read_flat_field_correction` and remove the pre-made correction map from the calibration package.
-
 ## Scripts
 
 - [ ] Convert all command-line inputs to `optparse` format.
 
 ## Documentation
 
+- [ ] Add metadata on all calibration files, including origins and quality of data.
+
 ### READMEs
 
 ### Module
 
 - [ ] Add detailed information on inputs, outputs, and possible errors to all `spectacle` methods.
-- [ ] Add a more user-friendly method for accessing calibration data from an arbitrary folder.
 
 ### Scripts
 

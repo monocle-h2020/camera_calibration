@@ -46,7 +46,7 @@ The gain calibration requires an ISO speed normalisation look-up table.
 
 ## Flat-field
 
-A flat-field model and map are generated using [flatfield.py](flatfield.py). This map has the flat-field response (sensivity) in each pixel, while the model describes the map in a seven-parameter model, as described in the SPECTACLE paper. The flat-field response is corrected for using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
+A flat-field model is generated using [flatfield.py](flatfield.py). This model describes the flat-field response (sensivity) in each pixel with seven parameters, as described in the SPECTACLE paper. The flat-field response is corrected for using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
 
 The flat-field calibration requires a bias correction. This may be done using a bias map or a mean value, as described above.
 
@@ -54,7 +54,9 @@ The flat-field calibration requires a bias correction. This may be done using a 
 
 Two methods for characterising the spectral response of a camera are currently included in MONOCLE. These are the use of a monochromator and the use of a spectrometer such as iSPEX.
 
-In either case, the spectral response curves are saved, in CSV format, to `root/calibration/spectral_response.csv`. The `spectacle` method `spectacle.calibration.correct_spectral_response` may then be used to correct spectral data (e.g. from iSPEX) by dividing out the spectral response of the camera. Further calibration methods, for example to convert simple RGB images to the CIE XYZ colour space, are currently in development on the [xyz branch](https://github.com/monocle-h2020/camera_calibration/tree/xyz).
+In either case, the spectral response curves are saved, in CSV format, to `root/calibration/spectral_response.csv`. The `spectacle` method `spectacle.calibrate.correct_spectral_response` may then be used to correct spectral data (e.g. from iSPEX) by dividing out the spectral response of the camera. Further calibration methods, for example to convert simple RGB images to the CIE XYZ colour space, are currently in development on the [xyz branch](https://github.com/monocle-h2020/camera_calibration/tree/xyz).
+
+The effective spectral bandwidths are saved to `root/calibration/spectral_bandwidths.csv` and may be loaded with the `spectacle` method `spectacle.calibrate.load_spectral_bandwidths`.
 
 ### Monochromator
 

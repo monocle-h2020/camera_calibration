@@ -6,12 +6,12 @@ from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(folder)
-phone = io.load_metadata(root)
+camera = io.load_metadata(root)
 
 products_gain, results_gain = products/"gain", results/"gain"
 print("Loaded information")
 
-colours      = io.load_colour(stacks  )
+colours = camera.bayer_map
 
 nr_files = len(list(folder.glob("*_mean.npy")))
 assert nr_files%2 == 0  # equal number for both ISO speeds
