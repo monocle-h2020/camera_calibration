@@ -46,7 +46,7 @@ def load_raw_colors(filename):
     Load a raw file using rawpy's `imread` function. Return only the Bayer
     colour data.
     """
-    img = load_raw_file(str(filename))
+    img = load_raw_file(filename)
     return img.raw_colors
 
 
