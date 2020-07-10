@@ -205,9 +205,9 @@ class Camera(object):
             self.iso_lookup_table = lookup_table
 
 
-    def calibrate_bias(self, *data, **kwargs):
+    def correct_bias(self, *data, **kwargs):
         """
-        Calibrate data for bias using this sensor's bias data
+        Correct data for bias using this sensor's bias data
         """
         # If a bias map has already been loaded, use that
         try:
