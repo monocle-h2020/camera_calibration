@@ -97,29 +97,6 @@ def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     _saveshow(saveto)
 
 
-def _wavelength_coefficients_single(y, coefficients, coefficients_fit, nr=0, saveto=None):
-    plt.scatter(y, coefficients, c='r')
-    plt.plot(y, coefficients_fit, c='k', lw=3)
-    plt.xlim(y[0], y[-1])
-    plt.ylim(coefficients.min(), coefficients.max())
-    plt.title(f"Coefficient {nr} of wavelength fit")
-    plt.xlabel("$y$")
-    plt.ylabel(f"$p_{nr}$")
-    _saveshow(saveto)
-
-
-def wavelength_coefficients(y, coefficients, coefficients_fit, saveto=None):
-    for j in range(coefficients_fit.shape[1]):
-        try:
-            # save every coefficient plot in its own file
-            # TODO: make one plot with shared x axis
-            saveto1 = saveto.split(".")
-            saveto1 = saveto1[0] + "_" + str(j) + "." + saveto1[1]
-        except AttributeError:
-            saveto1 = saveto
-        _wavelength_coefficients_single(y, coefficients[:,j], coefficients_fit[:,j], nr=j, saveto=saveto1)
-
-
 def RGBG(RGBG, saveto=None, size=13, **kwargs):
     # replace with `show_RGBG`
     R, G, B, G2 = raw.split_RGBG(RGBG)

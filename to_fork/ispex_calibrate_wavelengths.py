@@ -71,9 +71,6 @@ wavelength_fits = wavelength.fit_many_wavelength_relations(y, lines_fit)
 # Fit a polynomial to the coefficients of the previous fit
 coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(y, wavelength_fits)
 
-# Plot the polynomial fits to the coefficients
-plot.wavelength_coefficients(y, wavelength_fits, coefficients_fit)
-
 # Save the coefficients to file
 wavelength.save_coefficients(coefficients, saveto=save_to)
 print(f"Saved wavelength coefficients to '{save_to}'")
