@@ -178,6 +178,12 @@ class Camera(object):
         # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
         self.dark_current = dark_current
 
+    def _generate_ISO_range(self):
+        """
+        Generate an array from 0 to the max iso
+        """
+        return np.arange(0, self.settings.ISO_max+1, 1)
+
     def _load_iso_normalisation(self):
         """
         Load an ISO normalisation look-up table from file or from parameters
@@ -186,24 +192,16 @@ class Camera(object):
         try:
             lookup_table = iso.load_iso_lookup_table(self.root)
 
-        # If a lookup table cannot be found, try to load model parameters and generate one
+        # If a lookup table cannot be found, assume a linear relation and warn the user
         except (FileNotFoundError, OSError):
-            # First try loading the model
-            try:
-                model = iso.load_iso_model(self.root)
-
-            # If a model is also unavailable, assume a linear relation and warn the user
-            except (FileNotFoundError, OSError):
-                pass
-
-            # If a model was found, create a lookup table
-            else:
-                pass
+            iso_range = self._generate_ISO_range()
+            normalisation = iso_range / self.settings.ISO_min
+            lookup_table = np.stack([iso_range, normalisation])
+            print(f"No ISO lookup table found for {self.device.name}. Using naive estimate (ISO / min ISO). This may not be accurate.")
 
         # Whatever method was used, save the lookup table so it need not be looked up again
         else:
             self.iso_lookup_table = lookup_table
-
 
     def correct_bias(self, *data, **kwargs):
         """
@@ -236,15 +234,6 @@ class Camera(object):
         # Apply the dark current correction
         data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, *data, **kwargs)
         return data_corrected
-
-    def generate_ISO_range(self):
-        """
-        Generate an array with all ISO values possible for this camera.
-
-        To do:
-            * Hide method and use a property instead (like the bayer map)
-        """
-        return np.arange(self.settings.ISO_min, self.settings.ISO_max+1, 1)
 
     def write_to_file(self, path):
         """
