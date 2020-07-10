@@ -268,7 +268,7 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
             label = "g2"
         try:
             saveto = savefolder/f"linearity_response_RAW_{label}.pdf"
-        except:
+        except TypeError:
             saveto = None
 
         mean_dng =  means[:, j]
@@ -300,7 +300,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
             label = "g2"
         try:
             saveto = savefolder/f"linearity_response_RAW_JPEG_{label}.pdf"
-        except:
+        except TypeError:
             saveto = None
 
         mean_dng =  means[:, j]
