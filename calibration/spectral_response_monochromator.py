@@ -15,8 +15,17 @@ from sys import argv
 from spectacle import io, spectral
 
 # Get the data folder and minimum and maximum wavelengths from the command line
-folder, wvl1, wvl2 = io.path_from_input(argv)
-wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
+# Defaults
+if len(argv) == 2:
+    folder = io.path_from_input(argv)
+    wvl1 = 390
+    wvl2 = 700
+elif len(argv) == 4:
+    folder, wvl1, wvl2 = io.path_from_input(argv)
+    wvl1 = float(wvl1.stem) ; wvl2 = float(wvl2.stem)
+else:
+    raise ValueError(f"Expected 2 or 4 arguments in `argv`, got {len(argv)}.")
+
 root = io.find_root_folder(folder)
 
 # Get the camera metadata
