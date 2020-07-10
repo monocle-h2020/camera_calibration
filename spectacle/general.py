@@ -124,3 +124,18 @@ def symmetric_percentiles(data, percent=0.1, **kwargs):
     Additional **kwargs are passed to `numpy.nanpercentile`
     """
     return np.nanpercentile(data, percent, **kwargs), np.nanpercentile(data, 100-percent, **kwargs)
+
+
+def return_with_filename(to_return, filename, return_filename=False):
+    """
+    Handle optional returns for filenames.
+
+    Inputs:
+        to_return: object that must always be returned
+        filename: filename that is returned only if return_filename is True
+        return_filename: boolean determining in the filename is returned
+    """
+    if return_filename:
+        return to_return, filename
+    else:
+        return to_return

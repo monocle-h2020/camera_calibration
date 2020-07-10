@@ -5,7 +5,7 @@ look-up tables.
 
 import numpy as np
 from scipy.optimize import curve_fit
-from .general import Rsquare
+from .general import Rsquare, return_with_filename
 
 
 def generate_linear_model(slope, offset):
@@ -125,21 +125,21 @@ def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at
     `root`/calibration/iso_normalisation_lookup_table.csv
+
     If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
     filename = root/"calibration/iso_normalisation_lookup_table.csv"
     table = np.loadtxt(filename, delimiter=",").T
-    if return_filename:
-        return table, filename
-    else:
-        return table
+    return return_with_filename(table, filename, return_filename)
+
 
 
 def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
     in `root`/calibration/iso_normalisation_model.csv
+
     If `return_filename` is True, also return the exact filename the model
     was retrieved from.
 
@@ -162,10 +162,7 @@ def load_iso_model(root, return_filename=False):
     errors     = errors.astype(np.float64)
     model = model_generator[model_type](*parameters)
 
-    if return_filename:
-        return model, filename
-    else:
-        return model
+    return return_with_filename(model, filename, return_filename)
 
 
 def save_iso_model(saveto, model_type, parameters, errors):
@@ -192,12 +189,11 @@ def load_iso_data(root, return_filename=False):
     """
     Load ISO normalisation data from
     `root`/intermediaries/iso_normalisation/iso_data.npy
+
     If `return_filename` is True, also return the exact filename the data
     were retrieved from.
     """
     filename = root/"intermediaries/iso_normalisation/iso_data.npy"
     data = np.load(filename)
-    if return_filename:
-        return data, filename
-    else:
-        return data
+    return return_with_filename(data, filename, return_filename)
+

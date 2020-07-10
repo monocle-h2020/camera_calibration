@@ -4,6 +4,7 @@ a map.
 """
 
 import numpy as np
+from .general import return_with_filename
 
 def fit_dark_current_linear(exposure_times, data):
     """
@@ -34,10 +35,7 @@ def load_dark_current_map(root, return_filename=False):
     """
     filename = root/"calibration/dark_current_normalised.npy"
     dark_current_map = np.load(filename)
-    if return_filename:
-        return dark_current_map, filename
-    else:
-        return dark_current_map
+    return return_with_filename(dark_current_map, filename, return_filename)
 
 
 def correct_dark_current_from_map(dark_current_map, data, exposure_time):

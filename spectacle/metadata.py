@@ -7,6 +7,7 @@ import json
 from collections import namedtuple
 
 from . import raw, analyse
+from .general import return_with_filename
 
 def _convert_exposure_time(exposure):
     """
@@ -174,11 +175,9 @@ def write_json(data, save_to):
 def load_metadata(root, return_filename=False):
     """
     Read the metadata JSON located in the `root` folder.
+
     If `return_filename` is True, also return the exact filename used.
     """
     filename = root/"metadata.json"
     metadata = Camera.read_from_file(filename)
-    if return_filename:
-        return metadata, filename
-    else:
-        return metadata
+    return return_with_filename(metadata, filename, return_filename)

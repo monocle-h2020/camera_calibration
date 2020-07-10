@@ -3,6 +3,7 @@ Code relating to gain calibration, such as loading gain maps.
 """
 
 import numpy as np
+from .general import return_with_filename
 
 def load_gain_map(root, return_filename=False):
     """
@@ -12,10 +13,7 @@ def load_gain_map(root, return_filename=False):
     """
     filename = root/"calibration/gain.npy"
     gain_map = np.load(filename)
-    if return_filename:
-        return gain_map, filename
-    else:
-        return gain_map
+    return return_with_filename(gain_map, filename, return_filename)
 
 
 def convert_to_photoelectrons_from_map(gain_map, data):

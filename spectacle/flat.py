@@ -3,7 +3,7 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 """
 
 import numpy as np
-from .general import gaussMd, curve_fit, generate_XY
+from .general import gaussMd, curve_fit, generate_XY, return_with_filename
 from . import raw
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
@@ -114,10 +114,7 @@ def load_flatfield_correction(root, shape, return_filename=False):
     parameters, errors = data[:7], data[7:]
     correction_map = apply_vignette_radial(shape, parameters)
 
-    if return_filename:
-        return correction_map, filename
-    else:
-        return correction_map
+    return return_with_filename(correction_map, filename, return_filename)
 
 
 def normalise_RGBG2(mean, stds, bayer_pattern):
