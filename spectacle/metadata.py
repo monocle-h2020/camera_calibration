@@ -153,13 +153,13 @@ def load_json(path):
     """
     Read a JSON file.
     """
-    file = open(path)
-    try:
-        # Load the JSON file
-        dump = json.load(file)
-    except json.JSONDecodeError:
-        # If the JSON file could not be read, e.g. because it is empty, raise an error
-        raise ValueError(f"Could not read JSON file `{path}`.")
+    with open(path, "r") as file:
+        try:
+            # Load the JSON file
+            dump = json.load(file)
+        except json.JSONDecodeError:
+            # If the JSON file could not be read, e.g. because it is empty, raise an error
+            raise ValueError(f"Could not read JSON file `{path}`.")
     return dump
 
 
