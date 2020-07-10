@@ -143,6 +143,8 @@ def expected_array_size(folder, pattern):
     Find the required array size when loading files from `folder` that follow
     the pattern `pattern`, e.g. all .DNG files.
     """
+    # Make sure `folder` is a Path-like object
+    folder = Path(folder)
     files = sorted(folder.glob(pattern))
     array = np.load(files[0])
     return np.array(array.shape)
@@ -156,6 +158,8 @@ def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[
     given in the `retrieve_value` keyword. Only return array elements included
     in `selection` (default: all).
     """
+    # Make sure `folder` is a Path-like object
+    folder = Path(folder)
     files = sorted(folder.glob(pattern))
     stacked = np.stack([np.load(f)[selection] for f in files])
     values = np.array([retrieve_value(f, **kwargs) for f in files])
@@ -165,7 +169,12 @@ def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[
 def split_path(path, split_on):
     """
     Split a pathlib Path object `path` on a string `split_on`.
+
+    Input `path` is converted to a Path-type object, but
+    output `split_underscore` is (and must be) a str object
     """
+    # Make sure `path` is a Path-type object
+    path = Path(path)
     split_split_on = path.stem.split(split_on)[1]
     split_underscore = split_split_on.split("_")[0]
     return split_underscore
