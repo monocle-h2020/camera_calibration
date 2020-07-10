@@ -207,12 +207,8 @@ class Camera(object):
         """
         Correct data for bias using this sensor's bias data
         """
-        # If a bias map has already been loaded, use that
-        try:
-            bias_map = self.bias_map
-
         # If a bias map has not been loaded yet, do so
-        except AttributeError:
+        if not hasattr(self, "bias_map"):
             self._load_bias_map()
 
         # Apply the bias correction
@@ -223,12 +219,8 @@ class Camera(object):
         """
         Calibrate data for dark current using this sensor's data
         """
-        # If a dark current map has already been loaded, use that
-        try:
-            dark_current = self.dark_current
-
         # If a dark current map has not been loaded yet, do so
-        except AttributeError:
+        if not hasattr(self, "dark_current"):
             self._load_dark_current_map()
 
         # Apply the dark current correction
