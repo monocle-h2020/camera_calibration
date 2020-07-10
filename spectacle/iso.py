@@ -125,6 +125,7 @@ def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at
     `root`/calibration/iso_normalisation_lookup_table.csv
+
     If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
@@ -140,6 +141,7 @@ def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
     in `root`/calibration/iso_normalisation_model.csv
+
     If `return_filename` is True, also return the exact filename the model
     was retrieved from.
 
@@ -192,6 +194,7 @@ def load_iso_data(root, return_filename=False):
     """
     Load ISO normalisation data from
     `root`/intermediaries/iso_normalisation/iso_data.npy
+
     If `return_filename` is True, also return the exact filename the data
     were retrieved from.
     """
