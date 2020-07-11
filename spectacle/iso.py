@@ -88,33 +88,35 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     return model_type, model, R2, parameters, errors
 
 
-def _normalise_iso(data_element, iso, lookup_table):
+def _normalise_iso_single(data_element, iso, lookup_table):
     """
     Normalise one `data_element` for one `iso` value using the `lookup_table`
     """
     return data_element / lookup_table[1][iso]
 
 
-def normalise_multiple_iso(data, isos, lookup_table):
+def _normalise_iso_multiple(data_element, isos, lookup_table):
     """
-    Normalise data at multiple ISO speeds using the look-up table.
-    `data` and `isos` are assumed to have the same length, i.e. each element
-    of `data` has one associated ISO speed in `isos`.
+    Normalise one `data_element` for multiple iso speeds `isos`, each of which
+    corresponds to one element in `data_element`, using the `lookup_table`.
+    `data_element` and `isos` are assumed to have the same length, i.e. each element
+    of `data_element` has one associated ISO speed in `isos`.
     """
-    as_list = [normalise_single_iso(data_sub, ISO, lookup_table) for data_sub, ISO in zip(data, isos)]
+    assert len(data_element) == len(isos), f"data_element ({len(data_elements)}) and isos ({len(isos)}) have different lengths."
+    as_list = [_normalise_iso_single(data_subelement, ISO, lookup_table) for data_subelement, ISO in zip(data_element, isos)]
     as_array = np.array(as_list)
     return as_array
 
 
-def normalise_iso_general(lookup_table, isos, data):
+def normalise_iso_general(lookup_table, isos, *data):
     """
     Normalise data for ISO speed in general. Uses either `normalise_single_iso`
     or `normalise_multiple_iso` based on the number of isos given.
     """
     if isinstance(isos, (int, float)):
-        data_normalised = normalise_single_iso  (data, isos, lookup_table)
+        data_normalised = apply_to_multiple_args(_normalise_iso_single, data, isos, lookup_table)
     else:
-        data_normalised = normalise_multiple_iso(data, isos, lookup_table)
+        data_normalised = apply_to_multiple_args(_normalise_iso_multiple, data, isos, lookup_table)
 
     return data_normalised
 
