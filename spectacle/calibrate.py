@@ -91,11 +91,7 @@ def convert_to_photoelectrons(root, *data):
     print(f"Using normalised gain map from '{origin}'")
 
     # Correct each given array
-    data_converted = [gain.convert_to_photoelectrons_from_map(gain_map, data_array) for data_array in data]
-
-    # If only a single array was given, don't return a list
-    if len(data_converted) == 1:
-        data_converted = data_converted[0]
+    data_converted = gain.convert_to_photoelectrons_from_map(gain_map, *data)
 
     return data_converted
 
