@@ -5,7 +5,7 @@ look-up tables.
 
 import numpy as np
 from scipy.optimize import curve_fit
-from .general import Rsquare, return_with_filename
+from .general import Rsquare, return_with_filename, apply_to_multiple_args
 
 
 def generate_linear_model(slope, offset):
@@ -88,13 +88,11 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     return model_type, model, R2, parameters, errors
 
 
-def normalise_single_iso(data, iso, lookup_table):
+def _normalise_iso(data_element, iso, lookup_table):
     """
-    Normalise data at a single ISO speed using the look-up table.
+    Normalise one `data_element` for one `iso` value using the `lookup_table`
     """
-    normalisation_factor = lookup_table[1][iso]
-    new_data = data / normalisation_factor
-    return new_data
+    return data_element / lookup_table[1][iso]
 
 
 def normalise_multiple_iso(data, isos, lookup_table):
