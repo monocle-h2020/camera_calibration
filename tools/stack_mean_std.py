@@ -49,20 +49,21 @@ for tup in walk(folder):
         # If there are no RAW files in this folder, move on to the next
         continue
 
-    # Load all RAW files
-    arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
-
-    # Calculate the mean and standard deviation per pixel
-    mean = arrs.mean(axis=0, dtype=np.float32)
-    stds = arrs.std (axis=0, dtype=np.float32)
-    del arrs
-
     # Create the goal folder if it does not exist yet
     makedirs(goal.parent, exist_ok=True)
 
-    # Save the RAW data stacks
+    # Load all RAW files
+    arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
+
+    # Calculate and save the mean per pixel
+    mean = arrs.mean(axis=0, dtype=np.float32)
     np.save(f"{goal}_mean.npy", mean)
+    del mean
+
+    # Calculate and save the standard deviation per pixel
+    stds = arrs.std(axis=0, dtype=np.float32)
     np.save(f"{goal}_stds.npy", stds)
+    del stds, arrs
 
     # Print the input and output folder as confirmation
     print(f"{folder_here}  -->  {goal}_x.npy")
@@ -76,11 +77,12 @@ for tup in walk(folder):
     # Load all JPEG files
     jarrs = io.load_jpg_multi(folder_here)
 
-    # Calculate the mean and standard deviation per pixel
+    # Calculate and save the mean per pixel
     jmean = jarrs.mean(axis=0, dtype=np.float32)
-    jstds = jarrs.std (axis=0, dtype=np.float32)
-    del jarrs
-
-    # Save the JPEG data stacks
     np.save(f"{goal}_jmean.npy", jmean)
+    del jmean
+
+    # Calculate and save the standard deviation per pixel
+    jstds = jarrs.std(axis=0, dtype=np.float32)
     np.save(f"{goal}_jstds.npy", jstds)
+    del jstds, jarrs
