@@ -1,14 +1,16 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
+from .general import return_with_filename
 from warnings import warn
+
+
+wavelengths_interpolated = np.arange(390, 701, 1)
+
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     response_normalised = response / response.max(axis=axis)
     return np.trapz(response_normalised, x=wavelengths, axis=axis, **kwargs)
-
-
-wavelengths_interpolated = np.arange(390, 701, 1)
 
 
 def interpolate(wavelengths, response, interpolate_to=wavelengths_interpolated):
@@ -148,10 +150,7 @@ def load_spectral_response(root, return_filename=False):
 
     print(f"Using spectral response curves from '{filename}'")
 
-    if return_filename:
-        return spectral_response, filename
-    else:
-        return spectral_response
+    return return_with_filename(spectral_response, filename, return_filename)
 
 
 def load_spectral_bandwidths(root, return_filename=False):
@@ -164,10 +163,7 @@ def load_spectral_bandwidths(root, return_filename=False):
     filename = root/"calibration/spectral_bandwidths.csv"
     spectral_bandwidths = np.loadtxt(filename, delimiter=", ").T
 
-    if return_filename:
-        return spectral_bandwidths, filename
-    else:
-        return spectral_bandwidths
+    return return_with_filename(spectral_bandwidths, filename, return_filename)
 
 
 def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwargs):

@@ -7,7 +7,6 @@ from .general import gaussMd, gauss_nan, symmetric_percentiles
 
 import numpy as np
 from astropy.table import Table
-from matplotlib import pyplot as plt
 
 def statistics(data, prefix_column=None, prefix_column_header=""):
     """

@@ -8,6 +8,7 @@ from collections import namedtuple
 from pathlib import Path
 
 from . import raw, analyse, bias_readnoise, dark, iso
+from .general import return_with_filename
 
 
 def find_root_folder(input_path):
@@ -54,6 +55,16 @@ def _convert_exposure_time(exposure):
             # If a simple number is given (e.g. '2' or '100'), simply convert
             # it to a floating point number and return the result
             return float(exposure)
+    else:
+        # If the input is none of the above, try to cast it to a float somehow
+        try:
+            exposure_new = float(exposure)
+        except TypeError:
+            # Raise an error if the exposure could not be converted
+            raise TypeError(f"Input exposure `{exposure}` is of type `{type(exposure)}` which cannot be converted to a number.")
+        else:
+            # If the exposure could be converted, return it
+            return exposure_new
 
 
 class Camera(object):
@@ -307,7 +318,4 @@ def load_metadata(root, return_filename=False):
     """
     filename = root/"metadata.json"
     metadata = Camera.read_from_file(filename)
-    if return_filename:
-        return metadata, filename
-    else:
-        return metadata
+    return return_with_filename(metadata, filename, return_filename)
