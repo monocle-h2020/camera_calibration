@@ -3,7 +3,7 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 """
 
 import numpy as np
-from .general import gaussMd, curve_fit, generate_XY, return_with_filename
+from .general import gaussMd, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
 from . import raw
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
@@ -145,19 +145,27 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     return mean_remosaicked, stds_remosaicked
 
 
-def correct_flatfield_from_map(flatfield, data, clip=False):
+def _correct_flatfield(data_element, flatfield, clip=False):
+    """
+    Correct a `data_element` for flatfield using a map `flatfield`
+
+    If `clip`, clip the data (make the outer borders NaN).
+    """
+    if clip:
+        data_to_correct = clip_data(data_element)
+    else:
+        data_to_correct = data_element
+
+    return data_to_correct * flatfield
+
+
+def correct_flatfield_from_map(flatfield, *data, clip=False):
     """
     Apply a flat-field correction from a flat-field map `flatfield` to an
     array `data`.
 
     If `clip`, clip the data (make the outer borders NaN).
     """
-    if clip:
-        data_to_correct = clip_data(data)
-    else:
-        data_to_correct = data
-
-    # Correct the data
-    data_corrected = data_to_correct * flatfield
+    data_corrected = apply_to_multiple_args(_correct_flatfield, data, flatfield, clip=clip)
 
     return data_corrected

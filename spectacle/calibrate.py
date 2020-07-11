@@ -101,7 +101,6 @@ def correct_flatfield(root, *data, **kwargs):
     Correction for flat-fielding using a flat-field correction map read from
     `root`/calibration/
     """
-
     # Load metadata to get the array shape
     camera = load_metadata(root)
 
@@ -110,11 +109,7 @@ def correct_flatfield(root, *data, **kwargs):
     print(f"Using flat-field map from '{origin}'")
 
     # Correct each given array
-    data_corrected = [flat.correct_flatfield_from_map(correction_map, data_array, **kwargs) for data_array in data]
-
-    # If only a single array was given, don't return a list
-    if len(data_corrected) == 1:
-        data_corrected = data_corrected[0]
+    data_corrected = flat.correct_flatfield_from_map(correction_map, *data, **kwargs)
 
     return data_corrected
 
