@@ -41,7 +41,7 @@ def load_readnoise_map(root, return_filename=False):
     return return_with_filename(readnoise_map, filename, return_filename)
 
 
-def _correct_bias(bias, data_element):
+def _correct_bias(data_element, bias):
     """
     Apply a bias correction with value `bias` to the `data_element`
     Helper function
