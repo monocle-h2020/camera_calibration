@@ -55,6 +55,7 @@ for tup in walk(folder):
     # Calculate the mean and standard deviation per pixel
     mean = arrs.mean(axis=0, dtype=np.float32)
     stds = arrs.std (axis=0, dtype=np.float32)
+    del arrs
 
     # Create the goal folder if it does not exist yet
     makedirs(goal.parent, exist_ok=True)
@@ -78,6 +79,7 @@ for tup in walk(folder):
     # Calculate the mean and standard deviation per pixel
     jmean = jarrs.mean(axis=0, dtype=np.float32)
     jstds = jarrs.std (axis=0, dtype=np.float32)
+    del jarrs
 
     # Save the JPEG data stacks
     np.save(f"{goal}_jmean.npy", jmean)
