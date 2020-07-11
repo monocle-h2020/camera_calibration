@@ -4,7 +4,7 @@ a map.
 """
 
 import numpy as np
-from .general import return_with_filename
+from .general import return_with_filename, apply_to_multiple_args
 
 def fit_dark_current_linear(exposure_times, data):
     """
@@ -38,15 +38,18 @@ def load_dark_current_map(root, return_filename=False):
     return return_with_filename(dark_current_map, filename, return_filename)
 
 
-def correct_dark_current_from_map(dark_current_map, data, exposure_time):
+def _correct_dark_current(data_element, dark_current, exposure_time):
+    """
+    Apply a dark current correction with value `dark_current` times the
+    `exposure_time` to an element data_element
+    """
+    return data_element - dark_current * exposure_time
+
+def correct_dark_current_from_map(dark_current_map, exposure_time, *data):
     """
     Apply a dark current correction from a dark current map `dark_current_map`,
-    multiplied by an `exposure_time`, to an array `data`.
+    multiplied by an `exposure_time`, to any number of elements in `data`.
     """
-    # Calculate the total dark current (in ADU) per pixel
-    dark_total = dark_current_map * exposure_time
-
-    # Correct the data
-    data_corrected = data - dark_total
+    data_corrected = apply_to_multiple_args(_correct_dark_current, data, dark_current_map, exposure_time)
 
     return data_corrected

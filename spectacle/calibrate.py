@@ -55,11 +55,7 @@ def correct_dark_current(root, exposure_time, *data):
     print(f"Using dark current map from '{origin}'")
 
     # Correct each given array
-    data_corrected = [dark.correct_dark_current_from_map(dark_current, data_array, exposure_time) for data_array in data]
-
-    # If only a single array was given, don't return a list
-    if len(data_corrected) == 1:
-        data_corrected = data_corrected[0]
+    data_corrected = dark.correct_dark_current_from_map(dark_current, exposure_time, *data)
 
     return data_corrected
 
