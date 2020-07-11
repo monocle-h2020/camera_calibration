@@ -50,7 +50,7 @@ for tup in walk(folder):
         continue
 
     # Load all RAW files
-    arrs, colors = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
+    arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
 
     # Calculate the mean and standard deviation per pixel
     mean = arrs.mean(axis=0, dtype=np.float32)

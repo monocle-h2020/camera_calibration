@@ -69,10 +69,8 @@ def load_raw_image_multi(folder, pattern="*.dng"):
     # Find all files in `folder` matching the given pattern `pattern`
     files = list(folder.glob(pattern))
 
-    # Load the first file to get the Bayer color information (`colors`)
-    # and the shape of the images
+    # Load the first file to get the shape of the images
     file0 = load_raw_file(files[0])
-    colors = file0.raw_colors
 
     # Create an array to fit the image contained in each file
     arrs = np.empty((len(files), *file0.raw_image.shape), dtype=np.uint16)
@@ -84,7 +82,7 @@ def load_raw_image_multi(folder, pattern="*.dng"):
     for j, file in enumerate(files[1:], 1):
         arrs[j] = load_raw_image(file)
 
-    return arrs, colors
+    return arrs
 
 
 def load_jpg_image(filename):
