@@ -15,7 +15,7 @@ will be fixed with the general overhaul for iSPEX 2.
 
 import numpy as np
 from sys import argv
-from spectacle import general, io, plot, wavelength, raw2, calibrate, flat
+from spectacle import general, io, plot, wavelength, raw, raw2, calibrate, flat
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
@@ -77,8 +77,8 @@ print(f"Saved wavelength coefficients to '{save_to}'")
 
 # Convert the input spectrum to wavelengths and plot it, as a sanity check
 wavelengths_cut = wavelength.calculate_wavelengths(coefficients, x, y)
-wavelengths_split,_ = raw2.pull_apart(wavelengths_cut, colors_cut)
-RGBG,_ = raw2.pull_apart(image_cut, colors_cut)
+wavelengths_split,_ = raw.pull_apart(wavelengths_cut, colors_cut)
+RGBG,_ = raw.pull_apart(image_cut, colors_cut)
 
 lambdarange, all_interpolated = wavelength.interpolate_multi(wavelengths_split, RGBG)
 

@@ -109,6 +109,7 @@ def fit_sRGB_generic(intensities, jmeans):
     finally:
         return normalizations, gammas, Rsquares
 
+
 def sRGB_compare_gamma(intensities, jmeans, gamma):
     """
     Fit sRGB profiles with a given `gamma` and free normalization to given

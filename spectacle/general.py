@@ -3,12 +3,6 @@ from scipy.optimize import curve_fit
 from astropy.modeling.blackbody import blackbody_lambda
 import numpy as np
 
-y_thick = (1530, 1911)
-y_thin  = (1970, 2315)
-y = np.concatenate((np.arange(*y_thick), np.arange(*y_thin)))
-x_spectrum = (2150, 3900)
-x = np.arange(*x_spectrum)
-
 
 def gauss_filter(D, sigma=5, **kwargs):
     """
@@ -32,20 +26,6 @@ def gauss_nan(D, sigma=5, **kwargs):
 
     Z=VV/WW
     return Z
-
-
-def split_spectrum(data):
-    thick = data[x_spectrum[0]:x_spectrum[1], y_thick[0]:y_thick[1]]
-    thin  = data[x_spectrum[0]:x_spectrum[1], y_thin[0] :y_thin[1] ]
-    return thick, thin
-
-
-def find_white_balance(data):
-    return data[x_spectrum[0]:x_spectrum[1], :y_thick[0]-100].mean(axis=(0,1))
-
-
-def correct_white_balance(data, white_balance):
-    return data/white_balance
 
 
 def blackbody(wavelengths, temperature=5777, norm=1):
@@ -144,3 +124,36 @@ def symmetric_percentiles(data, percent=0.1, **kwargs):
     Additional **kwargs are passed to `numpy.nanpercentile`
     """
     return np.nanpercentile(data, percent, **kwargs), np.nanpercentile(data, 100-percent, **kwargs)
+
+
+def return_with_filename(to_return, filename, return_filename=False):
+    """
+    Handle optional returns for filenames.
+
+    Inputs:
+        to_return: object that must always be returned
+        filename: filename that is returned only if return_filename is True
+        return_filename: boolean determining in the filename is returned
+    """
+    if return_filename:
+        return to_return, filename
+    else:
+        return to_return
+
+
+def apply_to_multiple_args(func, data, *args, **kwargs):
+    """
+    Apply `func` to any number of elements in `data`
+    Return the result, as a list if `data` had multiple elements, or as a single
+    element if `data` had only one element.
+
+    Any *args and **kwargs are passed to `func` on every call.
+    """
+    # Apply func to each element
+    results = [func(data_element, *args, **kwargs) for data_element in data]
+
+    # If only a single element was given, don't return a list
+    if len(results) == 1:
+        results = results[0]
+
+    return results

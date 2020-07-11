@@ -20,7 +20,7 @@ save_to = io.results_folder/"iso_comparison.pdf"
 plt.figure(figsize=(4, 3), tight_layout=True)
 
 # Loop over each camera, load its data, and plot them in the figure
-for c, folder in zip(plot.line_colours, folders):
+for folder in folders:
     # Get the data folder for this camera
     root = io.find_root_folder(folder)
 
@@ -32,7 +32,7 @@ for c, folder in zip(plot.line_colours, folders):
     data = iso.load_iso_data(root)
 
     # Plot the normalisation data and look-up table
-    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=camera.device.name)
+    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.device.name)
     plt.plot(*lookup_table, c=c)
 
     print(camera)
