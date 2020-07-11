@@ -4,7 +4,7 @@ Code relating to bias and read noise, such as loading maps of either.
 
 import numpy as np
 from . import io
-from .general import return_with_filename
+from .general import return_with_filename, apply_to_multiple_args
 
 
 def load_bias_map(root, return_filename=False):
@@ -41,10 +41,19 @@ def load_readnoise_map(root, return_filename=False):
     return return_with_filename(readnoise_map, filename, return_filename)
 
 
-def correct_bias_from_map(bias_map, data):
+def _correct_bias(bias, data_element):
     """
-    Apply a bias correction from a bias map `bias_map` to an array `data`.
+    Apply a bias correction with value `bias` to the `data_element`
+    Helper function
     """
-    data_corrected = data - bias_map
+    return data_element - bias
+
+
+def correct_bias_from_map(bias_map, *data):
+    """
+    Apply a bias correction from a bias map `bias_map` to any number of
+    elements in `data`
+    """
+    data_corrected = apply_to_multiple_args(_correct_bias, data, bias_map)
 
     return data_corrected

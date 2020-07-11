@@ -19,8 +19,6 @@ from .metadata import load_metadata
 from .raw import demosaick
 from .spectral import load_spectral_response, load_spectral_bandwidths, convert_RGBG2_to_RGB
 
-# Import helper functions from general submodule
-from .general import apply_to_multiple_args
 
 def correct_bias(root, *data):
     """
@@ -39,7 +37,7 @@ def correct_bias(root, *data):
         print(f"Using bias map from '{origin}'")
 
     # Correct each given array
-    data_corrected = apply_to_multiple_args(bias_readnoise.correct_bias_from_map, data, bias)
+    data_corrected = bias_readnoise.correct_bias_from_map(bias, *data)
 
     return data_corrected
 
