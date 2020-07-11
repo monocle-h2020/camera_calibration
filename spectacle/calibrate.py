@@ -65,8 +65,8 @@ def normalise_iso(root, iso_values, *data):
     Normalise data using an ISO normalisation look-up table from
     `root`/calibration/
 
-    If `iso` is a single number, use `normalise_single_iso`. Otherwise, use
-    `normalise_multiple_iso`.
+    `iso_values` can be a single number (for a single ISO value) or a list-like object
+    (for multiple)
     """
     lookup_table, origin = iso.load_iso_lookup_table(root, return_filename=True)
     print(f"Using ISO speed normalisation look-up table from '{origin}'")
