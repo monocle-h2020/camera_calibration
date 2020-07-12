@@ -223,7 +223,7 @@ class Camera(object):
             self._load_iso_normalisation()
 
         # Apply the ISO normalisation
-        data_corrected = data
+        data_corrected = iso.normalise_iso_general(self.iso_lookup_table, iso_values, *data)
         return data_corrected
 
     def correct_bias(self, *data, **kwargs):
