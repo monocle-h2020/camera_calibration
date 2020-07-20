@@ -7,7 +7,7 @@ import json
 from collections import namedtuple
 from pathlib import Path
 
-from . import raw, analyse, bias_readnoise, dark, iso
+from . import raw, analyse, bias_readnoise, dark, iso, gain
 from .general import return_with_filename
 
 
@@ -213,6 +213,23 @@ class Camera(object):
         # Whatever method was used, save the lookup table so it need not be looked up again
         else:
             self.iso_lookup_table = lookup_table
+
+    def _load_gain_map(self):
+        """
+        Load a gain map from file
+        """
+        # Try to use a gain map from file
+        try:
+            gain_map = gain.load_gain_map(self.root)
+
+        # If a gain map cannot be found, do not use any, and warn the user
+        except (FileNotFoundError, OSError):
+            gain_map = None
+            print(f"No gain map found for {self.device.name}.")
+
+        # If a gain map was found, save it to this object so it need not be looked up again
+        # If no gain map was found, save the None object to warn the user
+        self.gain_map = gain_map
 
     def correct_bias(self, *data, **kwargs):
         """
