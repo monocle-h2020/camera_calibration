@@ -4,7 +4,13 @@ This is a to-do list for the `spectacle` module.
 
 ## Scripts
 
+#### Changes to existing scripts
 - [ ] Convert all command-line inputs to `optparse` format.
+- [ ] Merge [stack_mean_std.py](tools/stack_mean_std.py) and [stack_heavy.py](tools/stack_heavy.py).
+- [ ] Make error data optional in [flatfield_characterise_data.py](analyse/flatfield_characterise_data.py).
+
+#### New scripts
+- [ ] Analyse the deviations between ISO normalisation look-up tables and the expected behaviour (normalisation of 1/ISO).
 
 ## Documentation
 
@@ -17,12 +23,3 @@ This is a to-do list for the `spectacle` module.
 - [ ] Add detailed information on inputs, outputs, and possible errors to all `spectacle` methods.
 
 ### Scripts
-
-#### Changes to existing scripts
-
-- [ ] Merge [stack_mean_std.py](tools/stack_mean_std.py) and [stack_heavy.py](tools/stack_heavy.py).
-- [ ] Make error data optional in [flatfield_characterise_data.py](analyse/flatfield_characterise_data.py).
-
-#### New scripts
-
-- [ ] Analyse the deviations between ISO normalisation look-up tables and the expected behaviour (normalisation of 1/ISO).
