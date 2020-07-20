@@ -7,7 +7,7 @@ import json
 from collections import namedtuple
 from pathlib import Path
 
-from . import raw, analyse, bias_readnoise, dark, iso, gain, flat
+from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
 from .general import return_with_filename
 
 
@@ -246,6 +246,23 @@ class Camera(object):
         # If a flatfield map was found, save it to this object so it need not be looked up again
         # If no flatfield map was found, save the None object to warn the user
         self.flatfield_map = correction_map
+
+    def _load_spectral_response(self):
+        """
+        Load spectral response curves from file
+        """
+        # Try to use SRFs from file
+        try:
+            spectral_response = spectral.load_spectral_response(self.root)
+
+        # If SRFs cannot be found, do not use any, and warn the user
+        except (FileNotFoundError, OSError):
+            spectral_response = None
+            print(f"No spectral response functions found for {self.device.name}.")
+
+        # If SRFs were found, save it to this object so it need not be looked up again
+        # Else, save the None object to warn the user
+        self.spectral_response = spectral_response
 
     def correct_bias(self, *data, **kwargs):
         """
