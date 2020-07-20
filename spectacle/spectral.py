@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from . import calibrate, io, raw, plot
+from . import io, plot
 from .general import return_with_filename, apply_to_multiple_args
 from warnings import warn
 
@@ -50,7 +50,6 @@ def load_monochromator_data(root, folder, blocksize=100):
 
     # Load metadata
     camera = io.load_metadata(root)
-    bias = calibrate.load_bias_map(root)
 
     # Half-blocksize, to slice the arrays with
     d = blocksize//2
@@ -66,9 +65,8 @@ def load_monochromator_data(root, folder, blocksize=100):
         # Load the mean data
         m = np.load(mean_file)
 
-        # Bias correction; don't use calibrate.correct_bias to prevent loading
-        # the data from file every time
-        m = m - bias
+        # Bias correction
+        m = camera.correct_bias(m)
 
         # Demosaick the data
         mean_RGBG = camera.demosaick(m)
