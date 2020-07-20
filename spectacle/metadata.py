@@ -330,6 +330,21 @@ class Camera(object):
         data_corrected = flat.correct_flatfield_from_map(self.flatfield_map, *data, **kwargs)
         return data_corrected
 
+    def correct_spectral_response(self, data_wavelengths, *data):
+        """
+        Correct data for the sensor's spectral response functions
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        # Assert that SRFs were loaded
+        assert self.spectral_response is not None, "Spectral response functions unavailable"
+
+        # If SRFs were available, correct for them
+        data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
+        return data_normalised
+
     def write_to_file(self, path):
         """
         Write metadata to a file.
