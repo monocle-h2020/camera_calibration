@@ -1,15 +1,17 @@
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import raw, io, plot, calibrate
+from spectacle import raw, io, plot
 from spectacle.general import gaussMd
 
 folder = io.path_from_input(argv)
-root, images, stacks, products, results = io.folders(folder)
-camera = io.load_metadata(root)
-
-products_gain, results_gain = products/"gain", results/"gain"
+root = io.find_root_folder(folder)
+products_gain, results_gain = root/"intermediaries/gain", root/"analysis/gain"
 print("Loaded information")
+
+# Get metadata
+camera = io.load_metadata(root)
+print("Loaded metadata")
 
 colours = camera.bayer_map
 
@@ -26,8 +28,8 @@ _, high_mean = io.load_npy(folder, f"{high}_*_mean.npy")
 _, high_stds = io.load_npy(folder, f"{high}_*_stds.npy")
 print(f"Loaded ISO {high}")
 
-low_mean  = calibrate.correct_bias(root, low_mean )
-high_mean = calibrate.correct_bias(root, high_mean)
+low_mean = camera.correct_bias(low_mean )
+high_mean = camera.correct_bias(high_mean)
 
 ratio = high_mean / low_mean
 q_low, q_high = np.percentile(ratio.ravel(), 0.1), np.percentile(ratio.ravel(), 99.9)

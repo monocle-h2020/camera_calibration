@@ -22,12 +22,16 @@ file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_to = root/"intermediaries/spectral_response/ispex_wavelength_solution.npy"
 
+# Get metadata
+camera = io.load_metadata(root)
+print("Loaded metadata")
+
 # Load the data
 img = io.load_raw_file(file)
 print("Loaded data")
 
 # Bias correction
-values = calibrate.correct_bias(root, img.raw_image)
+values = camera.correct_bias(img.raw_image)
 
 # Flat-field correction (includes clipping data)
 values = calibrate.correct_flatfield(root, values)

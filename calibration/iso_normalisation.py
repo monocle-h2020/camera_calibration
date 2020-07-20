@@ -12,7 +12,7 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, iso, calibrate
+from spectacle import io, iso
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -31,7 +31,7 @@ isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 print("Loaded data")
 
 # Bias correction
-means = calibrate.correct_bias(root, means)
+means = camera.correct_bias(means)
 
 # Get relative errors to use as weights in the fit
 relative_errors = stds / means

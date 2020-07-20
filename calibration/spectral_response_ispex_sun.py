@@ -38,6 +38,10 @@ from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 
+# Get metadata
+camera = io.load_metadata(root)
+print("Loaded metadata")
+
 # Load the SMARTS2 reference spectrum
 wvl, smartsz, smartsy, smartsx = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)
 
@@ -73,7 +77,7 @@ img  = io.load_raw_file(file)
 print("Loaded data")
 
 # Bias correction
-values = calibrate.correct_bias(root, img.raw_image.astype(np.float32))
+values = camera.correct_bias(img.raw_image.astype(np.float32))
 
 # Flat-field correction - note that this clips the image
 values = calibrate.correct_flatfield(root, values)

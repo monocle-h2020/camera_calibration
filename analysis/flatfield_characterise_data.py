@@ -12,7 +12,7 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, flat, calibrate, analyse
+from spectacle import io, flat, analyse
 from spectacle.general import gaussMd
 from matplotlib import pyplot as plt
 
@@ -33,7 +33,7 @@ stds_raw = np.load(stdsfile)
 print("Loaded data")
 
 # Bias correction
-mean_bias_corrected = calibrate.correct_bias(root, mean_raw)
+mean_bias_corrected = camera.correct_bias(mean_raw)
 
 # Normalise the RGBG2 channels to a maximum of 1 each
 mean_normalised, stds_normalised = flat.normalise_RGBG2(mean_bias_corrected, stds_raw, camera.bayer_map)

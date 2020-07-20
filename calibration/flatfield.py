@@ -16,7 +16,7 @@ To do:
 
 import numpy as np
 from sys import argv
-from spectacle import io, flat, calibrate
+from spectacle import io, flat
 from spectacle.general import gaussMd
 
 # Get the data folder from the command line
@@ -45,7 +45,7 @@ stds = np.load(stdsfile)
 print("Loaded data")
 
 # Bias correction
-mean = calibrate.correct_bias(root, mean)
+mean = camera.correct_bias(mean)
 
 # Normalise the RGBG2 channels to a maximum of 1 each
 mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, camera.bayer_map)

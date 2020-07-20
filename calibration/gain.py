@@ -36,7 +36,7 @@ names, stds = io.load_stds(folder)
 print("Loaded data")
 
 # Bias correction
-means = calibrate.correct_bias(root, means)
+means = camera.correct_bias(means)
 
 # Use variance instead of standard deviation
 variance = stds**2
