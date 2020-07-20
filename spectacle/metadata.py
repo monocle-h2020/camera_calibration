@@ -298,6 +298,21 @@ class Camera(object):
         data_converted = gain.convert_to_photoelectrons_from_map(self.gain_map, *data)
         return data_converted
 
+    def correct_flatfield(self, *data, **kwargs):
+        """
+        Correct data for flatfield using this sensor's flatfield data
+        """
+        # If a flatfield map has not been loaded yet, do so
+        if not hasattr(self, "flatfield_map"):
+            self._load_flatfield_correction()
+
+        # Assert that a flatfield map was loaded
+        assert self.flatfield_map is not None, "Flatfield map unavailable"
+
+        # If a flatfield map was available, apply it
+        data_corrected = flat.correct_flatfield_from_map(self.flatfield_map, *data, **kwargs)
+        return data_corrected
+
     def write_to_file(self, path):
         """
         Write metadata to a file.
