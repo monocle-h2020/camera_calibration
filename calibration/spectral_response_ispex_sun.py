@@ -31,7 +31,7 @@ will be fixed with the general overhaul for iSPEX 2.
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from spectacle import raw, plot, io, wavelength, calibrate
+from spectacle import raw, plot, io, wavelength
 from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 
 # Get the data folder from the command line
@@ -79,8 +79,8 @@ print("Loaded data")
 # Bias correction
 values = camera.correct_bias(img.raw_image.astype(np.float32))
 
-# Flat-field correction - note that this clips the image
-values = calibrate.correct_flatfield(root, values)
+# Flat-field correction
+values = camera.correct_flatfield(values)
 
 # Spectrum edges
 xmin, xmax = 1900, 3500

@@ -15,7 +15,7 @@ will be fixed with the general overhaul for iSPEX 2.
 
 import numpy as np
 from sys import argv
-from spectacle import general, io, plot, wavelength, raw, raw2, calibrate, flat
+from spectacle import general, io, plot, wavelength, raw, raw2, flat
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
@@ -34,7 +34,7 @@ print("Loaded data")
 values = camera.correct_bias(img.raw_image)
 
 # Flat-field correction (includes clipping data)
-values = calibrate.correct_flatfield(root, values)
+values = camera.correct_flatfield(values)
 
 # Clip the Bayer map to be the same shape
 bayer_map = flat.clip_data(img.raw_colors)
