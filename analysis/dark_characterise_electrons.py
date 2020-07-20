@@ -11,22 +11,23 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, analyse, calibrate
+from spectacle import io
 
 # Get the data file from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_folder = root/f"analysis/dark_current/"
 
-# Get metadata
+# Get the camera metadata
 camera = io.load_metadata(root)
+print("Loaded metadata")
 
 # Load the data
 dark_current_normADU = np.load(file)
 print("Loaded data")
 
 # Convert the data to photoelectrons per second
-dark_current_electrons = calibrate.convert_to_photoelectrons(root, dark_current_normADU)
+dark_current_electrons = camera.convert_to_photoelectrons(dark_current_normADU)
 
 # Convolve the map with a Gaussian kernel and plot an image of the result
 save_to_maps = save_folder/"dark_current_map_electrons.pdf"
