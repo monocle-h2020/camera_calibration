@@ -10,7 +10,7 @@ Command line arguments:
 """
 
 from sys import argv
-from spectacle import io, analyse, calibrate
+from spectacle import io, analyse
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -24,7 +24,7 @@ camera = io.load_metadata(root)
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 
 # Normalise the data using the ISO look-up table
-stds_normalised = calibrate.normalise_iso(root, isos, stds)
+stds_normalised = camera.normalise_iso(isos, stds)
 
 # Print statistics at each ISO
 stats = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")

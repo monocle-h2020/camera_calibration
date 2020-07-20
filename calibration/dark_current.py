@@ -17,12 +17,16 @@ To do:
 
 import numpy as np
 from sys import argv
-from spectacle import io, calibrate, dark
+from spectacle import io, dark
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to_normalised = root/"calibration/dark_current_normalised.npy"
+
+# Get the camera metadata
+camera = io.load_metadata(root)
+print("Loaded metadata")
 
 # Get the ISO speed at which the data were taken from the folder name
 ISO = io.split_iso(folder)
@@ -41,7 +45,7 @@ np.save(save_to_ADU, dark_current)
 print(f"Saved dark current map at ISO {ISO} to '{save_to_ADU}'")
 
 # ISO normalisation
-dark_current_normalised = calibrate.normalise_iso(root, ISO, dark_current)
+dark_current_normalised = camera.normalise_iso(ISO, dark_current)
 
 # Save the normalised dark current map
 np.save(save_to_normalised, dark_current_normalised)
