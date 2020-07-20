@@ -163,15 +163,15 @@ class Camera(object):
         """
         # Try to use a data-based read-noise map
         try:
-            self.readnoise = bias_readnoise.load_readnoise_map(self.root)
+            readnoise = bias_readnoise.load_readnoise_map(self.root)
 
         # If a data-based read-noise map does not exist or cannot be loaded, return an empty (None) object and warn
         except (FileNotFoundError, OSError):
-            self.readnoise = None
+            readnoise = None
             print(f"Could not find a readnoise map in the folder `{self.root}`")
 
-        # The read-noise map is saved to this object and returned from the function call
-        return self.readnoise
+        # The read-noise map is saved to this object
+        self.readnoise = readnoise
 
     def _load_dark_current_map(self):
         """
