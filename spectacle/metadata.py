@@ -7,7 +7,7 @@ import json
 from collections import namedtuple
 from pathlib import Path
 
-from . import raw, analyse, bias_readnoise, dark, iso, gain
+from . import raw, analyse, bias_readnoise, dark, iso, gain, flat
 from .general import return_with_filename
 
 
@@ -229,6 +229,23 @@ class Camera(object):
         # If a gain map was found, save it to this object so it need not be looked up again
         # If no gain map was found, save the None object to warn the user
         self.gain_map = gain_map
+
+    def _load_flatfield_correction(self):
+        """
+        Load a flatfield correction model from file, and generate a correction map
+        """
+        # Try to use a flatfield model from file
+        try:
+            correction_map = flat.load_flatfield_correction(self.root, shape=self.image.shape)
+
+        # If a flatfield map cannot be found, do not use any, and warn the user
+        except (FileNotFoundError, OSError):
+            correction_map = None
+            print(f"No flatfield model found for {self.device.name}.")
+
+        # If a flatfield map was found, save it to this object so it need not be looked up again
+        # If no flatfield map was found, save the None object to warn the user
+        self.flatfield_map = correction_map
 
     def correct_bias(self, *data, **kwargs):
         """
