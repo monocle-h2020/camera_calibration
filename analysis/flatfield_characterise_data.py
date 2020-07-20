@@ -8,6 +8,9 @@ Command line arguments:
     * `meanfile`: location of an NPY stack of mean flat-field data. It is
     assumed that for a meanfile "X_mean.npy", a standard deviation stack can be
     found at "X_stds.npy" in the same folder.
+
+To do:
+    * Make stds optional
 """
 
 import numpy as np
