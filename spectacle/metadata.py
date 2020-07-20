@@ -266,6 +266,21 @@ class Camera(object):
         data_corrected = iso.normalise_iso_general(self.iso_lookup_table, iso_values, *data)
         return data_corrected
 
+    def convert_to_photoelectrons(self, *data):
+        """
+        Convert data from ADU to photoelectrons using this sensor's gain data
+        """
+        # If a gain map has not been loaded yet, do so
+        if not hasattr(self, "gain_map"):
+            self._load_gain_map()
+
+        # Assert that a gain map was loaded
+        assert self.gain_map is not None, "Gain map unavailable"
+
+        # If a gain map was available, apply it
+        data_converted = gain.convert_to_photoelectrons_from_map(self.gain_map, *data)
+        return data_converted
+
     def write_to_file(self, path):
         """
         Write metadata to a file.
