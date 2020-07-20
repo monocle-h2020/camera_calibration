@@ -211,8 +211,7 @@ class Camera(object):
             print(f"No ISO lookup table found for {self.device.name}. Using naive estimate (ISO / min ISO). This may not be accurate.")
 
         # Whatever method was used, save the lookup table so it need not be looked up again
-        else:
-            self.iso_lookup_table = lookup_table
+        self.iso_lookup_table = lookup_table
 
     def _load_gain_map(self):
         """
