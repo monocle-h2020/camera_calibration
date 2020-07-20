@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
-from .general import return_with_filename
+from .general import return_with_filename, apply_to_multiple_args
 from warnings import warn
 
 
@@ -204,6 +204,50 @@ def convert_RGBG2_to_RGB(RGBG2_data):
     RGB_data = np.stack([R, G_combined, B])
 
     return RGB_data
+
+
+def _correct_for_srf(data_element, spectral_response_interpolated, wavelengths):
+    """
+    Correct a `data_element` for the SRF
+    Helper function
+    """
+    # Check that the data are the right shape
+    assert data_element.shape[1] == wavelengths.shape[0], f"Wavelengths ({wavelengths.shape[0]}) and data ({data_element.shape[1]}) have different numbers of wavelength values."
+    assert data_element.shape[0] in (3, 4), f"Incorrect number of channels ({data_element.shape[0]}) in data; expected 3 (RGB) or 4 (RGBG2)."
+
+    # Convert the spectral response into the correct channels (RGB or RGBG2)
+    if data_element.shape[0] == 3:  # RGB data
+        spectral_response_final = convert_RGBG2_to_RGB(spectral_response_interpolated)
+    else:  # RGBG2 data
+        spectral_response_final = spectral_response_interpolated
+
+    # Normalise the input data by the spectral response and return the result
+    data_normalised = data_element / spectral_response_final
+    return data_normalised
+
+
+def correct_spectra(spectral_response, data_wavelengths, *data):
+    """
+    Correct any number of spectra `*data` for the `spectral response` interpolated to
+    the data wavelengths. Note that the arrays in *data must share the same wavelengths.
+
+    The spectral responses are interpolated to the wavelengths given by the
+    user. Spectral responses outside the range of the calibration data are
+    assumed to be 0.
+
+    The data are assumed to consist of 3 (RGB) or 4 (RGBG2) rows and a column
+    for every wavelength. If not, an error is thrown.
+    """
+    # Pick out the wavelengths and RGBG2 channels of the spectral response curves
+    spectral_response_wavelengths = spectral_response[0]
+    spectral_response_RGBG2 = spectral_response[1:5]
+
+    # Convert the spectral response to the same shape as the input data
+    spectral_response_interpolated = interpolate_spectral_data(spectral_response_wavelengths, spectral_response_RGBG2, data_wavelengths, left=0, right=0)
+
+    # Correct the spectra
+    data_normalised = apply_to_multiple_args(_correct_for_srf, data, spectral_response_interpolated, data_wavelengths)
+    return data_normalised
 
 
 def effective_wavelengths(wavelengths, spectral_responses):
