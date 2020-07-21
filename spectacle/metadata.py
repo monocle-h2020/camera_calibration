@@ -106,7 +106,10 @@ class Camera(object):
         """
         Text representation of the Camera object
         """
-        return f"{self.device.manufacturer} {self.device.name} (from `{self.root}`)"
+        if self.root is None:
+            return f"{self.device.manufacturer} {self.device.name} (not from file)"
+        else:
+            return f"{self.device.manufacturer} {self.device.name} (from `{self.root}`)"
 
     def __str__(self):
         """
@@ -114,7 +117,10 @@ class Camera(object):
         """
         combiner = "\n\t"
         device_name = f"{self.device.manufacturer} {self.device.name}"
-        source = f"from {self.root}"
+        if self.root is None:
+            source = f"not from file"
+        else:
+            source = f"from {self.root}"
         manufacturer = f"manufacturer: {self.device.manufacturer}"
         model_name = f"camera model: to-do"
         calibration_list = f"calibration data: [] to-do"
