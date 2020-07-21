@@ -1,6 +1,8 @@
 from astropy.stats import sigma_clip
-
 import numpy as np
+from .general import deprecation
+
+deprecation("The spectacle.wavelength module will be moved to the ispex2 module, and will not be available in future releases.")
 
 fluorescent_lines = np.array([611.6, 544.45, 436.6])  # RGB, units: nm
 degree_of_spectral_line_fit = 2
