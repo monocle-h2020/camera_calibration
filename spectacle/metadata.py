@@ -167,7 +167,7 @@ class Camera(object):
             bias_map = bias_readnoise.load_bias_map(self.root)
 
         # If a data-based bias map does not exist or cannot be loaded, use metadata instead
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             bias_map = self.generate_bias_map()
             self.bias_type = "Metadata"
 
@@ -188,7 +188,7 @@ class Camera(object):
             readnoise = bias_readnoise.load_readnoise_map(self.root)
 
         # If a data-based read-noise map does not exist or cannot be loaded, return an empty (None) object and warn
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             readnoise = None
             print(f"Could not find a readnoise map in the folder `{self.root}`")
 
@@ -204,7 +204,7 @@ class Camera(object):
             dark_current = dark.load_dark_current_map(self.root)
 
         # If a dark current map does not exist, return an empty one, and warn the user
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             dark_current = np.zeros(self.image.shape)
             print(f"Could not find a dark current map in the folder `{self.root}` - using all 0 instead")
 
@@ -226,7 +226,7 @@ class Camera(object):
             lookup_table = iso.load_iso_lookup_table(self.root)
 
         # If a lookup table cannot be found, assume a linear relation and warn the user
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             iso_range = self._generate_ISO_range()
             normalisation = iso_range / self.settings.ISO_min
             lookup_table = np.stack([iso_range, normalisation])
@@ -244,7 +244,7 @@ class Camera(object):
             gain_map = gain.load_gain_map(self.root)
 
         # If a gain map cannot be found, do not use any, and warn the user
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             gain_map = None
             print(f"No gain map found for {self.device.name}.")
 
@@ -261,7 +261,7 @@ class Camera(object):
             correction_map = flat.load_flatfield_correction(self.root, shape=self.image.shape)
 
         # If a flatfield map cannot be found, do not use any, and warn the user
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             correction_map = None
             print(f"No flatfield model found for {self.device.name}.")
 
@@ -278,7 +278,7 @@ class Camera(object):
             spectral_response = spectral.load_spectral_response(self.root)
 
         # If SRFs cannot be found, do not use any, and warn the user
-        except (FileNotFoundError, OSError):
+        except (FileNotFoundError, OSError, TypeError):
             spectral_response = None
             print(f"No spectral response functions found for {self.device.name}.")
 
