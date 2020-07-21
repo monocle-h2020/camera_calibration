@@ -120,12 +120,11 @@ class Camera(object):
         if self.root is None:
             source = f"not from file"
         else:
-            source = f"from {self.root}"
+            source = f"from `{self.root}`"
         manufacturer = f"manufacturer: {self.device.manufacturer}"
-        model_name = f"camera model: to-do"
         calibration_list = f"calibration data: {self.check_calibration_data()}"
 
-        text = combiner.join([device_name, source, manufacturer, model_name, calibration_list])
+        text = combiner.join([device_name, source, manufacturer, calibration_list])
         return text
 
     def _as_dict(self):
