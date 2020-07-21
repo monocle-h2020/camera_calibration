@@ -1,6 +1,5 @@
 from scipy.ndimage.filters import gaussian_filter1d as gauss1d, gaussian_filter as gaussMd
 from scipy.optimize import curve_fit
-from astropy.modeling.blackbody import blackbody_lambda
 import numpy as np
 
 
@@ -34,7 +33,11 @@ def blackbody(wavelengths, temperature=5777, norm=1):
     (default: 5777, effective temperature of the Sun), normalised to a maximum
     value of `norm`.
     """
-    bb = blackbody_lambda(wavelengths*10, temperature).value
+    h = 6.62607004e-34 # m**2 kg s**-1
+    c = 299792458. # m s**-1
+    kB = 1.38064852e-23 # m**2 kg s**-2 K**-1
+    wavelengths_m = wavelengths/1e9
+    bb = (2 * h * c**2) / wavelengths_m**5 * 1/(np.exp((h*c)/(wavelengths_m * kB * temperature)) - 1)
     bb = bb / bb.max() * norm
     return bb
 
