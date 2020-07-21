@@ -2,9 +2,8 @@ This is a to-do list for the `spectacle` module.
 
 ## Module
 
-#### Deprecation
-- [ ] Matplotlib 3.1-3.3: Use lowercase single-letter colours instead of uppercase
-- [ ] AstroPy: Blackbody function
+- [ ] Remove AstroPy dependencies for simplicity
+- [ ] Fix silent deprecation warnings
 
 ## Scripts
 
