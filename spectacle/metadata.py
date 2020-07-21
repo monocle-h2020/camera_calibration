@@ -123,7 +123,7 @@ class Camera(object):
             source = f"from {self.root}"
         manufacturer = f"manufacturer: {self.device.manufacturer}"
         model_name = f"camera model: to-do"
-        calibration_list = f"calibration data: [] to-do"
+        calibration_list = f"calibration data: {self.check_calibration_data()}"
 
         text = combiner.join([device_name, source, manufacturer, model_name, calibration_list])
         return text
