@@ -4,4 +4,4 @@ This branch represents a minor update to deal with deprecation
 - [x] AstroPy: Blackbody function
 - [ ] AstroPy: Remove dependencies altogether
 - [ ] SPECTACLE: Fix deprecation warnings in `spectral` module
-- [ ] SPECTACLE: Add deprecation warnings to `wavelength` module (will be moved to iSPEX code)
+- [x] SPECTACLE: Add deprecation warnings to `wavelength` module (will be moved to iSPEX code)
