@@ -75,7 +75,7 @@ class Camera(object):
     """
     # Properties a Camera can have
     Device = namedtuple("Device", ["manufacturer", "name"])
-    Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth"])
+    Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "color_description"])
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
     def __init__(self, device_properties, image_properties, settings, root=None):
@@ -95,6 +95,7 @@ class Camera(object):
         # Generate/calculate commonly used values/properties
         self.bayer_map = self._generate_bayer_map()
         self.saturation = 2**self.image.bit_depth - 1
+        self.bands = self.image.color_description
 
         # Root folder
         self.root = root
@@ -355,7 +356,7 @@ class Camera(object):
         """
         Demosaick data using this camera's Bayer pattern.
         """
-        RGBG_data = raw.demosaick(self.bayer_map, *data, **kwargs)
+        RGBG_data = raw.demosaick(self.bayer_map, *data, color_desc=self.bands, **kwargs)
         return RGBG_data
 
     def plot_gauss_maps(self, data, **kwargs):
