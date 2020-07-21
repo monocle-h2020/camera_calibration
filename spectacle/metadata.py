@@ -78,6 +78,8 @@ class Camera(object):
     Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "color_description"])
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
+    calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response"]
+
     def __init__(self, device_properties, image_properties, settings, root=None):
         """
         Generate a Camera object based on input dictionaries containing the
@@ -271,6 +273,13 @@ class Camera(object):
         # If SRFs were found, save it to this object so it need not be looked up again
         # Else, save the None object to warn the user
         self.spectral_response = spectral_response
+
+    def check_calibration_data(self):
+        """
+        Check what calibration data have been loaded so far
+        """
+        data_available = [data_type for data_type in self.calibration_data_all if hasattr(self, data_type)]
+        return data_available
 
     def correct_bias(self, *data, **kwargs):
         """
