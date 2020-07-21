@@ -54,7 +54,7 @@ device = {
         }
 print("Device properties:", device)
 
-# Image proprties
+# Image properties
 image = {
         "shape": raw_file.raw_image.shape,
         "raw_extension": file.suffix,
