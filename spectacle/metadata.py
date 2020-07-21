@@ -104,8 +104,15 @@ class Camera(object):
         """
         Output for `print(Camera)`, currently simply the name of the device
         """
+        combiner = "\n\t"
         device_name = f"{self.device.manufacturer} {self.device.name}"
-        return device_name
+        source = f"from {self.root}"
+        manufacturer = f"manufacturer: {self.device.manufacturer}"
+        model_name = f"camera model: to-do"
+        calibration_list = f"calibration data: [] to-do"
+
+        text = combiner.join([device_name, source, manufacturer, model_name, calibration_list])
+        return text
 
     def _as_dict(self):
         """
