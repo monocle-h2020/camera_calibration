@@ -15,6 +15,12 @@ def find_fluorescent_lines(RGB):
     peaks[peaks == 0] = np.nan
     return peaks
 
+def _sigma_clip_indices(x, low=3, high=3, nr_iterations=5):
+    median = np.median(x)
+    sigma = np.std(x)
+    indices = np.where((x >= median-low*sigma) & (x <= median+high*sigma))[0]
+    return indices
+
 def fit_fluorescent_lines(lines, y):
     lines_fit = lines.copy()
     for j in (0,1,2):  # fit separately for R, G, B
