@@ -44,7 +44,7 @@ fig, axs = plt.subplots(ncols=4, nrows=len(files), sharex=True, sharey=True, fig
 for path, gauss, axs_here in zip(files, gauss_all, axs):
 
     # Loop over the Bayer RGBG2 channels
-    for j, (ax, D, c) in enumerate(zip(axs_here, gauss, plot.RGBG2)):
+    for j, (ax, D, c) in enumerate(zip(axs_here, gauss, plot.rgbg2)):
 
         # Plot the image
         img = ax.imshow(D, cmap=plot.cmaps[c+"r"], vmin=vmin, vmax=vmax)

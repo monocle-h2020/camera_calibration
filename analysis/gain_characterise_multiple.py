@@ -43,11 +43,13 @@ print("Gaussed data")
 
 # Plot a Gaussed map for each channel
 # Loop over the Bayer RGBG2 channels
-for j, c in enumerate(plot.RGBG2):
+for j, c in enumerate(plot.rgbg2):
     # Create a figure to plot into
     fig, axs = plt.subplots(ncols=len(files), figsize=(3*len(files), 2.3), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     # Loop over the demosaicked/gaussed gain maps and plot them into the figure
     for camera, iso, ax, data_RGBG, data_RGBG_gauss in zip(cameras, isos, axs, data_RGBG_arrays, data_RGBG_gauss_arrays):
+        # Uppercase label for colour
+        c_label = c.upper()
 
         # Plot channel j into this figure
         im = ax.imshow(data_RGBG_gauss[j], cmap=plot.cmaps[c+"r"])
@@ -72,13 +74,13 @@ for j, c in enumerate(plot.RGBG2):
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
         print(f"{camera.device.name:<10}: ISO {iso:>4}")
-        print(f"{c:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
+        print(f"{c_label:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
-    save_to_map_c = save_folder/f"gain_map_{c}.pdf"
+    save_to_map_c = save_folder/f"gain_map_{c_label}.pdf"
     fig.savefig(save_to_map_c)
     plt.close()
-    print(f"Saved gain map for the {c} channel to '{save_to_map_c}'")
+    print(f"Saved gain map for the {c_label} channel to '{save_to_map_c}'")
 
 # Plot a histogram
 bins = np.linspace(0.4, 2.8, 250)
@@ -93,7 +95,7 @@ for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays
     B = data_RGBG[2].ravel()    ; B = B[~np.isnan(B)]
 
     # Plot the RGB data
-    for ax, D, c in zip(ax_arr, [R, G, B], plot.RGB):
+    for ax, D, c in zip(ax_arr, [R, G, B], plot.rgb):
         ax.hist(D, bins=bins, color=c, edgecolor=c, density=True)
         ax.grid(True)
 

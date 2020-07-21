@@ -13,7 +13,7 @@ TO DO:
 
 import numpy as np
 from sys import argv
-from spectacle import io
+from spectacle import io, plot
 from spectacle.general import RMS
 from matplotlib import pyplot as plt
 
@@ -92,7 +92,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     errors_RGB = np.stack([errors[0], G_errors, errors[2]])
 
     # Loop over the RGB responses
-    for j, c in enumerate("rgb"):
+    for j, c in enumerate(plot.rgb):
         mean  =  means_RGB[j]
         error = errors_RGB[j]
 
@@ -134,7 +134,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     SNR = means_RGB / errors_RGB
 
     # Loop over the RGB responses
-    for j, c in enumerate("rgb"):
+    for j, c in enumerate(plot.rgb):
         snr = SNR[j]
 
         # Plot the curve

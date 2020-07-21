@@ -201,7 +201,7 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
 
     for j in range(4):
         colour_index = colours_here[j]
-        colour = "rgbg"[colour_index]
+        colour = rgbg[colour_index]
         if colour_index < 3:
             label = colour
         else:
@@ -231,7 +231,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
 
     for j in range(4):
         colour_index = colours_here[j]
-        colour = "rgbg"[colour_index]
+        colour = rgbg[colour_index]
         if colour_index < 3:
             i = colour_index
             label = colour

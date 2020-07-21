@@ -147,7 +147,7 @@ wvl = wvl[ind]
 def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, title="", saveto=None, label_thin = "narrow_slit", label_thick="broad slit"):
     print(title)
     plt.figure(figsize=(7,3), tight_layout=True)
-    for j, c in enumerate("rgb"):
+    for j, c in enumerate(plot.rgb):
         plt.plot(monochromator[0], monochromator[1+j], c=c)
         plt.plot(wavelength, thin_spec [1+j], c=c, ls="--")
         plt.plot(wavelength, thick_spec[1+j], c=c, ls=":" )

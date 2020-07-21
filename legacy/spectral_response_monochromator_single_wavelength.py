@@ -1,6 +1,6 @@
 import numpy as np
 from sys import argv
-from spectacle import io, calibrate
+from spectacle import io, calibrate, plot
 from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)
@@ -22,7 +22,7 @@ mean_stack = m_RGBG.mean(axis=(1,2))
 std_stack  = m_RGBG.std (axis=(1,2))
 SNR_stack = mean_stack / std_stack
 
-for j,c in enumerate("RGBG"):
+for j, c in enumerate(plot.RGBG):
     SNR_here = SNR_RGBG[j].ravel()
     mean_here = m_RGBG[j].ravel()
     plt.figure(figsize=(10,3))

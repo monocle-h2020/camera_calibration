@@ -83,7 +83,7 @@ if jpeg_data_available:
     bins = np.linspace(0.9, 1.0, 150)
     plt.figure(tight_layout=True, figsize=(5,2))
     plt.hist(r_raw.ravel(), bins=bins, color='k')
-    for j, c in enumerate("rgb"):
+    for j, c in enumerate(plot.rgb):
         plt.hist(r_jpeg[j].ravel(), bins=bins, color=c, alpha=0.7)
     plt.xlabel("Pearson $r$")
     plt.ylabel("Frequency")

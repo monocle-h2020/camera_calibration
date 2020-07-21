@@ -14,7 +14,7 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, spectral
+from spectacle import io, spectral, plot
 
 # Get the data folder and minimum and maximum wavelengths from the command line
 # Defaults
@@ -190,5 +190,5 @@ print(f"Saved spectral response curves to '{save_to}'")
 bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
 np.savetxt(root/"calibration/spectral_bandwidths.csv", bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
-for band, width in zip([*"RGB", "G2"], bandwidths):
+for band, width in zip(plot.RGBG2, bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")
