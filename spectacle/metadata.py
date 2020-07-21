@@ -104,7 +104,13 @@ class Camera(object):
 
     def __repr__(self):
         """
-        Output for `print(Camera)`, currently simply the name of the device
+        Text representation of the Camera object
+        """
+        return f"{self.device.manufacturer} {self.device.name} (from `{self.root}`)"
+
+    def __str__(self):
+        """
+        Output for `print(Camera)`
         """
         combiner = "\n\t"
         device_name = f"{self.device.manufacturer} {self.device.name}"
