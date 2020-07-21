@@ -18,13 +18,20 @@ def find_fluorescent_lines(RGB):
 def fit_fluorescent_lines(lines, y):
     lines_fit = lines.copy()
     for j in (0,1,2):  # fit separately for R, G, B
+        # Filter out non-finite and NaN elements
         idx = np.isfinite(lines[j])
         new_y = y[idx] ; new_line = lines[j][idx]
+
+        # Sigma-clip to filter out elements more than 3-sigma away from the mean
         clipped = sigma_clip(new_line)  # generates a masked array
         idx = ~clipped.mask  # get the non-masked items
         new_y = new_y[idx] ; new_line = new_line[idx]
-        # np.polyfit can go along axis - try this?
+
+        # Fit a polynomial to the line positions
+        # Note: np.polyfit can go along axis - try this?
         coeff = np.polyfit(new_y, new_line, degree_of_spectral_line_fit)
+
+        # Evaluate the fitted polynomial on all y positions
         lines_fit[j] = np.polyval(coeff, y)
     return lines_fit
 
