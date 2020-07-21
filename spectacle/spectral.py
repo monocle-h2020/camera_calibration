@@ -1,8 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from . import calibrate, io, raw, plot
-from .general import return_with_filename
-from warnings import warn
+from .general import return_with_filename, deprecation
 
 
 wavelengths_interpolated = np.arange(390, 701, 1)
@@ -146,7 +145,7 @@ def load_spectral_response(root, return_filename=False):
 
         # If an NPY file was used instead of a CSV file, raise a warning about deprecation
         else:
-            warn("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.", DeprecationWarning)
+            deprecation("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.")
 
     print(f"Using spectral response curves from '{filename}'")
 

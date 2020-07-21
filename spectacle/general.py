@@ -1,6 +1,7 @@
 from scipy.ndimage.filters import gaussian_filter1d as gauss1d, gaussian_filter as gaussMd
 from scipy.optimize import curve_fit
 import numpy as np
+from warnings import warn
 
 
 def gauss_filter(D, sigma=5, **kwargs):
@@ -160,3 +161,7 @@ def apply_to_multiple_args(func, data, *args, **kwargs):
         results = results[0]
 
     return results
+
+
+def deprecation(message):
+    warn(message, DeprecationWarning, stacklevel=2)
