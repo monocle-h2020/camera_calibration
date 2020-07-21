@@ -75,7 +75,7 @@ class Camera(object):
     """
     # Properties a Camera can have
     Device = namedtuple("Device", ["manufacturer", "name"])
-    Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "color_description"])
+    Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"])
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
     calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response"]
@@ -97,7 +97,7 @@ class Camera(object):
         # Generate/calculate commonly used values/properties
         self.bayer_map = self._generate_bayer_map()
         self.saturation = 2**self.image.bit_depth - 1
-        self.bands = self.image.color_description
+        self.bands = self.image.colour_description
 
         # Root folder
         self.root = root

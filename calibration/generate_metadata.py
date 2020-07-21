@@ -61,7 +61,7 @@ image = {
         "bias": raw_file.black_level_per_channel,
         "bayer_pattern": raw_file.raw_pattern.tolist(),
         "bit_depth": bit_depth,
-        "color_description": raw_file.color_desc.decode()
+        "colour_description": raw_file.color_desc.decode()
         }
 print("Image properties:", image)
 
