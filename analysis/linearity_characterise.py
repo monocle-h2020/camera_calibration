@@ -31,7 +31,7 @@ else:
     print("JPEG data are not available")
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 savefolder = root/"analysis/linearity/"
 
 # Load the data

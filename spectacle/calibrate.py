@@ -15,7 +15,7 @@ from .dark import load_dark_current_map
 from .flat import clip_data, load_flatfield_correction
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
-from .camera import load_metadata
+from .camera import load_camera
 from .raw import demosaick
 from .spectral import load_spectral_response, load_spectral_bandwidths, convert_RGBG2_to_RGB
 
@@ -98,7 +98,7 @@ def correct_flatfield(root, *data, **kwargs):
     `root`/calibration/
     """
     # Load metadata to get the array shape
-    camera = load_metadata(root)
+    camera = load_camera(root)
 
     # Load the correction map
     correction_map, origin = flat.load_flatfield_correction(root, shape=camera.image.shape, return_filename=True)

@@ -433,7 +433,7 @@ def write_json(data, save_to):
         json.dump(data, file)
 
 
-def load_metadata(root, return_filename=False):
+def load_camera(root, return_filename=False):
     """
     Read the metadata JSON located in the `root` folder.
 

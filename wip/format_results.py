@@ -18,7 +18,7 @@ calibration = root/"calibration/"
 analysis = root/"analysis/"
 
 # Load metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Create results folder

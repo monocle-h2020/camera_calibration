@@ -35,7 +35,7 @@ save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_para
 save_to_parameters_calibration = root/"calibration/flatfield_parameters.csv"
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Load the data

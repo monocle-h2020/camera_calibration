@@ -6,7 +6,7 @@ from spectacle.general import gaussMd
 
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 
 colours = camera.bayer_map
 

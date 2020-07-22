@@ -19,7 +19,7 @@ root = io.find_root_folder(folder)
 save_to = root/"analysis/readnoise/readnoise_ISO_relation.pdf"
 
 # Get the camera metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Load the data

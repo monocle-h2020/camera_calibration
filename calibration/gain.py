@@ -23,7 +23,7 @@ root = io.find_root_folder(folder)
 save_to_normalised_map = root/"calibration/gain.npy"
 
 # Get the camera metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Get the ISO speed of these data from the folder name

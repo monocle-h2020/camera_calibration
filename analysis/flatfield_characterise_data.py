@@ -23,7 +23,7 @@ savefolder = root/"analysis/flatfield/"
 label = meanfile.stem.split("_mean")[0]
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Load the data

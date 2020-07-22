@@ -17,7 +17,7 @@ root = io.find_root_folder(file)
 save_folder = root/f"analysis/dark_current/"
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 
 # Load the data
 dark_current = np.load(file)

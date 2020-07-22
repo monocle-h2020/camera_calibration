@@ -29,7 +29,7 @@ roots = [io.find_root_folder(folder) for folder in folders]
 save_to = io.results_folder/"jpeg_sRGB_comparison.pdf"
 
 # Get metadata
-cameras = [io.load_metadata(root) for root in roots]
+cameras = [io.load_camera(root) for root in roots]
 print("Read meta-data")
 
 # Loop through the given folders to see which gamma values are available

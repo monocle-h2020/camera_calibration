@@ -10,7 +10,7 @@ products_gain, results_gain = root/"intermediaries/gain", root/"analysis/gain"
 print("Loaded information")
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 colours = camera.bayer_map

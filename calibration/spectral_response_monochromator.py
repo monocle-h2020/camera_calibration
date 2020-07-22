@@ -31,7 +31,7 @@ else:
 root = io.find_root_folder(folder)
 
 # Get the camera metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Get the subfolders in the given data folder

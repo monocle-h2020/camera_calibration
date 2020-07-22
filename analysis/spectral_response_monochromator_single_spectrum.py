@@ -22,7 +22,7 @@ label = folder.stem
 save_folder = root/"analysis/spectral_response/"
 
 # Get the camera metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Load the data

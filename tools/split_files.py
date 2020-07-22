@@ -21,7 +21,7 @@ from spectacle import io
 
 folder_main = io.path_from_input(argv[:2])
 root = io.find_root_folder(folder_main)
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 raw_pattern = f"*{camera.image.raw_extension}"
 
 blocksize = int(argv[2])

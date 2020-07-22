@@ -17,7 +17,7 @@ root = io.find_root_folder(folder)
 save_to = root/"intermediaries/linearity/linearity_raw.npy"
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 
 # Load the data
 intensities_with_errors, means = io.load_means(folder, retrieve_value=lin.filename_to_intensity)

@@ -17,7 +17,7 @@ root = io.find_root_folder(folder)
 savefolder = root/"analysis/linearity/"
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 
 # Find the indices of the central pixels
 array_size = np.array(camera.image.shape)

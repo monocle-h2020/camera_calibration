@@ -25,7 +25,7 @@ def load_bias_metadata(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
-    camera, filename = io.load_metadata(root, return_filename=True)
+    camera, filename = io.load_camera(root, return_filename=True)
     bias_map = camera.generate_bias_map()
     return return_with_filename(bias_map, filename, return_filename)
 

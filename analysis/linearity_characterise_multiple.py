@@ -27,7 +27,7 @@ r_jpeg_paths = [root/"intermediaries/linearity/linearity_jpeg.npy" for root in r
 save_to = io.results_folder
 
 # Get metadata
-cameras = [io.load_metadata(root) for root in roots]
+cameras = [io.load_camera(root) for root in roots]
 
 def load_jpeg(path):
     """

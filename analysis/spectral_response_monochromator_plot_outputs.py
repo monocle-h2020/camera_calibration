@@ -20,7 +20,7 @@ root = io.find_root_folder(folder)
 save_folder = root/"analysis/spectral_response/"
 
 # Get the camera metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Load the wavelength data

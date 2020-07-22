@@ -30,7 +30,7 @@ root = io.find_root_folder(folder)
 print("Loaded metadata")
 
 # Get the camera metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 
 # Wildcard pattern to find RAW data with
 raw_pattern = f"*{camera.image.raw_extension}"

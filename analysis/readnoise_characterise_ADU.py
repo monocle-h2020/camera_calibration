@@ -15,7 +15,7 @@ root = io.find_root_folder(folder)
 save_to = root/"analysis/readnoise"
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)

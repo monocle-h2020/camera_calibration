@@ -22,7 +22,7 @@ save_to_model = root/"calibration/iso_normalisation_model.csv"
 save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
 # Get metadata
-camera = io.load_metadata(root)
+camera = io.load_camera(root)
 print("Loaded metadata")
 
 # Load the mean and standard deviation stacks for each ISO value
