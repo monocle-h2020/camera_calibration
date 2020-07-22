@@ -13,7 +13,8 @@ To do:
     * Generate entire file structure for camera - or separate script?
 """
 
-from spectacle import io, metadata
+from spectacle import io
+from spectacle.camera import Camera
 from sys import argv
 
 # Get the data folder from the command line
@@ -74,6 +75,6 @@ settings = {
 print("Camera settings:", settings)
 
 # Combine all metadata into a single object and write it to file
-camera = metadata.Camera(device, image, settings)
+camera = Camera(device, image, settings)
 camera.write_to_file(save_to)
 print(f"Saved metadata to '{save_to}'")
