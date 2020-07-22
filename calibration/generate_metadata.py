@@ -1,5 +1,5 @@
 """
-Generate metadata files for a camera given a saturated RAW image and user
+Generate camera information files for a camera given a saturated RAW image and user
 inputs on the command line.
 
 Note that if the image does not have at least one saturated pixel, the bit
