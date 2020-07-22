@@ -21,7 +21,7 @@ save_to_data = root/"intermediaries/iso_normalisation/iso_data.npy"
 save_to_model = root/"calibration/iso_normalisation_model.csv"
 save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

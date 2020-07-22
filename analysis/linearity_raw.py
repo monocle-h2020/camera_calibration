@@ -16,7 +16,7 @@ folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to = root/"intermediaries/linearity/linearity_raw.npy"
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

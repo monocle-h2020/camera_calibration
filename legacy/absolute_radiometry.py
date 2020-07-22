@@ -7,7 +7,7 @@ from spectacle.general import gaussMd
 meanfile = io.path_from_input(argv)
 root, images, stacks, products, results = io.folders(meanfile)
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

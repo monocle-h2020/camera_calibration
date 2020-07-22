@@ -23,7 +23,7 @@ from matplotlib import pyplot as plt
 folders = io.path_from_input(argv)
 roots = [io.find_root_folder(f) for f in folders]
 
-# Get metadata
+# Load Camera object
 cameras = [io.load_camera(root) for root in roots]
 print("Loaded all metadata")
 
@@ -37,7 +37,7 @@ mean_jpeg_all = []
 
 # Loop over the given folders
 for folder, camera in zip(folders, cameras):
-    # Get metadata
+    # Load Camera object
     print("\n", camera)
     root = io.find_root_folder(folder)
 

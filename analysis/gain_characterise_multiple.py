@@ -23,7 +23,7 @@ files = io.path_from_input(argv)
 roots = [io.find_root_folder(file) for file in files]
 save_folder = io.results_folder
 
-# Get metadata
+# Load Camera object
 cameras = [io.load_camera(root) for root in roots]
 print("Loaded all metadata")
 

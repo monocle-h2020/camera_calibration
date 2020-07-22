@@ -23,7 +23,7 @@ root = io.find_root_folder(file1)
 savefolder = root/"analysis/flatfield/"
 label = "comparison_" + file1.stem + "_X_" + file2.stem
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

@@ -16,7 +16,7 @@ file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_folder = root/f"analysis/dark_current/"
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

@@ -16,7 +16,7 @@ file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_to = root/"analysis/iso_normalisation/iso_normalisation_curve.pdf"
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

@@ -20,7 +20,7 @@ root = io.find_root_folder(file)
 savefolder = root/"analysis/gain/"
 ISO = io.split_iso(file)
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

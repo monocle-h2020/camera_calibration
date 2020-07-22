@@ -24,7 +24,7 @@ for folder in folders:
     # Get the data folder for this camera
     root = io.find_root_folder(folder)
 
-    # Get metadata
+    # Load Camera object
     camera = io.load_camera(root)
     print("Loaded metadata")
 

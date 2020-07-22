@@ -22,7 +22,7 @@ root = io.find_root_folder(meanfile)
 savefolder = root/"analysis/flatfield/"
 label = meanfile.stem.split("_mean")[0]
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

@@ -7,7 +7,7 @@ folder, wvl = io.path_from_input(argv)
 wvl = wvl.stem
 root = io.find_root_folder(folder)
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

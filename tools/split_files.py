@@ -22,7 +22,7 @@ from spectacle import io
 folder_main = io.path_from_input(argv[:2])
 root = io.find_root_folder(folder_main)
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

@@ -28,7 +28,7 @@ folders = io.path_from_input(argv)
 roots = [io.find_root_folder(folder) for folder in folders]
 save_to = io.results_folder/"jpeg_sRGB_comparison.pdf"
 
-# Get metadata
+# Load Camera object
 cameras = [io.load_camera(root) for root in roots]
 print("Loaded all metadata")
 

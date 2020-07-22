@@ -22,7 +22,7 @@ roots = [io.find_root_folder(path) for path in files]
 save_to = io.results_folder/"RGBG.pdf"
 colorbar_label = 40*" " + "Read noise (ADU)"
 
-# Get metadata
+# Load Camera object
 cameras = [io.load_camera(root) for root in roots]
 print("Loaded all metadata")
 

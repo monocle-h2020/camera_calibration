@@ -30,7 +30,7 @@ if jpeg_data_available:
 else:
     print("JPEG data are not available")
 
-# Get metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 
