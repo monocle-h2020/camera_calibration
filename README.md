@@ -24,9 +24,11 @@ There are three main use cases for the `spectacle` module, each of which will be
 
 There are two interfaces for applying calibrations to new data, namely through a `spectacle.Camera` object or through the [`spectacle.calibrate`](spectacle/calibrate.py) submodule.
 
-Description of `spectacle.Camera`.
+The `spectacle.Camera` interface is the easiest to use.
 
-To apply calibrations to new data, simply load the [`spectacle.calibrate`](spectacle/calibrate.py) submodule and apply the methods contained therein. For example, to correct for the camera bias, one would use the `correct_bias` method from this submodule. Each method comes with detailed documentation on its usage, which can be found [here](spectacle/calibrate.py) or from within Python (using Python's `help` function or iPython's `?` and `??` shortcuts).
+To use the `spectacle.calibrate` interface, simply load the [`spectacle.calibrate`](spectacle/calibrate.py) submodule (`from spectacle import calibrate`) and apply the methods contained therein.
+For example, to correct for the camera bias, one would use the `correct_bias` method from this submodule.
+Each method comes with detailed documentation on its usage, which can be found [here](spectacle/calibrate.py) or from within Python (using Python's `help` function or iPython's `?` and `??` shortcuts).
 
 ## Analysis
 
