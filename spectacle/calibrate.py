@@ -6,7 +6,7 @@ calibrations, this is the module to use.
 """
 
 # Import other SPECTACLE submodules to use in functions
-from . import bias_readnoise, dark, flat, gain, io, iso, metadata, spectral
+from . import bias_readnoise, dark, flat, gain, io, iso, spectral
 
 # Import functions from other SPECTACLE submodules which may be used in
 # calibration scripts, for simpler access
@@ -15,7 +15,7 @@ from .dark import load_dark_current_map
 from .flat import clip_data, load_flatfield_correction
 from .gain import load_gain_map
 from .iso import load_iso_lookup_table
-from .metadata import load_metadata
+from .camera import load_metadata
 from .raw import demosaick
 from .spectral import load_spectral_response, load_spectral_bandwidths, convert_RGBG2_to_RGB
 

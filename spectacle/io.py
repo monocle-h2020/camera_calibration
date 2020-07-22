@@ -4,7 +4,7 @@ import numpy as np
 import os
 from pathlib import Path
 from matplotlib import pyplot as plt
-from .metadata import load_metadata, find_root_folder
+from .camera import load_metadata, find_root_folder
 
 # Default save folder for results
 results_folder = Path.home() / "SPECTACLE_results"
