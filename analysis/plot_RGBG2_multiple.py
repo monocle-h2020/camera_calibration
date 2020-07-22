@@ -24,7 +24,7 @@ colorbar_label = 40*" " + "Read noise (ADU)"
 
 # Load Camera object
 cameras = [io.load_camera(root) for root in roots]
-print("Loaded all metadata")
+print(f"Loaded Camera objects: {cameras}")
 
 # Load the data
 data_all = [np.load(path) for path in files]

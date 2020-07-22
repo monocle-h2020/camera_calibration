@@ -28,9 +28,9 @@ folders = io.path_from_input(argv)
 roots = [io.find_root_folder(folder) for folder in folders]
 save_to = io.results_folder/"jpeg_sRGB_comparison.pdf"
 
-# Load Camera object
+# Load Camera objects
 cameras = [io.load_camera(root) for root in roots]
-print("Loaded all metadata")
+print(f"Loaded Camera objects: {cameras}")
 
 # Loop through the given folders to see which gamma values are available
 gammas_all = []

@@ -23,9 +23,9 @@ files = io.path_from_input(argv)
 roots = [io.find_root_folder(file) for file in files]
 save_folder = io.results_folder
 
-# Load Camera object
+# Load Camera objects
 cameras = [io.load_camera(root) for root in roots]
-print("Loaded all metadata")
+print(f"Loaded Camera objects: {cameras}")
 
 # Find the ISO speed for each gain map, to include in the plot titles
 isos = [io.split_iso(file) for file in files]

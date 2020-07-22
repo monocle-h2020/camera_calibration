@@ -14,7 +14,7 @@ folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to = root/"analysis/bias/"
 
-# Load Camera object
+# Load Camera objects
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
