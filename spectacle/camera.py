@@ -435,7 +435,7 @@ def write_json(data, save_to):
 
 def load_camera(root, return_filename=False):
     """
-    Read the metadata JSON located in the `root` folder.
+    Read the camera data JSON located in the `root` folder.
 
     If `return_filename` is True, also return the exact filename used.
     """
