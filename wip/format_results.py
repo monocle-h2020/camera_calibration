@@ -17,7 +17,7 @@ root = io.find_root_folder(folder)
 calibration = root/"calibration/"
 analysis = root/"analysis/"
 
-# Load metadata
+# Load Camera object
 camera = io.load_camera(root)
 print("Loaded metadata")
 

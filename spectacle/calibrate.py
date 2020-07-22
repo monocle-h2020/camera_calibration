@@ -97,7 +97,7 @@ def correct_flatfield(root, *data, **kwargs):
     Correction for flat-fielding using a flat-field correction map read from
     `root`/calibration/
     """
-    # Load metadata to get the array shape
+    # Load Camera object to get the array shape
     camera = load_camera(root)
 
     # Load the correction map
