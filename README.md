@@ -1,8 +1,12 @@
 # SPECTACLE
 
-SPECTACLE (Standardised Photographic Equipment Calibration Technique And CataLoguE) is a standardised methodology for the spectral and radiometric calibration of consumer camera data. The associated database, containing calibration data for a number of popular consumer cameras, can be found at http://spectacle.ddq.nl/. More information on the SPECTACLE methodology, including results from applying it to several cameras, can be found in our paper: https://doi.org/10.1364/OE.27.019075
+SPECTACLE (Standardised Photographic Equipment Calibration Technique And CataLoguE) is a standardised methodology for the spectral and radiometric calibration of consumer camera data.
+The associated database, containing calibration data for a number of popular consumer cameras, can be found at http://spectacle.ddq.nl/.
+More information on the SPECTACLE methodology, including results from applying it to several cameras, can be found in our paper: https://doi.org/10.1364/OE.27.019075
 
-This repository contains the associated `spectacle` Python module. This module can be used to calibrate data using previously obtained calibration data (measured by the user or retrieved from the SPECTACLE database). It also includes functions and pre-made scripts for processing calibration data, as described in the paper linked above.
+This repository contains the associated `spectacle` Python module.
+This module can be used to calibrate data using previously obtained calibration data (measured by the user or retrieved from the SPECTACLE database).
+It also includes functions and pre-made scripts for processing calibration data, as described in the paper linked above.
 
 # Installation
 
@@ -32,14 +36,22 @@ Each method comes with detailed documentation on its usage, which can be found [
 
 ## Analysis
 
-A large number of pre-made scripts for the analysis of camera data, calibration data, and metadata are provided in the [analysis](analysis) subfolder. These are sorted by the parameter they probe, such as linearity or dark current. Please refer to the README in the [analysis](analysis) subfolder and documentation in the scripts themselves for further information. A number of common methods for analysing these data have also been bundled into the [`spectacle.analyse`](spectacle/analyse.py) submodule.
+A large number of pre-made scripts for the analysis of camera data, calibration data, and metadata are provided in the [analysis](analysis) subfolder.
+These are sorted by the parameter they probe, such as linearity or dark current. Please refer to the README in the [analysis](analysis) subfolder and documentation in the scripts themselves for further information.
+A number of common methods for analysing these data have also been bundled into the [`spectacle.analyse`](spectacle/analyse.py) submodule.
 
 ## Calibration
 
-Finally, pre-made scripts for generating calibration data based on data gathered by the user are provided in the [calibration](calibration) subfolder. These are sorted by the parameter they probe, such as bias or flat-field response. Furthermore, a script is provided that combines calibration data generated this way into a format that can be uploaded to the [SPECTACLE database](http://spectacle.ddq.nl/). Please refer to the README in the [calibration](calibration) subfolder and documentation in the scripts themselves for further information.
+Finally, pre-made scripts for generating calibration data based on data gathered by the user are provided in the [calibration](calibration) subfolder.
+These are sorted by the parameter they probe, such as bias or flat-field response.
+Furthermore, a script is provided that combines calibration data generated this way into a format that can be uploaded to the [SPECTACLE database](http://spectacle.ddq.nl/).
+Please refer to the README in the [calibration](calibration) subfolder and documentation in the scripts themselves for further information.
 
 # Further information
 
-The SPECTACLE method itself has been fully developed and applied, as shown in [our paper](https://doi.org/10.1364/OE.27.019075). The [SPECTACLE database](http://spectacle.ddq.nl/) and `spectacle` Python module are still in active development. Contributions from the community are highly welcome and we invite everyone to contribute.
+The SPECTACLE method itself has been fully developed and applied, as shown in [our paper](https://doi.org/10.1364/OE.27.019075).
+The [SPECTACLE database](http://spectacle.ddq.nl/) and `spectacle` Python module are still in active development.
+Contributions from the community are highly welcome and we invite everyone to contribute.
 
-Further information will be added to this repository with time. If anything is missing, please [raise an issue](https://github.com/monocle-h2020/camera_calibration/issues) or [contact the authors directly](mailto:burggraaff@strw.leidenuniv.nl).
+Further information will be added to this repository with time.
+If anything is missing, please [raise an issue](https://github.com/monocle-h2020/camera_calibration/issues) or [contact the authors directly](mailto:burggraaff@strw.leidenuniv.nl).
