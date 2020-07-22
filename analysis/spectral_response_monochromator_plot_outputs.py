@@ -21,7 +21,7 @@ save_folder = root/"analysis/spectral_response/"
 
 # Get the camera metadata
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the wavelength data
 wavelengths = np.load(folder/"monochromator_wavelengths.npy")

@@ -40,7 +40,7 @@ root = io.find_root_folder(file)
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the SMARTS2 reference spectrum
 wvl, smartsz, smartsy, smartsx = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)

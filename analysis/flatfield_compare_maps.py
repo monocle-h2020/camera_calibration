@@ -25,7 +25,7 @@ label = "comparison_" + file1.stem + "_X_" + file2.stem
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 map1 = np.load(file1)

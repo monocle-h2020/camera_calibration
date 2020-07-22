@@ -18,7 +18,7 @@ savefolder = root/"analysis/linearity/"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Find the indices of the central pixels
 array_size = np.array(camera.image.shape)

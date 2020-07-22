@@ -19,7 +19,7 @@ analysis = root/"analysis/"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Create results folder
 identifier = f"{camera.device.manufacturer}-{camera.device.name}"

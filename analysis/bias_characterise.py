@@ -16,7 +16,7 @@ save_to = root/"analysis/bias/"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)

@@ -24,7 +24,7 @@ save_to_normalised_map = root/"calibration/gain.npy"
 
 # Get the camera metadata
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Get the ISO speed of these data from the folder name
 ISO = io.split_iso(folder)

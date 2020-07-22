@@ -26,7 +26,7 @@ save_to_normalised = root/"calibration/dark_current_normalised.npy"
 
 # Get the camera metadata
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Get the ISO speed at which the data were taken from the folder name
 ISO = io.split_iso(folder)

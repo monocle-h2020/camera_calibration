@@ -24,7 +24,7 @@ label = meanfile.stem.split("_mean")[0]
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")

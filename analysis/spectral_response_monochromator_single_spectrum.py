@@ -23,7 +23,7 @@ save_folder = root/"analysis/spectral_response/"
 
 # Get the camera metadata
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 spectrum = spectral.load_monochromator_data(root, folder)

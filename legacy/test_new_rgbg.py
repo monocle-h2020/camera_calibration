@@ -48,7 +48,7 @@ results_readnoise = root/"results/readnoise"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours = camera.bayer_map

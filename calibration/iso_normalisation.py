@@ -23,7 +23,7 @@ save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the mean and standard deviation stacks for each ISO value
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)

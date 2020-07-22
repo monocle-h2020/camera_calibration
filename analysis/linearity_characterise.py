@@ -32,7 +32,7 @@ else:
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 savefolder = root/"analysis/linearity/"
 

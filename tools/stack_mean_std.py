@@ -27,11 +27,11 @@ from os import walk, makedirs
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Wildcard pattern to find RAW data with
 raw_pattern = f"*{camera.image.raw_extension}"

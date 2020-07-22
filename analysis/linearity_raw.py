@@ -18,7 +18,7 @@ save_to = root/"intermediaries/linearity/linearity_raw.npy"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 intensities_with_errors, means = io.load_means(folder, retrieve_value=lin.filename_to_intensity)

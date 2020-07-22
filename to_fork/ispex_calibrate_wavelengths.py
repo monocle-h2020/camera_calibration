@@ -24,7 +24,7 @@ save_to = root/"intermediaries/spectral_response/ispex_wavelength_solution.npy"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 img = io.load_raw_file(file)

@@ -11,7 +11,7 @@ print("Loaded information")
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 colours = camera.bayer_map
 

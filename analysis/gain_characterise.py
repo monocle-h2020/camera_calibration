@@ -22,7 +22,7 @@ ISO = io.split_iso(file)
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 gains = np.load(file)

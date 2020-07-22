@@ -16,7 +16,7 @@ save_to = root/"analysis/readnoise"
 
 # Load Camera object
 camera = io.load_camera(root)
-print("Loaded metadata")
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
