@@ -12,9 +12,9 @@ It also includes functions and pre-made scripts for processing calibration data,
 
 Currently, the easiest way to install the `spectacle` module is using `pip`: simply run `pip install pyspectacle` in your terminal to fetch the package from PyPI and install it. 
 
-You may have to specify a user-specific installation (`pip install pyspectacle --user`) if a permission error occurs. Please note that the module itself is called `spectacle` and `pyspectacle` is only its identifier on PyPI.
+You may have to specify a user-specific installation (`pip install pyspectacle --user`) if a permission error occurs. Please note that while the module is identified as `pyspectacle` on PyPI and in pip, in Python itself it is imported and used as simply `spectacle`.
 
-An alternative way to install the `spectacle` module is to clone this repository (`git clone git@github.com:monocle-h2020/camera_calibration.git`) and then install it using pip, by navigating into the repository folder and running `pip install .`.
+An alternative way to install the `spectacle` module is to clone this repository (`git clone git@github.com:monocle-h2020/camera_calibration.git`) and then install it using pip, by navigating into the repository folder and running `pip install .` (mind the `.`).
 
 # Usage
 

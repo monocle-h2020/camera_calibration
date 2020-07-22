@@ -4,4 +4,5 @@ This branch represents a major update where calibration methods are integrated i
 - [x] Update all scripts to use `Camera`-based calibrations
 - [ ] More intuitive `Camera` creation, for example using just a folder name (so the user never sees `root`)
 - [x] Add band information from RawPy to `Camera`
-- [ ] Update all documentation
+- [ ] Extend `Camera` and function documentation
+- [ ] Update READMEs
