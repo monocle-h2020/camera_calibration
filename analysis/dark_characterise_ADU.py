@@ -18,6 +18,7 @@ save_folder = root/f"analysis/dark_current/"
 
 # Get metadata
 camera = io.load_camera(root)
+print("Loaded metadata")
 
 # Load the data
 dark_current = np.load(file)

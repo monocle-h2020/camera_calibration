@@ -18,6 +18,7 @@ save_to = root/"analysis/iso_normalisation/iso_normalisation_curve.pdf"
 
 # Get metadata
 camera = io.load_camera(root)
+print("Loaded metadata")
 
 # Load the normalisation data and look-up table
 lookup_table = iso.load_iso_lookup_table(root)

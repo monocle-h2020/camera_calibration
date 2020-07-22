@@ -26,6 +26,7 @@ for folder in folders:
 
     # Get metadata
     camera = io.load_camera(root)
+    print("Loaded metadata")
 
     # Load the normalisation data and look-up table
     lookup_table = iso.load_iso_lookup_table(root)

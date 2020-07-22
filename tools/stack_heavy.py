@@ -25,7 +25,10 @@ from os import walk, makedirs
 
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
+
+# Get metadata
 camera = io.load_camera(root)
+print("Loaded metadata")
 
 raw_pattern = f"*{camera.image.raw_extension}"
 

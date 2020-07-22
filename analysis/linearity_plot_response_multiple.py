@@ -22,7 +22,11 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
 roots = [io.find_root_folder(f) for f in folders]
+
+# Get metadata
 cameras = [io.load_camera(root) for root in roots]
+print("Loaded all metadata")
+
 save_to = io.results_folder
 
 # Lists to hold the data for each device

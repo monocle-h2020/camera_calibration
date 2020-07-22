@@ -30,7 +30,7 @@ save_to = io.results_folder/"jpeg_sRGB_comparison.pdf"
 
 # Get metadata
 cameras = [io.load_camera(root) for root in roots]
-print("Read meta-data")
+print("Loaded all metadata")
 
 # Loop through the given folders to see which gamma values are available
 gammas_all = []

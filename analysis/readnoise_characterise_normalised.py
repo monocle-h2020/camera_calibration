@@ -19,6 +19,7 @@ save_to = root/"analysis/readnoise"
 
 # Get metadata
 camera = io.load_camera(root)
+print("Loaded metadata")
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)

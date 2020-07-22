@@ -32,6 +32,8 @@ else:
 
 # Get metadata
 camera = io.load_camera(root)
+print("Loaded metadata")
+
 savefolder = root/"analysis/linearity/"
 
 # Load the data

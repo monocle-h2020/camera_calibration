@@ -28,6 +28,7 @@ save_to = io.results_folder
 
 # Get metadata
 cameras = [io.load_camera(root) for root in roots]
+print("Loaded all metadata")
 
 def load_jpeg(path):
     """
