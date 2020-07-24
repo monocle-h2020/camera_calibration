@@ -36,10 +36,22 @@ This camera information file can be loaded in any script using the `spectacle.lo
 
 For example, if your calibration data for an iPhone SE are stored in the folder `/home/spectacle_data/iPhone_SE/`, then that folder is the `root` folder and the metadata file should be located in that folder (i.e. at `/home/spectacle_data/iPhone_SE/metadata.json`).
 Then the Camera object can be initialised from that file and used in the future.
-Using the example of the iPhone SE, one might run the following piece of code:
 
 Calibrations are applied using the Camera object's methods, such as `Camera.correct_bias` for correcting for camera bias.
 The Camera object will automatically load the required calibration data from the same folder it was initialised from.
+
+Using the example of the iPhone SE, one might run the following piece of code:
+```python3
+from spectacle import load_metadata, io
+
+camera = load_metadata("/home/spectacle_data/iPhone_SE/")
+raw_data = io.load_raw_image("/home/img_0001.dng")
+
+data_corrected = camera.correct_bias(raw_data)
+```
+This code snippet loads the iPhone SE camera data and a RAW image file (`/home/img_0001.dng`), then corrects the RAW image data for the iPhone SE camera bias.
+
+
 
 ### spectacle.calibrate interface
 
