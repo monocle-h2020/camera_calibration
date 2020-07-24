@@ -1,8 +1,10 @@
 # Analysis
 
-This folder contains scripts for analysing camera data and calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075). These scripts are used to create plots, tables, etc. which provide insight into the performance and characteristics of the camera.
+This folder contains scripts for analysing camera data and calibration data using the methods described in the SPECTACLE paper (https://doi.org/10.1364/OE.27.019075).
+These scripts are used to create plots, tables, etc. which provide insight into the performance and characteristics of the camera.
 
-This README is only intended to give a very broad overview of the results that can be obtained using these scripts. For further documentation, please refer to that included in the scripts themselves.
+This README is only intended to give a very broad overview of the results that can be obtained using these scripts.
+For further documentation, please refer to that included in the scripts themselves.
 
 ## Paper
 
@@ -26,13 +28,15 @@ Please note that for the paper, some parameters such as axis labels were manuall
 
 ## Linearity
 
-Pearson r maps may be generated using [linearity_raw.py](linearity_raw.py) (for RAW data) and [linearity_jpeg.py](linearity_jpeg.py) (for JPEG data). Histograms of the resulting Pearson r distributions may be plotted using  [linearity_characterise.py](linearity_characterise.py) (for a single camera) or [linearity_characterise_multiple.py](linearity_characterise_multiple.py) (for multiple cameras) to create plots similar to Fig. 2 in the paper.
+Pearson r maps may be generated using [linearity_raw.py](linearity_raw.py) (for RAW data) and [linearity_jpeg.py](linearity_jpeg.py) (for JPEG data).
+Histograms of the resulting Pearson r distributions may be plotted using  [linearity_characterise.py](linearity_characterise.py) (for a single camera) or [linearity_characterise_multiple.py](linearity_characterise_multiple.py) (for multiple cameras) to create plots similar to Fig. 2 in the paper.
 
 The response of the central pixels in a camera may be analysed using [linearity_plot_response.py](linearity_plot_response.py) (for a single camera) or [linearity_plot_response_multiple.py](linearity_plot_response_multiple.py) (for multiple cameras) to create plots similar to Fig. 3 in the paper.
 
 ## JPEG response
 
-The JPEG response of a camera may be analysed using [jpeg_sRGB_gamma_free.py](jpeg_sRGB_gamma_free.py) (fitting an sRGB response with a free gamma value to each pixel) and [jpeg_sRGB_gamma_fixed.py](jpeg_sRGB_gamma_fixed.py) (comparing them to sRGB models with fixed gamma values). The results from this may be plotted using [jpeg_sRGB_characterise_model.py](jpeg_sRGB_characterise_model.py) (free gamma), [jpeg_sRGB_comparison_plot.py](jpeg_sRGB_comparison_plot.py) (fixed gamma), or [jpeg_sRGB_comparison_plot_multiple.py](jpeg_sRGB_comparison_plot_multiple.py) (free and fixed gamma, multiple cameras) to create plots similar to Fig. 4 in the paper.
+The JPEG response of a camera may be analysed using [jpeg_sRGB_gamma_free.py](jpeg_sRGB_gamma_free.py) (fitting an sRGB response with a free gamma value to each pixel) and [jpeg_sRGB_gamma_fixed.py](jpeg_sRGB_gamma_fixed.py) (comparing them to sRGB models with fixed gamma values).
+The results from this may be plotted using [jpeg_sRGB_characterise_model.py](jpeg_sRGB_characterise_model.py) (free gamma), [jpeg_sRGB_comparison_plot.py](jpeg_sRGB_comparison_plot.py) (fixed gamma), or [jpeg_sRGB_comparison_plot_multiple.py](jpeg_sRGB_comparison_plot_multiple.py) (free and fixed gamma, multiple cameras) to create plots similar to Fig. 4 in the paper.
 
 ## Bias
 
@@ -40,13 +44,15 @@ Bias maps may be analysed using [bias_characterise.py](bias_characterise.py) to 
 
 ## Read noise
 
-Read noise maps, in ADU, may be analysed using [readnoise_characterise_ADU.py](readnoise_characterise_ADU.py) to create plots similar to Fig. 5 in the paper. Another script, [readnoise_characterise_normalised.py](readnoise_characterise_normalised.py), does the same but normalises data according to ISO speed first.
+Read noise maps, in ADU, may be analysed using [readnoise_characterise_ADU.py](readnoise_characterise_ADU.py) to create plots similar to Fig. 5 in the paper.
+Another script, [readnoise_characterise_normalised.py](readnoise_characterise_normalised.py), does the same but normalises data according to ISO speed first.
 
 Furthermore, the relation between read noise and ISO speed may be analysed using [readnoise_iso_relation.py](readnoise_iso_relation.py) to create a plot of read noise at each ISO speed.
 
 ## Dark current
 
-The dark current in a camera may be analysed using using [dark_characterise_ADU.py](dark_characterise_ADU.py) to create histograms and Gaussed maps of dark current per pixel in normalised ADU/s. If a gain map has been created, [dark_characterise_electrons.py](dark_characterise_electrons.py) may be used to create similar figures in units of electrons/s.
+The dark current in a camera may be analysed using using [dark_characterise_ADU.py](dark_characterise_ADU.py) to create histograms and Gaussed maps of dark current per pixel in normalised ADU/s.
+If a gain map has been created, [dark_characterise_electrons.py](dark_characterise_electrons.py) may be used to create similar figures in units of electrons/s.
 
 ## ISO speed normalisation
 
@@ -60,7 +66,8 @@ Gain maps may be analysed using [gain_characterise.py](gain_characterise.py) (si
 
 Flat-field data may be analysed using [flatfield_characterise_data.py](flatfield_characterise_data.py) to create plots similar to Fig. 5 in the paper and plot the SNR of the data. 
 
-Flat-field models may be compared using [flatfield_compare_model_parameters.py](flatfield_compare_model_parameters.py) (comparing model parameters) or [flatfield_compare_maps.py](flatfield_compare_maps.py) (comparing fitted flat-field maps). The latter may also be used to create plots similar to Fig. 9 in the paper.
+Flat-field models may be compared using [flatfield_compare_model_parameters.py](flatfield_compare_model_parameters.py) (comparing model parameters) or [flatfield_compare_maps.py](flatfield_compare_maps.py) (comparing fitted flat-field maps).
+The latter may also be used to create plots similar to Fig. 9 in the paper.
 
 ## Spectral response
 
