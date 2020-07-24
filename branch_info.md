@@ -10,4 +10,4 @@ This is a sub-branch dedicated to renaming the `metadata` submodule to `camera`,
 - [ ] Update READMEs
 - [x] Rename `metadata` to `camera` and update all code
 - [x] Rename `load_metadata` to `load_camera` and update all code
-- [ ] Print camera info on loading instead of "Loaded metadata"
+- [x] Print camera info on loading instead of "Loaded metadata"
