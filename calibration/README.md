@@ -15,7 +15,14 @@ This is either because they are based on statistical properties of such image st
 
 Some camera information is necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels.
 These information files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_camera.py](generate_camera.py) script.
-This script is used to generate a file based on a single (saturated) image and some user inputs.
+This script is used to generate a file based on a single image.
+If the image has saturated pixels, no user input is required.
+If not, the user is required to manually put in the bit depth.
+
+## Camera settings
+
+Additional camera information may be added by the user with the [camera_info.py](camera_info.py) script.
+This script will prompt the user with several questions on camera settings, and saves the results to file.
 
 ## Bias
 
