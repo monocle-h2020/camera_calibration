@@ -10,15 +10,17 @@ It also includes functions and pre-made scripts for processing calibration data,
 
 # Installation
 
-Currently, the easiest way to install the `spectacle` module is using `pip`: simply run `pip install pyspectacle` in your terminal to fetch the package from PyPI and install it. 
+Currently, the easiest way to install the `spectacle` module is using `pip`: simply run `pip install pyspectacle` in your terminal to fetch the package from PyPI and install it.
 
-You may have to specify a user-specific installation (`pip install pyspectacle --user`) if a permission error occurs. Please note that while the module is identified as `pyspectacle` on PyPI and in pip, in Python itself it is imported and used as simply `spectacle`.
+You may have to specify a user-specific installation (`pip install pyspectacle --user`) if a permission error occurs.
+Please note that while the module is identified as `pyspectacle` on PyPI and in pip, in Python itself it is imported and used as simply `spectacle`.
 
 An alternative way to install the `spectacle` module is to clone this repository (`git clone git@github.com:monocle-h2020/camera_calibration.git`) and then install it using pip, by navigating into the repository folder and running `pip install .` (mind the `.`).
 
 # Usage
 
-There are three main use cases for the `spectacle` module, each of which will be explained further in the relevant subsection. They are as follows:
+There are three main use cases for the `spectacle` module, each of which will be explained further in the relevant subsection.
+They are as follows:
 
 1. Application: applying camera calibrations to new data.
 2. Analysis: analysing camera properties and performance based on calibration data.
@@ -30,7 +32,7 @@ There are two interfaces for applying calibrations to new data, namely through a
 
 ### spectacle.Camera interface
 
-The `spectacle.Camera` interface is the easiest to use. 
+The `spectacle.Camera` interface is the easiest to use.
 A camera information file is generated using the [generate_metadata.py](calibrate/generate_metadata.py) script.
 This camera information file can be loaded in any script using the `spectacle.load_metadata` function, which takes one argument, namely the `root` folder that contains all calibration data for a certain camera.
 
@@ -62,7 +64,8 @@ Each method comes with detailed documentation on its usage, which can be found [
 ## Analysis
 
 A large number of pre-made scripts for the analysis of camera data, calibration data, and metadata are provided in the [analysis](analysis) subfolder.
-These are sorted by the parameter they probe, such as linearity or dark current. Please refer to the README in the [analysis](analysis) subfolder and documentation in the scripts themselves for further information.
+These are sorted by the parameter they probe, such as linearity or dark current.
+Please refer to the README in the [analysis](analysis) subfolder and documentation in the scripts themselves for further information.
 A number of common methods for analysing these data have also been bundled into the [`spectacle.analyse`](spectacle/analyse.py) submodule.
 
 ## Calibration
