@@ -5,6 +5,7 @@ This is a to-do list for the `spectacle` module.
 ## Scripts
 
 - [ ] Convert all command-line inputs to `optparse` format.
+- [ ] More intuitive `Camera` creation, for example using just a folder name (so the user never sees `root`)
 
 ## Documentation
 
