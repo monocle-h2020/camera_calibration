@@ -69,9 +69,8 @@ def _convert_exposure_time(exposure):
 
 class Camera(object):
     """
-    Class that represents a camera, providing some metadata used in common
-    calibration/analysis tasks. Some class methods for common tasks are also
-    included, such as generating a Bayer map.
+    Object that represents a camera, storing its important properties and providing
+    functions for calibrating data.
     """
     # Properties a Camera can have
     Device = namedtuple("Device", ["manufacturer", "name"])
@@ -84,6 +83,8 @@ class Camera(object):
         """
         Generate a Camera object based on input dictionaries containing the
         keys defined in Device, Image, and Settings
+
+        If a root folder is provided, this will be used to load calibration data from.
         """
         # Convert the input exposures to floating point numbers
         settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
@@ -150,7 +151,7 @@ class Camera(object):
 
     def generate_bias_map(self):
         """
-        Generate a Bayer-aware map of bias values from the camera metadata
+        Generate a Bayer-aware map of bias values from the camera information.
         """
         bayer_map = self._generate_bayer_map()
         for j, bias_value in enumerate(self.image.bias):
@@ -159,13 +160,13 @@ class Camera(object):
 
     def _load_bias_map(self):
         """
-        Load a bias map from file or from metadata
+        Load a bias map from the root folder or from the camera information.
         """
         # First try using a data-based bias map from file
         try:
             bias_map = bias_readnoise.load_bias_map(self.root)
 
-        # If a data-based bias map does not exist or cannot be loaded, use metadata instead
+        # If a data-based bias map does not exist or cannot be loaded, use camera information instead
         except (FileNotFoundError, OSError, TypeError):
             bias_map = self.generate_bias_map()
             self.bias_type = "Metadata"
@@ -180,7 +181,7 @@ class Camera(object):
 
     def _load_readnoise_map(self):
         """
-        Load a readnoise map for this sensor
+        Load a readnoise map for this sensor, from the root folder.
         """
         # Try to use a data-based read-noise map
         try:
@@ -196,7 +197,7 @@ class Camera(object):
 
     def _load_dark_current_map(self):
         """
-        Load a dark current map from file - if none is available, return 0s
+        Load a dark current map from the root folder - if none is available, return 0 everywhere.
         """
         # Try to use a dark current map from file
         try:
@@ -212,13 +213,14 @@ class Camera(object):
 
     def _generate_ISO_range(self):
         """
-        Generate an array from 0 to the max iso
+        Generate an array from 0 to the max iso.
         """
         return np.arange(0, self.settings.ISO_max+1, 1)
 
     def _load_iso_normalisation(self):
         """
-        Load an ISO normalisation look-up table from file or from parameters
+        Load an ISO normalisation look-up table from the root folder.
+        If none is available, make an estimate from the camera's ISO range.
         """
         # Try to use a lookup table from file
         try:
@@ -236,7 +238,7 @@ class Camera(object):
 
     def _load_gain_map(self):
         """
-        Load a gain map from file
+        Load a gain map from the root folder.
         """
         # Try to use a gain map from file
         try:
@@ -253,7 +255,7 @@ class Camera(object):
 
     def _load_flatfield_correction(self):
         """
-        Load a flatfield correction model from file, and generate a correction map
+        Load a flatfield correction model from the root folder, and generate a correction map.
         """
         # Try to use a flatfield model from file
         try:
@@ -270,7 +272,7 @@ class Camera(object):
 
     def _load_spectral_response(self):
         """
-        Load spectral response curves from file
+        Load spectral response curves from the root folder.
         """
         # Try to use SRFs from file
         try:
@@ -287,14 +289,15 @@ class Camera(object):
 
     def check_calibration_data(self):
         """
-        Check what calibration data have been loaded so far
+        Check what calibration data have been loaded so far.
         """
         data_available = [data_type for data_type in self.calibration_data_all if hasattr(self, data_type)]
         return data_available
 
     def correct_bias(self, *data, **kwargs):
         """
-        Correct data for bias using this sensor's bias data
+        Correct data for bias using this sensor's data.
+        Bias data are loaded from the root folder or from the camera information.
         """
         # If a bias map has not been loaded yet, do so
         if not hasattr(self, "bias_map"):
@@ -306,7 +309,9 @@ class Camera(object):
 
     def correct_dark_current(self, exposure_time, *data, **kwargs):
         """
-        Calibrate data for dark current using this sensor's data
+        Calibrate data for dark current using this sensor's data.
+        Dark current data are loaded from the root folder or estimated 0 in all pixels,
+        if no data were available.
         """
         # If a dark current map has not been loaded yet, do so
         if not hasattr(self, "dark_current"):
@@ -318,7 +323,8 @@ class Camera(object):
 
     def normalise_iso(self, iso_values, *data):
         """
-        Normalise data for their ISO speed using this sensor's lookup table
+        Normalise data for their ISO speed using this sensor's lookup table.
+        The ISO lookup table is loaded from the root folder.
         """
         # If a lookup table has not been loaded yet, do so
         if not hasattr(self, "iso_lookup_table"):
@@ -330,7 +336,8 @@ class Camera(object):
 
     def convert_to_photoelectrons(self, *data):
         """
-        Convert data from ADU to photoelectrons using this sensor's gain data
+        Convert data from ADU to photoelectrons using this sensor's gain data.
+        The gain data are loaded from the root folder.
         """
         # If a gain map has not been loaded yet, do so
         if not hasattr(self, "gain_map"):
@@ -345,7 +352,8 @@ class Camera(object):
 
     def correct_flatfield(self, *data, **kwargs):
         """
-        Correct data for flatfield using this sensor's flatfield data
+        Correct data for flatfield using this sensor's flatfield data.
+        The flatfield data are loaded from the root folder.
         """
         # If a flatfield map has not been loaded yet, do so
         if not hasattr(self, "flatfield_map"):
@@ -360,7 +368,8 @@ class Camera(object):
 
     def correct_spectral_response(self, data_wavelengths, *data):
         """
-        Correct data for the sensor's spectral response functions
+        Correct data for the sensor's spectral response functions.
+        The spectral response data are loaded from the root folder.
         """
         # If the SRFs have not been loaded yet, do so
         if not hasattr(self, "spectral_response"):
