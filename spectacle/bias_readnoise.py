@@ -20,12 +20,12 @@ def load_bias_map(root, return_filename=False):
 
 def load_bias_metadata(root, return_filename=False):
     """
-    Load the bias value from the camera metadata file, and generate a Bayer-
+    Load the bias value from the camera information file, and generate a Bayer-
     tiled map from it
 
     If `return_filename` is True, also return the exact filename used.
     """
-    camera, filename = io.load_metadata(root, return_filename=True)
+    camera, filename = io.load_camera(root, return_filename=True)
     bias_map = camera.generate_bias_map()
     return return_with_filename(bias_map, filename, return_filename)
 

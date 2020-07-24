@@ -17,9 +17,9 @@ root = io.find_root_folder(folder)
 calibration = root/"calibration/"
 analysis = root/"analysis/"
 
-# Load metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Create results folder
 identifier = f"{camera.device.manufacturer}-{camera.device.name}"

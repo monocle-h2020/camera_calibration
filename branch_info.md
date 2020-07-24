@@ -5,3 +5,6 @@ This branch represents a major update where calibration methods are integrated i
 - [x] Add band information from RawPy to `Camera`
 - [ ] Extend `Camera` and function documentation
 - [x] Update READMEs
+- [x] Rename `metadata` to `camera` and update all code
+- [x] Rename `load_metadata` to `load_camera` and update all code
+- [x] Print camera info on loading instead of "Loaded metadata"

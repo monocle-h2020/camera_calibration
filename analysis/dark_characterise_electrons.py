@@ -18,9 +18,9 @@ file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_folder = root/f"analysis/dark_current/"
 
-# Get the camera metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 dark_current_normADU = np.load(file)

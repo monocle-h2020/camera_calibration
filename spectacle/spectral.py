@@ -48,8 +48,8 @@ def load_monochromator_data(root, folder, blocksize=100):
     stds_files = sorted(folder.glob("*_stds.npy"))
     assert len(mean_files) == len(stds_files)
 
-    # Load metadata
-    camera = io.load_metadata(root)
+    # Load Camera object
+    camera = io.load_camera(root)
 
     # Half-blocksize, to slice the arrays with
     d = blocksize//2

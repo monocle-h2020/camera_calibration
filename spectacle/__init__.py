@@ -1,2 +1,2 @@
 from . import analyse, calibrate, io
-from .metadata import Camera, load_metadata
+from .camera import Camera, load_camera

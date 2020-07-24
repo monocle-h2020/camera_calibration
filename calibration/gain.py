@@ -2,9 +2,6 @@
 Create a gain map using gain images, fitting the mean and standard deviation
 against each other. Data for a single ISO speed are loaded and fitted.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
-
 An ISO speed normalisation is applied to the data. This means this script
 requires an ISO speed look-up table to exist.
 
@@ -22,9 +19,9 @@ folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to_normalised_map = root/"calibration/gain.npy"
 
-# Get the camera metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Get the ISO speed of these data from the folder name
 ISO = io.split_iso(folder)

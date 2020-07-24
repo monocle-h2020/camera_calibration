@@ -25,9 +25,9 @@ save_to_rgbg2 = io.results_folder/"spectral_responses.pdf"
 save_to_rgb = io.results_folder/"spectral_responses_RGB.pdf"
 save_to_snr = io.results_folder/"spectral_responses_SNR.pdf"
 
-# Get the camera metadata
-cameras = [io.load_metadata(root) for root in roots]
-print("Loaded metadata")
+# Load Camera objects
+cameras = [io.load_camera(root) for root in roots]
+print(f"Loaded Camera objects: {cameras}")
 
 # Load the data
 curves = [np.load(f) for f in files]

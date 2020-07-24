@@ -7,9 +7,9 @@ folder, wvl = io.path_from_input(argv)
 wvl = wvl.stem
 root = io.find_root_folder(folder)
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 m = np.load(folder/f"{wvl}_mean.npy")
 m = camera.correct_bias(m)

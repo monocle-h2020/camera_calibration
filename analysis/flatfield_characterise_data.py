@@ -1,9 +1,6 @@
 """
 Analyse a flat-field data set.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
-
 Command line arguments:
     * `meanfile`: location of an NPY stack of mean flat-field data. It is
     assumed that for a meanfile "X_mean.npy", a standard deviation stack can be
@@ -22,9 +19,9 @@ root = io.find_root_folder(meanfile)
 savefolder = root/"analysis/flatfield/"
 label = meanfile.stem.split("_mean")[0]
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")

@@ -403,7 +403,7 @@ class Camera(object):
     @classmethod
     def read_from_file(cls, path):
         """
-        Read metadata from a JSON file.
+        Read camera information from a JSON file.
         """
         root = find_root_folder(path)
         full_dictionary = load_json(path)
@@ -433,9 +433,9 @@ def write_json(data, save_to):
         json.dump(data, file)
 
 
-def load_metadata(root, return_filename=False):
+def load_camera(root, return_filename=False):
     """
-    Read the metadata JSON located in the `root` folder.
+    Read the camera information JSON located in the `root` folder.
 
     If the location of the metadata file itself is given for `root`,
     this is handled.

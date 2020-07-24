@@ -9,9 +9,9 @@ root = io.find_root_folder(folder)
 products_gain, results_gain = root/"intermediaries/gain", root/"analysis/gain"
 print("Loaded information")
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 colours = camera.bayer_map
 

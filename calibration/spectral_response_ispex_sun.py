@@ -38,9 +38,9 @@ from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the SMARTS2 reference spectrum
 wvl, smartsz, smartsy, smartsx = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)

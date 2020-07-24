@@ -22,7 +22,11 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
 roots = [io.find_root_folder(f) for f in folders]
-cameras = [io.load_metadata(root) for root in roots]
+
+# Load Camera objects
+cameras = [io.load_camera(root) for root in roots]
+print(f"Loaded Camera objects: {cameras}")
+
 save_to = io.results_folder
 
 # Lists to hold the data for each device
@@ -33,7 +37,7 @@ mean_jpeg_all = []
 
 # Loop over the given folders
 for folder, camera in zip(folders, cameras):
-    # Get metadata
+    # Load Camera object
     print("\n", camera)
     root = io.find_root_folder(folder)
 

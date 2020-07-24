@@ -2,9 +2,6 @@
 Create a look-up table for the ISO-gain normalisation function of a camera,
 using mean images of the same scene taken at various ISO speeds.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
-
 Command line arguments:
     * `folder`: folder containing NPY stacks of identical exposures taken at
     different ISO speeds.
@@ -21,9 +18,9 @@ save_to_data = root/"intermediaries/iso_normalisation/iso_data.npy"
 save_to_model = root/"calibration/iso_normalisation_model.csv"
 save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the mean and standard deviation stacks for each ISO value
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)

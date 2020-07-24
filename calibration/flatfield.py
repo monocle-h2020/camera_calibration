@@ -1,9 +1,6 @@
 """
 Create a flat-field map using the mean flat-field images.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
-
 Command line arguments:
     * `meanfile`: location of an NPY stack of mean flat-field data. It is
     assumed that for a meanfile "X_mean.npy", a standard deviation stack can be
@@ -34,9 +31,9 @@ save_to_correction_modelled_intermediary = root/f"intermediaries/flatfield/flatf
 save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.csv"
 save_to_parameters_calibration = root/"calibration/flatfield_parameters.csv"
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")

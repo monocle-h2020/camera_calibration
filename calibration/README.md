@@ -11,11 +11,11 @@ For further documentation, please refer to that included in the scripts themselv
 Most of these scripts require the use of image stacks, generated using the [stack_mean_std.py](../tools/stack_mean_std.py) script, rather than individual RAW images.
 This is either because they are based on statistical properties of such image stacks (e.g. for read noise) or because they are highly noise-sensitive (e.g. for gain).
 
-## Metadata
+## Camera information
 
-Some metadata are necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels.
-These metadata files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_metadata.py](generate_metadata.py) script.
-This script is used to generate a metadata file based on a single saturated image and some user inputs.
+Some camera information is necessary for the calibration and analysis of camera data, such as the pattern of the Bayer RGBG2 channels.
+These information files can be retrieved from the [SPECTACLE database](http://spectacle.ddq.nl/) or generated using the [generate_camera.py](generate_camera.py) script.
+This script is used to generate a file based on a single (saturated) image and some user inputs.
 
 ## Bias
 
