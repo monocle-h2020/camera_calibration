@@ -437,9 +437,19 @@ def load_metadata(root, return_filename=False):
     """
     Read the metadata JSON located in the `root` folder.
 
+    If the location of the metadata file itself is given for `root`,
+    this is handled.
+
     If `return_filename` is True, also return the exact filename used.
     """
     root = Path(root)
+
+    if root.is_file():
+        # If a file is given instead of a folder, look for the folder first
+        root_original = root
+        root = find_root_folder(root)
+        print(f"load_metadata was given a file (`{root_original}`) instead of a folder. Found a correct root folder to use instead: `{root}`")
+
     filename = root/"metadata.json"
     metadata = Camera.read_from_file(filename)
     return return_with_filename(metadata, filename, return_filename)
