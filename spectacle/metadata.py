@@ -444,6 +444,8 @@ def load_metadata(root, return_filename=False):
     """
     root = Path(root)
 
+    assert root.exists(), f"Cannot load metadata from `{root}` as this location does not exist."
+
     if root.is_file():
         # If a file is given instead of a folder, look for the folder first
         root_original = root
