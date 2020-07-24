@@ -31,10 +31,10 @@ There are two interfaces for applying calibrations to new data, namely through a
 ### spectacle.Camera interface
 
 The `spectacle.Camera` interface is the easiest to use. 
-A camera information file is generated using the [generate_metadata.py](calibrate/generate_metadata.py) script.
-This camera information file can be loaded in any script using the `spectacle.load_metadata` function, which takes one argument, namely the `root` folder that contains all calibration data for a certain camera.
+A camera information file is generated using the [generate_camera.py](calibrate/generate_camera.py) script.
+This camera information file can be loaded in any script using the `spectacle.load_camera` function, which takes one argument, namely the `root` folder that contains all calibration data for a certain camera.
 
-For example, if your calibration data for an iPhone SE are stored in the folder `/home/spectacle_data/iPhone_SE/`, then that folder is the `root` folder and the metadata file should be located in that folder (i.e. at `/home/spectacle_data/iPhone_SE/metadata.json`).
+For example, if your calibration data for an iPhone SE are stored in the folder `/home/spectacle_data/iPhone_SE/`, then that folder is the `root` folder and the camera information file should be located in that folder (i.e. at `/home/spectacle_data/iPhone_SE/metadata.json`).
 Then the Camera object can be initialised from that file and used in the future.
 Using the example of the iPhone SE, one might run the following piece of code:
 
