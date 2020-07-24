@@ -439,6 +439,7 @@ def load_camera(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
+    root = Path(root)
     filename = root/"metadata.json"
     metadata = Camera.read_from_file(filename)
     return return_with_filename(metadata, filename, return_filename)
