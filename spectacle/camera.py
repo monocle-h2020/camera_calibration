@@ -79,21 +79,16 @@ class Camera(object):
 
     calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response"]
 
-    def __init__(self, device_properties, image_properties, settings, root=None):
+    def __init__(self, device_properties, image_properties, root=None):
         """
         Generate a Camera object based on input dictionaries containing the
-        keys defined in Device, Image, and Settings
+        keys defined in Device and Image
 
         If a root folder is provided, this will be used to load calibration data from.
         """
-        # Convert the input exposures to floating point numbers
-        settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
-        settings["exposure_max"] = _convert_exposure_time(settings["exposure_max"])
-
         # Create named tuples based on the input dictionaries
         self.device = self.Device(**device_properties)
         self.image = self.Image(**image_properties)
-        self.settings = self.Settings(**settings)
 
         # Generate/calculate commonly used values/properties
         self.bayer_map = self._generate_bayer_map()
@@ -102,6 +97,19 @@ class Camera(object):
 
         # Root folder
         self.root = root
+
+    def load_settings(self):
+        """
+        Load a settings file
+        """
+        settings = load_json(self.root/"settings.json")
+
+        # Convert the input exposures to floating point numbers
+        settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
+        settings["exposure_max"] = _convert_exposure_time(settings["exposure_max"])
+
+        # Add settings to the camera
+        self.settings = self.Settings(**settings)
 
     def __repr__(self):
         """
@@ -134,8 +142,7 @@ class Camera(object):
         inputs to __init__.
         """
         dictionary = {"device": self.device._asdict(),
-                      "image": self.image._asdict(),
-                      "settings": self.settings._asdict()}
+                      "image": self.image._asdict()}
         return dictionary
 
     def _generate_bayer_map(self):
@@ -416,8 +423,8 @@ class Camera(object):
         """
         root = find_root_folder(path)
         full_dictionary = load_json(path)
-        device_properties, image_properties, settings = full_dictionary.values()
-        return cls(device_properties, image_properties, settings, root=root)
+        device_properties, image_properties = full_dictionary.values()
+        return cls(device_properties, image_properties, root=root)
 
 
 def load_json(path):

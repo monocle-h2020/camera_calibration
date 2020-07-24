@@ -26,16 +26,6 @@ raw_file = io.load_raw_file(file)
 exif = io.load_exif(file)
 print("Loaded data")
 
-# Get additional data from command line input from the user
-iso_min = input("What is the *lowest* ISO speed available on this device? (-1 if unknown)\n")
-iso_max = input("What is the *highest* ISO speed available on this device? (-1 if unknown)\n")
-iso_min = int(iso_min) ; iso_max = int(iso_max)
-
-exposure_min = input("What is the *shortest* exposure time, in seconds, available on this device? (-1 if unknown)\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
-exposure_max = input("What is the *longest* exposure time, in seconds, available on this device? (-1 if unknown)\nThis can be provided as an integer (e.g. 5 or 10), float (e.g. 0.12 or 5.1), or fraction (e.g. 1/5 or 2/3)\n")
-
-print("")
-
 # Bit depth - find the maximum value and the corresponding bit depth
 maximum_value = raw_file.raw_image.max()
 bit_depth_conversion = {255: 8, 511: 9, 1023: 10, 2047: 11, 4095: 12, 8191: 13,
@@ -65,15 +55,7 @@ image = {
         }
 print("Image properties:", image)
 
-# Settings
-settings = {
-        "ISO_min": iso_min,
-        "ISO_max": iso_max,
-        "exposure_min": exposure_min,
-        "exposure_max": exposure_max}
-print("Camera settings:", settings)
-
 # Combine all metadata into a single object and write it to file
-camera = Camera(device, image, settings)
+camera = Camera(device, image)
 camera.write_to_file(save_to)
 print(f"Saved metadata to '{save_to}'")
