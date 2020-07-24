@@ -18,7 +18,7 @@ folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 save_to = root/"analysis/readnoise/readnoise_ISO_relation.pdf"
 
-# Get the camera metadata
+# Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 

@@ -1,9 +1,6 @@
 """
 Create a flat-field map using the mean flat-field images.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
-
 Command line arguments:
     * `meanfile`: location of an NPY stack of mean flat-field data. It is
     assumed that for a meanfile "X_mean.npy", a standard deviation stack can be

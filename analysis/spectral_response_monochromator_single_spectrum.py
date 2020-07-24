@@ -21,7 +21,7 @@ root = io.find_root_folder(folder)
 label = folder.stem
 save_folder = root/"analysis/spectral_response/"
 
-# Get the camera metadata
+# Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
