@@ -33,6 +33,7 @@ A camera information file is generated using the [generate_metadata.py](calibrat
 This camera information file can be loaded in any script using the `spectacle.load_metadata` function, which takes one argument, namely the `root` folder that contains all calibration data for a certain camera.
 For example, if your calibration data for an iPhone SE are stored in the folder `/home/spectacle_data/iPhone_SE/`, then that folder is the `root` folder and the metadata file should be located in that folder (i.e. at `/home/spectacle_data/iPhone_SE/metadata.json`).
 Then the Camera object can be initialised from that file and used in the future.
+Using the example of the iPhone SE, one might run the following piece of code:
 Calibrations are applied using the Camera object's methods, such as `Camera.correct_bias` for correcting for camera bias.
 The Camera object will automatically load the required calibration data from the same folder it was initialised from.
 
