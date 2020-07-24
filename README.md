@@ -28,7 +28,13 @@ There are three main use cases for the `spectacle` module, each of which will be
 
 There are two interfaces for applying calibrations to new data, namely through a `spectacle.Camera` object or through the [`spectacle.calibrate`](spectacle/calibrate.py) submodule.
 
-The `spectacle.Camera` interface is the easiest to use. A camera information file is generated using the [generate_metadata.py](calibrate/generate_metadata.py) script. 
+The `spectacle.Camera` interface is the easiest to use. 
+A camera information file is generated using the [generate_metadata.py](calibrate/generate_metadata.py) script.
+This camera information file can be loaded in any script using the `spectacle.load_metadata` function, which takes one argument, namely the `root` folder that contains all calibration data for a certain camera.
+For example, if your calibration data for an iPhone SE are stored in the folder `/home/spectacle_data/iPhone_SE/`, then that folder is the `root` folder and the metadata file should be located in that folder (i.e. at `/home/spectacle_data/iPhone_SE/metadata.json`).
+Then the Camera object can be initialised from that file and used in the future.
+Calibrations are applied using the Camera object's methods, such as `Camera.correct_bias` for correcting for camera bias.
+The Camera object will automatically load the required calibration data from the same folder it was initialised from.
 
 To use the `spectacle.calibrate` interface, simply load the [`spectacle.calibrate`](spectacle/calibrate.py) submodule (`from spectacle import calibrate`) and apply the methods contained therein.
 For example, to correct for the camera bias, one would use the `correct_bias` method from this submodule.
