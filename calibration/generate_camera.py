@@ -1,6 +1,6 @@
 """
-Generate camera information files for a camera given a saturated RAW image and user
-inputs on the command line.
+Generate camera information files for a camera given a RAW image
+(ideally one with saturated pixels) and user inputs on the command line.
 
 Note that if the image does not have at least one saturated pixel, the bit
 depth of the camera (which is important in further calibration steps) cannot
