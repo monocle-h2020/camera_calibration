@@ -99,6 +99,7 @@ class Camera(object):
         """
         # Save properties
         self.name = name
+        self.name_underscore = self.name.replace(" ", "_")
         self.manufacturer = manufacturer
         self.name_internal = name_internal
         self.image_shape = image_shape

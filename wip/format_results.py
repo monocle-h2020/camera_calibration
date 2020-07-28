@@ -22,8 +22,7 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Create results folder
-identifier = f"{camera.manufacturer}-{camera.name}"
-identifier = identifier.replace(" ", "_")
+identifier = camera.name_underscore
 save_folder = io.results_folder/"spectacle"/identifier
 
 makedirs(save_folder, exist_ok=True)  # create folder if it does not yet exist
