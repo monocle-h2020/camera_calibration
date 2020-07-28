@@ -37,25 +37,20 @@ except KeyError:
     bit_depth = input("Please enter the bit depth manually.\nTypical values are 8 (JPEG), 10 (Samsung), 12 (Apple), 14 (Nikon).\n")
     bit_depth = int(bit_depth)
 
-# Device properties
-device = {
+# Camera properties
+properties = {
         "manufacturer": exif["Image Make"].printable,
-        "name": exif["Image Model"].printable
-        }
-print("Device properties:", device)
-
-# Image properties
-image = {
-        "shape": raw_file.raw_image.shape,
+        "name": exif["Image Model"].printable,
+        "image_shape": raw_file.raw_image.shape,
         "raw_extension": file.suffix,
         "bias": raw_file.black_level_per_channel,
         "bayer_pattern": raw_file.raw_pattern.tolist(),
         "bit_depth": bit_depth,
         "colour_description": raw_file.color_desc.decode()
         }
-print("Image properties:", image)
+print("Camera properties:", properties)
 
 # Combine all metadata into a single object and write it to file
-camera = Camera(device, image)
+camera = Camera(**properties)
 camera.write_to_file(save_to)
 print(f"Saved metadata to '{save_to}'")

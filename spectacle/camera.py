@@ -144,8 +144,7 @@ class Camera(object):
         Generate a dictionary containing the Camera metadata, similar to the
         inputs to __init__.
         """
-        dictionary = {"device": self.device._asdict(),
-                      "image": self.image._asdict()}
+        dictionary = {prop: getattr(self, prop) for prop in self.property_list}
         return dictionary
 
     def _generate_bayer_map(self):
@@ -392,12 +391,6 @@ class Camera(object):
         data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
         return data_normalised
 
-    def write_to_file(self, path):
-        """
-        Write metadata to a file.
-        """
-        write_json(self._as_dict(), path)
-
     def demosaick(self, *data, **kwargs):
         """
         Demosaick data using this camera's Bayer pattern.
@@ -419,15 +412,20 @@ class Camera(object):
         """
         analyse.plot_histogram_RGB(data, self.bayer_map, **kwargs)
 
+    def write_to_file(self, path):
+        """
+        Write metadata to a file.
+        """
+        write_json(self._as_dict(), path)
+
     @classmethod
     def read_from_file(cls, path):
         """
         Read camera information from a JSON file.
         """
         root = find_root_folder(path)
-        full_dictionary = load_json(path)
-        device_properties, image_properties = full_dictionary.values()
-        return cls(device_properties, image_properties, root=root)
+        properties = load_json(path)
+        return cls(**properties, root=root)
 
 
 def load_json(path):
