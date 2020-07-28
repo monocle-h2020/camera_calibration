@@ -73,30 +73,33 @@ class Camera(object):
     functions for calibrating data.
     """
     # Properties a Camera can have
-    Device = namedtuple("Device", ["manufacturer", "name"])
-    Image = namedtuple("Image", ["shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"])
+    property_list = ["manufacturer", "name", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
     calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response"]
 
-    def __init__(self, device_properties, image_properties, root=None):
+    def __init__(self, manufacturer, name, image_shape, raw_extension, bias, bayer_pattern, bit_depth, colour_description="RGBG", root=None):
         """
         Generate a Camera object based on input dictionaries containing the
         keys defined in Device and Image
 
         If a root folder is provided, this will be used to load calibration data from.
         """
-        # Create named tuples based on the input dictionaries
-        self.device = self.Device(**device_properties)
-        self.image = self.Image(**image_properties)
+        # Save properties
+        self.manufacturer = manufacturer
+        self.name = name
+        self.image_shape = image_shape
+        self.raw_extension = raw_extension
+        self.bias = bias
+        self.bayer_pattern = bayer_pattern
+        self.bit_depth = bit_depth
+        self.colour_description = colour_description
+        self.root = root
 
         # Generate/calculate commonly used values/properties
         self.bayer_map = self._generate_bayer_map()
         self.saturation = 2**self.image.bit_depth - 1
         self.bands = self.image.colour_description
-
-        # Root folder
-        self.root = root
 
     def load_settings(self):
         """
