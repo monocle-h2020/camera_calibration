@@ -461,7 +461,7 @@ def write_json(data, save_to):
     Write a JSON file containing `data` to a path `save_to`.
     """
     with open(save_to, "w") as file:
-        json.dump(data, file)
+        json.dump(data, file, indent=4)
 
 
 def load_camera(root, return_filename=False):
