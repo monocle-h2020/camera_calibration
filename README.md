@@ -37,3 +37,5 @@ Finally, pre-made scripts for generating calibration data based on data gathered
 The SPECTACLE method itself has been fully developed and applied, as shown in [our paper](https://doi.org/10.1364/OE.27.019075). The [SPECTACLE database](http://spectacle.ddq.nl/) and `spectacle` Python module are still in active development. Contributions from the community are highly welcome and we invite everyone to contribute.
 
 Further information will be added to this repository with time. If anything is missing, please [raise an issue](https://github.com/monocle-h2020/camera_calibration/issues) or [contact the authors directly](mailto:burggraaff@strw.leidenuniv.nl).
+
+_This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 776480 (MONOCLE)._
