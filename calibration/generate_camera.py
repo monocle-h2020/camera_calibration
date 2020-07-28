@@ -13,7 +13,7 @@ To do:
 """
 
 from spectacle import io
-from spectacle.camera import Camera
+from spectacle.camera import Camera, name_from_root_folder
 from sys import argv
 
 # Get the data folder from the command line
@@ -25,6 +25,12 @@ save_to = root/"camera.json"
 raw_file = io.load_raw_file(file)
 exif = io.load_exif(file)
 print("Loaded data")
+
+# Get the camera name from the root folder, then ask the user for feedback
+camera_name = name_from_root_folder(root)
+camera_name_correct = input(f"From the image location (`{file}`),\nthe camera name was determined to be '{camera_name}'. Is this correct? [y/n]\n")
+if camera_name_correct not in ("Y", "y", "yes", "Yes"):
+    camera_name = input("Please put in the correct name for this camera:\n")
 
 # Bit depth - find the maximum value and the corresponding bit depth
 maximum_value = raw_file.raw_image.max()
@@ -39,8 +45,9 @@ except KeyError:
 
 # Camera properties
 properties = {
+        "name": camera_name,
         "manufacturer": exif["Image Make"].printable,
-        "name": exif["Image Model"].printable,
+        "name_internal": exif["Image Model"].printable,
         "image_shape": raw_file.raw_image.shape,
         "raw_extension": file.suffix,
         "bias": raw_file.black_level_per_channel,

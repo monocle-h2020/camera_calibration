@@ -31,6 +31,18 @@ def find_root_folder(input_path):
     return root
 
 
+def name_from_root_folder(root):
+    """
+    Convert the root path to a camera name by removing underscores.
+    This is useful for cameras that use model numbers internally,
+    such as the Samsung Galaxy S8 (SM-G950F).
+    """
+    root = Path(root)
+    stem = root.stem
+    clean = stem.replace("_", " ").strip()
+    return clean
+
+
 def _convert_exposure_time(exposure):
     """
     Convert an exposure time, in various formats, into a floating-point number.
@@ -73,12 +85,12 @@ class Camera(object):
     functions for calibrating data.
     """
     # Properties a Camera can have
-    property_list = ["manufacturer", "name", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
+    property_list = ["name", "manufacturer", "name_internal", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
     calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response"]
 
-    def __init__(self, manufacturer, name, image_shape, raw_extension, bias, bayer_pattern, bit_depth, colour_description="RGBG", root=None):
+    def __init__(self, name, manufacturer, name_internal, image_shape, raw_extension, bias, bayer_pattern, bit_depth, colour_description="RGBG", root=None):
         """
         Generate a Camera object based on input dictionaries containing the
         keys defined in Device and Image
@@ -86,8 +98,9 @@ class Camera(object):
         If a root folder is provided, this will be used to load calibration data from.
         """
         # Save properties
-        self.manufacturer = manufacturer
         self.name = name
+        self.manufacturer = manufacturer
+        self.name_internal = name_internal
         self.image_shape = image_shape
         self.raw_extension = raw_extension
         self.bias = bias
@@ -119,24 +132,25 @@ class Camera(object):
         Text representation of the Camera object
         """
         if self.root is None:
-            return f"{self.manufacturer} {self.name} (not from file)"
+            return f"{self.name} (not from file)"
         else:
-            return f"{self.manufacturer} {self.name} (from `{self.root}`)"
+            return f"{self.name} (from `{self.root}`)"
 
     def __str__(self):
         """
         Output for `print(Camera)`
         """
         combiner = "\n\t"
-        device_name = f"{self.manufacturer} {self.name}"
+        device_name = f"{self.name}"
+        manufacturer = f"manufacturer: {self.manufacturer}"
+        internal_name = f"internal name: {self.name_internal}"
         if self.root is None:
             source = f"not from file"
         else:
             source = f"from `{self.root}`"
-        manufacturer = f"manufacturer: {self.manufacturer}"
         calibration_list = f"calibration data: {self.check_calibration_data()}"
 
-        text = combiner.join([device_name, source, manufacturer, calibration_list])
+        text = combiner.join([device_name, manufacturer, internal_name, source, calibration_list])
         return text
 
     def _as_dict(self):
