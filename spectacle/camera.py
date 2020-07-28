@@ -442,6 +442,9 @@ class Camera(object):
         return cls(**properties, root=root)
 
 
+dummy_camera = Camera(name="Dummy", manufacturer="SPECTACLE", name_internal="dummy-123", image_shape=[1080, 1920], raw_extension=".dng", bias=[0,0,0,0], bayer_pattern=[[0,1],[2,3]], bit_depth=11, colour_description="RGBG", root=Path(__file__).parent)
+
+
 def load_json(path):
     """
     Read a JSON file.
