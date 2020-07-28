@@ -35,12 +35,12 @@ mean = spectrum[:,1:5]
 stds = spectrum[:,5:]
 
 # Plot the raw spectrum
-spectral.plot_monochromator_curves(wavelengths, [mean], [stds], title=f"{camera.device.name}: Raw spectral curve ({label})", unit="ADU", saveto=save_folder/f"monochromator_{label}_data.pdf")
+spectral.plot_monochromator_curves(wavelengths, [mean], [stds], title=f"{camera.name}: Raw spectral curve ({label})", unit="ADU", saveto=save_folder/f"monochromator_{label}_data.pdf")
 print("Saved raw spectrum plot")
 
 # Calculate the signal-to-noise ratio (SNR) and plot it
 SNR = mean / stds
 SNR_err = np.zeros_like(SNR)  # don't plot errors on the SNR
 
-spectral.plot_monochromator_curves(wavelengths, [SNR], [SNR_err], title=f"{camera.device.name}: Signal-to-noise ratio ({label})", unit="SNR", saveto=save_folder/f"monochromator_{label}_SNR.pdf")
+spectral.plot_monochromator_curves(wavelengths, [SNR], [SNR_err], title=f"{camera.name}: Signal-to-noise ratio ({label})", unit="SNR", saveto=save_folder/f"monochromator_{label}_SNR.pdf")
 print("Saved SNR plot")

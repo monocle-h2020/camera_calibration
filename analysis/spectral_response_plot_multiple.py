@@ -58,7 +58,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         plt.plot(wavelength, mean, c=c, ls=style)
 
     # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera.device.name)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera.name)
 
 # Plot parameters
 plt.grid(True)
@@ -83,7 +83,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     errors = curve[5:]
 
     # Calculate and print the RMS difference between G and G2
-    print(f"{camera.device.name:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
+    print(f"{camera.name:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
 
     # Combine G and G2 into a single curve
     G = means[1::2].mean(axis=0)
@@ -100,7 +100,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         plt.plot(wavelength, mean, c=c, ls=style)
 
     # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.device.name)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.name)
 
 # Plot parameters
 plt.grid(True)
@@ -141,7 +141,7 @@ for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
         plt.plot(wavelength, snr, c=c, ls=style)
 
     # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.device.name)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.name)
 
 # Plot parameters
 plt.grid(True)

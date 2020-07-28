@@ -56,7 +56,7 @@ for j, c in enumerate(plot.RGBG2):
         # Plot parameters
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.set_title(f"{camera.device.name} (ISO {iso})")
+        ax.set_title(f"{camera.name} (ISO {iso})")
 
         # Include a colorbar
         # Left-most map has a colorbar on the left
@@ -72,7 +72,7 @@ for j, c in enumerate(plot.RGBG2):
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
-        print(f"{camera.device.name:<10}: ISO {iso:>4}")
+        print(f"{camera.name:<10}: ISO {iso:>4}")
         print(f"{c:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
@@ -107,7 +107,7 @@ for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays
             ax.tick_params(right=True, labelright=True)
 
     # Add a title to the top plot in each column
-    ax_arr[0].set_title(f"{camera.device.name} (ISO {iso})")
+    ax_arr[0].set_title(f"{camera.name} (ISO {iso})")
 
     # Add a label to the x-axis of the bottom plot in each column
     ax_arr[-1].set_xlabel("Gain (ADU/e$^-$)")

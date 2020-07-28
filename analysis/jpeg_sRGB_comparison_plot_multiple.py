@@ -71,7 +71,7 @@ print("Plotting histogram...")
 for ax_row, folder, camera in zip(axs, folders, cameras):
 
     # Add the camera name to the y-axis of the left-most subplot
-    ax_row[0].set_ylabel(camera.device.name)
+    ax_row[0].set_ylabel(camera.name)
 
     # Generate expected filenames for all combinations of folder and gamma
     gamma_fixed_filenames = [folder/f"sRGB_comparison_gamma{gamma}.npy" for gamma in gammas_all]

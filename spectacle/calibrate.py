@@ -101,7 +101,7 @@ def correct_flatfield(root, *data, **kwargs):
     camera = load_camera(root)
 
     # Load the correction map
-    correction_map, origin = flat.load_flatfield_correction(root, shape=camera.image.shape, return_filename=True)
+    correction_map, origin = flat.load_flatfield_correction(root, shape=camera.image_shape, return_filename=True)
     print(f"Using flat-field map from '{origin}'")
 
     # Correct each given array

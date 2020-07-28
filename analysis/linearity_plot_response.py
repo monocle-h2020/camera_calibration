@@ -21,7 +21,7 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Find the indices of the central pixels
-array_size = np.array(camera.image.shape)
+array_size = np.array(camera.image_shape)
 mid1, mid2 = array_size // 2
 center = np.s_[mid1:mid1+2, mid2:mid2+2]
 

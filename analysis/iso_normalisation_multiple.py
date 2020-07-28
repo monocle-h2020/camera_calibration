@@ -33,7 +33,7 @@ for folder in folders:
     data = iso.load_iso_data(root)
 
     # Plot the normalisation data and look-up table
-    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.device.name)
+    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.name)
     plt.plot(*lookup_table, c=c)
 
     print(camera)

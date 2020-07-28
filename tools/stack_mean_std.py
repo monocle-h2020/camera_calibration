@@ -34,7 +34,7 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Wildcard pattern to find RAW data with
-raw_pattern = f"*{camera.image.raw_extension}"
+raw_pattern = f"*{camera.raw_extension}"
 
 # Walk through the folder and all its subfolders
 for tup in walk(folder):

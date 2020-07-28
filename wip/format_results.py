@@ -22,7 +22,7 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Create results folder
-identifier = f"{camera.device.manufacturer}-{camera.device.name}"
+identifier = f"{camera.manufacturer}-{camera.name}"
 identifier = identifier.replace(" ", "_")
 save_folder = io.results_folder/"spectacle"/identifier
 
@@ -33,8 +33,8 @@ print(f"Found/Created save folder '{save_folder}'")
 
 generic_header = f"\
 SPECTACLE data sheet. More information can be found in our paper (https://doi.org/10.1364/OE.27.019075) and on our website (http://spectacle.ddq.nl/). \n\
-Camera manufacturer: {camera.device.manufacturer}\n\
-Camera device: {camera.device.name}\n"
+Camera manufacturer: {camera.manufacturer}\n\
+Camera device: {camera.name}\n"
 
 # Linearity
 

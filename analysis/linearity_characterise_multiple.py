@@ -63,7 +63,7 @@ for ax, raw_, jpeg_, camera in zip(axs, r_raw, r_jpeg, cameras):
             below_limit = np.where(jpeg_c < lower_limit)[0]
             print(f"JPEG {c} pixels with r < {lower_limit}: {len(below_limit):>3}")
             ax.hist(jpeg_c.ravel(), bins=bins, color=c, edgecolor="None", alpha=0.7)
-    ax.set_ylabel(camera.device.name)
+    ax.set_ylabel(camera.name)
     ax.axvline(lin.linearity_limit, c='k', ls="--")
     bad_pixels = np.where(raw < lin.linearity_limit)[0]
     print(f"RAW    pixels with r < {lin.linearity_limit}: {len(bad_pixels):>3}\n")

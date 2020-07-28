@@ -30,7 +30,7 @@ root = io.find_root_folder(folder)
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
-raw_pattern = f"*{camera.image.raw_extension}"
+raw_pattern = f"*{camera.raw_extension}"
 
 for tup in walk(folder):
     folder_here = io.Path(tup[0])

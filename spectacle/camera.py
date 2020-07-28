@@ -98,8 +98,8 @@ class Camera(object):
 
         # Generate/calculate commonly used values/properties
         self.bayer_map = self._generate_bayer_map()
-        self.saturation = 2**self.image.bit_depth - 1
-        self.bands = self.image.colour_description
+        self.saturation = 2**self.bit_depth - 1
+        self.bands = self.colour_description
 
     def load_settings(self):
         """
@@ -119,21 +119,21 @@ class Camera(object):
         Text representation of the Camera object
         """
         if self.root is None:
-            return f"{self.device.manufacturer} {self.device.name} (not from file)"
+            return f"{self.manufacturer} {self.name} (not from file)"
         else:
-            return f"{self.device.manufacturer} {self.device.name} (from `{self.root}`)"
+            return f"{self.manufacturer} {self.name} (from `{self.root}`)"
 
     def __str__(self):
         """
         Output for `print(Camera)`
         """
         combiner = "\n\t"
-        device_name = f"{self.device.manufacturer} {self.device.name}"
+        device_name = f"{self.manufacturer} {self.name}"
         if self.root is None:
             source = f"not from file"
         else:
             source = f"from `{self.root}`"
-        manufacturer = f"manufacturer: {self.device.manufacturer}"
+        manufacturer = f"manufacturer: {self.manufacturer}"
         calibration_list = f"calibration data: {self.check_calibration_data()}"
 
         text = combiner.join([device_name, source, manufacturer, calibration_list])
@@ -152,11 +152,11 @@ class Camera(object):
         """
         Generate a Bayer map, with the Bayer channel (RGBG2) for each pixel.
         """
-        bayer_map = np.zeros(self.image.shape, dtype=int)
-        bayer_map[0::2, 0::2] = self.image.bayer_pattern[0][0]
-        bayer_map[0::2, 1::2] = self.image.bayer_pattern[0][1]
-        bayer_map[1::2, 0::2] = self.image.bayer_pattern[1][0]
-        bayer_map[1::2, 1::2] = self.image.bayer_pattern[1][1]
+        bayer_map = np.zeros(self.image_shape, dtype=int)
+        bayer_map[0::2, 0::2] = self.bayer_pattern[0][0]
+        bayer_map[0::2, 1::2] = self.bayer_pattern[0][1]
+        bayer_map[1::2, 0::2] = self.bayer_pattern[1][0]
+        bayer_map[1::2, 1::2] = self.bayer_pattern[1][1]
         return bayer_map
 
     def generate_bias_map(self):
@@ -164,7 +164,7 @@ class Camera(object):
         Generate a Bayer-aware map of bias values from the camera information.
         """
         bayer_map = self._generate_bayer_map()
-        for j, bias_value in enumerate(self.image.bias):
+        for j, bias_value in enumerate(self.bias):
             bayer_map[bayer_map == j] = bias_value
         return bayer_map
 
@@ -215,7 +215,7 @@ class Camera(object):
 
         # If a dark current map does not exist, return an empty one, and warn the user
         except (FileNotFoundError, OSError, TypeError):
-            dark_current = np.zeros(self.image.shape)
+            dark_current = np.zeros(self.image_shape)
             print(f"Could not find a dark current map in the folder `{self.root}` - using all 0 instead")
 
         # Whatever bias map was used, save it to this object so it need not be re-loaded in the future
@@ -241,7 +241,7 @@ class Camera(object):
             iso_range = self._generate_ISO_range()
             normalisation = iso_range / self.settings.ISO_min
             lookup_table = np.stack([iso_range, normalisation])
-            print(f"No ISO lookup table found for {self.device.name}. Using naive estimate (ISO / min ISO). This may not be accurate.")
+            print(f"No ISO lookup table found for {self.name}. Using naive estimate (ISO / min ISO). This may not be accurate.")
 
         # Whatever method was used, save the lookup table so it need not be looked up again
         self.iso_lookup_table = lookup_table
@@ -257,7 +257,7 @@ class Camera(object):
         # If a gain map cannot be found, do not use any, and warn the user
         except (FileNotFoundError, OSError, TypeError):
             gain_map = None
-            print(f"No gain map found for {self.device.name}.")
+            print(f"No gain map found for {self.name}.")
 
         # If a gain map was found, save it to this object so it need not be looked up again
         # If no gain map was found, save the None object to warn the user
@@ -269,12 +269,12 @@ class Camera(object):
         """
         # Try to use a flatfield model from file
         try:
-            correction_map = flat.load_flatfield_correction(self.root, shape=self.image.shape)
+            correction_map = flat.load_flatfield_correction(self.root, shape=self.image_shape)
 
         # If a flatfield map cannot be found, do not use any, and warn the user
         except (FileNotFoundError, OSError, TypeError):
             correction_map = None
-            print(f"No flatfield model found for {self.device.name}.")
+            print(f"No flatfield model found for {self.name}.")
 
         # If a flatfield map was found, save it to this object so it need not be looked up again
         # If no flatfield map was found, save the None object to warn the user
@@ -291,7 +291,7 @@ class Camera(object):
         # If SRFs cannot be found, do not use any, and warn the user
         except (FileNotFoundError, OSError, TypeError):
             spectral_response = None
-            print(f"No spectral response functions found for {self.device.name}.")
+            print(f"No spectral response functions found for {self.name}.")
 
         # If SRFs were found, save it to this object so it need not be looked up again
         # Else, save the None object to warn the user
