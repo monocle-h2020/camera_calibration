@@ -14,5 +14,5 @@ This branch represents a major update where calibration methods are integrated i
 - [x] Flatten Camera object by integrating Device and Image properties
 - [ ] Prevent bugs with new Settings interface
 - [x] Add human-readable Camera names
-- [ ] Use human-readable Camera names in scripts
+- [x] Use human-readable Camera names in scripts
 - [ ] Include Camera name in camera.json and calibration files
