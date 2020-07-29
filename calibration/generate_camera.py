@@ -19,7 +19,6 @@ from sys import argv
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-save_to = root/"camera.json"
 
 # Get the data
 raw_file = io.load_raw_file(file)
@@ -57,7 +56,12 @@ properties = {
         }
 print("Camera properties:", properties)
 
-# Combine all metadata into a single object and write it to file
-camera = Camera(**properties)
+# Combine all metadata into a single object
+camera = Camera(**properties, root=root)
+
+# Save to a filename based on the camera name
+save_to = camera.root/f"{camera.name_underscore}_data.json"
+
+# Save the Camera object to file
 camera.write_to_file(save_to)
 print(f"Saved metadata to '{save_to}'")
