@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jul 24 17:30:22 2020
-
-@author: Burggraaff
-"""
-
 """
 Generate a file with additional information for the camera in the `root` folder.
 
