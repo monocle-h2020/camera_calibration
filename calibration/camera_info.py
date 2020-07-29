@@ -3,6 +3,9 @@ Generate a file with additional information for the camera in the `root` folder.
 
 Command line arguments:
     * `folder`: folder containing camera data.
+
+To do:
+    * Apertures?
 """
 from spectacle import load_camera, io
 from sys import argv

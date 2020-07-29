@@ -22,6 +22,7 @@ This is a to-do list for the `spectacle` module.
 #### Changes to existing scripts
 
 - [ ] Merge [stack_mean_std.py](tools/stack_mean_std.py) and [stack_heavy.py](tools/stack_heavy.py).
+- [ ] Add varying apertures to [camera_info.py](calibration/camera_info.py).
 
 #### New scripts
 
