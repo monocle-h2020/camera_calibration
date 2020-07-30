@@ -430,6 +430,8 @@ class Camera(object):
     def filename_calibration(self, suffix):
         """
         Shortcut to get a filename in the `calibration` folder with a given `suffix`.
+
+        This filename will include the camera name.
         """
         filename = self.root/f"calibration/{self.name_underscore}_{suffix}"
         return filename
