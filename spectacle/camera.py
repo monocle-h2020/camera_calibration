@@ -545,6 +545,6 @@ def load_camera(root, return_filename=False):
         root = find_root_folder(root)
         print(f"load_metadata was given a file (`{root_original}`) instead of a folder. Found a correct root folder to use instead: `{root}`")
 
-    filename = _find_data_file(root)
+    filename = find_files(root, "data.json")
     metadata = Camera.read_from_file(filename)
     return return_with_filename(metadata, filename, return_filename)
