@@ -2,5 +2,5 @@ This branch implements camera-based filenames for calibration data.
 
 - [x] Save camera info to camera-specific filename
 - [ ] Load root and camera info from camera-specific filename
-- [ ] Save calibration data to camera-specific filenames
+- [x] Save calibration data to camera-specific filenames
 - [ ] Load calibration data from camera-specific filenames
