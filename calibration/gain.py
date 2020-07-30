@@ -27,7 +27,7 @@ save_to_normalised_map = camera.filename_calibration("gain.npy")
 
 # Get the ISO speed of these data from the folder name
 ISO = io.split_iso(folder)
-save_to_original_map = root/f"intermediaries/gain/gain_map_iso{ISO}.npy"
+save_to_original_map = camera.filename_intermediaries("gain/gain_map_iso{ISO}.npy", makefolders=True)
 
 # Load the data
 names, means = io.load_means(folder)

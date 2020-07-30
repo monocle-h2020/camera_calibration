@@ -17,12 +17,17 @@ from spectacle import io, analyse
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-savefolder = root/"analysis/gain/"
 ISO = io.split_iso(file)
 
 # Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("gain", makefolders=True)
+save_to_histogram = savefolder/f"gain_histogram_iso{ISO}.pdf"
+save_to_map = savefolder/f"gain_map_iso{ISO}.pdf"
+save_to_histogram_miniature = savefolder/f"gain_histogram_iso{ISO}_rgb_only.pdf"
 
 # Load the data
 gains = np.load(file)
@@ -30,11 +35,11 @@ print("Loaded data")
 
 # Plot an RGB histogram of the data
 xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
-camera.plot_histogram_RGB(gains, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_histogram_iso{ISO}.pdf")
+camera.plot_histogram_RGB(gains, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=save_to_histogram)
 print("Made histogram")
 
 # Plot Gauss-convolved maps of the data
-camera.plot_gauss_maps(gains, colorbar_label="Gain (ADU/e$^-$)", saveto=savefolder/f"gain_map_iso{ISO}.pdf")
+camera.plot_gauss_maps(gains, colorbar_label="Gain (ADU/e$^-$)", saveto=save_to_map)
 print("Made maps")
 
 # Demosaick data by splitting the RGBG2 channels into separate arrays
@@ -55,6 +60,6 @@ axs[0].set_xlim(0, 3.5)
 axs[0].set_ylim(0, 2.5)
 axs[2].set_xlabel("Gain (ADU/e-)")
 axs[1].set_ylabel("Frequency")
-plt.savefig(savefolder/f"gain_histogram_iso{ISO}_rgb_only.pdf")
+plt.savefig(save_to_histogram_miniature)
 plt.close()
 print("Made RGB histogram")

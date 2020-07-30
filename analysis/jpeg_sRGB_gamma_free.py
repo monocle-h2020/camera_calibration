@@ -17,7 +17,14 @@ from spectacle import io, linearity as lin
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_folder = root/"intermediaries/jpeg/"
+
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_intermediaries("flatfield", makefolders=True)
+save_to_result = savefolder/"sRGB_model_free.npy"
 
 # Load the data
 intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)
@@ -30,6 +37,5 @@ normalisations, gammas, R2s = lin.fit_sRGB_generic(intensities, jmeans)
 
 # Combine the results into a single array and save it to file
 result_combined = np.stack([normalisations, gammas, R2s])
-save_to = save_folder/"sRGB_model_free.npy"
-np.save(save_to, result_combined)
-print(f"Saved results to '{save_to}'")
+np.save(save_to_result, result_combined)
+print(f"Saved results to '{save_to_result}'")

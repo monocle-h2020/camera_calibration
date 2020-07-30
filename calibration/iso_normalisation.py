@@ -14,7 +14,6 @@ from spectacle import io, iso
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to_data = root/"intermediaries/iso_normalisation/iso_data.npy"
 
 # Load Camera object
 camera = io.load_camera(root)
@@ -23,6 +22,7 @@ print(f"Loaded Camera object: {camera}")
 # Save location based on camera name
 save_to_model = camera.filename_calibration("iso_normalisation_model.csv")
 save_to_lookup_table = camera.filename_calibration("iso_normalisation_lookup_table.csv")
+save_to_data = camera.filename_intermediaries("iso_normalisation/iso_data.npy", makefolders=True)
 
 # Load the mean and standard deviation stacks for each ISO value
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)

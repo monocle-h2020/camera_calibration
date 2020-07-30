@@ -20,7 +20,13 @@ from spectacle import io, linearity as lin
 folder, *gammas = io.path_from_input(argv)
 gammas = [float(str(gamma)) for gamma in gammas]
 root = io.find_root_folder(folder)
-save_folder = root/"intermediaries/jpeg/"
+
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_intermediaries("flatfield", makefolders=True)
 
 # Load the data
 intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)
@@ -35,6 +41,6 @@ for gamma in gammas:
 
     # Combine the results into a single array and save it to file
     result_combined = np.stack([normalisations, Rsquares, RMSes, RMSes_relative])
-    save_to = save_folder/f"sRGB_comparison_gamma{gamma}.npy"
+    save_to = savefolder/f"sRGB_comparison_gamma{gamma}.npy"
     np.save(save_to, result_combined)
     print(f"Saved results to '{save_to}'")
