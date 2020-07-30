@@ -15,4 +15,4 @@ This branch represents a major update where calibration methods are integrated i
 - [ ] Prevent bugs with new Settings interface
 - [x] Add human-readable Camera names
 - [x] Use human-readable Camera names in scripts
-- [ ] Include Camera name in camera.json and calibration files
+- [x] Include Camera name in camera.json and calibration files
