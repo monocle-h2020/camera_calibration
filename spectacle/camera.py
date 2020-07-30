@@ -9,21 +9,8 @@ from pathlib import Path
 from os import makedirs
 
 from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
-from .general import return_with_filename
+from .general import return_with_filename, find_files
 
-
-def _find_data_file(folder):
-    """
-    Find a camera data file in a given `folder`
-    """
-    # Find all files in `folder` that match the pattern "*_data.json"
-    json_files = list(folder.glob("*_data.json"))
-
-    # Check the length of the list and raise an error if it is not 1.
-    assert len(json_files) > 0, f"No camera data JSON files found in `{folder}`"
-    assert len(json_files) < 2, f"Multiple ({len(json_files)}) camera data JSON files found in `{folder}`"
-
-    return json_files[0]
 
 def find_root_folder(input_path):
     """
@@ -36,7 +23,7 @@ def find_root_folder(input_path):
     for parent in [input_path, *input_path.parents]:
         # If a metadata file is found, use the containing folder as the root folder
         try:
-            json_file = _find_data_file(parent)
+            json_file = find_files(parent, "data.json")
         except AssertionError:
             continue
         else:

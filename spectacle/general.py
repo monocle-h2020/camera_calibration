@@ -157,3 +157,18 @@ def apply_to_multiple_args(func, data, *args, **kwargs):
         results = results[0]
 
     return results
+
+
+def find_files(folder, filename):
+    """
+    In a given `folder`, find files that end with the `filename`,
+    e.g. iPhone_SE_bias.npy for filename="bias.npy".
+    """
+    # Find all files in `folder` that match the pattern "*_{filename}"
+    all_files = list(folder.glob(f"*_{filename}"))
+
+    # Check the length of the list and raise an error if it is not 1.
+    assert len(all_files) > 0, f"No files matching the pattern `*_{filename}` found in `{folder}`"
+    assert len(all_files) < 2, f"Multiple ({len(all_files)}) files matching the pattern `*_{filename}` found in `{folder}`"
+
+    return all_files[0]
