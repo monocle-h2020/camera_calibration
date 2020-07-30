@@ -12,6 +12,19 @@ from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
 from .general import return_with_filename
 
 
+def _find_data_file(folder):
+    """
+    Find a camera data file in a given `folder`
+    """
+    # Find all files in `folder` that match the pattern "*_data.json"
+    json_files = list(folder.glob("*_data.json"))
+
+    # Check the length of the list and raise an error if it is not 1.
+    assert len(json_files) > 0, f"No camera data JSON files found in `{folder}`"
+    assert len(json_files) < 2, f"Multiple ({len(json_files)}) camera data JSON files found in `{folder}`"
+
+    return json_files[0]
+
 def find_root_folder(input_path):
     """
     For a given `input_path`, find the root folder, containing the standard
@@ -22,12 +35,16 @@ def find_root_folder(input_path):
     # Loop through the input_path's parents until a metadata JSON file is found
     for parent in [input_path, *input_path.parents]:
         # If a metadata file is found, use the containing folder as the root folder
-        if (parent/"camera.json").exists():
+        try:
+            json_file = _find_data_file(parent)
+        except AssertionError:
+            continue
+        else:
             root = parent
             break
     # If no metadata file was found, raise an error
     else:
-        raise OSError(f"None of the parents of the input `{input_path}` include a 'camera.json' file.")
+        raise OSError(f"None of the parents of the input `{input_path}` include a camera data JSON file.")
 
     return root
 
