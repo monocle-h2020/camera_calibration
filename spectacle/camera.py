@@ -311,6 +311,13 @@ class Camera(object):
         # Else, save the None object to warn the user
         self.spectral_response = spectral_response
 
+    def load_all_calibrations(self):
+        """
+        Load all available calibration data for this camera.
+        """
+        for func in [self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response]:
+            func()
+
     def check_calibration_data(self):
         """
         Check what calibration data have been loaded so far.
