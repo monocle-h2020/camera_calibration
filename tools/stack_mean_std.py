@@ -27,7 +27,6 @@ from os import walk, makedirs
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-print(f"Loaded Camera object: {camera}")
 
 # Load Camera object
 camera = io.load_camera(root)

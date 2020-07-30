@@ -6,9 +6,10 @@ import numpy as np
 import json
 from collections import namedtuple
 from pathlib import Path
+from os import makedirs
 
 from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
-from .general import return_with_filename
+from .general import return_with_filename, find_files
 
 
 def find_root_folder(input_path):
@@ -21,12 +22,16 @@ def find_root_folder(input_path):
     # Loop through the input_path's parents until a metadata JSON file is found
     for parent in [input_path, *input_path.parents]:
         # If a metadata file is found, use the containing folder as the root folder
-        if (parent/"camera.json").exists():
+        try:
+            json_file = find_files(parent, "data.json")
+        except AssertionError:
+            continue
+        else:
             root = parent
             break
     # If no metadata file was found, raise an error
     else:
-        raise OSError(f"None of the parents of the input `{input_path}` include a 'camera.json' file.")
+        raise OSError(f"None of the parents of the input `{input_path}` include a camera data JSON file.")
 
     return root
 
@@ -41,6 +46,21 @@ def name_from_root_folder(root):
     stem = root.stem
     clean = stem.replace("_", " ").strip()
     return clean
+
+
+def makedirs_without_file(path):
+    """
+    Similar to os.makedirs, creating a folder tree, but checks if
+    the given path is file-like (has a file extension). If yes, the
+    final element of the tree is assumed to be a file and ignored.
+    """
+    # If the path has no suffix, create it as well as its parents
+    if path.suffix == "":
+        path_for_makedirs = path
+    # If it does, only create the path's parents
+    else:
+        path_for_makedirs = path.parent
+    makedirs(path_for_makedirs, exist_ok=True)
 
 
 def _convert_exposure_time(exposure):
@@ -435,6 +455,44 @@ class Camera(object):
         """
         analyse.plot_histogram_RGB(data, self.bayer_map, **kwargs)
 
+    def filename_analysis(self, suffix, makefolders=False):
+        """
+        Shortcut to get a filename in the `analysis` folder with a given `suffix`.
+        """
+        filename = self.root/"analysis"/suffix
+
+        # Make sure the relevant folders exist
+        if makefolders:
+            makedirs_without_file(filename)
+
+        return filename
+
+    def filename_intermediaries(self, suffix, makefolders=False):
+        """
+        Shortcut to get a filename in the `intermediaries` folder with a given `suffix`.
+        """
+        filename = self.root/"intermediaries"/suffix
+
+        # Make sure the relevant folders exist
+        if makefolders:
+            makedirs_without_file(filename)
+
+        return filename
+
+    def filename_calibration(self, suffix, makefolders=True):
+        """
+        Shortcut to get a filename in the `calibration` folder with a given `suffix`.
+
+        This filename will include the camera name.
+        """
+        filename = self.root/f"calibration/{self.name_underscore}_{suffix}"
+
+        # Make sure the relevant folders exist
+        if makefolders:
+            makedirs_without_file(filename)
+
+        return filename
+
     def write_to_file(self, path):
         """
         Write metadata to a file.
@@ -495,6 +553,6 @@ def load_camera(root, return_filename=False):
         root = find_root_folder(root)
         print(f"load_metadata was given a file (`{root_original}`) instead of a folder. Found a correct root folder to use instead: `{root}`")
 
-    filename = root/"camera.json"
+    filename = find_files(root, "data.json")
     metadata = Camera.read_from_file(filename)
     return return_with_filename(metadata, filename, return_filename)

@@ -12,11 +12,13 @@ from spectacle import io, analyse
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to = root/"analysis/bias/"
 
 # Load Camera objects
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Save location based on camera name
+savefolder = camera.filename_analysis("bias", makefolders=True)
 
 # Load the data
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)
@@ -31,8 +33,8 @@ xmin, xmax = analyse.symmetric_percentiles(means, percent=0.001)
 
 # Loop over the data and make plots at each ISO value
 for ISO, mean in zip(isos, means):
-    save_to_histogram = save_to/f"bias_histogram_iso{ISO}.pdf"
-    save_to_maps = save_to/f"bias_map_iso{ISO}.pdf"
+    save_to_histogram = savefolder/f"bias_histogram_iso{ISO}.pdf"
+    save_to_maps = savefolder/f"bias_map_iso{ISO}.pdf"
 
     camera.plot_histogram_RGB(mean, xmin=xmin, xmax=xmax, xlabel="Bias (ADU)", saveto=save_to_histogram)
     camera.plot_gauss_maps(mean, colorbar_label="Bias (ADU)", saveto=save_to_maps)

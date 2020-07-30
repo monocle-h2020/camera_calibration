@@ -16,11 +16,14 @@ from spectacle import io, analyse
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to = root/"analysis/readnoise/readnoise_ISO_relation.pdf"
 
 # Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("readnoise", makefolders=True)
+save_to_plot = savefolder/"readnoise_ISO_relation.pdf"
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
@@ -43,6 +46,6 @@ plt.ylabel("Mean read noise\n(norm. ADU)")
 plt.xlim(0, 1.05*camera.settings.ISO_max)
 plt.ylim(ymin=0)
 plt.grid(True, ls="--", alpha=0.3)
-plt.savefig(save_to)
+plt.savefig(save_to_plot)
 plt.close()
-print(f"Saved plot to '{save_to}'")
+print(f"Saved plot to '{save_to_plot}'")

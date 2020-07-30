@@ -21,19 +21,22 @@ meanfile = io.path_from_input(argv)
 root = io.find_root_folder(meanfile)
 label = meanfile.stem.split("_mean")[0]
 
-# Replace the calibration file? TO DO: make this a command line argument
-overwrite_calibration = True
-
-# Define save locations for results
-save_to_correction = root/f"intermediaries/flatfield/flatfield_correction_{label}.npy"
-save_to_correction_raw = root/f"intermediaries/flatfield/flatfield_correction_{label}_raw.npy"
-save_to_correction_modelled_intermediary = root/f"intermediaries/flatfield/flatfield_correction_{label}_modelled.npy"
-save_to_parameters_intermediary = root/f"intermediaries/flatfield/flatfield_parameters_{label}.csv"
-save_to_parameters_calibration = root/"calibration/flatfield_parameters.csv"
-
 # Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Replace the calibration file? TO DO: make this a command line argument
+overwrite_calibration = True
+
+# Save locations
+savefolder = camera.filename_intermediaries("flatfield", makefolders=True)
+save_to_correction = savefolder/"flatfield_correction_{label}.npy"
+save_to_correction_raw = savefolder/"flatfield_correction_{label}_raw.npy"
+save_to_correction_modelled_intermediary = savefolder/"flatfield_correction_{label}_modelled.npy"
+save_to_parameters_intermediary = savefolder/"flatfield_parameters_{label}.csv"
+
+# Save location based on camera name
+save_to_parameters_calibration = camera.filename_calibration("flatfield_parameters.csv")
 
 # Load the data
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")

@@ -16,12 +16,21 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 meanfile = io.path_from_input(argv)
 root = io.find_root_folder(meanfile)
-savefolder = root/"analysis/flatfield/"
 label = meanfile.stem.split("_mean")[0]
 
 # Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("flatfield", makefolders=True)
+save_to_histogram_SNR = savefolder/f"data_histogram_SNR_{label}.pdf"
+save_to_maps_SNR = savefolder/f"data_SNR_{label}.pdf"
+save_to_histogram_data = savefolder/f"data_histogram_{label}.pdf"
+save_to_histogram_difference = savefolder/f"data_gauss_difference.pdf"
+save_to_maps_normalised = savefolder/f"data_normalised_{label}.pdf"
+save_to_maps_gaussed = savefolder/f"data_gaussed_{label}.pdf"
+save_to_maps_correction_factor = savefolder/f"data_correction_factor_{label}.pdf"
 
 # Load the data
 stdsfile = meanfile.parent / meanfile.name.replace("mean", "stds")
@@ -41,7 +50,6 @@ SNR = mean_normalised / stds_normalised
 print("Calculated signal-to-noise-ratio")
 
 # Make a histogram of the SNR
-save_to_histogram_SNR = savefolder/f"data_histogram_SNR_{label}.pdf"
 SNR_top_percentile = analyse.symmetric_percentiles(SNR)[1]
 bins_SNR = np.linspace(0, SNR_top_percentile, 100)
 
@@ -55,7 +63,6 @@ plt.close()
 print(f"Saved histogram of signal-to-noise ratio to '{save_to_histogram_SNR}'")
 
 # Make Gaussian maps of the SNR
-save_to_maps_SNR = savefolder/f"data_SNR_{label}.pdf"
 camera.plot_gauss_maps(SNR, colorbar_label="Signal-to-noise ratio", saveto=save_to_maps_SNR)
 print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
 
@@ -63,7 +70,6 @@ print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
 flatfield_gauss = gaussMd(mean_normalised, 10)
 
 # Make histograms of the raw, bias-corrected, normalised, and Gaussed data
-save_to_histogram_data = savefolder/f"data_histogram_{label}.pdf"
 data_sets = [mean_raw, mean_normalised, mean_bias_corrected, flatfield_gauss]
 titles = ["Raw", "Normalised", "Bias-corrected", "Gaussed"]
 bins_adu = np.linspace(0, camera.saturation, 250)
@@ -86,7 +92,6 @@ plt.close()
 print(f"Saved histograms of data to '{save_to_histogram_data}'")
 
 # Make a histogram of the difference between the normalised and Gaussed data
-save_to_histogram_difference = savefolder/f"data_gauss_difference.pdf"
 difference_normalised_gauss = flatfield_gauss - mean_normalised
 bins = np.linspace(*analyse.symmetric_percentiles(difference_normalised_gauss, percent=0.01), 100)
 plt.figure(figsize=(4,2), tight_layout=True)
@@ -99,8 +104,6 @@ plt.close()
 print(f"Saved histogram of difference (Gaussed - Normalised data) to '{save_to_histogram_difference}'")
 
 # Plot Gaussian maps of the flat-field data
-save_to_maps_normalised = savefolder/f"data_normalised_{label}.pdf"
-save_to_maps_gaussed = savefolder/f"data_gaussed_{label}.pdf"
 camera.plot_gauss_maps(mean_normalised, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_normalised)
 camera.plot_gauss_maps(flatfield_gauss, colorbar_label="Flat-field response", vmax=1, saveto=save_to_maps_gaussed)
 print(f"Saved Gaussed maps to '{save_to_maps_normalised}' and '{save_to_maps_gaussed}'")
@@ -112,6 +115,5 @@ flatfield_gauss_clipped = flat.clip_data(flatfield_gauss)
 correction_factor = 1 / flatfield_gauss_clipped
 
 # Plot Gaussian maps of the correction factors
-save_to_maps_correction_factor = savefolder/f"data_correction_factor_{label}.pdf"
 camera.plot_gauss_maps(correction_factor, colorbar_label="Correction factor", saveto=save_to_maps_correction_factor)
 print(f"Saved correction factor maps to '{save_to_maps_correction_factor}'")

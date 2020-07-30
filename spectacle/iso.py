@@ -6,6 +6,7 @@ look-up tables.
 import numpy as np
 from scipy.optimize import curve_fit
 from .general import Rsquare, return_with_filename, apply_to_multiple_args
+from . import io
 
 
 def generate_linear_model(slope, offset):
@@ -129,7 +130,7 @@ def load_iso_lookup_table(root, return_filename=False):
     If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
-    filename = root/"calibration/iso_normalisation_lookup_table.csv"
+    filename = io.find_files(root/"calibration", "iso_normalisation_lookup_table.csv")
     table = np.loadtxt(filename, delimiter=",").T
     return return_with_filename(table, filename, return_filename)
 
@@ -145,7 +146,7 @@ def load_iso_model(root, return_filename=False):
 
     To do: include in ISO model object
     """
-    filename = root/"calibration/iso_normalisation_model.csv"
+    filename = io.find_files(root/"calibration", "iso_normalisation_model.csv")
     as_array = np.loadtxt(filename, dtype=str, delimiter=",")
 
     model_type = as_array[0]
