@@ -164,11 +164,13 @@ def find_files(folder, filename):
     In a given `folder`, find files that end with the `filename`,
     e.g. iPhone_SE_bias.npy for filename="bias.npy".
     """
+    pattern = f"*{filename}"
+
     # Find all files in `folder` that match the pattern "*{filename}"
-    all_files = list(folder.glob(f"*{filename}"))
+    all_files = list(folder.glob(pattern))
 
     # Check the length of the list and raise an error if it is not 1.
-    assert len(all_files) > 0, f"No files matching the pattern `*_{filename}` found in `{folder}`"
-    assert len(all_files) < 2, f"Multiple ({len(all_files)}) files matching the pattern `*_{filename}` found in `{folder}`"
+    assert len(all_files) > 0, f"No files matching the pattern `{pattern}` found in `{folder}`"
+    assert len(all_files) < 2, f"Multiple ({len(all_files)}) files matching the pattern `{pattern}` found in `{folder}`"
 
     return all_files[0]
