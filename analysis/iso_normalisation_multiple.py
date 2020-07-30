@@ -10,7 +10,7 @@ Command line arguments:
 
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, plot, iso
+from spectacle import io, iso
 
 # Get the data folders from the command line
 folders = io.path_from_input(argv)
@@ -33,7 +33,7 @@ for folder in folders:
 
     # Plot the normalisation data and look-up table
     plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.device.name)
-    plt.plot(*lookup_table, c=c)
+    plt.plot(*lookup_table)
 
     print(camera)
 
