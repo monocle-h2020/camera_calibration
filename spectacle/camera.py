@@ -427,6 +427,13 @@ class Camera(object):
         """
         analyse.plot_histogram_RGB(data, self.bayer_map, **kwargs)
 
+    def filename_analysis(self, suffix):
+        """
+        Shortcut to get a filename in the `analysis` folder with a given `suffix`.
+        """
+        filename = self.root/"analysis"/suffix
+        return filename
+
     def filename_calibration(self, suffix):
         """
         Shortcut to get a filename in the `calibration` folder with a given `suffix`.
@@ -434,6 +441,13 @@ class Camera(object):
         This filename will include the camera name.
         """
         filename = self.root/f"calibration/{self.name_underscore}_{suffix}"
+        return filename
+
+    def filename_intermediaries(self, suffix):
+        """
+        Shortcut to get a filename in the `intermediaries` folder with a given `suffix`.
+        """
+        filename = self.root/"intermediaries"/suffix
         return filename
 
     def write_to_file(self, path):
