@@ -323,6 +323,7 @@ class Camera(object):
         Check what calibration data have been loaded so far.
         """
         data_available = [data_type for data_type in self.calibration_data_all if hasattr(self, data_type)]
+        data_available = [data_type for data_type in data_available if getattr(self, data_type) is not None]
         return data_available
 
     def correct_bias(self, *data, **kwargs):
