@@ -427,6 +427,13 @@ class Camera(object):
         """
         analyse.plot_histogram_RGB(data, self.bayer_map, **kwargs)
 
+    def filename_calibration(self, suffix):
+        """
+        Shortcut to get a filename in the `calibration` folder with a given `suffix`.
+        """
+        filename = self.root/f"calibration/{self.name_underscore}_{suffix}"
+        return filename
+
     def write_to_file(self, path):
         """
         Write metadata to a file.

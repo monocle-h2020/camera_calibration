@@ -34,6 +34,10 @@ root = io.find_root_folder(folder)
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
+# Save location based on camera name
+save_to_SRF = camera.filename_calibration("spectral_response.csv")
+save_to_bands = camera.filename_calibration("spectral_bandwiths.csv")
+
 # Get the subfolders in the given data folder
 folders = io.find_subfolders(folder)
 
@@ -182,13 +186,12 @@ result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.
 np.save(root/"intermediaries/spectral_response/monochromator_curve.npy", result)
 print(f"Saved final curves to '{root/'intermediaries/spectral_response/'}'")
 
-save_to = root/"calibration/spectral_response.csv"
-np.savetxt(save_to, result.T, delimiter=",", header="Wavelength, R, G, B, G2, R_err, G_err, B_err, G2_err")
-print(f"Saved spectral response curves to '{save_to}'")
+np.savetxt(save_to_SRF, result.T, delimiter=",", header="Wavelength, R, G, B, G2, R_err, G_err, B_err, G2_err")
+print(f"Saved spectral response curves to '{save_to_SRF}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
 bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
-np.savetxt(root/"calibration/spectral_bandwidths.csv", bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
+np.savetxt(save_to_bands, bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
 for band, width in zip([*"RGB", "G2"], bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")

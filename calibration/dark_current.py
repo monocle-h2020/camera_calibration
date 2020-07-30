@@ -22,11 +22,13 @@ from spectacle import io, dark
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to_normalised = root/"calibration/dark_current_normalised.npy"
 
 # Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Save location based on camera name
+save_to_normalised = camera.filename_calibration("dark_current_normalised.npy")
 
 # Get the ISO speed at which the data were taken from the folder name
 ISO = io.split_iso(folder)
