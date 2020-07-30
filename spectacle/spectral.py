@@ -128,7 +128,7 @@ def load_spectral_response(root, return_filename=False):
     If `return_filename` is True, also return the exact filename used.
     """
     # Try to use a CSV file
-    filename = root/"calibration/spectral_response.csv"
+    filename = io.find_files(root/"calibration", "spectral_response.csv")
     try:
         spectral_response = np.loadtxt(filename, delimiter=",").T
 
