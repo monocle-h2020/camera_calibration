@@ -139,7 +139,8 @@ class Camera(object):
         """
         Load a settings file
         """
-        settings = load_json(self.root/"settings.json")
+        filename = find_files(self.root/"calibration", "settings.json")
+        settings = load_json(filename)
 
         # Convert the input exposures to floating point numbers
         settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
