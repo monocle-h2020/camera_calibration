@@ -135,6 +135,12 @@ class Camera(object):
         self.saturation = 2**self.bit_depth - 1
         self.bands = self.colour_description
 
+        # Load settings if available
+        try:
+            self.load_settings()
+        except AssertionError:
+            pass
+
     def load_settings(self):
         """
         Load a settings file
