@@ -23,6 +23,7 @@ User input is also required for the camera name, either to confirm one automatic
 
 Additional camera information may be added by the user with the [camera_settings.py](camera_settings.py) script.
 This script will prompt the user with several questions on camera settings, and saves the results to file.
+The resulting settings file is required for some calibrations, such as ISO speed normalisation.
 
 ## Bias
 
@@ -53,8 +54,8 @@ In this case, a mean value may be used, which is derived from measurements.
 An ISO speed normalisation look-up table is generated using [iso_normalisation.py](iso_normalisation.py), based on image stacks taken at different ISO speeds.
 This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
 
-The ISO speed normalisation calibration requires a bias correction.
-This may be done using a bias map or a mean value, as described above.
+The ISO speed normalisation calibration requires a bias correction and camera settings file.
+If no measured bias map is available, one is generated from the camera information file.
 
 ## Dark current
 
@@ -71,7 +72,7 @@ This map has the gain (in normalised ADU/photoelectron) in each pixel.
 This is not used in further calibration, but can be used to convert a signal to photoelectrons with the `spectacle` function `spectacle.calibrate.convert_to_photoelectrons`.
 
 The gain calibration requires a bias correction.
-This may be done using a bias map or a mean value, as described above.
+If no measured bias map is available, one is generated from the camera information file.
 
 The gain calibration requires an ISO speed normalisation look-up table.
 
@@ -82,7 +83,7 @@ This model describes the flat-field response (sensivity) in each pixel with seve
 The flat-field response is corrected for using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
 
 The flat-field calibration requires a bias correction.
-This may be done using a bias map or a mean value, as described above.
+If no measured bias map is available, one is generated from the camera information file.
 
 ## Spectral response
 

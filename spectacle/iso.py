@@ -198,3 +198,15 @@ def load_iso_data(root, return_filename=False):
     data = np.load(filename)
     return return_with_filename(data, filename, return_filename)
 
+
+def get_max_iso(camera, default=2000):
+    """
+    Get the maximum ISO value for a Camera object. If unavailable,
+    return `default` instead.
+    """
+    try:
+        isomax = camera.settings.ISO_max * 1.05
+    except AttributeError:
+        isomax = default
+
+    return isomax

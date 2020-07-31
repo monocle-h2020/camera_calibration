@@ -11,7 +11,7 @@ Command line arguments:
 
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, analyse
+from spectacle import io, analyse, iso
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -39,11 +39,12 @@ print(stats)
 std_mean = stds_normalised.mean(axis=(1,2))
 std_std = stds_normalised.std(axis=(1,2))
 
+xmax = iso.get_max_iso(camera)
 plt.figure(figsize=(3,2), tight_layout=True)
 plt.errorbar(isos, std_mean, yerr=std_std, fmt="ko")
 plt.xlabel("ISO speed")
 plt.ylabel("Mean read noise\n(norm. ADU)")
-plt.xlim(0, 1.05*camera.settings.ISO_max)
+plt.xlim(0, xmax)
 plt.ylim(ymin=0)
 plt.grid(True, ls="--", alpha=0.3)
 plt.savefig(save_to_plot)

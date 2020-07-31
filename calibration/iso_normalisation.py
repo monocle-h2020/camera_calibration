@@ -2,6 +2,9 @@
 Create a look-up table for the ISO-gain normalisation function of a camera,
 using mean images of the same scene taken at various ISO speeds.
 
+A camera settings file containing the minimum and maximum ISO speeds is
+necessary for this script to work.
+
 Command line arguments:
     * `folder`: folder containing NPY stacks of identical exposures taken at
     different ISO speeds.
@@ -18,6 +21,7 @@ root = io.find_root_folder(folder)
 # Load Camera object
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+assert hasattr(camera, "settings"), f"A settings file could not be loaded for the following Camera object:\n{camera}"
 
 # Save location based on camera name
 save_to_model = camera.filename_calibration("iso_normalisation_model.csv")
