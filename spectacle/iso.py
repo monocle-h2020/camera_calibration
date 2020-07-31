@@ -103,7 +103,7 @@ def _normalise_iso_multiple(data_element, isos, lookup_table):
     `data_element` and `isos` are assumed to have the same length, i.e. each element
     of `data_element` has one associated ISO speed in `isos`.
     """
-    assert len(data_element) == len(isos), f"data_element ({len(data_elements)}) and isos ({len(isos)}) have different lengths."
+    assert len(data_element) == len(isos), f"data_element ({len(data_element)}) and isos ({len(isos)}) have different lengths."
     as_list = [_normalise_iso_single(data_subelement, ISO, lookup_table) for data_subelement, ISO in zip(data_element, isos)]
     as_array = np.array(as_list)
     return as_array
