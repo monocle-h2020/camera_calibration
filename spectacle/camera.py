@@ -26,7 +26,7 @@ def find_root_folder(input_path):
         # If a metadata file is found, use the containing folder as the root folder
         try:
             json_file = find_matching_file(parent, "data.json")
-        except AssertionError:
+        except FileNotFoundError:
             continue
         else:
             root = parent
@@ -140,7 +140,7 @@ class Camera(object):
         # Load settings if available
         try:
             self.load_settings()
-        except AssertionError:
+        except FileNotFoundError:
             pass
 
     def load_settings(self):

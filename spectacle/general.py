@@ -170,7 +170,9 @@ def find_matching_file(folder, filename):
     all_files = list(folder.glob(pattern))
 
     # Check the length of the list and raise an error if it is not 1.
-    assert len(all_files) > 0, f"No files matching the pattern `{pattern}` found in `{folder}`"
-    assert len(all_files) < 2, f"Multiple ({len(all_files)}) files matching the pattern `{pattern}` found in `{folder}`"
+    if len(all_files) == 0:
+        raise FileNotFoundError(f"No files matching the pattern `{pattern}` found in `{folder}`")
+    elif len(all_files) > 1:
+        raise OSError(f"Multiple ({len(all_files)}) files matching the pattern `{pattern}` found in `{folder}`")
 
     return all_files[0]
