@@ -21,7 +21,7 @@ User input is also required for the camera name, either to confirm one automatic
 
 ## Camera settings
 
-Additional camera information may be added by the user with the [camera_info.py](camera_info.py) script.
+Additional camera information may be added by the user with the [camera_settings.py](camera_settings.py) script.
 This script will prompt the user with several questions on camera settings, and saves the results to file.
 
 ## Bias
