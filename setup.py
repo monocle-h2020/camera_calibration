@@ -8,6 +8,7 @@ setup(
       version="2.0.0",
       description="SPECTACLE camera calibration module",
       long_description = long_description,
+      long_description_content_type="text/markdown",
       url="https://github.com/monocle-h2020/camera_calibration",
       author="Olivier Burggraaff",
       author_email="burggraaff@strw.leidenuniv.nl",
