@@ -4,7 +4,7 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 
 import numpy as np
 from .general import gaussMd, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
-from . import raw
+from . import raw, io
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
 parameter_error_labels = ["k0_err", "k1_err", "k2_err", "k3_err", "k4_err", "cx_err", "cy_err"]
@@ -109,7 +109,7 @@ def load_flatfield_correction(root, shape, return_filename=False):
     Load the flat-field correction model, the parameters of which are contained
     in `root`/calibration/flatfield_parameters.csv
     """
-    filename = root/"calibration/flatfield_parameters.csv"
+    filename = io.find_matching_file(root/"calibration", "flatfield_parameters.csv")
     data = np.loadtxt(filename, delimiter=",")
     parameters, errors = data[:7], data[7:]
     correction_map = apply_vignette_radial(shape, parameters)

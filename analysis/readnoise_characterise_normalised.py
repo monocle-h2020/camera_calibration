@@ -10,21 +10,24 @@ Command line arguments:
 """
 
 from sys import argv
-from spectacle import io, analyse, calibrate
+from spectacle import io, analyse
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to = root/"analysis/readnoise"
 
-# Get metadata
-camera = io.load_metadata(root)
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("readnoise", makefolders=True)
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 
 # Normalise the data using the ISO look-up table
-stds_normalised = calibrate.normalise_iso(root, isos, stds)
+stds_normalised = camera.normalise_iso(isos, stds)
 
 # Print statistics at each ISO
 stats = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")
@@ -35,8 +38,8 @@ xmin, xmax = 0., analyse.symmetric_percentiles(stds_normalised)[1]
 
 # Loop over the data and make plots at each ISO value
 for ISO, std in zip(isos, stds_normalised):
-    save_to_histogram = save_to/f"readnoise_normalised_histogram_iso{ISO}.pdf"
-    save_to_maps = save_to/f"readnoise_normalised_map_iso{ISO}.pdf"
+    save_to_histogram = savefolder/f"readnoise_normalised_histogram_iso{ISO}.pdf"
+    save_to_maps = savefolder/f"readnoise_normalised_map_iso{ISO}.pdf"
 
     camera.plot_histogram_RGB(std, xmin=xmin, xmax=xmax, xlabel="Read noise (norm. ADU)", saveto=save_to_histogram)
     camera.plot_gauss_maps(std, colorbar_label="Read noise (norm. ADU)", saveto=save_to_maps)

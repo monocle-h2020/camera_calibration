@@ -25,9 +25,12 @@ from os import walk, makedirs
 
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-camera = io.load_metadata(root)
 
-raw_pattern = f"*{camera.image.raw_extension}"
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+raw_pattern = f"*{camera.raw_extension}"
 
 for tup in walk(folder):
     folder_here = io.Path(tup[0])

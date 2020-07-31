@@ -30,9 +30,16 @@ if jpeg_data_available:
 else:
     print("JPEG data are not available")
 
-# Get metadata
-camera = io.load_metadata(root)
-savefolder = root/"analysis/linearity/"
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("linearity", makefolders=True)
+save_to_maps = savefolder/f"map_raw.pdf"
+save_to_map_JPEG = savefolder/f"map_jpeg.pdf"
+save_to_histogram_RGB = savefolder/f"histogram_RGB_raw.pdf"
+save_to_histogram_RAW_JPEG = savefolder/f"histogram_raw_jpeg.pdf"
 
 # Load the data
 r_raw = np.load(file_raw)
@@ -42,13 +49,11 @@ if jpeg_data_available:
     print("Loaded JPEG Pearson r map")
 
 # Make Gaussian maps of the RAW data
-save_to_maps = savefolder/f"map_raw.pdf"
 camera.plot_gauss_maps(r_raw, colorbar_label="Pearson $r$", saveto=save_to_maps)
 print(f"Saved maps of RAW Pearson r to '{save_to_maps}'")
 
 # Make a Gaussian map of the JPEG data, if available
 if jpeg_data_available:
-    save_to_map_JPEG = savefolder/f"map_jpeg.pdf"
     vmin, vmax = analyse.symmetric_percentiles(r_jpeg)
     fig, axs = plt.subplots(ncols=3, sharex=True, sharey=True, figsize=(5,2), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, squeeze=True)
     for data, channel, ax in zip(r_jpeg, plot.rgb, axs):
@@ -72,14 +77,12 @@ if jpeg_data_available:
     print(stats)
 
 # Make an RGB histogram of the RAW r values
-save_to_histogram_RGB = savefolder/f"histogram_RGB_raw.pdf"
 xmax = 1.
 camera.plot_histogram_RGB(r_raw, xmax=xmax, xlabel="Pearson $r$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make a histogram comparing RAW and JPEG r values
 if jpeg_data_available:
-    save_to_histogram_RAW_JPEG = savefolder/f"histogram_raw_jpeg.pdf"
     bins = np.linspace(0.9, 1.0, 150)
     plt.figure(tight_layout=True, figsize=(5,2))
     plt.hist(r_raw.ravel(), bins=bins, color='k')

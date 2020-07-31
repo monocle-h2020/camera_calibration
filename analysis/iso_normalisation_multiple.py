@@ -24,15 +24,16 @@ for folder in folders:
     # Get the data folder for this camera
     root = io.find_root_folder(folder)
 
-    # Get metadata
-    camera = io.load_metadata(root)
+    # Load Camera object
+    camera = io.load_camera(root)
+    print(f"Loaded Camera object: {camera}")
 
     # Load the normalisation data and look-up table
     lookup_table = iso.load_iso_lookup_table(root)
     data = iso.load_iso_data(root)
 
     # Plot the normalisation data and look-up table
-    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.device.name)
+    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.name)
     plt.plot(*lookup_table)
 
     print(camera)

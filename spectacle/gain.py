@@ -4,6 +4,7 @@ Code relating to gain calibration, such as loading gain maps.
 
 import numpy as np
 from .general import return_with_filename, apply_to_multiple_args
+from . import io
 
 def load_gain_map(root, return_filename=False):
     """
@@ -11,7 +12,7 @@ def load_gain_map(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
-    filename = root/"calibration/gain.npy"
+    filename = io.find_matching_file(root/"calibration", "gain.npy")
     gain_map = np.load(filename)
     return return_with_filename(gain_map, filename, return_filename)
 

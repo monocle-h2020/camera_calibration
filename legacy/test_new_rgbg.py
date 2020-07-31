@@ -46,7 +46,9 @@ folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
 results_readnoise = root/"results/readnoise"
 
-camera = io.load_metadata(root)
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 isos, stds  = io.load_stds  (folder, retrieve_value=io.split_iso)
 colours = camera.bayer_map

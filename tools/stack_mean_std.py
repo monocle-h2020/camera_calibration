@@ -27,13 +27,13 @@ from os import walk, makedirs
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-print("Loaded metadata")
 
-# Get the camera metadata
-camera = io.load_metadata(root)
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Wildcard pattern to find RAW data with
-raw_pattern = f"*{camera.image.raw_extension}"
+raw_pattern = f"*{camera.raw_extension}"
 
 # Walk through the folder and all its subfolders
 for tup in walk(folder):

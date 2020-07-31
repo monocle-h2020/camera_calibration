@@ -22,7 +22,11 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 folders = io.path_from_input(argv)
 roots = [io.find_root_folder(f) for f in folders]
-cameras = [io.load_metadata(root) for root in roots]
+
+# Load Camera objects
+cameras = [io.load_camera(root) for root in roots]
+print(f"Loaded Camera objects: {cameras}")
+
 save_to = io.results_folder
 
 # Lists to hold the data for each device
@@ -33,12 +37,12 @@ mean_jpeg_all = []
 
 # Loop over the given folders
 for folder, camera in zip(folders, cameras):
-    # Get metadata
+    # Load Camera object
     print("\n", camera)
     root = io.find_root_folder(folder)
 
     # Find the indices of the central pixels
-    array_size = np.array(camera.image.shape)
+    array_size = np.array(camera.image_shape)
     mid1, mid2 = array_size // 2
     center = np.s_[mid1:mid1+2, mid2:mid2+2]
 
@@ -92,7 +96,7 @@ for j, c in enumerate(plot.rgbg2):
         r_jpeg = lin.pearson_r_single(intensities, mean_jpeg_c, saturate=240)
 
         # Plot title, including device name and r values calculated above
-        title = camera.device.name + "\n" + "$r_{JPEG} = " + f"{r_jpeg:.3f}" + "$   $r_{RAW} = " + f"{r_raw:.3f}" + "$"
+        title = camera.name + "\n" + "$r_{JPEG} = " + f"{r_jpeg:.3f}" + "$   $r_{RAW} = " + f"{r_raw:.3f}" + "$"
 
         # Fit a linear function to the RAW response and an sRGB function to the
         # JPEG response, to plot as lines

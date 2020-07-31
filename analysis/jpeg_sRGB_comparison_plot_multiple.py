@@ -28,9 +28,9 @@ folders = io.path_from_input(argv)
 roots = [io.find_root_folder(folder) for folder in folders]
 save_to = io.results_folder/"jpeg_sRGB_comparison.pdf"
 
-# Get metadata
-cameras = [io.load_metadata(root) for root in roots]
-print("Read meta-data")
+# Load Camera objects
+cameras = [io.load_camera(root) for root in roots]
+print(f"Loaded Camera objects: {cameras}")
 
 # Loop through the given folders to see which gamma values are available
 gammas_all = []
@@ -71,7 +71,7 @@ print("Plotting histogram...")
 for ax_row, folder, camera in zip(axs, folders, cameras):
 
     # Add the camera name to the y-axis of the left-most subplot
-    ax_row[0].set_ylabel(camera.device.name)
+    ax_row[0].set_ylabel(camera.name)
 
     # Generate expected filenames for all combinations of folder and gamma
     gamma_fixed_filenames = [folder/f"sRGB_comparison_gamma{gamma}.npy" for gamma in gammas_all]

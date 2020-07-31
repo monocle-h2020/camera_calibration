@@ -22,9 +22,9 @@ def demosaick(bayer_map, *data, **kwargs):
     return data_RGBG
 
 
-def pull_apart(raw_img, color_pattern, color_desc=b"RGBG"):
-    if color_desc != b"RGBG":
-        raise ValueError(f"Image is of type {raw_img.color_desc} instead of RGBG")
+def pull_apart(raw_img, color_pattern, color_desc="RGBG"):
+    if color_desc not in ("RGBG", b"RGBG"):
+        raise ValueError(f"Unknown colour description `{color_desc}")
     offsets = np.array([_find_offset(color_pattern, i) for i in range(4)])
     offX, offY = offsets.T
     R, G, B, G2 = [raw_img[x::2, y::2] for x, y in zip(offX, offY)]

@@ -2,8 +2,8 @@
 Create a look-up table for the ISO-gain normalisation function of a camera,
 using mean images of the same scene taken at various ISO speeds.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
+A camera settings file containing the minimum and maximum ISO speeds is
+necessary for this script to work.
 
 Command line arguments:
     * `folder`: folder containing NPY stacks of identical exposures taken at
@@ -12,18 +12,21 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, iso, calibrate
+from spectacle import io, iso
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to_data = root/"intermediaries/iso_normalisation/iso_data.npy"
-save_to_model = root/"calibration/iso_normalisation_model.csv"
-save_to_lookup_table = root/"calibration/iso_normalisation_lookup_table.csv"
 
-# Get metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+assert hasattr(camera, "settings"), f"A settings file could not be loaded for the following Camera object:\n{camera}"
+
+# Save location based on camera name
+save_to_model = camera.filename_calibration("iso_normalisation_model.csv")
+save_to_lookup_table = camera.filename_calibration("iso_normalisation_lookup_table.csv")
+save_to_data = camera.filename_intermediaries("iso_normalisation/iso_data.npy", makefolders=True)
 
 # Load the mean and standard deviation stacks for each ISO value
 isos, means = io.load_means(folder, retrieve_value=io.split_iso)
@@ -31,7 +34,7 @@ isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 print("Loaded data")
 
 # Bias correction
-means = calibrate.correct_bias(root, means)
+means = camera.correct_bias(means)
 
 # Get relative errors to use as weights in the fit
 relative_errors = stds / means

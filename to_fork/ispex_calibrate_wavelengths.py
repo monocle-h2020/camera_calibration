@@ -15,22 +15,26 @@ will be fixed with the general overhaul for iSPEX 2.
 
 import numpy as np
 from sys import argv
-from spectacle import general, io, plot, wavelength, raw, raw2, calibrate, flat
+from spectacle import general, io, plot, wavelength, raw, raw2, flat
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_to = root/"intermediaries/spectral_response/ispex_wavelength_solution.npy"
 
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
 # Load the data
 img = io.load_raw_file(file)
 print("Loaded data")
 
 # Bias correction
-values = calibrate.correct_bias(root, img.raw_image)
+values = camera.correct_bias(img.raw_image)
 
 # Flat-field correction (includes clipping data)
-values = calibrate.correct_flatfield(root, values)
+values = camera.correct_flatfield(values)
 
 # Clip the Bayer map to be the same shape
 bayer_map = flat.clip_data(img.raw_colors)

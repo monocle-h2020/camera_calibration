@@ -17,13 +17,12 @@ root = io.find_root_folder(folder)
 calibration = root/"calibration/"
 analysis = root/"analysis/"
 
-# Load metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Create results folder
-identifier = f"{camera.device.manufacturer}-{camera.device.name}"
-identifier = identifier.replace(" ", "_")
+identifier = camera.name_underscore
 save_folder = io.results_folder/"spectacle"/identifier
 
 makedirs(save_folder, exist_ok=True)  # create folder if it does not yet exist
@@ -33,8 +32,8 @@ print(f"Found/Created save folder '{save_folder}'")
 
 generic_header = f"\
 SPECTACLE data sheet. More information can be found in our paper (https://doi.org/10.1364/OE.27.019075) and on our website (http://spectacle.ddq.nl/). \n\
-Camera manufacturer: {camera.device.manufacturer}\n\
-Camera device: {camera.device.name}\n"
+Camera manufacturer: {camera.manufacturer}\n\
+Camera device: {camera.name}\n"
 
 # Linearity
 

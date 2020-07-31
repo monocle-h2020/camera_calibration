@@ -23,8 +23,9 @@ files = io.path_from_input(argv)
 roots = [io.find_root_folder(file) for file in files]
 save_folder = io.results_folder
 
-# Get metadata
-cameras = [io.load_metadata(root) for root in roots]
+# Load Camera objects
+cameras = [io.load_camera(root) for root in roots]
+print(f"Loaded Camera objects: {cameras}")
 
 # Find the ISO speed for each gain map, to include in the plot titles
 isos = [io.split_iso(file) for file in files]
@@ -57,7 +58,7 @@ for j, c in enumerate(plot.rgbg2):
         # Plot parameters
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.set_title(f"{camera.device.name} (ISO {iso})")
+        ax.set_title(f"{camera.name} (ISO {iso})")
 
         # Include a colorbar
         # Left-most map has a colorbar on the left
@@ -73,7 +74,7 @@ for j, c in enumerate(plot.rgbg2):
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
-        print(f"{camera.device.name:<10}: ISO {iso:>4}")
+        print(f"{camera.name:<10}: ISO {iso:>4}")
         print(f"{c_label:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
@@ -108,7 +109,7 @@ for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays
             ax.tick_params(right=True, labelright=True)
 
     # Add a title to the top plot in each column
-    ax_arr[0].set_title(f"{camera.device.name} (ISO {iso})")
+    ax_arr[0].set_title(f"{camera.name} (ISO {iso})")
 
     # Add a label to the x-axis of the bottom plot in each column
     ax_arr[-1].set_xlabel("Gain (ADU/e$^-$)")

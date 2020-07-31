@@ -1,15 +1,18 @@
 import numpy as np
 from sys import argv
-from spectacle import io, calibrate, plot
+from spectacle import io
 from matplotlib import pyplot as plt
 
 folder, wvl = io.path_from_input(argv)
 wvl = wvl.stem
 root = io.find_root_folder(folder)
-camera = io.load_metadata(root)
+
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 m = np.load(folder/f"{wvl}_mean.npy")
-m = calibrate.correct_bias(root, m)
+m = camera.correct_bias(m)
 s = np.load(folder/f"{wvl}_stds.npy")
 
 s[s < 0.001] = -1  # prevent infinities

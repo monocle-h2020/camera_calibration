@@ -30,9 +30,24 @@ else:
 
 root = io.find_root_folder(folder)
 
-# Get the camera metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save location based on camera name
+save_to_SRF = camera.filename_calibration("spectral_response.csv")
+save_to_bands = camera.filename_calibration("spectral_bands.csv")
+
+# Save locations for intermediaries
+savefolder = camera.filename_intermediaries("spectral_response", makefolders=True)
+save_to_wavelengths = savefolder/"monochromator_wavelengths.npy"
+save_to_means = savefolder/"monochromator_raw_means.npy"
+save_to_stds = savefolder/"monochromator_raw_stds.npy"
+save_to_means_calibrated = savefolder/"monochromator_calibrated_means.npy"
+save_to_stds_calibrated = savefolder/"monochromator_calibrated_stds.npy"
+save_to_means_normalised = savefolder/"monochromator_normalised_means.npy"
+save_to_stds_normalised = savefolder/"monochromator_normalised_stds.npy"
+save_to_final_curve = savefolder/"monochromator_curve.npy"
 
 # Get the subfolders in the given data folder
 folders = io.find_subfolders(folder)
@@ -63,10 +78,10 @@ for i, spec in enumerate(spectra):
     all_stds[i][min_in_all:max_in_all+1] = spec[:,5:]
 
 # Save the raw curves to file
-np.save(root/"intermediaries/spectral_response/monochromator_wavelengths.npy", all_wvl)
-np.save(root/"intermediaries/spectral_response/monochromator_raw_means.npy", all_means)
-np.save(root/"intermediaries/spectral_response/monochromator_raw_stds.npy", all_stds)
-print(f"Saved raw curves to '{root/'intermediaries/spectral_response/'}'")
+np.save(save_to_wavelengths, all_wvl)
+np.save(save_to_means, all_means)
+np.save(save_to_stds, all_stds)
+print(f"Saved raw curves to {savefolder}")
 
 # Calibrate the data
 # First, create a copy of the array to put the calibrated data into
@@ -93,9 +108,9 @@ for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     all_stds_calibrated[i] = calibrated_std
 
 # Save the calibrated curves to file
-np.save(root/"intermediaries/spectral_response/monochromator_calibrated_means.npy", all_means_calibrated)
-np.save(root/"intermediaries/spectral_response/monochromator_calibrated_stds.npy", all_stds_calibrated)
-print(f"Saved calibrated curves to '{root/'intermediaries/spectral_response/'}'")
+np.save(save_to_means_calibrated, all_means_calibrated)
+np.save(save_to_stds_calibrated, all_stds_calibrated)
+print(f"Saved calibrated curves to {savefolder}")
 
 # Normalise the calibrated data
 # Create a copy of the array to put the normalised data into
@@ -150,9 +165,9 @@ for i in normalise_order:
     all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
 
 # Save the normalised curves to file
-np.save(root/"intermediaries/spectral_response/monochromator_normalised_means.npy", all_means_normalised)
-np.save(root/"intermediaries/spectral_response/monochromator_normalised_stds.npy", all_stds_normalised)
-print(f"Saved normalised curves to '{root/'intermediaries/spectral_response/'}'")
+np.save(save_to_means_normalised, all_means_normalised)
+np.save(save_to_stds_normalised, all_stds_normalised)
+print(f"Saved normalised curves to {savefolder}")
 
 # Combine the spectra into one
 # Calculate the signal-to-noise ratio (SNR) at each wavelength in each spectrum
@@ -179,16 +194,15 @@ errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
 
 # Combine the result into one big array and save it
 result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
-np.save(root/"intermediaries/spectral_response/monochromator_curve.npy", result)
-print(f"Saved final curves to '{root/'intermediaries/spectral_response/'}'")
+np.save(save_to_final_curve, result)
+print(f"Saved final curves to {savefolder}")
 
-save_to = root/"calibration/spectral_response.csv"
-np.savetxt(save_to, result.T, delimiter=",", header="Wavelength, R, G, B, G2, R_err, G_err, B_err, G2_err")
-print(f"Saved spectral response curves to '{save_to}'")
+np.savetxt(save_to_SRF, result.T, delimiter=",", header="Wavelength, R, G, B, G2, R_err, G_err, B_err, G2_err")
+print(f"Saved spectral response curves to '{save_to_SRF}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
 bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
-np.savetxt(root/"calibration/spectral_bandwidths.csv", bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
+np.savetxt(save_to_bands, bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
 for band, width in zip(plot.RGBG2, bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")

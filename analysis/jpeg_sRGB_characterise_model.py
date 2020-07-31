@@ -15,7 +15,14 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-save_to = root/"analysis/jpeg/sRGB_model_histogram.pdf"
+
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("jpeg", makefolders=True)
+save_to_histogram = savefolder/"sRGB_model_histogram.pdf"
 
 # Load the data
 normalisations, gammas, R2s = np.load(file)
@@ -55,6 +62,6 @@ for ax, result, label in zip(axs, [normalisations, gammas, R2s], labels):
 axs[0].set_ylabel("Counts")
 
 # Save the figure to file
-plt.savefig(save_to)
+plt.savefig(save_to_histogram)
 plt.close()
-print(f"Saved figure to '{save_to}'")
+print(f"Saved figure to '{save_to_histogram}'")

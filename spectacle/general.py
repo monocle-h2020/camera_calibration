@@ -165,3 +165,22 @@ def apply_to_multiple_args(func, data, *args, **kwargs):
 
 def deprecation(message):
     warnings.warn(message, DeprecationWarning, stacklevel=2)
+
+
+def find_matching_file(folder, filename):
+    """
+    In a given `folder`, find files that end with the `filename`,
+    e.g. iPhone_SE_bias.npy for filename="bias.npy".
+    """
+    pattern = f"*{filename}"
+
+    # Find all files in `folder` that match the pattern "*{filename}"
+    all_files = list(folder.glob(pattern))
+
+    # Check the length of the list and raise an error if it is not 1.
+    if len(all_files) == 0:
+        raise FileNotFoundError(f"No files matching the pattern `{pattern}` found in `{folder}`")
+    elif len(all_files) > 1:
+        raise OSError(f"Multiple ({len(all_files)}) files matching the pattern `{pattern}` found in `{folder}`")
+
+    return all_files[0]

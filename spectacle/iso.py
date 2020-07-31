@@ -6,6 +6,7 @@ look-up tables.
 import numpy as np
 from scipy.optimize import curve_fit
 from .general import Rsquare, return_with_filename, apply_to_multiple_args
+from . import io
 
 
 def generate_linear_model(slope, offset):
@@ -102,7 +103,7 @@ def _normalise_iso_multiple(data_element, isos, lookup_table):
     `data_element` and `isos` are assumed to have the same length, i.e. each element
     of `data_element` has one associated ISO speed in `isos`.
     """
-    assert len(data_element) == len(isos), f"data_element ({len(data_elements)}) and isos ({len(isos)}) have different lengths."
+    assert len(data_element) == len(isos), f"data_element ({len(data_element)}) and isos ({len(isos)}) have different lengths."
     as_list = [_normalise_iso_single(data_subelement, ISO, lookup_table) for data_subelement, ISO in zip(data_element, isos)]
     as_array = np.array(as_list)
     return as_array
@@ -129,7 +130,7 @@ def load_iso_lookup_table(root, return_filename=False):
     If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
-    filename = root/"calibration/iso_normalisation_lookup_table.csv"
+    filename = io.find_matching_file(root/"calibration", "iso_normalisation_lookup_table.csv")
     table = np.loadtxt(filename, delimiter=",").T
     return return_with_filename(table, filename, return_filename)
 
@@ -145,7 +146,7 @@ def load_iso_model(root, return_filename=False):
 
     To do: include in ISO model object
     """
-    filename = root/"calibration/iso_normalisation_model.csv"
+    filename = io.find_matching_file(root/"calibration", "iso_normalisation_model.csv")
     as_array = np.loadtxt(filename, dtype=str, delimiter=",")
 
     model_type = as_array[0]
@@ -197,3 +198,15 @@ def load_iso_data(root, return_filename=False):
     data = np.load(filename)
     return return_with_filename(data, filename, return_filename)
 
+
+def get_max_iso(camera, default=2000):
+    """
+    Get the maximum ISO value for a Camera object. If unavailable,
+    return `default` instead.
+    """
+    try:
+        isomax = camera.settings.ISO_max * 1.05
+    except AttributeError:
+        isomax = default
+
+    return isomax
