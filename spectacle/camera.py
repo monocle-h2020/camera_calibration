@@ -1,5 +1,7 @@
 """
-Code relating to camera metadata, such as generating or reading metadata files.
+Code relating to Camera objects, which store camera information such the name,
+manufacturer, and RGBG pattern of the camera.
+The Camera object also provides an easy interface for data calibration/correction.
 """
 
 import numpy as np
