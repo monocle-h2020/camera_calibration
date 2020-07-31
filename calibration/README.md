@@ -94,7 +94,7 @@ In either case, the spectral response curves are saved, in CSV format, to `root/
 The `spectacle` method `spectacle.calibrate.correct_spectral_response` may then be used to correct spectral data (e.g. from iSPEX) by dividing out the spectral response of the camera.
 Further calibration methods, for example to convert simple RGB images to the CIE XYZ colour space, are currently in development on the [xyz branch](https://github.com/monocle-h2020/camera_calibration/tree/xyz).
 
-The effective spectral bandwidths are saved to `root/calibration/spectral_bandwidths.csv` and may be loaded with the `spectacle` method `spectacle.calibrate.load_spectral_bandwidths`.
+The effective spectral bandwidths are saved to `root/calibration/spectral_bands.csv` and may be loaded with the `spectacle` method `spectacle.calibrate.load_spectral_bands`.
 
 ### Monochromator
 

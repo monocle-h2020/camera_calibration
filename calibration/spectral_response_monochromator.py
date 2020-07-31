@@ -36,7 +36,7 @@ print(f"Loaded Camera object: {camera}")
 
 # Save location based on camera name
 save_to_SRF = camera.filename_calibration("spectral_response.csv")
-save_to_bands = camera.filename_calibration("spectral_bandwiths.csv")
+save_to_bands = camera.filename_calibration("spectral_bands.csv")
 
 # Save locations for intermediaries
 savefolder = camera.filename_intermediaries("spectral_response", makefolders=True)
