@@ -158,7 +158,7 @@ def load_spectral_bands(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
-    filename = root/"calibration/spectral_bands.csv"
+    filename = io.find_matching_file(root/"calibration", "spectral_bands.csv")
     spectral_bands = np.loadtxt(filename, delimiter=", ").T
 
     return return_with_filename(spectral_bands, filename, return_filename)

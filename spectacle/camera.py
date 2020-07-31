@@ -110,7 +110,7 @@ class Camera(object):
     property_list = ["name", "manufacturer", "name_internal", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
-    calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response"]
+    calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response", "spectral_bands"]
 
     def __init__(self, name, manufacturer, name_internal, image_shape, raw_extension, bias, bayer_pattern, bit_depth, colour_description="RGBG", root=None):
         """
@@ -340,11 +340,28 @@ class Camera(object):
         # Else, save the None object to warn the user
         self.spectral_response = spectral_response
 
+    def load_spectral_bands(self):
+        """
+        Load spectral bands from the root folder.
+        """
+        # Try to load from file
+        try:
+            spectral_bands = spectral.load_spectral_bands(self.root)
+
+        # If spectra lbands cannot be found, do not use any, and warn the user
+        except (FileNotFoundError, OSError, TypeError):
+            spectral_bands = None
+            print(f"No spectral band data found for {self.name}.")
+
+        # If spectral bands were found, save it to this object so it need not be looked up again
+        # Else, save the None object to warn the user
+        self.spectral_bands = spectral_bands
+
     def load_all_calibrations(self):
         """
         Load all available calibration data for this camera.
         """
-        for func in [self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response]:
+        for func in [self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response, self.load_spectral_bands]:
             func()
 
     def check_calibration_data(self):
