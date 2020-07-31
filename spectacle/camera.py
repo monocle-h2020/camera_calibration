@@ -281,7 +281,11 @@ class Camera(object):
 
         # If a lookup table cannot be found, assume a linear relation and warn the user
         except (FileNotFoundError, OSError, TypeError):
-            iso_range = self._generate_ISO_range()
+            try:
+                iso_range = self._generate_ISO_range()
+            except AttributeError:
+                iso_range = np.arange(0, 2000, 1)
+                print("No Settings file loaded, so did not know native ISO range. Using 0-2000 instead.")
             normalisation = iso_range / self.settings.ISO_min
             lookup_table = np.stack([iso_range, normalisation])
             print(f"No ISO lookup table found for {self.name}. Using naive estimate (ISO / min ISO). This may not be accurate.")
