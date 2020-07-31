@@ -159,7 +159,7 @@ def apply_to_multiple_args(func, data, *args, **kwargs):
     return results
 
 
-def find_files(folder, filename):
+def find_matching_file(folder, filename):
     """
     In a given `folder`, find files that end with the `filename`,
     e.g. iPhone_SE_bias.npy for filename="bias.npy".

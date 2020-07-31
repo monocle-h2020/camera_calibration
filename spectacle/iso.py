@@ -130,7 +130,7 @@ def load_iso_lookup_table(root, return_filename=False):
     If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
-    filename = io.find_files(root/"calibration", "iso_normalisation_lookup_table.csv")
+    filename = io.find_matching_file(root/"calibration", "iso_normalisation_lookup_table.csv")
     table = np.loadtxt(filename, delimiter=",").T
     return return_with_filename(table, filename, return_filename)
 
@@ -146,7 +146,7 @@ def load_iso_model(root, return_filename=False):
 
     To do: include in ISO model object
     """
-    filename = io.find_files(root/"calibration", "iso_normalisation_model.csv")
+    filename = io.find_matching_file(root/"calibration", "iso_normalisation_model.csv")
     as_array = np.loadtxt(filename, dtype=str, delimiter=",")
 
     model_type = as_array[0]

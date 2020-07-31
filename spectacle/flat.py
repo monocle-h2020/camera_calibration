@@ -109,7 +109,7 @@ def load_flatfield_correction(root, shape, return_filename=False):
     Load the flat-field correction model, the parameters of which are contained
     in `root`/calibration/flatfield_parameters.csv
     """
-    filename = io.find_files(root/"calibration", "flatfield_parameters.csv")
+    filename = io.find_matching_file(root/"calibration", "flatfield_parameters.csv")
     data = np.loadtxt(filename, delimiter=",")
     parameters, errors = data[:7], data[7:]
     correction_map = apply_vignette_radial(shape, parameters)

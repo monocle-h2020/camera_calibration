@@ -11,7 +11,7 @@ from pathlib import Path
 from os import makedirs
 
 from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
-from .general import return_with_filename, find_files
+from .general import return_with_filename, find_matching_file
 
 
 def find_root_folder(input_path):
@@ -25,7 +25,7 @@ def find_root_folder(input_path):
     for parent in [input_path, *input_path.parents]:
         # If a metadata file is found, use the containing folder as the root folder
         try:
-            json_file = find_files(parent, "data.json")
+            json_file = find_matching_file(parent, "data.json")
         except AssertionError:
             continue
         else:
@@ -147,7 +147,7 @@ class Camera(object):
         """
         Load a settings file
         """
-        filename = find_files(self.root/"calibration", "settings.json")
+        filename = find_matching_file(self.root/"calibration", "settings.json")
         settings = load_json(filename)
 
         # Convert the input exposures to floating point numbers
@@ -562,6 +562,6 @@ def load_camera(root, return_filename=False):
         root = find_root_folder(root)
         print(f"load_metadata was given a file (`{root_original}`) instead of a folder. Found a correct root folder to use instead: `{root}`")
 
-    filename = find_files(root, "data.json")
+    filename = find_matching_file(root, "data.json")
     metadata = Camera.read_from_file(filename)
     return return_with_filename(metadata, filename, return_filename)

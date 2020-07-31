@@ -12,7 +12,7 @@ def load_gain_map(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
-    filename = io.find_files(root/"calibration", "gain.npy")
+    filename = io.find_matching_file(root/"calibration", "gain.npy")
     gain_map = np.load(filename)
     return return_with_filename(gain_map, filename, return_filename)
 

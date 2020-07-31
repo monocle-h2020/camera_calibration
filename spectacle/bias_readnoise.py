@@ -13,7 +13,7 @@ def load_bias_map(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
-    filename = io.find_files(root/"calibration", "bias.npy")
+    filename = io.find_matching_file(root/"calibration", "bias.npy")
     bias_map = np.load(filename)
     return return_with_filename(bias_map, filename, return_filename)
 
@@ -36,7 +36,7 @@ def load_readnoise_map(root, return_filename=False):
 
     If `return_filename` is True, also return the exact filename used.
     """
-    filename = io.find_files(root/"calibration", "readnoise.npy")
+    filename = io.find_matching_file(root/"calibration", "readnoise.npy")
     readnoise_map = np.load(filename)
     return return_with_filename(readnoise_map, filename, return_filename)
 
