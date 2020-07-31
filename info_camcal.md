@@ -12,7 +12,7 @@ This branch represents a major update where calibration methods are integrated i
 - [x] Add basic file loading functions
 - [x] Add basic functions from spectacle.general
 - [x] Flatten Camera object by integrating Device and Image properties
-- [ ] Prevent bugs with new Settings interface
+- [x] Prevent bugs with new Settings interface
 - [x] Add human-readable Camera names
 - [x] Use human-readable Camera names in scripts
 - [x] Include Camera name in camera.json and calibration files
