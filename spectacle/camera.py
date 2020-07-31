@@ -110,7 +110,7 @@ class Camera(object):
     property_list = ["name", "manufacturer", "name_internal", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
-    calibration_data_all = ["bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response", "spectral_bands"]
+    calibration_data_all = ["settings", "bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response", "spectral_bands"]
 
     def __init__(self, name, manufacturer, name_internal, image_shape, raw_extension, bias, bayer_pattern, bit_depth, colour_description="RGBG", root=None):
         """
@@ -142,20 +142,6 @@ class Camera(object):
             self.load_settings()
         except FileNotFoundError:
             pass
-
-    def load_settings(self):
-        """
-        Load a settings file
-        """
-        filename = find_matching_file(self.root/"calibration", "settings.json")
-        settings = load_json(filename)
-
-        # Convert the input exposures to floating point numbers
-        settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
-        settings["exposure_max"] = _convert_exposure_time(settings["exposure_max"])
-
-        # Add settings to the camera
-        self.settings = self.Settings(**settings)
 
     def __repr__(self):
         """
@@ -201,6 +187,20 @@ class Camera(object):
         bayer_map[1::2, 0::2] = self.bayer_pattern[1][0]
         bayer_map[1::2, 1::2] = self.bayer_pattern[1][1]
         return bayer_map
+
+    def load_settings(self):
+        """
+        Load a settings file
+        """
+        filename = find_matching_file(self.root/"calibration", "settings.json")
+        settings = load_json(filename)
+
+        # Convert the input exposures to floating point numbers
+        settings["exposure_min"] = _convert_exposure_time(settings["exposure_min"])
+        settings["exposure_max"] = _convert_exposure_time(settings["exposure_max"])
+
+        # Add settings to the camera
+        self.settings = self.Settings(**settings)
 
     def generate_bias_map(self):
         """
@@ -361,7 +361,7 @@ class Camera(object):
         """
         Load all available calibration data for this camera.
         """
-        for func in [self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response, self.load_spectral_bands]:
+        for func in [self.load_settings, self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response, self.load_spectral_bands]:
             func()
 
     def check_calibration_data(self):
