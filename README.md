@@ -44,9 +44,9 @@ The Camera object will automatically load the required calibration data from the
 
 Using the example of the iPhone SE, one might run the following piece of code:
 ```python3
-from spectacle import load_metadata, io
+from spectacle import load_camera, io
 
-camera = load_metadata("/home/spectacle_data/iPhone_SE/")
+camera = load_camera("/home/spectacle_data/iPhone_SE/")
 raw_data = io.load_raw_image("/home/img_0001.dng")
 
 data_corrected = camera.correct_bias(raw_data)
