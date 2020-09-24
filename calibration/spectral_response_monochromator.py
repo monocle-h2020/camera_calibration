@@ -37,6 +37,7 @@ print(f"Loaded Camera object: {camera}")
 # Save location based on camera name
 save_to_SRF = camera.filename_calibration("spectral_response.csv")
 save_to_bands = camera.filename_calibration("spectral_bands.csv")
+save_to_XYZ_matrix = camera.filename_calibration("RGB_to_XYZ_matrix.csv")
 
 # Save locations for intermediaries
 savefolder = camera.filename_intermediaries("spectral_response", makefolders=True)
@@ -206,3 +207,14 @@ np.savetxt(save_to_bands, bandwidths[:,np.newaxis].T, delimiter=", ", header="R,
 print("Effective spectral bandwidths:")
 for band, width in zip(plot.RGBG2, bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")
+
+# Calculate the RGB-to-XYZ matrix
+M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(all_wvl, response_normalised)
+
+# Save the conversion matrix
+header = f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).\n\
+[X_R  X_G  X_B]\n\
+[Y_R  Y_G  Y_B]\n\
+[Z_R  Z_G  Z_B]"
+np.savetxt(save_to_XYZ_matrix, M_RGB_to_XYZ, header=header, fmt="%1.6f", delimiter=", ")
+print(f"Saved XYZ conversion matrix to `{save_to_XYZ_matrix}`.")
