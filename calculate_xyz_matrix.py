@@ -68,11 +68,12 @@ normalisation_vector = np.linalg.inv(SRF_xyz) @ white_E
 normalisation_matrix = np.identity(3) * normalisation_vector
 M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
 
-# Plot the colour gamut
+# Determine the base vectors and their chromaticities
 base_vectors = np.hsplit(M_RGB_to_XYZ, 3)
 base_xyz = [vector / vector.sum() for vector in base_vectors]
 base_xy = [vector[:2].T[0] for vector in base_xyz]
 
+# Plot the colour gamut
 colorio._tools.plot_flat_gamut()
 triangle = plt.Polygon(base_xy, fill=False, linestyle="--", label=camera.name)
 plt.gca().add_patch(triangle)
