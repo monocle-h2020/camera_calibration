@@ -46,5 +46,5 @@ header = f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equa
 [X_R  X_G  X_B]\n\
 [Y_R  Y_G  Y_B]\n\
 [Z_R  Z_G  Z_B]"
-np.savetxt(savefile, M_RGB_to_XYZ, header=header, fmt="%1.6f")
+np.savetxt(savefile, M_RGB_to_XYZ, header=header, fmt="%1.6f", delimiter=", ")
 print(f"Saved XYZ conversion matrix to `{savefile}`.")
