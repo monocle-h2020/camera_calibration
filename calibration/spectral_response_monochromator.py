@@ -209,7 +209,7 @@ for band, width in zip(plot.RGBG2, bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")
 
 # Calculate the RGB-to-XYZ matrix
-M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(all_wvl, response_normalised)
+M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(all_wvl, response_normalised.T)
 
 # Save the conversion matrix
 header = f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).\n\
