@@ -28,7 +28,7 @@ SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response
 kwargs = {"lw": 3}
 colours = ["#d95f02", "#1b9e77", "#7570b3"]
 fig, axs = plt.subplots(nrows=2, figsize=(4,3), sharex=True)
-for c, letter, colour in zip([xyz.x, xyz.y, xyz.z], "xyz", colours):
+for c, letter, colour in zip(xyz.xyz, "xyz", colours):
     axs[0].plot(xyz.wavelengths, c, c=colour, label=f"$\\bar {letter}$", **kwargs)
 axs[0].set_ylabel("XYZ Response")
 axs[0].legend(loc="upper left", bbox_to_anchor=(1,1))
@@ -45,3 +45,8 @@ axs[1].legend(loc="upper left", bbox_to_anchor=(1,1))
 plt.show()
 plt.close()
 
+# Interpolate the SRFs
+SRF_RGB_interpolated = spectral.interpolate_spectral_data(SRF_wavelengths, SRF_RGB, xyz.wavelengths)
+
+# Convolve the SRFs and XYZ curves
+SRF_XYZ_product = np.einsum()
