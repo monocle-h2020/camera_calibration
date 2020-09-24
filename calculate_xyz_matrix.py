@@ -49,4 +49,8 @@ plt.close()
 SRF_RGB_interpolated = spectral.interpolate_spectral_data(SRF_wavelengths, SRF_RGB, xyz.wavelengths)
 
 # Convolve the SRFs and XYZ curves
-SRF_XYZ_product = np.einsum()
+# Resulting matrix:
+# [X_R  X_G  X_B]
+# [Y_R  Y_G  Y_B]
+# [Z_R  Z_G  Z_B]
+SRF_XYZ_product = np.einsum("xw,rw->xr", xyz.xyz, SRF_RGB_interpolated) / len(xyz.wavelengths)
