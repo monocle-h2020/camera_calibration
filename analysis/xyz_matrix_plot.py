@@ -42,5 +42,9 @@ base_xy = spectral.calculate_xy_base_vectors(M_RGB_to_XYZ)
 spectral.plot_xy_on_gamut(base_xy, label=camera.name, saveto=savefolder_plot/"colour_space.pdf")
 
 # Save the conversion matrix
-np.savetxt(savefile, M_RGB_to_XYZ, header=f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).")
+header = f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).\n\
+[X_R  X_G  X_B]\n\
+[Y_R  Y_G  Y_B]\n\
+[Z_R  Z_G  Z_B]"
+np.savetxt(savefile, M_RGB_to_XYZ, header=header)
 print(f"Saved XYZ conversion matrix to `{savefile}`.")
