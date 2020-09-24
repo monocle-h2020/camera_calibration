@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 
 from . import io, plot
 from .general import return_with_filename, apply_to_multiple_args, deprecation
-from .xyz import wavelengths as cie_wavelengths, x as cie_x, y as cie_y, z as cie_z
+from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 
 
 wavelengths_interpolated = np.arange(390, 701, 1)
@@ -276,3 +276,22 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
         spectral_response_RGB = spectral_response.copy()
     else:  # RGBG2
         spectral_response_RGB = convert_RGBG2_to_RGB(spectral_response)
+
+    # Interpolate the spectral response to the CIE XYZ wavelengths
+    SRF_RGB_interpolated = interpolate_spectral_data(wavelengths, spectral_response_RGB, cie_wavelengths)
+
+    # Convolve the SRFs and XYZ curves
+    # Resulting matrix:
+    # [X_R  X_G  X_B]
+    # [Y_R  Y_G  Y_B]
+    # [Z_R  Z_G  Z_B]
+    SRF_XYZ_product = np.einsum("xw,rw->xr", cie_xyz, SRF_RGB_interpolated) / len(cie_wavelengths)
+
+    # Normalise by column
+    SRF_xyz = SRF_XYZ_product / SRF_XYZ_product.sum(axis=0)
+    white_E = np.array([1., 1., 1.])  # Equal-energy illuminant E
+    normalisation_vector = np.linalg.inv(SRF_xyz) @ white_E
+    normalisation_matrix = np.identity(3) * normalisation_vector
+    M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
+
+    return M_RGB_to_XYZ

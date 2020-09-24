@@ -12,7 +12,7 @@ Command line arguments:
 from sys import argv
 import numpy as np
 from matplotlib import pyplot as plt
-from spectacle import xyz, spectral, io
+from spectacle import spectral, io
 import colorio
 
 # Get the data folder from the command line
@@ -35,8 +35,8 @@ SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response
 kwargs = {"lw": 3}
 colours = ["#d95f02", "#1b9e77", "#7570b3"]
 fig, axs = plt.subplots(nrows=2, figsize=(4,3), sharex=True)
-for c, letter, colour in zip(xyz.xyz, "xyz", colours):
-    axs[0].plot(xyz.wavelengths, c, c=colour, label=f"$\\bar {letter}$", **kwargs)
+for c, letter, colour in zip(spectral.cie_xyz, "xyz", colours):
+    axs[0].plot(spectral.cie_wavelengths, c, c=colour, label=f"$\\bar {letter}$", **kwargs)
 axs[0].set_ylabel("XYZ Response")
 axs[0].legend(loc="upper left", bbox_to_anchor=(1,1))
 axs[0].set_xlim(390, 700)
@@ -52,22 +52,8 @@ axs[1].legend(loc="upper left", bbox_to_anchor=(1,1))
 plt.show()
 plt.close()
 
-# Interpolate the SRFs
-SRF_RGB_interpolated = spectral.interpolate_spectral_data(SRF_wavelengths, SRF_RGB, xyz.wavelengths)
-
-# Convolve the SRFs and XYZ curves
-# Resulting matrix:
-# [X_R  X_G  X_B]
-# [Y_R  Y_G  Y_B]
-# [Z_R  Z_G  Z_B]
-SRF_XYZ_product = np.einsum("xw,rw->xr", xyz.xyz, SRF_RGB_interpolated) / len(xyz.wavelengths)
-
-# Normalise by column
-SRF_xyz = SRF_XYZ_product / SRF_XYZ_product.sum(axis=0)
-white_E = np.array([1., 1., 1.])  # Equal-energy illuminant E
-normalisation_vector = np.linalg.inv(SRF_xyz) @ white_E
-normalisation_matrix = np.identity(3) * normalisation_vector
-M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
+# Calculate the RGB-to-XYZ matrix
+M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(SRF_wavelengths, SRF_RGB)
 
 # Determine the base vectors and their chromaticities
 base_vectors = np.hsplit(M_RGB_to_XYZ, 3)
