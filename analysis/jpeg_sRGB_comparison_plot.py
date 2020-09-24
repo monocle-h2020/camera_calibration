@@ -15,7 +15,10 @@ from matplotlib import pyplot as plt
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
-savefolder = root/"analysis/jpeg/"
+
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the data
 normalisations, Rsquares, RMSes, RMSes_relative = np.load(file)
@@ -25,6 +28,10 @@ print("Loaded data")
 # Find the associated gamma value from the filename
 gamma = float(io.split_path(file, "gamma"))
 print(f"Gamma = {gamma}")
+
+# Save locations
+savefolder = camera.filename_analysis("jpeg", makefolders=True)
+save_to_histogram = savefolder/f"sRGB_comparison_gamma{gamma}.pdf"
 
 # Labels for the plot
 labels = ["Normalisation", "$R^2$", "RMS diff. (DN)", "RMS diff. (%)"]
@@ -60,7 +67,6 @@ for ax, result, label in zip(axs, [normalisations, Rsquares, RMSes, RMSes_percen
 axs[0].set_ylabel("Counts")
 
 # Save the figure to file
-save_to = savefolder/f"sRGB_comparison_gamma{gamma}.pdf"
-plt.savefig(save_to)
+plt.savefig(save_to_histogram)
 plt.close()
-print(f"Saved figure to '{save_to}'")
+print(f"Saved figure to '{save_to_histogram}'")

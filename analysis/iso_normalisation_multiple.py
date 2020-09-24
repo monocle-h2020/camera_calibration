@@ -10,7 +10,7 @@ Command line arguments:
 
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, plot, iso
+from spectacle import io, iso
 
 # Get the data folders from the command line
 folders = io.path_from_input(argv)
@@ -20,20 +20,21 @@ save_to = io.results_folder/"iso_comparison.pdf"
 plt.figure(figsize=(4, 3), tight_layout=True)
 
 # Loop over each camera, load its data, and plot them in the figure
-for c, folder in zip(plot.line_colours, folders):
+for folder in folders:
     # Get the data folder for this camera
     root = io.find_root_folder(folder)
 
-    # Get metadata
-    camera = io.load_metadata(root)
+    # Load Camera object
+    camera = io.load_camera(root)
+    print(f"Loaded Camera object: {camera}")
 
     # Load the normalisation data and look-up table
     lookup_table = iso.load_iso_lookup_table(root)
     data = iso.load_iso_data(root)
 
     # Plot the normalisation data and look-up table
-    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", c=c, label=camera.device.name)
-    plt.plot(*lookup_table, c=c)
+    plt.errorbar(data[0], data[1], yerr=data[2], fmt=f"o", label=camera.name)
+    plt.plot(*lookup_table)
 
     print(camera)
 

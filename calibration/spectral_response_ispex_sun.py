@@ -31,12 +31,16 @@ will be fixed with the general overhaul for iSPEX 2.
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from spectacle import raw, plot, io, wavelength, calibrate
+from spectacle import raw, plot, io, wavelength
 from spectacle.general import blackbody, RMS, gauss1d, curve_fit
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
+
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
 
 # Load the SMARTS2 reference spectrum
 wvl, smartsz, smartsy, smartsx = np.loadtxt("reference_spectra/ispex.ext.txt", skiprows=1, unpack=True)
@@ -73,10 +77,10 @@ img  = io.load_raw_file(file)
 print("Loaded data")
 
 # Bias correction
-values = calibrate.correct_bias(root, img.raw_image.astype(np.float32))
+values = camera.correct_bias(img.raw_image.astype(np.float32))
 
-# Flat-field correction - note that this clips the image
-values = calibrate.correct_flatfield(root, values)
+# Flat-field correction
+values = camera.correct_flatfield(values)
 
 # Spectrum edges
 xmin, xmax = 1900, 3500
@@ -147,7 +151,7 @@ wvl = wvl[ind]
 def plot_spectral_response(wavelength, thin_spec, thick_spec, monochromator, title="", saveto=None, label_thin = "narrow_slit", label_thick="broad slit"):
     print(title)
     plt.figure(figsize=(7,3), tight_layout=True)
-    for j, c in enumerate("rgb"):
+    for j, c in enumerate(plot.rgb):
         plt.plot(monochromator[0], monochromator[1+j], c=c)
         plt.plot(wavelength, thin_spec [1+j], c=c, ls="--")
         plt.plot(wavelength, thick_spec[1+j], c=c, ls=":" )

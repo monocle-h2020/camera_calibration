@@ -26,8 +26,9 @@ r_raw_paths = [root/"intermediaries/linearity/linearity_raw.npy" for root in roo
 r_jpeg_paths = [root/"intermediaries/linearity/linearity_jpeg.npy" for root in roots]
 save_to = io.results_folder
 
-# Get metadata
-cameras = [io.load_metadata(root) for root in roots]
+# Load Camera objects
+cameras = [io.load_camera(root) for root in roots]
+print(f"Loaded Camera objects: {cameras}")
 
 def load_jpeg(path):
     """
@@ -62,7 +63,7 @@ for ax, raw_, jpeg_, camera in zip(axs, r_raw, r_jpeg, cameras):
             below_limit = np.where(jpeg_c < lower_limit)[0]
             print(f"JPEG {c} pixels with r < {lower_limit}: {len(below_limit):>3}")
             ax.hist(jpeg_c.ravel(), bins=bins, color=c, edgecolor="None", alpha=0.7)
-    ax.set_ylabel(camera.device.name)
+    ax.set_ylabel(camera.name)
     ax.axvline(lin.linearity_limit, c='k', ls="--")
     bad_pixels = np.where(raw < lin.linearity_limit)[0]
     print(f"RAW    pixels with r < {lin.linearity_limit}: {len(bad_pixels):>3}\n")

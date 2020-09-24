@@ -1,6 +1,8 @@
 from astropy.stats import sigma_clip
-
 import numpy as np
+from .general import deprecation
+
+deprecation("The spectacle.wavelength module will be moved to the ispex2 module, and will not be available in future releases.")
 
 fluorescent_lines = np.array([611.6, 544.45, 436.6])  # RGB, units: nm
 degree_of_spectral_line_fit = 2
@@ -15,16 +17,29 @@ def find_fluorescent_lines(RGB):
     peaks[peaks == 0] = np.nan
     return peaks
 
+def _sigma_clip_indices(x, low=3, high=3, nr_iterations=5):
+    median = np.median(x)
+    sigma = np.std(x)
+    indices = np.where((x >= median-low*sigma) & (x <= median+high*sigma))[0]
+    return indices
+
 def fit_fluorescent_lines(lines, y):
     lines_fit = lines.copy()
     for j in (0,1,2):  # fit separately for R, G, B
+        # Filter out non-finite and NaN elements
         idx = np.isfinite(lines[j])
         new_y = y[idx] ; new_line = lines[j][idx]
+
+        # Sigma-clip to filter out elements more than 3-sigma away from the mean
         clipped = sigma_clip(new_line)  # generates a masked array
         idx = ~clipped.mask  # get the non-masked items
         new_y = new_y[idx] ; new_line = new_line[idx]
-        # np.polyfit can go along axis - try this?
+
+        # Fit a polynomial to the line positions
+        # Note: np.polyfit can go along axis - try this?
         coeff = np.polyfit(new_y, new_line, degree_of_spectral_line_fit)
+
+        # Evaluate the fitted polynomial on all y positions
         lines_fit[j] = np.polyval(coeff, y)
     return lines_fit
 

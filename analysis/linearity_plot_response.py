@@ -14,13 +14,16 @@ from spectacle import io, plot, linearity as lin
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-savefolder = root/"analysis/linearity/"
 
-# Get metadata
-camera = io.load_metadata(root)
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("linearity", makefolders=True)
 
 # Find the indices of the central pixels
-array_size = np.array(camera.image.shape)
+array_size = np.array(camera.image_shape)
 mid1, mid2 = array_size // 2
 center = np.s_[mid1:mid1+2, mid2:mid2+2]
 

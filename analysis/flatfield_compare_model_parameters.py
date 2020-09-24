@@ -4,7 +4,7 @@ Compare two flat-field correction models.
 Command line arguments:
     * `file1`: the location of the file containing the first model parameters.
     * `file2`: the location of the file containing the second model parameters.
-    These flat-field models should be in NPY files generated using
+    These flat-field models should be in CSV files generated using
     ../calibration/flatfield.py
 
 To do:
@@ -20,8 +20,10 @@ file1, file2 = io.path_from_input(argv)
 root = io.find_root_folder(file1)
 
 # Load the data
-parameters1, errors1 = np.load(file1)
-parameters2, errors2 = np.load(file2)
+data1 = np.loadtxt(file1, delimiter=",")
+parameters1, errors1 = data1[:7], data1[7:]
+data2 = np.loadtxt(file2, delimiter=",")
+parameters2, errors2 = data2[:7], data2[7:]
 
 for param1, err1, param2, err2, label in zip(parameters1, errors1, parameters2, errors2, flat.parameter_labels):
     difference = param1 - param2

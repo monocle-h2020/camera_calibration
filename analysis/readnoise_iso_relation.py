@@ -11,21 +11,25 @@ Command line arguments:
 
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, analyse, calibrate
+from spectacle import io, analyse, iso
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to = root/"analysis/readnoise/readnoise_ISO_relation.pdf"
 
-# Get metadata
-camera = io.load_metadata(root)
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("readnoise", makefolders=True)
+save_to_plot = savefolder/"readnoise_ISO_relation.pdf"
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
 
 # Normalise the data using the ISO look-up table
-stds_normalised = calibrate.normalise_iso(root, isos, stds)
+stds_normalised = camera.normalise_iso(isos, stds)
 
 # Print statistics at each ISO
 stats = analyse.statistics(stds_normalised, prefix_column=isos, prefix_column_header="ISO")
@@ -35,13 +39,14 @@ print(stats)
 std_mean = stds_normalised.mean(axis=(1,2))
 std_std = stds_normalised.std(axis=(1,2))
 
+xmax = iso.get_max_iso(camera)
 plt.figure(figsize=(3,2), tight_layout=True)
 plt.errorbar(isos, std_mean, yerr=std_std, fmt="ko")
 plt.xlabel("ISO speed")
 plt.ylabel("Mean read noise\n(norm. ADU)")
-plt.xlim(0, 1.05*camera.settings.ISO_max)
+plt.xlim(0, xmax)
 plt.ylim(ymin=0)
 plt.grid(True, ls="--", alpha=0.3)
-plt.savefig(save_to)
+plt.savefig(save_to_plot)
 plt.close()
-print(f"Saved plot to '{save_to}'")
+print(f"Saved plot to '{save_to_plot}'")

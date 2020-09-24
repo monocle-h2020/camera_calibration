@@ -15,22 +15,26 @@ will be fixed with the general overhaul for iSPEX 2.
 
 import numpy as np
 from sys import argv
-from spectacle import general, io, plot, wavelength, raw2, calibrate, flat
+from spectacle import general, io, plot, wavelength, raw, raw2, flat
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
 root = io.find_root_folder(file)
 save_to = root/"intermediaries/spectral_response/ispex_wavelength_solution.npy"
 
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
 # Load the data
 img = io.load_raw_file(file)
 print("Loaded data")
 
 # Bias correction
-values = calibrate.correct_bias(root, img.raw_image)
+values = camera.correct_bias(img.raw_image)
 
 # Flat-field correction (includes clipping data)
-values = calibrate.correct_flatfield(root, values)
+values = camera.correct_flatfield(values)
 
 # Clip the Bayer map to be the same shape
 bayer_map = flat.clip_data(img.raw_colors)
@@ -71,17 +75,14 @@ wavelength_fits = wavelength.fit_many_wavelength_relations(y, lines_fit)
 # Fit a polynomial to the coefficients of the previous fit
 coefficients, coefficients_fit = wavelength.fit_wavelength_coefficients(y, wavelength_fits)
 
-# Plot the polynomial fits to the coefficients
-plot.wavelength_coefficients(y, wavelength_fits, coefficients_fit)
-
 # Save the coefficients to file
 wavelength.save_coefficients(coefficients, saveto=save_to)
 print(f"Saved wavelength coefficients to '{save_to}'")
 
 # Convert the input spectrum to wavelengths and plot it, as a sanity check
 wavelengths_cut = wavelength.calculate_wavelengths(coefficients, x, y)
-wavelengths_split,_ = raw2.pull_apart(wavelengths_cut, colors_cut)
-RGBG,_ = raw2.pull_apart(image_cut, colors_cut)
+wavelengths_split,_ = raw.pull_apart(wavelengths_cut, colors_cut)
+RGBG,_ = raw.pull_apart(image_cut, colors_cut)
 
 lambdarange, all_interpolated = wavelength.interpolate_multi(wavelengths_split, RGBG)
 

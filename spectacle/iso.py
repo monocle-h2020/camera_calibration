@@ -5,7 +5,8 @@ look-up tables.
 
 import numpy as np
 from scipy.optimize import curve_fit
-from .general import Rsquare
+from .general import Rsquare, return_with_filename, apply_to_multiple_args
+from . import io
 
 
 def generate_linear_model(slope, offset):
@@ -88,35 +89,35 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     return model_type, model, R2, parameters, errors
 
 
-def normalise_single_iso(data, iso, lookup_table):
+def _normalise_iso_single(data_element, iso, lookup_table):
     """
-    Normalise data at a single ISO speed using the look-up table.
+    Normalise one `data_element` for one `iso` value using the `lookup_table`
     """
-    normalisation_factor = lookup_table[1][iso]
-    new_data = data / normalisation_factor
-    return new_data
+    return data_element / lookup_table[1][iso]
 
 
-def normalise_multiple_iso(data, isos, lookup_table):
+def _normalise_iso_multiple(data_element, isos, lookup_table):
     """
-    Normalise data at multiple ISO speeds using the look-up table.
-    `data` and `isos` are assumed to have the same length, i.e. each element
-    of `data` has one associated ISO speed in `isos`.
+    Normalise one `data_element` for multiple iso speeds `isos`, each of which
+    corresponds to one element in `data_element`, using the `lookup_table`.
+    `data_element` and `isos` are assumed to have the same length, i.e. each element
+    of `data_element` has one associated ISO speed in `isos`.
     """
-    as_list = [normalise_single_iso(data_sub, ISO, lookup_table) for data_sub, ISO in zip(data, isos)]
+    assert len(data_element) == len(isos), f"data_element ({len(data_element)}) and isos ({len(isos)}) have different lengths."
+    as_list = [_normalise_iso_single(data_subelement, ISO, lookup_table) for data_subelement, ISO in zip(data_element, isos)]
     as_array = np.array(as_list)
     return as_array
 
 
-def normalise_iso_general(lookup_table, isos, data):
+def normalise_iso_general(lookup_table, isos, *data):
     """
     Normalise data for ISO speed in general. Uses either `normalise_single_iso`
     or `normalise_multiple_iso` based on the number of isos given.
     """
     if isinstance(isos, (int, float)):
-        data_normalised = normalise_single_iso  (data, isos, lookup_table)
+        data_normalised = apply_to_multiple_args(_normalise_iso_single, data, isos, lookup_table)
     else:
-        data_normalised = normalise_multiple_iso(data, isos, lookup_table)
+        data_normalised = apply_to_multiple_args(_normalise_iso_multiple, data, isos, lookup_table)
 
     return data_normalised
 
@@ -124,45 +125,88 @@ def normalise_iso_general(lookup_table, isos, data):
 def load_iso_lookup_table(root, return_filename=False):
     """
     Load the ISO normalization lookup table located at
-    `root`/calibration/iso_normalisation_lookup_table.npy
-    If `return_filename` is True, also return the exact filename the bias map
+    `root`/calibration/iso_normalisation_lookup_table.csv
+
+    If `return_filename` is True, also return the exact filename the table
     was retrieved from.
     """
-    filename = root/"calibration/iso_normalisation_lookup_table.npy"
-    table = np.load(filename)
-    if return_filename:
-        return table, filename
-    else:
-        return table
+    filename = io.find_matching_file(root/"calibration", "iso_normalisation_lookup_table.csv")
+    table = np.loadtxt(filename, delimiter=",").T
+    return return_with_filename(table, filename, return_filename)
+
+
 
 def load_iso_model(root, return_filename=False):
     """
     Load the ISO normalization function, the parameters of which are contained
-    in `root`/calibration/iso_normalisation_model.dat
-    If `return_filename` is True, also return the exact filename the bias map
+    in `root`/calibration/iso_normalisation_model.csv
+
+    If `return_filename` is True, also return the exact filename the model
     was retrieved from.
+
+    To do: include in ISO model object
     """
-    filename = root/"calibration/iso_normalisation_model.dat"
-    as_array = np.loadtxt(filename, dtype=str)
-    model_type = as_array[0,0]
-    parameters = as_array[1].astype(np.float64)
-    errors     = as_array[2].astype(np.float64)
-    model = model_generator[model_type](*parameters)
-    if return_filename:
-        return model, filename
+    filename = io.find_matching_file(root/"calibration", "iso_normalisation_model.csv")
+    as_array = np.loadtxt(filename, dtype=str, delimiter=",")
+
+    model_type = as_array[0]
+    if model_type == "Linear":
+        parameters = as_array[1:3]
+        errors = as_array[3:]
+    elif model_type == "Knee":
+        parameters = as_array[1:4]
+        errors = as_array[4:]
     else:
-        return model
+        raise ValueError(f"Unknown model type `{model_type}` in file `{filename}`.")
+
+    parameters = parameters.astype(np.float64)
+    errors     = errors.astype(np.float64)
+    model = model_generator[model_type](*parameters)
+
+    return return_with_filename(model, filename, return_filename)
+
+
+def save_iso_model(saveto, model_type, parameters, errors):
+    """
+    Save the parameters to the ISO normalisation function to `saveto`.
+
+    To do: include in ISO model object
+    """
+
+    model_array = np.array([model_type, *parameters, *errors])
+    model_array = model_array[:, np.newaxis].T
+
+    if model_type == "Linear":
+        header = "Model, a, b, a_err, b_err"
+    elif model_type == "Knee":
+        header = "Model, a, b, K, a_err, b_err, K_err"
+    else:
+        raise ValueError(f"Unknown model type `{model_type}`.")
+
+    np.savetxt(saveto, model_array, fmt="%s", delimiter=",", header=header)
+
 
 def load_iso_data(root, return_filename=False):
     """
     Load ISO normalisation data from
     `root`/intermediaries/iso_normalisation/iso_data.npy
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
+
+    If `return_filename` is True, also return the exact filename the data
+    were retrieved from.
     """
     filename = root/"intermediaries/iso_normalisation/iso_data.npy"
     data = np.load(filename)
-    if return_filename:
-        return data, filename
-    else:
-        return data
+    return return_with_filename(data, filename, return_filename)
+
+
+def get_max_iso(camera, default=2000):
+    """
+    Get the maximum ISO value for a Camera object. If unavailable,
+    return `default` instead.
+    """
+    try:
+        isomax = camera.settings.ISO_max * 1.05
+    except AttributeError:
+        isomax = default
+
+    return isomax

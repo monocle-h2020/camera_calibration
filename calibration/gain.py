@@ -2,9 +2,6 @@
 Create a gain map using gain images, fitting the mean and standard deviation
 against each other. Data for a single ISO speed are loaded and fitted.
 
-A bias correction is applied to the data. If available, a bias map is used for
-this; otherwise, a mean value from metadata.
-
 An ISO speed normalisation is applied to the data. This means this script
 requires an ISO speed look-up table to exist.
 
@@ -15,20 +12,22 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io, calibrate
+from spectacle import io
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to_normalised_map = root/"calibration/gain.npy"
 
-# Get the camera metadata
-camera = io.load_metadata(root)
-print("Loaded metadata")
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save location based on camera name
+save_to_normalised_map = camera.filename_calibration("gain.npy")
 
 # Get the ISO speed of these data from the folder name
 ISO = io.split_iso(folder)
-save_to_original_map = root/f"intermediaries/gain/gain_map_iso{ISO}.npy"
+save_to_original_map = camera.filename_intermediaries("gain/gain_map_iso{ISO}.npy", makefolders=True)
 
 # Load the data
 names, means = io.load_means(folder)
@@ -36,7 +35,7 @@ names, stds = io.load_stds(folder)
 print("Loaded data")
 
 # Bias correction
-means = calibrate.correct_bias(root, means)
+means = camera.correct_bias(means)
 
 # Use variance instead of standard deviation
 variance = stds**2
@@ -66,7 +65,7 @@ np.save(save_to_original_map, gain_map)
 print(f"Saved gain map to '{save_to_original_map}'")
 
 # Normalise the gain map to the minimum ISO value
-gain_map_normalised = calibrate.normalise_iso(root, ISO, gain_map)
+gain_map_normalised = camera.normalise_iso(ISO, gain_map)
 
 # Save the normalised gain map
 np.save(save_to_normalised_map, gain_map_normalised)

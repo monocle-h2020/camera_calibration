@@ -3,10 +3,11 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 """
 
 import numpy as np
-from .general import gaussMd, curve_fit, generate_XY
-from . import raw
+from .general import gaussMd, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
+from . import raw, io
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
+parameter_error_labels = ["k0_err", "k1_err", "k2_err", "k3_err", "k4_err", "cx_err", "cy_err"]
 
 _clip_border = np.s_[250:-250, 250:-250]
 
@@ -103,31 +104,17 @@ def apply_vignette_radial(shape, parameters):
     return correction
 
 
-def read_flat_field_correction(root, shape):
+def load_flatfield_correction(root, shape, return_filename=False):
     """
     Load the flat-field correction model, the parameters of which are contained
-    in `root`/calibration/flatfield_parameters.npy
+    in `root`/calibration/flatfield_parameters.csv
     """
-    filename = root/"calibration/flatfield_parameters.npy"
-    parameters, errors = np.load(filename)
+    filename = io.find_matching_file(root/"calibration", "flatfield_parameters.csv")
+    data = np.loadtxt(filename, delimiter=",")
+    parameters, errors = data[:7], data[7:]
     correction_map = apply_vignette_radial(shape, parameters)
-    return correction_map
 
-
-def load_flat_field_correction_map(root, return_filename=False):
-    """
-    Load the flat-field correction map contained in
-    `root`/calibration/flatfield_correction_modelled.npy
-
-    If `return_filename` is True, also return the exact filename the bias map
-    was retrieved from.
-    """
-    filename = root/"calibration/flatfield_correction_modelled.npy"
-    correction_map = np.load(filename)
-    if return_filename:
-        return correction_map, filename
-    else:
-        return correction_map
+    return return_with_filename(correction_map, filename, return_filename)
 
 
 def normalise_RGBG2(mean, stds, bayer_pattern):
@@ -158,19 +145,27 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     return mean_remosaicked, stds_remosaicked
 
 
-def correct_flatfield_from_map(flatfield, data, clip=False):
+def _correct_flatfield(data_element, flatfield, clip=False):
+    """
+    Correct a `data_element` for flatfield using a map `flatfield`
+
+    If `clip`, clip the data (make the outer borders NaN).
+    """
+    if clip:
+        data_to_correct = clip_data(data_element)
+    else:
+        data_to_correct = data_element
+
+    return data_to_correct * flatfield
+
+
+def correct_flatfield_from_map(flatfield, *data, clip=False):
     """
     Apply a flat-field correction from a flat-field map `flatfield` to an
     array `data`.
 
     If `clip`, clip the data (make the outer borders NaN).
     """
-    if clip:
-        data_to_correct = clip_data(data)
-    else:
-        data_to_correct = data
-
-    # Correct the data
-    data_corrected = data_to_correct * flatfield
+    data_corrected = apply_to_multiple_args(_correct_flatfield, data, flatfield, clip=clip)
 
     return data_corrected

@@ -12,10 +12,13 @@ from spectacle import io, analyse
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
 root = io.find_root_folder(folder)
-save_to = root/"analysis/readnoise"
 
-# Get metadata
-camera = io.load_metadata(root)
+# Load Camera object
+camera = io.load_camera(root)
+print(f"Loaded Camera object: {camera}")
+
+# Save locations
+savefolder = camera.filename_analysis("readnoise", makefolders=True)
 
 # Load the data
 isos, stds = io.load_stds(folder, retrieve_value=io.split_iso)
@@ -29,8 +32,8 @@ xmin, xmax = 0., analyse.symmetric_percentiles(stds)[1]
 
 # Loop over the data and make plots at each ISO value
 for ISO, std in zip(isos, stds):
-    save_to_histogram = save_to/f"readnoise_ADU_histogram_iso{ISO}.pdf"
-    save_to_maps = save_to/f"readnoise_ADU_map_iso{ISO}.pdf"
+    save_to_histogram = savefolder/f"readnoise_ADU_histogram_iso{ISO}.pdf"
+    save_to_maps = savefolder/f"readnoise_ADU_map_iso{ISO}.pdf"
 
     camera.plot_histogram_RGB(std, xmin=xmin, xmax=xmax, xlabel="Read noise (ADU)", saveto=save_to_histogram)
     camera.plot_gauss_maps(std, colorbar_label="Read noise (ADU)", saveto=save_to_maps)
