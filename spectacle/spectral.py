@@ -295,3 +295,14 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
 
     return M_RGB_to_XYZ
+
+
+def calculate_xy_base_vectors(XYZ_matrix):
+    """
+    Calculate the base vectors in xy chromaticity space for a given conversion matrix M.
+    """
+    xyz_matrix = XYZ_matrix / XYZ_matrix.sum(axis=0)  # Divide by X+Y+Z per column
+    base_vectors = np.hsplit(xyz_matrix, 3)
+    base_xy = [vector[:2].T[0] for vector in base_vectors]
+
+    return base_xy

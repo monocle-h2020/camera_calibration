@@ -56,9 +56,7 @@ plt.close()
 M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(SRF_wavelengths, SRF_RGB)
 
 # Determine the base vectors and their chromaticities
-base_vectors = np.hsplit(M_RGB_to_XYZ, 3)
-base_xyz = [vector / vector.sum() for vector in base_vectors]
-base_xy = [vector[:2].T[0] for vector in base_xyz]
+base_xy = spectral.calculate_xy_base_vectors(M_RGB_to_XYZ)
 
 # Plot the colour gamut
 colorio._tools.plot_flat_gamut()
