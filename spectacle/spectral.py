@@ -5,6 +5,10 @@ from . import io, plot
 from .general import return_with_filename, apply_to_multiple_args, deprecation
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 
+try:
+    from colorio._tools import plot_flat_gamut
+except ImportError:
+    print("Could not import colorio, using simple gamut plot.")
 
 wavelengths_interpolated = np.arange(390, 701, 1)
 
@@ -306,3 +310,55 @@ def calculate_xy_base_vectors(XYZ_matrix):
     base_xy = [vector[:2].T[0] for vector in base_vectors]
 
     return base_xy
+
+
+
+def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
+    """
+    Plot the xy base vectors of a colour space on the xy plane.
+    If possible, use colorio's function to plot the human eye and sRGB gamuts.
+    """
+    saveto = plot._convert_to_path(saveto)
+
+    try:
+        plot_flat_gamut()
+    except NameError:
+        plt.xlim(0, 0.8)
+        plt.ylim(0, 0.8)
+        plt.xlabel("x")
+        plt.ylabel("y")
+        sRGB_triangle = plt.Polygon([[0.64,0.33], [0.30, 0.60], [0.15, 0.06]], fill=True, linestyle="-", label="sRGB")
+        plt.gca().add_patch(sRGB_triangle)
+        plt.title(f"{label} colour space\ncompared to sRGB")
+    else:
+        plt.title(f"{label} colour space\ncompared to sRGB and human eye")
+
+    triangle = plt.Polygon(xy_base_vectors, fill=False, linestyle="--", label=label)
+    plt.gca().add_patch(triangle)
+    plt.legend(loc="upper right")
+
+    plot._saveshow(saveto, bbox_inches="tight")
+
+
+def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
+    """
+    Plot the xyz colour matching functions and given RGB responses.
+    """
+    kwargs = {"lw": 3}
+    colours = ["#d95f02", "#1b9e77", "#7570b3"]
+    fig, axs = plt.subplots(nrows=2, figsize=(4,3), sharex=True)
+    for c, letter, colour in zip(cie_xyz, "xyz", colours):
+        axs[0].plot(cie_wavelengths, c, c=colour, label=f"$\\bar {letter}$", **kwargs)
+    axs[0].set_ylabel("XYZ Response")
+    axs[0].legend(loc="upper left", bbox_to_anchor=(1,1))
+    axs[0].set_xlim(390, 700)
+    axs[0].set_ylim(ymin=0)
+
+    for c, letter, colour in zip(RGB_responses, "rgb", colours):
+        axs[1].plot(RGB_wavelengths, c, c=colour, label=f"${letter}$", **kwargs)
+    axs[1].set_xlabel("Wavelength [nm]")
+    axs[1].set_ylabel(f"{label}\nRGB response")
+    axs[1].set_ylim(ymin=0)
+    axs[1].legend(loc="upper left", bbox_to_anchor=(1,1))
+
+    plot._saveshow(saveto, bbox_inches="tight")

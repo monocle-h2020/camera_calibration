@@ -6,10 +6,6 @@ from . import raw
 from .wavelength import fluorescent_lines
 from .linearity import pearson_r_single
 from .general import symmetric_percentiles
-try:
-    from colorio._tools import plot_flat_gamut
-except ImportError:
-    print("Could not import colorio, using simple gamut plot.")
 
 
 # Colour maps for red/green/blue
@@ -240,7 +236,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
             i = colour_index
             label = colour
         else:
-            i = 1
+            i = 1,
             label = "g2"
         try:
             saveto = savefolder/f"linearity_response_RAW_JPEG_{label}.pdf"
@@ -276,24 +272,3 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
 
-
-def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
-    saveto = _convert_to_path(saveto)
-
-    try:
-        plot_flat_gamut()
-    except NameError:
-        plt.xlim(0, 0.8)
-        plt.ylim(0, 0.8)
-        plt.xlabel("x")
-        plt.ylabel("y")
-        sRGB_triangle = plt.Polygon([[0.64,0.33], [0.30, 0.60], [0.15, 0.06]], fill=True, linestyle="-", label="sRGB")
-        plt.gca().add_patch(sRGB_triangle)
-        plt.title(f"{label} colour space\ncompared to sRGB")
-    else:
-        plt.title(f"{label} colour space\ncompared to sRGB and human eye")
-
-    triangle = plt.Polygon(xy_base_vectors, fill=False, linestyle="--", label=label)
-    plt.gca().add_patch(triangle)
-    plt.legend(loc="upper right")
-    _saveshow(saveto, bbox_inches="tight")
