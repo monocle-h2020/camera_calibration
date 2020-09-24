@@ -3,6 +3,8 @@ Calculate the matrices for converting camera RGB colours to CIE XYZ
 coordinates. Both E (equal-energy) and D65 (daylight) illuminants will
 be supported.
 
+Following http://www.ryanjuckett.com/programming/rgb-color-space-conversion/
+
 Command line arguments:
     * `folder`: folder containing the Camera information file.
 """
@@ -58,7 +60,16 @@ SRF_RGB_interpolated = spectral.interpolate_spectral_data(SRF_wavelengths, SRF_R
 # [Y_R  Y_G  Y_B]
 # [Z_R  Z_G  Z_B]
 SRF_XYZ_product = np.einsum("xw,rw->xr", xyz.xyz, SRF_RGB_interpolated) / len(xyz.wavelengths)
-base_vectors = np.hsplit(SRF_XYZ_product, 3)
+
+# Normalise by column
+SRF_xyz = SRF_XYZ_product / SRF_XYZ_product.sum(axis=0)
+white_E = np.array([1., 1., 1.])  # Equal-energy illuminant E
+normalisation_vector = np.linalg.inv(SRF_xyz) @ white_E
+normalisation_matrix = np.identity(3) * normalisation_vector
+M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
+
+# Plot the colour gamut
+base_vectors = np.hsplit(M_RGB_to_XYZ, 3)
 base_xyz = [vector / vector.sum() for vector in base_vectors]
 base_xy = [vector[:2].T[0] for vector in base_xyz]
 
