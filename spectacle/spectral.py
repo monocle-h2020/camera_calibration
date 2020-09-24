@@ -301,6 +301,19 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     return M_RGB_to_XYZ
 
 
+def load_XYZ_matrix(root, return_filename=False):
+    """
+    Load an RGB -> XYZ conversion matrix located at
+    `root`/calibration/RGB_to_XYZ_matrix.csv.
+
+    If `return_filename` is True, also return the exact filename used.
+    """
+    filename = io.find_matching_file(root/"calibration", "RGB_to_XYZ_matrix.csv")
+    XYZ_matrix = np.loadtxt(filename, delimiter=", ")
+
+    return return_with_filename(XYZ_matrix, filename, return_filename)
+
+
 def calculate_xy_base_vectors(XYZ_matrix):
     """
     Calculate the base vectors in xy chromaticity space for a given conversion matrix M.
@@ -310,7 +323,6 @@ def calculate_xy_base_vectors(XYZ_matrix):
     base_xy = [vector[:2].T[0] for vector in base_vectors]
 
     return base_xy
-
 
 
 def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):

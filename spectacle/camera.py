@@ -110,7 +110,7 @@ class Camera(object):
     property_list = ["name", "manufacturer", "name_internal", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
     Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
-    calibration_data_all = ["settings", "bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response", "spectral_bands"]
+    calibration_data_all = ["settings", "bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response", "spectral_bands", "XYZ_matrix"]
 
     def __init__(self, name, manufacturer, name_internal, image_shape, raw_extension, bias, bayer_pattern, bit_depth, colour_description="RGBG", root=None):
         """
@@ -361,11 +361,28 @@ class Camera(object):
         # Else, save the None object to warn the user
         self.spectral_bands = spectral_bands
 
+    def _load_XYZ_matrix(self):
+        """
+        Load the RGB -> XYZ conversion matrix from the root folder.
+        """
+        # Try to load from file
+        try:
+            XYZ_matrix = spectral.load_XYZ_matrix(self.root)
+
+        # If a matrix cannot be found, do not use one, and warn the user
+        except (FileNotFoundError, OSError, TypeError):
+            XYZ_matrix = None
+            print(f"No RGB->XYZ matrix found for {self.name}.")
+
+        # If an XYZ matrix was found, save it to this object so it need not be looked up again
+        # Else, save the None object to warn the user
+        self.XYZ_matrix = XYZ_matrix
+
     def load_all_calibrations(self):
         """
         Load all available calibration data for this camera.
         """
-        for func in [self.load_settings, self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response, self.load_spectral_bands]:
+        for func in [self.load_settings, self._load_bias_map, self._load_dark_current_map, self._load_flatfield_correction, self._load_gain_map, self._load_iso_normalisation, self._load_readnoise_map, self._load_spectral_response, self.load_spectral_bands, self._load_XYZ_matrix]:
             func()
 
     def check_calibration_data(self):
