@@ -24,7 +24,8 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Save folder
-savefolder = camera.filename_analysis("spectral_response", makefolders=True)
+savefile = camera.filename_calibration("RGB_to_XYZ_matrix.csv")
+savefolder_plot = camera.filename_analysis("spectral_response", makefolders=True)
 
 # Load the SRFs
 camera._load_spectral_response()
@@ -79,6 +80,10 @@ triangle = plt.Polygon(base_xy, fill=False, linestyle="--", label=camera.name)
 plt.gca().add_patch(triangle)
 plt.legend(loc="upper right")
 plt.title(f"{camera.name} colour space\ncompared to sRGB and human eye")
-plt.savefig(savefolder/"colour_space.pdf", bbox_inches="tight")
+plt.savefig(savefolder_plot/"colour_space.pdf", bbox_inches="tight")
 plt.show()
 plt.close()
+
+# Save the conversion matrix
+np.savetxt(savefile, M_RGB_to_XYZ, header=f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).")
+print(f"Saved XYZ conversion matrix to `{savefile}`.")
