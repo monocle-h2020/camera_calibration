@@ -12,8 +12,7 @@ Command line arguments:
 from sys import argv
 import numpy as np
 from matplotlib import pyplot as plt
-from spectacle import spectral, io
-import colorio
+from spectacle import spectral, io, plot
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -59,14 +58,7 @@ M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(SRF_wavelengths, SRF_RGB)
 base_xy = spectral.calculate_xy_base_vectors(M_RGB_to_XYZ)
 
 # Plot the colour gamut
-colorio._tools.plot_flat_gamut()
-triangle = plt.Polygon(base_xy, fill=False, linestyle="--", label=camera.name)
-plt.gca().add_patch(triangle)
-plt.legend(loc="upper right")
-plt.title(f"{camera.name} colour space\ncompared to sRGB and human eye")
-plt.savefig(savefolder_plot/"colour_space.pdf", bbox_inches="tight")
-plt.show()
-plt.close()
+plot.plot_xy_on_gamut(base_xy, label=camera.name, saveto=savefolder_plot/"colour_space.pdf")
 
 # Save the conversion matrix
 np.savetxt(savefile, M_RGB_to_XYZ, header=f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).")
