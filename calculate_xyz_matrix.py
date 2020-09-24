@@ -29,3 +29,7 @@ plt.legend(loc="best")
 plt.xlim(390, 700)
 plt.ylim(ymin=0)
 plt.show()
+
+# Load the SRFs
+camera._load_spectral_response()
+SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response[1:4]
