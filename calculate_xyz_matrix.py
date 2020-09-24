@@ -11,6 +11,7 @@ from sys import argv
 import numpy as np
 from matplotlib import pyplot as plt
 from spectacle import xyz, spectral, io
+import colorio
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -19,6 +20,9 @@ root = io.find_root_folder(folder)
 # Load Camera objects
 camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
+
+# Save folder
+savefolder = camera.filename_analysis("spectral_response", makefolders=True)
 
 # Load the SRFs
 camera._load_spectral_response()
@@ -54,3 +58,15 @@ SRF_RGB_interpolated = spectral.interpolate_spectral_data(SRF_wavelengths, SRF_R
 # [Y_R  Y_G  Y_B]
 # [Z_R  Z_G  Z_B]
 SRF_XYZ_product = np.einsum("xw,rw->xr", xyz.xyz, SRF_RGB_interpolated) / len(xyz.wavelengths)
+base_vectors = np.hsplit(SRF_XYZ_product, 3)
+base_xyz = [vector / vector.sum() for vector in base_vectors]
+base_xy = [vector[:2].T[0] for vector in base_xyz]
+
+colorio._tools.plot_flat_gamut()
+triangle = plt.Polygon(base_xy, fill=False, linestyle="--", label=camera.name)
+plt.gca().add_patch(triangle)
+plt.legend(loc="upper right")
+plt.title(f"{camera.name} colour space\ncompared to sRGB and human eye")
+plt.savefig(savefolder/"colour_space.pdf", bbox_inches="tight")
+plt.show()
+plt.close()
