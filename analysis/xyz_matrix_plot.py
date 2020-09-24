@@ -30,7 +30,7 @@ camera._load_spectral_response()
 SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response[1:4]
 
 # Plot xyz curves and SRFs
-spectral.plot_xyz_and_rgb(SRF_wavelengths, SRF_RGB, saveto=savefolder_plot/"SRF_vs_XYZ.pdf")
+spectral.plot_xyz_and_rgb(SRF_wavelengths, SRF_RGB, label=camera.name, saveto=savefolder_plot/"SRF_vs_XYZ.pdf")
 
 # Calculate the RGB-to-XYZ matrix
 M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(SRF_wavelengths, SRF_RGB)
