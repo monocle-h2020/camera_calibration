@@ -352,7 +352,7 @@ class Camera(object):
         try:
             spectral_bands = spectral.load_spectral_bands(self.root)
 
-        # If spectra lbands cannot be found, do not use any, and warn the user
+        # If spectral bands cannot be found, do not use any, and warn the user
         except (FileNotFoundError, OSError, TypeError):
             spectral_bands = None
             print(f"No spectral band data found for {self.name}.")
