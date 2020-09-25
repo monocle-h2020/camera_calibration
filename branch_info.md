@@ -9,5 +9,5 @@ This branch represents a minor update, implementing RGB to XYZ conversion matric
 - [ ] Plot gamut from Camera object
 - [ ] Script to plot/compare multiple gamuts
 - [ ] Method to convert RGB data to XYZ
-- [ ] Add documentation for calibration script
+- [x] Add documentation for calibration script
 - [ ] Add documentation for analysis script(s)
