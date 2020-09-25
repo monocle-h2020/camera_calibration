@@ -327,7 +327,7 @@ def calculate_xy_base_vectors(XYZ_matrix):
 
 def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
     """
-    Plot the xy base vectors of a colour space on the xy plane.
+    Plot the xy base vectors of any number of colour spaces on the xy plane.
     If possible, use colorio's function to plot the human eye and sRGB gamuts.
     """
     saveto = plot._convert_to_path(saveto)
@@ -341,12 +341,30 @@ def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
         plt.ylabel("y")
         sRGB_triangle = plt.Polygon([[0.64,0.33], [0.30, 0.60], [0.15, 0.06]], fill=True, linestyle="-", label="sRGB")
         plt.gca().add_patch(sRGB_triangle)
-        plt.title(f"{label} colour space\ncompared to sRGB")
-    else:
-        plt.title(f"{label} colour space\ncompared to sRGB and human eye")
 
-    triangle = plt.Polygon(xy_base_vectors, fill=False, linestyle="--", label=label)
-    plt.gca().add_patch(triangle)
+    # Check if a single set of base vectors was given or multiple
+    if len(xy_base_vectors[0]) != 3:  # A single set of base vectors
+        xy_base_vectors = [xy_base_vectors]
+        label = [label]
+        plt.title(f"{label[0]} colour space\ncompared to sRGB")
+    else:  # If multiple sets were given
+        nr_sets = len(xy_base_vectors)
+        # If no or insufficient labels were provided, warn the user, and provide empty strings instead
+        if len(label) != nr_sets:
+            print(f"{len(label)} labels were provided for {nr_sets} data sets. Using empty labels instead.")
+            label = [""] * nr_sets
+        plt.title(f"Colour spaces\ncompared to sRGB")
+
+    # kwargs to make triangles look distinct
+    kwargs = [{"linestyle": "dashed"},
+              {"linestyle": "dotted"},
+              {"linestyle": "dashdot"},
+              {"linestyle": "solid", "linewidth": 0.5}]
+
+    triangles = [plt.Polygon(base_vectors, fill=False, label=label_single, **kwargs_single) for base_vectors, label_single, kwargs_single in zip(xy_base_vectors, label, kwargs)]
+    for triangle in triangles:
+        plt.gca().add_patch(triangle)
+
     plt.legend(loc="upper right")
 
     plot._saveshow(saveto, bbox_inches="tight")
@@ -372,7 +390,7 @@ def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
     Plot the xyz colour matching functions and given RGB responses.
     """
     # Check if a single set of wavelengths/responses was given or multiple
-    try:  # This throws and error if a single set of wavelengths was given
+    try:  # This throws an error if a single set of wavelengths was given
         _ = len(RGB_wavelengths[0])
     except TypeError:  # If a single set of wavelengths was given, make them into a list
         RGB_wavelengths = [RGB_wavelengths]
