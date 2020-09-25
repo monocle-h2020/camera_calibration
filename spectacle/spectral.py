@@ -371,9 +371,26 @@ def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
     """
     Plot the xyz colour matching functions and given RGB responses.
     """
-    fig, axs = plt.subplots(nrows=2, figsize=(4,3), sharex=True)
+    # Check if a single set of wavelengths/responses was given or multiple
+    try:  # This throws and error if a single set of wavelengths was given
+        _ = len(RGB_wavelengths[0])
+    except TypeError:  # If a single set of wavelengths was given, make them into a list
+        RGB_wavelengths = [RGB_wavelengths]
+        RGB_responses = [RGB_responses]
+        label = [label]
+        nr_sets = 1
+    else:  # If multiple sets were given
+        assert len(RGB_wavelengths) == len(RGB_responses), f"Different numbers of wavelength sets ({len(RGB_wavelengths)}) and response sets ({len(RGB_responses)}) were provided."
+        nr_sets = len(RGB_wavelengths)
+        # If no or insufficient labels were provided, warn the user, and provide empty strings instead
+        if len(label) != nr_sets:
+            print(f"{len(label)} labels were provided for {nr_sets} data sets. Using empty labels instead.")
+            label = [""] * nr_sets
+
+    fig, axs = plt.subplots(nrows=1+nr_sets, figsize=(4,1.5*(nr_sets+1)), sharex=True)
     plot_xyz_and_rgb_single(axs[0], cie_wavelengths, cie_xyz, label="CIE XYZ", legend_labels=["$\\bar x$", "$\\bar y$", "$\\bar z$"])
-    plot_xyz_and_rgb_single(axs[1], RGB_wavelengths, RGB_responses, label=label)
+    for ax, wavelengths, responses, label_single in zip(axs[1:], RGB_wavelengths, RGB_responses, label):
+        plot_xyz_and_rgb_single(ax, wavelengths, responses, label=label_single)
     axs[-1].set_xlabel("Wavelength [nm]")
 
     plot._saveshow(saveto, bbox_inches="tight")
