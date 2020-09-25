@@ -76,3 +76,6 @@ Spectral response curves may be compared at each wavelength using [spectral_resp
 Monochromator data may be analysed using [spectral_response_monochromator_single_spectrum.py](spectral_response_monochromator_single_spectrum.py) (for a spectrum taken with a single setting, e.g. filter/grating) and [spectral_response_monochromator_plot_outputs.py](spectral_response_monochromator_plot_outputs.py) (to plot intermediary results from the calibration process).	
 
 Spectral response curves may be plotted using [spectral_response_plot_multiple.py](spectral_response_plot_multiple.py) to create plots similar to Fig. 10 in the paper.
+
+The SRFs may be compared to the CIE xyz colour-matching functions, and the camera's colour space may be compared to that of the human eye and sRGB in xy space using [xyz_matrix_plot.py](xyz_matrix_plot.py).
+To compare multiple cameras to each other, one can use [xyz_matrix_plot_multiple.py](xyz_matrix_plot_multiple.py).

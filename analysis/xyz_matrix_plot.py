@@ -1,9 +1,7 @@
 """
-Calculate the matrices for converting camera RGB colours to CIE XYZ
-coordinates. Both E (equal-energy) and D65 (daylight) illuminants will
-be supported.
-
-Following http://www.ryanjuckett.com/programming/rgb-color-space-conversion/
+Compare a camera's colour space to CIE XYZ and sRGB.
+The camera's spectral response functions are plotted together with the xyz colour matching functions,
+and its colour space is plotted in xy coordinates.
 
 Command line arguments:
     * `folder`: folder containing the Camera information file.

@@ -10,4 +10,4 @@ This branch represents a minor update, implementing RGB to XYZ conversion matric
 - [ ] Script to plot/compare multiple gamuts
 - [ ] Method to convert RGB data to XYZ
 - [x] Add documentation for calibration script
-- [ ] Add documentation for analysis script(s)
+- [x] Add documentation for analysis script(s)
