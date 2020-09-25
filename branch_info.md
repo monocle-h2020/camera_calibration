@@ -6,8 +6,6 @@ This branch represents a minor update, implementing RGB to XYZ conversion matric
 - [x] Split calculation from analysis
 - [x] Add xy coordinates to Camera object
 - [x] Plot gamut with optional colorio background
-- [ ] Plot gamut from Camera object
 - [x] Script to plot/compare multiple gamuts
-- [ ] Method to convert RGB data to XYZ
 - [x] Add documentation for calibration script
 - [x] Add documentation for analysis script(s)
