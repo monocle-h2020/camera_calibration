@@ -481,6 +481,22 @@ class Camera(object):
         data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
         return data_normalised
 
+    def colour_space(self):
+        """
+        Calculate the base vectors in xy chromaticity space for this camera's colour space.
+        """
+        # If the XYZ matrix has not been loaded yet, do so
+        if not hasattr(self, "XYZ_matrix"):
+            self._load_XYZ_matrix()
+
+        # Assert that XYZ matrix was loaded
+        assert self.XYZ_matrix is not None, "RGB -> XYZ conversion matrix unavailable"
+
+        # If the XYZ matrix was available, convert its base vectors to xy
+        colour_space = spectral.calculate_xy_base_vectors(self.XYZ_matrix)
+
+        return colour_space
+
     def demosaick(self, *data, **kwargs):
         """
         Demosaick data using this camera's Bayer pattern.

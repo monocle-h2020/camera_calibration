@@ -30,11 +30,8 @@ SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response
 # Plot xyz curves and SRFs
 spectral.plot_xyz_and_rgb(SRF_wavelengths, SRF_RGB, label=camera.name, saveto=savefolder_plot/"SRF_vs_XYZ.pdf")
 
-# Load the XYZ matrix
-camera._load_XYZ_matrix()
-
-# Determine the base vectors and their chromaticities
-base_xy = spectral.calculate_xy_base_vectors(camera.XYZ_matrix)
+# Get the camera's colour space base vectors
+base_xy = camera.colour_space()
 
 # Plot the colour gamut
 spectral.plot_xy_on_gamut(base_xy, label=camera.name, saveto=savefolder_plot/"colour_space.pdf")
