@@ -361,7 +361,7 @@ def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
     fig, axs = plt.subplots(nrows=2, figsize=(4,3), sharex=True)
     for c, letter, colour in zip(cie_xyz, "xyz", colours):
         axs[0].plot(cie_wavelengths, c, c=colour, label=f"$\\bar {letter}$", **kwargs)
-    axs[0].set_ylabel("XYZ Response")
+    axs[0].set_ylabel("XYZ response")
     axs[0].legend(loc="upper left", bbox_to_anchor=(1,1))
     axs[0].set_xlim(390, 700)
     axs[0].set_ylim(ymin=0)
