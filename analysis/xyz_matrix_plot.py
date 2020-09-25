@@ -23,9 +23,9 @@ savefolder_plot = camera.filename_analysis("spectral_response", makefolders=True
 
 # Load the SRFs
 camera._load_spectral_response()
-SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response[1:4]
 
 # Plot xyz curves and SRFs
+SRF_wavelengths, SRF_RGB = camera.spectral_response[0], camera.spectral_response[1:4]
 spectral.plot_xyz_and_rgb(SRF_wavelengths, SRF_RGB, label=camera.name, saveto=savefolder_plot/"SRF_vs_XYZ.pdf")
 
 # Get the camera's colour space base vectors

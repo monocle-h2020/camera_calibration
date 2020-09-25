@@ -352,25 +352,28 @@ def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
     plot._saveshow(saveto, bbox_inches="tight")
 
 
+def plot_xyz_and_rgb_single(ax, wavelengths, responses, label="", legend_labels="rgb"):
+    """
+    Plot the given spectral responses as a function of wavelength into the given axes object `ax`.
+    Put the `label` on the y axis.
+    """
+    kwargs = {"lw": 3}
+    colours = ["#d95f02", "#1b9e77", "#7570b3"]
+    for response, letter, colour in zip(responses, legend_labels, colours):
+        ax.plot(wavelengths, response, c=colour, label=letter, **kwargs)
+    ax.set_ylabel(f"{label}\nresponse")
+    ax.legend(loc="upper left", bbox_to_anchor=(1,1))
+    ax.set_xlim(390, 700)
+    ax.set_ylim(ymin=0)
+
+
 def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
     """
     Plot the xyz colour matching functions and given RGB responses.
     """
-    kwargs = {"lw": 3}
-    colours = ["#d95f02", "#1b9e77", "#7570b3"]
     fig, axs = plt.subplots(nrows=2, figsize=(4,3), sharex=True)
-    for c, letter, colour in zip(cie_xyz, "xyz", colours):
-        axs[0].plot(cie_wavelengths, c, c=colour, label=f"$\\bar {letter}$", **kwargs)
-    axs[0].set_ylabel("XYZ response")
-    axs[0].legend(loc="upper left", bbox_to_anchor=(1,1))
-    axs[0].set_xlim(390, 700)
-    axs[0].set_ylim(ymin=0)
-
-    for c, letter, colour in zip(RGB_responses, "rgb", colours):
-        axs[1].plot(RGB_wavelengths, c, c=colour, label=f"${letter}$", **kwargs)
-    axs[1].set_xlabel("Wavelength [nm]")
-    axs[1].set_ylabel(f"{label}\nRGB response")
-    axs[1].set_ylim(ymin=0)
-    axs[1].legend(loc="upper left", bbox_to_anchor=(1,1))
+    plot_xyz_and_rgb_single(axs[0], cie_wavelengths, cie_xyz, label="CIE XYZ", legend_labels=["$\\bar x$", "$\\bar y$", "$\\bar z$"])
+    plot_xyz_and_rgb_single(axs[1], RGB_wavelengths, RGB_responses, label=label)
+    axs[-1].set_xlabel("Wavelength [nm]")
 
     plot._saveshow(saveto, bbox_inches="tight")
