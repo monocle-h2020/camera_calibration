@@ -332,10 +332,11 @@ def _einsum_arbitrary_axis(matrix, data, axis):
     Perform Einstein summation for a 2-dimension matrix and an N-dimensional array data
     over an arbitrary given axis.
     """
+    alphabet = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuopasdfghklzxcvbnm"
     nr_dimensions = len(data.shape)
+    assert nr_dimensions <= len(alphabet), f"Data with more than {len(alphabet)} dimensions are currently not supported (given data array has {nr_dimensions} dimensions."
 
     # Create index strings for Einstein notation, with i and j in the correct places and arbitrary letters elsewhere
-    alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
     shape_original = alphabet[:axis] + "j" + alphabet[axis+1:nr_dimensions]
     shape_goal = shape_original.replace("j", "i")
 
@@ -354,9 +355,6 @@ def convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
 
     This could possibly be replaced by np.tensordot.
     """
-    nr_dimensions = len(RGB_data.shape)
-    assert nr_dimensions <= 26, f"Data with more than 26 dimensions are currently not supported (given data array has {nr_dimensions} dimensions."
-
     if axis is None:  # If no axis is supplied, look for one
         axis = _find_matching_axis(RGB_data, 3)
     else:  # If an axis was supplied, check that is has the correct length
