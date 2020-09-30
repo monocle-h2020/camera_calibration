@@ -311,6 +311,63 @@ def convert_matrix_to_RGBG2(RGB_to_XYZ_matrix):
     return matrix_new
 
 
+def _find_matching_axis(data, axis_length):
+    """
+    Find an axis in `data` that has the given length `axis_length`.
+    """
+    assert len(data.shape) <= 26, f"Data with more than 26 dimensions are currently not supported. This data array has {len(data.shape)} dimensions."
+
+    matching_axes = [i for i, length in enumerate(data.shape) if length == axis_length]
+
+    if len(matching_axes) == 0:
+        raise ValueError(f"No axis in the given data array matches the given axis length `{axis_length}`. Array shape: {data.shape}")
+    elif len(matching_axes) >= 2:
+        raise ValueError(f"No axis in the given data array matches the given axis length `{axis_length}`. Array shape: {data.shape}")
+    else:
+        return matching_axes[0]
+
+
+def _einsum_arbitrary_axis(matrix, data, axis):
+    """
+    Perform Einstein summation for a 2-dimension matrix and an N-dimensional array data
+    over an arbitrary given axis.
+    """
+    nr_dimensions = len(data.shape)
+
+    # Create index strings for Einstein notation, with i and j in the correct places and arbitrary letters elsewhere
+    alphabet = "QWERTYUIOPASDFGHJKLZXCVBNM"
+    shape_original = alphabet[:axis] + "j" + alphabet[axis+1:nr_dimensions]
+    shape_goal = shape_original.replace("j", "i")
+
+    # Perform the matrix multiplication
+    result = np.einsum(f"ij,{shape_original}->{shape_goal}", matrix, data)
+    return result
+
+
+def convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
+    """
+    Convert RGB data to XYZ. The RGB data can be multi-dimensional, for example a
+    spectrum (3, L) with L the number of wavelengths or an image (3, X, Y) with
+    X and Y the number of pixels in either direction.
+    If the axis is not specified by the user, an axis with a length of 3 is searched for.
+    If 0 or >=2 such axes are found, an error is raised.
+
+    This could possibly be replaced by np.tensordot.
+    """
+    nr_dimensions = len(RGB_data.shape)
+    assert nr_dimensions <= 26, f"Data with more than 26 dimensions are currently not supported (given data array has {nr_dimensions} dimensions."
+
+    if axis is None:  # If no axis is supplied, look for one
+        axis = _find_matching_axis(RGB_data, 3)
+    else:  # If an axis was supplied, check that is has the correct length
+        assert RGB_data.shape[axis] == 3, "The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
+
+    # Perform the matrix multiplication
+    XYZ_data = _einsum_arbitrary_axis(RGB_to_XYZ_matrix, RGB_data, axis)
+
+    return XYZ_data
+
+
 def load_XYZ_matrix(root, return_filename=False):
     """
     Load an RGB -> XYZ conversion matrix located at
