@@ -366,55 +366,14 @@ def _convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
     return XYZ_data
 
 
-def _convert_RGBG2_to_XYZ(RGBG2_data, RGBG2_to_XYZ_matrix, axis=None):
-    """
-    Same as _convert_RGB_to_XYZ but for RGBG2 data.
-    """
-    if axis is None:  # If no axis is supplied, look for one
-        axis = _find_matching_axis(RGBG2_data, 4)
-    else:  # If an axis was supplied, check that is has the correct length
-        assert RGBG2_data.shape[axis] == 4, f"The given axis ({axis}) in the data array has a length ({RGBG2_data.shape[axis]}) that is not 4."
-
-    # Perform the matrix multiplication
-    XYZ_data = _einsum_arbitrary_axis(RGBG2_to_XYZ_matrix, RGBG2_data, axis)
-
-    return XYZ_data
-
-
-def _convert_RGB_or_RGBG2_to_XYZ(RGB_data_element, RGB_to_XYZ_matrix, axis=None):
-    """
-    Apply _convert_RGB_to_XYZ or _convert_RGBG2_to_XYZ, depending on the shape of the input array.
-    """
-    if axis is None:  # If no axis is supplied, look for one
-        if any(axis_length == 3 for axis_length in RGB_data_element.shape):  # First look for an axis that is 3 long
-            axis = _find_matching_axis(RGB_data_element, 3)
-        elif any(axis_length == 4 for axis_length in RGB_data_element.shape):  # If no element with length 3 was found, try length 4
-            axis = _find_matching_axis(RGB_data_element, 4)
-        else:  # If length 3 and 4 were not found, raise an error
-            raise ValueError(f"None of the axes in the data element with shape {RGB_data_element.shape} have length 3 or 4.")
-
-    else:  # If an axis was given, check that its length is 3 or 4
-        assert RGB_data_element.shape[axis] in (3, 4), f"The given axis ({axis}) in the data array has a length ({RGB_data_element.shape[axis]}) that is not 3 (RGB) or 4 (RGBG2)."
-
-    # Apply the conversion
-    conversion_function = _convert_RGB_to_XYZ if RGB_data_element.shape[axis] == 3 else _convert_RGBG2_to_XYZ
-    conversion_matrix = RGB_to_XYZ_matrix if RGB_data_element.shape[axis] == 3 else convert_matrix_to_RGBG2(RGB_to_XYZ_matrix)
-    XYZ_data = conversion_function(RGB_data_element, conversion_matrix, axis=axis)
-
-    print(conversion_matrix)
-
-    return XYZ_data
-
-
-
 def convert_to_XYZ(RGB_to_XYZ_matrix, *RGB_data, axis=None):
     """
-    Apply the RGB/RGBG2 to XYZ conversion to any number of RGB/RGBG2 data arrays.
+    Apply the RGB to XYZ conversion to any number of RGB data arrays.
     `axis` must be the same for all data elements (or None everywhere).
 
-    Currently bugged - does not give the same result for RGB and RGBG2.
+    Does not support RGBG2 arrays.
     """
-    data_XYZ = apply_to_multiple_args(_convert_RGB_or_RGBG2_to_XYZ, RGB_data, RGB_to_XYZ_matrix, axis=axis)
+    data_XYZ = apply_to_multiple_args(_convert_RGB_to_XYZ, RGB_data, RGB_to_XYZ_matrix, axis=axis)
 
     return data_XYZ
 
