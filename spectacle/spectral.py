@@ -301,6 +301,15 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     return M_RGB_to_XYZ
 
 
+def convert_matrix_to_RGBG2(RGB_to_XYZ_matrix):
+    """
+    Convert a 3x3 matrix (RGB -> XYZ) to a 3x4 matrix (RGBG2 -> XYZ) for ease of use.
+    The G2 column is just a copy of the G column.
+    """
+    matrix_new = np.hstack([RGB_to_XYZ_matrix, RGB_to_XYZ_matrix[:,1][:,np.newaxis]])
+    return matrix_new
+
+
 def load_XYZ_matrix(root, return_filename=False):
     """
     Load an RGB -> XYZ conversion matrix located at
