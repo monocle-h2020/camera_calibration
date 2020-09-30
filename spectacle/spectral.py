@@ -358,7 +358,7 @@ def convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
     if axis is None:  # If no axis is supplied, look for one
         axis = _find_matching_axis(RGB_data, 3)
     else:  # If an axis was supplied, check that is has the correct length
-        assert RGB_data.shape[axis] == 3, "The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
+        assert RGB_data.shape[axis] == 3, f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
 
     # Perform the matrix multiplication
     XYZ_data = _einsum_arbitrary_axis(RGB_to_XYZ_matrix, RGB_data, axis)
