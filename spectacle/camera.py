@@ -487,6 +487,25 @@ class Camera(object):
         data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
         return data_normalised
 
+    def convert_to_XYZ(self, *data, axis=None):
+        """
+        Convert RGB data to XYZ using the sensor's conversion matrix.
+        The conversion matrix is loaded from the root folder.
+        `axis` is the RGB axis. If None is provided, one is automatically looked for.
+        Any number of arrays can be passed as *data, though all must have the same
+        (or None) axis.
+        """
+        # If the XYZ conversion matrix has not been loaded yet, do so
+        if not hasattr(self, "XYZ_matrix"):
+            self._load_XYZ_matrix()
+
+        # Assert that a conversion matrix was loaded
+        assert self.XYZ_matrix is not None, "RGB to XYZ conversion matrix unavailable"
+
+        # If a conversion matrix was available, use it in the conversion
+        data_XYZ = spectral.convert_to_XYZ(self.XYZ_matrix, *data, axis=axis)
+        return data_XYZ
+
     def colour_space(self):
         """
         Calculate the base vectors in xy chromaticity space for this camera's colour space.

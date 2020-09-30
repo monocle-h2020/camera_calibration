@@ -378,7 +378,6 @@ def convert_to_XYZ(RGB_to_XYZ_matrix, *RGB_data, axis=None):
     return data_XYZ
 
 
-
 def load_XYZ_matrix(root, return_filename=False):
     """
     Load an RGB -> XYZ conversion matrix located at
