@@ -366,6 +366,21 @@ def convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
     return XYZ_data
 
 
+def convert_RGBG2_to_XYZ(RGBG2_data, RGBG2_to_XYZ_matrix, axis=None):
+    """
+    Same as convert_RGB_to_XYZ but for RGBG2 data.
+    """
+    if axis is None:  # If no axis is supplied, look for one
+        axis = _find_matching_axis(RGBG2_data, 4)
+    else:  # If an axis was supplied, check that is has the correct length
+        assert RGBG2_data.shape[axis] == 4, f"The given axis ({axis}) in the data array has a length ({RGBG2_data.shape[axis]}) that is not 4."
+
+    # Perform the matrix multiplication
+    XYZ_data = _einsum_arbitrary_axis(RGBG2_to_XYZ_matrix, RGBG2_data, axis)
+
+    return XYZ_data
+
+
 def load_XYZ_matrix(root, return_filename=False):
     """
     Load an RGB -> XYZ conversion matrix located at
