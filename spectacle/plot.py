@@ -20,6 +20,7 @@ cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.G
 rgb = "rgb"
 RGB = "RGB"
 rgbg = "rgbg"
+rgby = "rgby"
 rgbg2 = ["r", "g", "b", "g2"]
 RGBG2 = ["R", "G", "B", "G2"]
 
@@ -45,15 +46,13 @@ def _saveshow(saveto=None, close=True, **kwargs):
 
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
-    RGB = ["R", "G", "B"]
     for j in range(3):
-        func(x, y[j], c=RGB[j], **kwargs)
+        func(x, y[j], c=rgb[j], **kwargs)
 
 
 def _rgbgplot(x, y, func=plt.plot, **kwargs):
-    RGBY = ["R", "G", "B", "Y"]
     for j in range(4):
-        func(x, y[j], c=RGBY[j], **kwargs)
+        func(x, y[j], c=rgby[j], **kwargs)
 
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
@@ -184,7 +183,7 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
         xmax = symmetric_percentiles(data_RGBG)[1]
     data_KRGB = [data_RGBG.ravel(), data_RGBG[0].ravel(), data_RGBG[1::2].ravel(), data_RGBG[2].ravel()]
     fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-    for data, colour, ax in zip(data_KRGB, "kRGB", axs):
+    for data, colour, ax in zip(data_KRGB, "krgb", axs):
         ax.hist(data.ravel(), bins=np.linspace(xmin, xmax, nrbins), color=colour, edgecolor=colour, density=True)
         ax.grid(True)
     for ax in axs[:3]:
