@@ -7,7 +7,8 @@ structure `level1/level2/level3/image1.dng`, stacks will be generated at
 
 Images are assumed to be in the `images` subfolder (see `data_template`).
 
-By default, image stacks are saved in the `root/stacks/` folder.
+By default, the save folder is the same as the data folder, but with `images`
+replaced with `stacks`.
 
 For particularly large data sets, use the `stack_heavy.py` script instead.
 
@@ -26,14 +27,10 @@ from os import walk, makedirs
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
-root = io.find_root_folder(folder)
 
-# Load Camera object
-camera = io.load_camera(root)
-print(f"Loaded Camera object: {camera}")
-
-# Wildcard pattern to find RAW data with
-raw_pattern = f"*{camera.raw_extension}"
+# Common RAW file extensions - try all, then select the one that works
+raw_patterns = ["*.dng", "*.NEF", "*.CR2"]
+raw_pattern = None
 
 # Walk through the folder and all its subfolders
 for tup in walk(folder):
@@ -42,6 +39,17 @@ for tup in walk(folder):
 
     # The folder to save stacks to
     goal = io.replace_word_in_path(folder_here, "images", "stacks")
+
+    # If the correct RAW file format has not been determined yet, do so
+    if raw_pattern is None:
+        for pattern in raw_patterns:  # Looping over the patterns, look for any files matching it
+            raw_files = list(folder_here.glob(pattern))
+            if len(raw_files) > 0:  # If a match was found, set the raw pattern to match it, and break the loop
+                raw_pattern = pattern
+                break
+            # If no match was found, continue
+        else:  # If no match was found at all, continue to the next folder
+            continue
 
     # Find all RAW files in this folder
     raw_files = list(folder_here.glob(raw_pattern))
