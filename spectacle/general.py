@@ -28,6 +28,18 @@ def gauss_nan(D, sigma=5, **kwargs):
     return Z
 
 
+def _gauss_generic(data_element, sigma=5, **kwargs):
+    """
+    Apply a multidimensional Gaussian kernel, accounting for NaN values
+    if necessary.
+    Select `gaussMd` or `gauss_nan` depending on if NaN data are present
+    in the given `data_element`.
+    """
+    func = gauss_nan if np.isnan(data_element).any() else gaussMd
+    print(func)
+    return func(data_element, sigma=sigma, **kwargs)
+
+
 def blackbody(wavelengths, temperature=5777, norm=1):
     """
     Return a blackbody curve for `wavelengths` with a given `temperature`
