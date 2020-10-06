@@ -4,7 +4,6 @@ This is a to-do list for the `spectacle` module.
 
 - [ ] Remove AstroPy dependencies for simplicity
 - [ ] Fix silent deprecation warnings
-- [ ] Merge `gauss_filter` and `gauss_nan` in [spectacle.general](spectacle/general.py)
 
 ## Scripts
 
