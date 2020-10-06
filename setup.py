@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
       name="pyspectacle",
-      version="2.1.2",
+      version="2.1.3",
       description="SPECTACLE camera calibration module",
       long_description = long_description,
       long_description_content_type="text/markdown",
