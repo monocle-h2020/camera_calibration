@@ -4,6 +4,7 @@ This is a to-do list for the `spectacle` module.
 
 - [ ] Remove AstroPy dependencies for simplicity
 - [ ] Fix silent deprecation warnings
+- [ ] Make [load_monochromator_data](https://github.com/monocle-h2020/camera_calibration/blob/cb9a358e7b965816440831b77a4e49a5760d90cc/spectacle/spectral.py#L41) use a Camera object from args, rather than `root`
 
 ## Scripts
 
