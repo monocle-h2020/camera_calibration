@@ -24,8 +24,8 @@ print(f"Loaded Camera object: {camera}")
 
 # Save locations
 savefolder = camera.filename_analysis("spectral_response", makefolders=True)
-save_to_data = savefolder/f"monochromator_{label}_data.pdf"
-save_to_SNR = savefolder/f"monochromator_{label}_SNR.pdf"
+save_to_SNR = savefolder/f"monochromator_{label}_SNR_cov.pdf"
+save_to_cov = savefolder/f"monochromator_{label}_covariance.pdf"
 
 # Find the filenames
 mean_files = sorted(folder.glob("*_mean.npy"))
@@ -68,6 +68,10 @@ for j, mean_file in enumerate(mean_files):
 # First len(wvls) elements are R, then G, then B, then G2
 means_RGBG2 = np.concatenate([means[:,0], means[:,1], means[:,2], means[:,3]])
 
+# Indices to select R, G, B, and G2
+R, G, B, G2 = [np.s_[len(wvls)*j : len(wvls)*(j+1)] for j in range(4)]
+RGBG2 = [R, G, B, G2]
+
 # Calculate mean SRF and covariance between all elements
 srf = np.nanmean(means_RGBG2, axis=1)
 srf_cov = np.cov(means_RGBG2)
@@ -76,3 +80,28 @@ srf_cov = np.cov(means_RGBG2)
 diag = np.where(np.eye(len(wvls) * 4))
 srf_var = srf_cov[diag]
 srf_std = np.sqrt(srf_var)
+
+# Plot the SRFs with their standard deviations, variance, and SNR
+labels = ["Response\n[ADU]", "Variance\n[ADU$^2$]", "SNR"]
+fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
+for ind, c in zip(RGBG2, "rybg"):
+    axs[0].plot(wvls, srf[ind], c=c)
+    axs[0].fill_between(wvls, srf[ind]-srf_std[ind], srf[ind]+srf_std[ind], color=c, alpha=0.7)
+
+    axs[1].plot(wvls, srf_var[ind], c=c)
+
+    axs[2].plot(wvls, srf[ind]/srf_std[ind], c=c)
+
+for ax, label in zip(axs, labels):
+    ax.set_ylabel(label)
+    ax.set_ylim(ymin=0)
+
+axs[-1].set_xlim(wvls[0], wvls[-1])
+axs[-1].set_xlabel("Wavelength [nm]")
+
+axs[0].set_title(folder.stem)
+
+plt.savefig(save_to_SNR, bbox_inches="tight")
+plt.show()
+plt.close()
+
