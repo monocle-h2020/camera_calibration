@@ -86,7 +86,7 @@ labels = ["Response\n[ADU]", "Variance\n[ADU$^2$]", "SNR"]
 fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
 for ind, c in zip(RGBG2, "rybg"):
     axs[0].plot(wvls, srf[ind], c=c)
-    axs[0].fill_between(wvls, srf[ind]-srf_std[ind], srf[ind]+srf_std[ind], color=c, alpha=0.7)
+    axs[0].fill_between(wvls, srf[ind]-srf_std[ind], srf[ind]+srf_std[ind], color=c, alpha=0.3)
 
     axs[1].plot(wvls, srf_var[ind], c=c)
 
