@@ -105,3 +105,16 @@ plt.savefig(save_to_SNR, bbox_inches="tight")
 plt.show()
 plt.close()
 
+# Plot the covariances
+ticks = [(ind.start + ind.stop) / 2 for ind in RGBG2]
+ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
+
+plt.figure(figsize=(5,5))
+plt.imshow(srf_cov, cmap="cividis")
+plt.colorbar(label="Covariance")
+plt.xticks(ticks, ticklabels)
+plt.yticks(ticks, ticklabels)
+plt.title(f"Covariances in {folder.stem}")
+plt.savefig(save_to_cov, bbox_inches="tight")
+plt.show()
+plt.close()
