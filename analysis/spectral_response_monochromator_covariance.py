@@ -67,5 +67,12 @@ for j, mean_file in enumerate(mean_files):
 # Reshape array: sort by filter first, then by wavelength
 # First len(wvls) elements are R, then G, then B, then G2
 means_RGBG2 = np.concatenate([means[:,0], means[:,1], means[:,2], means[:,3]])
+
+# Calculate mean SRF and covariance between all elements
 srf = np.nanmean(means_RGBG2, axis=1)
 srf_cov = np.cov(means_RGBG2)
+
+# Calculate the variance (ignoring covariance) from the diagonal elements
+diag = np.where(np.eye(len(wvls) * 4))
+srf_var = srf_cov[diag]
+srf_std = np.sqrt(srf_var)
