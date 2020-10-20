@@ -47,6 +47,9 @@ for j, mean_file in enumerate(mean_files):
     # Bias correction
     m = camera.correct_bias(m)
 
+    # Flat-field correction
+    m = camera.correct_flatfield(m)
+
     # Demosaick the data
     mean_RGBG = camera.demosaick(m)
 
