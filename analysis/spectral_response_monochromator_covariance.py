@@ -124,6 +124,16 @@ plt.savefig(save_to_cov, bbox_inches="tight")
 plt.show()
 plt.close()
 
+# Plot an example
+for c, ind in zip("rgby", RGBG2):
+    plt.plot(wvls, srf_cov[G,ind][0], c=c)
+plt.xlabel("Wavelength [nm]")
+plt.ylabel("Covariance")
+plt.ylim(ymin=0)
+plt.xlim(wvls[0], wvls[-1])
+plt.show()
+plt.close()
+
 # Calculate mean of G and G2
 I = np.eye(len(wvls))
 M_G_G2 = np.zeros((len(wvls)*3, len(wvls)*4))
