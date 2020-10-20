@@ -26,6 +26,8 @@ print(f"Loaded Camera object: {camera}")
 savefolder = camera.filename_analysis("spectral_response", makefolders=True)
 save_to_SNR = savefolder/f"monochromator_{label}_SNR_cov.pdf"
 save_to_cov = savefolder/f"monochromator_{label}_covariance.pdf"
+save_to_SNR_G = savefolder/f"monochromator_{label}_SNR_cov_G_mean.pdf"
+save_to_cov_G = savefolder/f"monochromator_{label}_covariance_G_mean.pdf"
 
 # Find the filenames
 mean_files = sorted(folder.glob("*_mean.npy"))
@@ -121,3 +123,56 @@ plt.title(f"Covariances in {folder.stem}")
 plt.savefig(save_to_cov, bbox_inches="tight")
 plt.show()
 plt.close()
+
+# Calculate mean of G and G2
+I = np.eye(len(wvls))
+M_G_G2 = np.zeros((len(wvls)*3, len(wvls)*4))
+M_G_G2[R,R] = I
+M_G_G2[B,B] = I
+M_G_G2[G,G] = 0.5*I
+M_G_G2[G,G2] = 0.5*I
+
+srf_G = M_G_G2 @ srf
+srf_G_cov = M_G_G2 @ srf_cov @ M_G_G2.T
+
+diag = np.where(np.eye(len(wvls) * 3))
+srf_G_var = srf_G_cov[diag]
+srf_G_std = np.sqrt(srf_G_var)
+
+# Plot the SRFs with their standard deviations, variance, and SNR
+labels = ["Response\n[ADU]", "Variance\n[ADU$^2$]", "SNR"]
+fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
+for ind, c in zip(RGBG2[:3], "rgb"):
+    axs[0].plot(wvls, srf_G[ind], c=c)
+    axs[0].fill_between(wvls, srf_G[ind]-srf_G_std[ind], srf_G[ind]+srf_G_std[ind], color=c, alpha=0.3)
+
+    axs[1].plot(wvls, srf_G_var[ind], c=c)
+
+    axs[2].plot(wvls, srf_G[ind]/srf_G_std[ind], c=c)
+
+for ax, label in zip(axs, labels):
+    ax.set_ylabel(label)
+    ax.set_ylim(ymin=0)
+
+axs[-1].set_xlim(wvls[0], wvls[-1])
+axs[-1].set_xlabel("Wavelength [nm]")
+
+axs[0].set_title(folder.stem)
+
+plt.savefig(save_to_SNR_G, bbox_inches="tight")
+plt.show()
+plt.close()
+
+# Plot the covariances
+ticks, ticklabels = ticks[:3], ticklabels[:3]
+
+plt.figure(figsize=(5,5))
+plt.imshow(srf_G_cov, cmap="cividis")
+plt.colorbar(label="Covariance")
+plt.xticks(ticks, ticklabels)
+plt.yticks(ticks, ticklabels)
+plt.title(f"Covariances in {folder.stem} (mean $G, G_2$)")
+plt.savefig(save_to_cov_G, bbox_inches="tight")
+plt.show()
+plt.close()
+
