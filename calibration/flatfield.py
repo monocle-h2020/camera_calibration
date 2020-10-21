@@ -30,10 +30,10 @@ overwrite_calibration = True
 
 # Save locations
 savefolder = camera.filename_intermediaries("flatfield", makefolders=True)
-save_to_correction = savefolder/"flatfield_correction_{label}.npy"
-save_to_correction_raw = savefolder/"flatfield_correction_{label}_raw.npy"
-save_to_correction_modelled_intermediary = savefolder/"flatfield_correction_{label}_modelled.npy"
-save_to_parameters_intermediary = savefolder/"flatfield_parameters_{label}.csv"
+save_to_correction = savefolder/f"flatfield_correction_{label}.npy"
+save_to_correction_raw = savefolder/f"flatfield_correction_{label}_raw.npy"
+save_to_correction_modelled_intermediary = savefolder/f"flatfield_correction_{label}_modelled.npy"
+save_to_parameters_intermediary = savefolder/f"flatfield_parameters_{label}.csv"
 
 # Save location based on camera name
 save_to_parameters_calibration = camera.filename_calibration("flatfield_parameters.csv")
