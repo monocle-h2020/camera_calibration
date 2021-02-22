@@ -82,7 +82,7 @@ def adjust_band_wavelengths(band_wavelengths, band_response, data_wavelengths):
     return new_wavelengths, new_response
 
 
-def bandaverage(band_wavelengths, band_response, data_wavelengths, data_response):
+def convolve_spectrum(band_wavelengths, band_response, data_wavelengths, data_response):
     """
     Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
     spectral band (`band_wavelengths`, `band_response`).
@@ -100,7 +100,7 @@ def bandaverage(band_wavelengths, band_response, data_wavelengths, data_response
     return response_average
 
 
-def bandaverage_multi(band_wavelengths, band_response, data_wavelengths, data_response_multi):
+def convolve_spectrum_multi(band_wavelengths, band_response, data_wavelengths, data_response_multi):
     """
     Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
     spectral band (`band_wavelengths`, `band_response`).
