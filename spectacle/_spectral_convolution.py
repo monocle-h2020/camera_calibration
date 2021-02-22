@@ -81,22 +81,3 @@ def bandaverage_multi(band_wavelengths, band_response, data_wavelengths, data_re
     weight_sum = integrate(band_response, x=band_wavelengths)
     response_average = response_sum / weight_sum
     return response_average
-
-
-def calculate_differences(reflectance_space, radiance_space):
-    difference_absolute = reflectance_space - radiance_space
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        difference_relative = 100 * difference_absolute / radiance_space
-    difference_relative[difference_absolute == 0] = 0
-
-    return difference_absolute, difference_relative
-
-
-def calculate_median_and_errors(differences):
-    lower_percentile = np.nanpercentile(differences, 15.9, axis=1)
-    medians = np.nanmedian(differences, axis=1)
-    upper_percentile = np.nanpercentile(differences, 84.1, axis=1)
-    lower_error = medians - lower_percentile
-    upper_error = upper_percentile - medians
-    return medians, lower_error, upper_error
