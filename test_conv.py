@@ -1,3 +1,10 @@
+"""
+Code to test the spectral convolution code added to spectacle.spectral and
+spectacle.camera.
+
+File locations are hard-coded.
+"""
+
 from spectacle import load_camera
 from spectacle.spectral import convolve, convolve_multi
 
