@@ -14,6 +14,9 @@ except ImportError:
 wavelengths_interpolated = np.arange(390, 701, 1)
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
+    """
+    Calculate the effective bandwidth of a spectral band.
+    """
     response_normalised = response / response.max(axis=axis)
     return np.trapz(response_normalised, x=wavelengths, axis=axis, **kwargs)
 
