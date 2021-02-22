@@ -22,3 +22,8 @@ Rrs0_convolvedR = convolve(camera.spectral_response[0], camera.spectral_response
 RrsAll_convolvedR = convolve_multi(camera.spectral_response[0], camera.spectral_response[1], wavelengths, Rrs_data)
 
 RrsAll_convolvedAll = np.array([convolve_multi(camera.spectral_response[0], srf, wavelengths, Rrs_data) for srf in camera.spectral_response[1:5]])
+
+Rrs0_convolvedAll = camera.convolve(wavelengths, Rrs_data[0])
+
+RrsAll_convolvedAll_camera = camera.convolve_multi(wavelengths, Rrs_data)
+print("Difference between manual and camera methods:", RrsAll_convolvedAll_camera - RrsAll_convolvedAll)

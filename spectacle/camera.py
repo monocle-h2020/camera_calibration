@@ -487,6 +487,40 @@ class Camera(object):
         data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
         return data_normalised
 
+    def convolve(self, data_wavelengths, data):
+        """
+        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
+        the camera's spectral bands.
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        # Assert that SRFs were loaded
+        assert self.spectral_response is not None, "Spectral response functions unavailable"
+
+        # If SRFs were available, apply spectral convolution
+        data_convolved = np.array([spectral.convolve(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
+        return data_convolved
+
+    def convolve_multi(self, data_wavelengths, data):
+        """
+        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
+        the camera's spectral bands.
+
+        Loops over multiple spectra at once.
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        # Assert that SRFs were loaded
+        assert self.spectral_response is not None, "Spectral response functions unavailable"
+
+        # If SRFs were available, apply spectral convolution
+        data_convolved = np.array([spectral.convolve_multi(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
+        return data_convolved
+
     def convert_to_XYZ(self, *data, axis=None):
         """
         Convert RGB data to XYZ using the sensor's conversion matrix.
