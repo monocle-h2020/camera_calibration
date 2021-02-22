@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from . import io, plot
 from .general import return_with_filename, apply_to_multiple_args, deprecation
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
+from . import _spectral_convolution as cv
 
 try:
     from colorio._tools import plot_flat_gamut
