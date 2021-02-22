@@ -1,13 +1,19 @@
 """
-Module with functions for band-averaging
+Functions for spectral convolution of data, converting them from hyperspectral
+to multispectral.
+
+For more details, please see https://doi.org/10.1364/OE.391470
 """
 
 import numpy as np
 from scipy.integrate import simps
-import warnings
 
 
 def integrate(*args, **kwargs):
+    """
+    Integrate data using `scipy.integrate.simps`.
+    Return 0 if an IndexError is raised.
+    """
     try:
         result = simps(*args, **kwargs)
     except IndexError:
@@ -17,11 +23,25 @@ def integrate(*args, **kwargs):
 
 
 def interpolate_spectral_data(band_wavelengths, data_wavelengths, data_response, extrapolation_value=np.nan):
+    """
+    Interpolate spectra `data_response` from `data_wavelengths` to `band_wavelengths`.
+    `extrapolation_value` is the value applied to wavelengths within `band_wavelengths`
+    but outside the original `data_wavelengths`
+    """
     data_interpolated = np.interp(band_wavelengths, data_wavelengths, data_response, left=extrapolation_value, right=extrapolation_value)
     return data_interpolated
 
 
 def check_spectral_overlap(band_wavelengths, band_response, data_wavelengths, threshold=0.05):
+    """
+    Check how much overlap exists between a spectral band `band_response` over its
+    `band_wavelengths` and a data set `data_wavelengths`. Return True if this is
+    less than or equal to a given threshold, default 5% (0.05).
+
+    This is used to determine if spectral convolution is sensible or the two spectra
+    are too far apart in wavelength. By weighting it to the band response, long tails
+    are ignored.
+    """
     # Shortest and longest wavelength in the data
     left, right = data_wavelengths[0], data_wavelengths[-1]
 
@@ -43,11 +63,18 @@ def check_spectral_overlap(band_wavelengths, band_response, data_wavelengths, th
         return False
 
 
-def nan_values(data_response):
-    return np.tile(np.nan, len(data_response))
+def nan_values(x):
+    """
+    Return an array of the same length as the input `x`, filled with `np.nan`.
+    """
+    return np.tile(np.nan, len(x))
 
 
 def adjust_band_wavelengths(band_wavelengths, band_response, data_wavelengths):
+    """
+    Clip a spectral band `band_response` over wavelengths `band_wavelengths` to only
+    include elements within the given `data_wavelengths`
+    """
     left, right = data_wavelengths[0], data_wavelengths[-1]
     indices = np.where((band_wavelengths >= left) & (band_wavelengths <= right))
     new_wavelengths = band_wavelengths[indices]
@@ -56,6 +83,10 @@ def adjust_band_wavelengths(band_wavelengths, band_response, data_wavelengths):
 
 
 def bandaverage(band_wavelengths, band_response, data_wavelengths, data_response):
+    """
+    Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
+    spectral band (`band_wavelengths`, `band_response`).
+    """
     if not check_spectral_overlap(band_wavelengths, band_response, data_wavelengths):
         return nan_values(data_response)
     else:
@@ -70,6 +101,12 @@ def bandaverage(band_wavelengths, band_response, data_wavelengths, data_response
 
 
 def bandaverage_multi(band_wavelengths, band_response, data_wavelengths, data_response_multi):
+    """
+    Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
+    spectral band (`band_wavelengths`, `band_response`).
+
+    Loops over multiple spectra at once.
+    """
     if not check_spectral_overlap(band_wavelengths, band_response, data_wavelengths):
         return nan_values(data_response_multi)
     else:
