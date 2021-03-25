@@ -54,20 +54,7 @@ def malus_error(angle0, angle1=0, I0=1., sigma_angle0=2., sigma_angle1=0.1, sigm
     return total
 
 
-def sRGB(I):
-    """
-    Apply the sRGB response to an intensity `I`.
-    """
-    u = I/255.
-    u_small = np.where(u < 0.0031308)
-    u_large = np.where(u >=0.0031308)
-    u[u_small] = 12.92 * u[u_small]
-    u[u_large] = 1.055 * u[u_large]**(1/2.4) - 0.055
-    u *= 255
-    return u
-
-
-def sRGB_generic(I, normalization=255, gamma=2.4):
+def sRGB(I, normalization=255, gamma=2.4):
     """
     Apply an sRGB-like response to an intensity `I`. The `normalization` and
     `gamma` are parameters.
@@ -97,9 +84,9 @@ def fit_sRGB_generic(intensities, jmeans):
         for i in range(jmeans.shape[1]):
             for j in range(jmeans.shape[2]):
                 for k in range(jmeans.shape[3]):
-                    popt, pcov = curve_fit(sRGB_generic, intensities, jmeans[:,i,j,k], p0=[1, 2.2])
+                    popt, pcov = curve_fit(sRGB, intensities, jmeans[:,i,j,k], p0=[1, 2.2])
                     normalizations[i,j,k], gammas[i,j,k] = popt
-                    jmeans_fit = sRGB_generic(intensities, *popt)
+                    jmeans_fit = sRGB(intensities, *popt)
                     Rsquares[i,j,k] = Rsquare(jmeans[:,i,j,k], jmeans_fit)
             if i%10 == 0:
                 print(100*i/jmeans.shape[1])
@@ -120,7 +107,7 @@ def sRGB_compare_gamma(intensities, jmeans, gamma):
     Rsquares = normalizations.copy()
     RMSes = normalizations.copy()
     RMSes_relative = normalizations.copy()
-    sRGB = lambda I, normalization: sRGB_generic(I, normalization, gamma=gamma)
+    sRGB = lambda I, normalization: sRGB(I, normalization, gamma=gamma)
     try:
         for i in range(jmeans.shape[1]):
             for j in range(jmeans.shape[2]):
