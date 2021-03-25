@@ -64,8 +64,22 @@ def sRGB(I, normalization=255, gamma=2.4):
     u_large = np.where(u >=0.0031308)
     u[u_small] = 12.92 * u[u_small]
     u[u_large] = 1.055 * u[u_large]**(1/gamma) - 0.055
-    u *= 255
+    u *= 255.
     u = np.clip(u, 0, 255)
+    return u
+
+
+def sRGB_inverse(I, normalization=255, gamma=2.4):
+    """
+    Apply an inverse sRGB-like response to data `I`. The `normalization` and
+    `gamma` are parameters.
+    """
+    u = I/255.
+    u_small = np.where(u <= 0.04045)
+    u_large = np.where(u >  0.04045)
+    u[u_small] = u[u_small]/12.92
+    u[u_large] = ((u[u_large]+0.055)/ 1.055)**gamma
+    u *= normalization
     return u
 
 
