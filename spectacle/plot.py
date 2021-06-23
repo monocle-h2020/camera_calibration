@@ -16,6 +16,12 @@ cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.G
          None: plt.cm.viridis}
 
 
+# Colour-blind friendly RGB colours, adapted from Okabe-Ito
+RGB_OkabeIto = [[213/255, 94/255,  0],
+                [0,       158/255, 115/255],
+                [0/255,   114/255, 178/255]]
+
+
 # Constants for easy iteration
 rgb = "rgb"
 RGB = "RGB"
