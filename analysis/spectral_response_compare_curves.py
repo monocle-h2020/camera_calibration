@@ -21,7 +21,7 @@ files = io.path_from_input(argv)
 save_to = io.results_folder/"spectrum_difference.pdf"
 
 # Load the data
-curves = [np.load(f) for f in files]
+curves = [np.loadtxt(f, delimiter=",", unpack=True) for f in files]
 print("Loaded data")
 
 # Wavelength grid to interpolate the curves to
