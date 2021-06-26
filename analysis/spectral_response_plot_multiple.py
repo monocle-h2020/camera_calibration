@@ -30,7 +30,7 @@ cameras = [io.load_camera(root) for root in roots]
 print(f"Loaded Camera objects: {cameras}")
 
 # Load the data
-curves = [np.load(f) for f in files]
+curves = [np.loadtxt(f, delimiter=",", unpack=True) for f in files]
 print("Loaded data")
 
 # Check that all necessary data are available
