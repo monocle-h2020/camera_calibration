@@ -21,6 +21,8 @@ RGB_OkabeIto = [[213/255, 94/255,  0],
                 [0,       158/255, 115/255],
                 [0/255,   114/255, 178/255]]
 
+RGBG_OkabeIto = RGB_OkabeIto + [RGB_OkabeIto[1]]  # Just duplicate the G element
+
 
 # Constants for easy iteration
 rgb = "rgb"
@@ -53,12 +55,12 @@ def _saveshow(saveto=None, close=True, **kwargs):
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
     for j in range(3):
-        func(x, y[j], c=rgb[j], **kwargs)
+        func(x, y[j], c=RGB_OkabeIto[j], **kwargs)
 
 
 def _rgbgplot(x, y, func=plt.plot, **kwargs):
     for j in range(4):
-        func(x, y[j], c=rgby[j], **kwargs)
+        func(x, y[j], c=RGBG_OkabeIto[j], **kwargs)
 
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
