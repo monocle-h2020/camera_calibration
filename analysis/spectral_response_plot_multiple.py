@@ -13,7 +13,7 @@ TO DO:
 
 import numpy as np
 from sys import argv
-from spectacle import io, plot
+from spectacle import io, plot, spectral
 from spectacle.general import RMS
 from matplotlib import pyplot as plt
 
@@ -48,14 +48,7 @@ plt.figure(figsize=(7,3), tight_layout=True)
 # Loop over the response curves
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
-
-    # Loop over the RGBG2 responses, plotting G in yellow and G2 in green
-    for j, c in enumerate("rybg"):
-        mean  = curve[1+j]
-        error = curve[5+j]
-
-        # Plot the curve
-        plt.plot(wavelength, mean, c=c, ls=style)
+    plot._rgbgplot(wavelength, curve[1:5], ls=style)
 
     # Add an invisible line for the legend
     plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera.name)
@@ -79,28 +72,17 @@ plt.figure(figsize=(7,3), tight_layout=True)
 # Loop over the response curves
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
-    means = curve[1:5]
-    errors = curve[5:]
 
     # Calculate and print the RMS difference between G and G2
     print(f"{camera.name:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
 
     # Combine G and G2 into a single curve
-    G = means[1::2].mean(axis=0)
-    G_errors = 0.5 * np.sqrt((errors[1::2]**2).sum(axis=0))
-    means_RGB = np.stack([means[0], G, means[2]])
-    errors_RGB = np.stack([errors[0], G_errors, errors[2]])
+    means_RGB = spectral.convert_RGBG2_to_RGB(curve[1:5])
 
-    # Loop over the RGB responses
-    for j, c in enumerate(plot.rgb):
-        mean  =  means_RGB[j]
-        error = errors_RGB[j]
-
-        # Plot the curve
-        plt.plot(wavelength, mean, c=c, ls=style)
+    plot._rgbplot(wavelength, means_RGB, ls=style)
 
     # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.name)
+    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera.name)
 
 # Plot parameters
 plt.grid(True)
@@ -122,23 +104,16 @@ plt.figure(figsize=(7,3), tight_layout=True)
 # Loop over the response curves
 for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
     wavelength = curve[0]
-    means = curve[1:5]
     errors = curve[5:]
 
     # Combine G and G2 into a single curve
-    G = means[1::2].mean(axis=0)
+    means_RGB = spectral.convert_RGBG2_to_RGB(curve[1:5])
     G_errors = 0.5 * np.sqrt((errors[1::2]**2).sum(axis=0))
-    means_RGB = np.stack([means[0], G, means[2]])
     errors_RGB = np.stack([errors[0], G_errors, errors[2]])
 
     SNR = means_RGB / errors_RGB
 
-    # Loop over the RGB responses
-    for j, c in enumerate(plot.rgb):
-        snr = SNR[j]
-
-        # Plot the curve
-        plt.plot(wavelength, snr, c=c, ls=style)
+    plot._rgbplot(wavelength, SNR, ls=style)
 
     # Add an invisible line for the legend
     plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.name)
