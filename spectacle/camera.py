@@ -489,7 +489,7 @@ class Camera(object):
 
     def convolve(self, data_wavelengths, data):
         """
-        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
+        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over
         the camera's spectral bands.
         """
         # If the SRFs have not been loaded yet, do so
@@ -505,7 +505,7 @@ class Camera(object):
 
     def convolve_multi(self, data_wavelengths, data):
         """
-        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over a
+        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over
         the camera's spectral bands.
 
         Loops over multiple spectra at once.
