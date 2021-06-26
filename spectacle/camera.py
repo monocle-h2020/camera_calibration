@@ -563,6 +563,16 @@ class Camera(object):
         RGBG_data = raw.demosaick(self.bayer_map, *data, color_desc=self.bands, **kwargs)
         return RGBG_data
 
+    def plot_spectral_response(self, saveto=None):
+        """
+        Plot the camera's spectral response function.
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        spectral.plot_spectral_responses([self.spectral_response[0]], [self.spectral_response[1:5]], labels=[self.name], saveto=saveto)
+
     def plot_gauss_maps(self, data, **kwargs):
         """
         Plot Gaussian maps using analyse.plot_gauss_maps.
