@@ -222,14 +222,11 @@ def convert_RGBG2_to_RGB(RGBG2_data):
 
     Assumes the `RGBG2_data` have the shape (4, number_of_wavelengths)
     """
-    # Split the channels
-    R, G, B, G2 = RGBG2_data
+    # Make a new array containing only the RGB data
+    RGB_data = RGBG2_data.copy()[:3]
 
-    # Take the average of the G and G2 channels
-    G_combined = np.mean([G, G2], axis=0)
-
-    # Stack the new RGB responses together and return the result
-    RGB_data = np.stack([R, G_combined, B])
+    # Replace the G axis with the average of G and G2
+    RGB_data[1] = np.mean(RGBG2_data[1::2], axis=0)
 
     return RGB_data
 
