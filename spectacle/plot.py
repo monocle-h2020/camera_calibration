@@ -54,13 +54,13 @@ def _saveshow(saveto=None, close=True, **kwargs):
 
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
-    for j in range(3):
-        func(x, y[j], c=RGB_OkabeIto[j], **kwargs)
+    for y_c, c in zip(y, RGB_OkabeIto):
+        func(x, y_c, c=c, **kwargs)
 
 
 def _rgbgplot(x, y, func=plt.plot, **kwargs):
-    for j in range(4):
-        func(x, y[j], c=RGBG_OkabeIto[j], **kwargs)
+    for y_c, c in zip(y, RGBG_OkabeIto):
+        func(x, y_c, c=c, **kwargs)
 
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
