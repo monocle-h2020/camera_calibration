@@ -32,42 +32,29 @@ save_to_cov_G = savefolder/f"monochromator_{label}_covariance_G_mean.pdf"
 # Find the filenames
 mean_files = sorted(folder.glob("*_mean.npy"))
 
-# Half-blocksize, to slice the arrays with
+# Blocksize, to slice the arrays with
+# This is the block size for RGBG2 data, meaning the mosaicked data will have
+# twice this size.
 blocksize = 100
-d = blocksize//2
 
-# Empty arrays to hold the output
-wvls  = np.zeros((len(mean_files)))
-means = np.zeros((len(mean_files), 4, (blocksize+1)**2))
+# Load first file to make a slice object
+mean0 = np.load(mean_files[0])
+midx, midy = np.array(mean0.shape)//2
+center = np.s_[midx-blocksize:midx+blocksize, midy-blocksize:midy+blocksize]
 
-# Loop over all files
-print("Wavelengths [nm]:", end=" ", flush=True)
-for j, mean_file in enumerate(mean_files):
-    # Load the mean data
-    m = np.load(mean_file)
+wvls, means = io.load_means(folder, selection=center)
 
-    # Bias correction
-    m = camera.correct_bias(m)
+# Bias correction
+means = camera.correct_bias(means, selection=center)
 
-    # Flat-field correction
-    m = camera.correct_flatfield(m)
+# Flat-field correction
+means = camera.correct_flatfield(means, selection=center)
 
-    # Demosaick the data
-    mean_RGBG = camera.demosaick(m)
+# Demosaick the data
+mean_RGBG = camera.demosaick(means, selection=center)
 
-    # Select the central blocksize x blocksize pixels
-    midx, midy = np.array(mean_RGBG.shape[1:])//2
-    sub = mean_RGBG[:,midx-d:midx+d+1,midy-d:midy+d+1]
-    sub = sub.reshape(4, -1)
-
-    # NaN if a channel's mean value is near saturation
-    sub[sub >= 0.95 * camera.saturation] = np.nan
-
-    # Store results
-    means[j] = sub
-    wvls[j] = mean_file.stem.split("_")[0]
-
-    print(wvls[j], end=" ", flush=True)
+# NaN if a channel's mean value is near saturation
+sub[sub >= 0.95 * camera.saturation] = np.nan
 
 # Reshape array: sort by filter first, then by wavelength
 # First len(wvls) elements are R, then G, then B, then G2
