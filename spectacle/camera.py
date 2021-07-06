@@ -399,7 +399,7 @@ class Camera(object):
         data_available = [data_type for data_type in data_available if getattr(self, data_type) is not None]
         return data_available
 
-    def correct_bias(self, *data, **kwargs):
+    def correct_bias(self, data, **kwargs):
         """
         Correct data for bias using this sensor's data.
         Bias data are loaded from the root folder or from the camera information.
@@ -409,7 +409,7 @@ class Camera(object):
             self._load_bias_map()
 
         # Apply the bias correction
-        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
+        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, data, **kwargs)
         return data_corrected
 
     def correct_dark_current(self, exposure_time, *data, **kwargs):
