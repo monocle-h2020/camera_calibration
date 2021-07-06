@@ -22,6 +22,7 @@ RGB_OkabeIto = [[213/255, 94/255,  0],
                 [0/255,   114/255, 178/255]]
 
 RGBG_OkabeIto = RGB_OkabeIto + [RGB_OkabeIto[1]]  # Just duplicate the G element
+kRGB_OkabeIto = ["k", *RGB_OkabeIto]  # black + RGB
 
 
 # Constants for easy iteration
@@ -185,21 +186,36 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
 
 
 def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", saveto=None):
+    """
+    Make a histogram of RGBG data with panels in black (all combined), red, green
+    (G + G2 combined), and blue.
+    """
+    # Get upper and lower bounds for the axes
     if xmin == "auto":
         xmin = symmetric_percentiles(data_RGBG)[0]
     if xmax == "auto":
         xmax = symmetric_percentiles(data_RGBG)[1]
+
+    # Unravel the data
     data_KRGB = [data_RGBG.ravel(), data_RGBG[0].ravel(), data_RGBG[1::2].ravel(), data_RGBG[2].ravel()]
+
+    # Make the figure
     fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-    for data, colour, ax in zip(data_KRGB, "krgb", axs):
+
+    # Loop over the different channels and plot them
+    for data, colour, ax in zip(data_KRGB, kRGB_OkabeIto, axs):
         ax.hist(data.ravel(), bins=np.linspace(xmin, xmax, nrbins), color=colour, edgecolor=colour, density=True)
-        ax.grid(True)
+        ax.grid(ls="--")
+
+    # Plot settings
     for ax in axs[:3]:
         ax.xaxis.set_ticks_position("none")
     axs[0].set_xlim(xmin, xmax)
     axs[3].set_xlabel(xlabel)
     axs[0].set_yscale(yscale)
     axs[2].set_ylabel(25*" "+"Probability density")
+
+    # Save or show the result
     _saveshow(saveto)
 
 
