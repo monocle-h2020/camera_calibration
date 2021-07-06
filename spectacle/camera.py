@@ -399,7 +399,7 @@ class Camera(object):
         data_available = [data_type for data_type in data_available if getattr(self, data_type) is not None]
         return data_available
 
-    def correct_bias(self, *data, **kwargs):
+    def correct_bias(self, data, **kwargs):
         """
         Correct data for bias using this sensor's data.
         Bias data are loaded from the root folder or from the camera information.
@@ -409,7 +409,7 @@ class Camera(object):
             self._load_bias_map()
 
         # Apply the bias correction
-        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
+        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, data, **kwargs)
         return data_corrected
 
     def correct_dark_current(self, exposure_time, *data, **kwargs):
@@ -487,6 +487,40 @@ class Camera(object):
         data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
         return data_normalised
 
+    def convolve(self, data_wavelengths, data):
+        """
+        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over
+        the camera's spectral bands.
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        # Assert that SRFs were loaded
+        assert self.spectral_response is not None, "Spectral response functions unavailable"
+
+        # If SRFs were available, apply spectral convolution
+        data_convolved = np.array([spectral.convolve(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
+        return data_convolved
+
+    def convolve_multi(self, data_wavelengths, data):
+        """
+        Spectral convolution of a data set (`data_wavelengths`, `data_response`) over
+        the camera's spectral bands.
+
+        Loops over multiple spectra at once.
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        # Assert that SRFs were loaded
+        assert self.spectral_response is not None, "Spectral response functions unavailable"
+
+        # If SRFs were available, apply spectral convolution
+        data_convolved = np.array([spectral.convolve_multi(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
+        return data_convolved
+
     def convert_to_XYZ(self, *data, axis=None):
         """
         Convert RGB data to XYZ using the sensor's conversion matrix.
@@ -528,6 +562,16 @@ class Camera(object):
         """
         RGBG_data = raw.demosaick(self.bayer_map, *data, color_desc=self.bands, **kwargs)
         return RGBG_data
+
+    def plot_spectral_response(self, saveto=None):
+        """
+        Plot the camera's spectral response function.
+        """
+        # If the SRFs have not been loaded yet, do so
+        if not hasattr(self, "spectral_response"):
+            self._load_spectral_response()
+
+        spectral.plot_spectral_responses([self.spectral_response[0]], [self.spectral_response[1:5]], labels=[self.name], saveto=saveto)
 
     def plot_gauss_maps(self, data, **kwargs):
         """

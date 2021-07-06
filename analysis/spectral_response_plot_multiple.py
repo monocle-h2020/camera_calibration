@@ -13,9 +13,8 @@ TO DO:
 
 import numpy as np
 from sys import argv
-from spectacle import io, plot
+from spectacle import io, spectral
 from spectacle.general import RMS
-from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
 files = io.path_from_input(argv)
@@ -30,127 +29,39 @@ cameras = [io.load_camera(root) for root in roots]
 print(f"Loaded Camera objects: {cameras}")
 
 # Load the data
-curves = [np.load(f) for f in files]
+curves = [np.loadtxt(f, delimiter=",", unpack=True) for f in files]
 print("Loaded data")
 
 # Check that all necessary data are available
 assert len(cameras) == len(curves)
 
 number_of_cameras = len(cameras)
+camera_names = [camera.name for camera in cameras]
 
 # Line styles for the individual camera spectra
 styles = ["-", "--", ":", "-."]
 
+# Get the wavelengths from each dataset
+wavelengths = [curve[0] for curve in curves]
+SRFs_RGBG2 = [curve[1:5] for curve in curves]
+SRFs_err_RGBG2 = [curve[5:] for curve in curves]
+
 # Plot the spectral responses in the RGBG2 filters
-# Create a figure to hold the plot
-plt.figure(figsize=(7,3), tight_layout=True)
-
-# Loop over the response curves
-for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
-    wavelength = curve[0]
-
-    # Loop over the RGBG2 responses, plotting G in yellow and G2 in green
-    for j, c in enumerate("rybg"):
-        mean  = curve[1+j]
-        error = curve[5+j]
-
-        # Plot the curve
-        plt.plot(wavelength, mean, c=c, ls=style)
-
-    # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=camera.name)
-
-# Plot parameters
-plt.grid(True)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(390, 700)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Relative sensitivity")
-plt.ylim(0, 1.02)
-plt.legend(loc="best")
-plt.savefig(save_to_rgbg2)
-plt.close()
+spectral.plot_spectral_responses(wavelengths, SRFs_RGBG2, labels=camera_names, saveto=save_to_rgbg2)
 print(f"Saved RGBG2 plot to '{save_to_rgbg2}'")
 
 # Plot the spectral responses in the RGB filters, with G the mean of G and G2
-# Create a figure to hold the plot
-plt.figure(figsize=(7,3), tight_layout=True)
-
-# Loop over the response curves
-for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
-    wavelength = curve[0]
-    means = curve[1:5]
-    errors = curve[5:]
-
-    # Calculate and print the RMS difference between G and G2
-    print(f"{camera.name:>15} RMS(G-G2) = {RMS(curve[2] - curve[4]):.4f}")
-
-    # Combine G and G2 into a single curve
-    G = means[1::2].mean(axis=0)
-    G_errors = 0.5 * np.sqrt((errors[1::2]**2).sum(axis=0))
-    means_RGB = np.stack([means[0], G, means[2]])
-    errors_RGB = np.stack([errors[0], G_errors, errors[2]])
-
-    # Loop over the RGB responses
-    for j, c in enumerate(plot.rgb):
-        mean  =  means_RGB[j]
-        error = errors_RGB[j]
-
-        # Plot the curve
-        plt.plot(wavelength, mean, c=c, ls=style)
-
-    # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.name)
-
-# Plot parameters
-plt.grid(True)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(390, 700)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Relative sensitivity")
-plt.ylim(0, 1.02)
-plt.legend(loc="best")
-plt.savefig(save_to_rgb)
-plt.close()
+SRFs_RGB = [spectral.convert_RGBG2_to_RGB(SRF_RGBG2) for SRF_RGBG2 in SRFs_RGBG2]
+spectral.plot_spectral_responses(wavelengths, SRFs_RGB, labels=camera_names, saveto=save_to_rgb)
 print(f"Saved RGB plot to '{save_to_rgb}'")
 
-# Plot the signal-to-noise ratio (SNR) in the RGB filters, with G the mean of G
-# and G2
-# Create a figure to hold the plot
-plt.figure(figsize=(7,3), tight_layout=True)
+# Print the typical differences between G and G2 for each camera
+for camera, curve in zip(cameras, SRFs_RGBG2):
+    # Calculate and print the RMS difference between G and G2
+    print(f"{camera.name:>20} RMS(G-G2) = {RMS(curve[1] - curve[3]):.4f}")
 
-# Loop over the response curves
-for i, (curve, camera, style) in enumerate(zip(curves, cameras, styles)):
-    wavelength = curve[0]
-    means = curve[1:5]
-    errors = curve[5:]
-
-    # Combine G and G2 into a single curve
-    G = means[1::2].mean(axis=0)
-    G_errors = 0.5 * np.sqrt((errors[1::2]**2).sum(axis=0))
-    means_RGB = np.stack([means[0], G, means[2]])
-    errors_RGB = np.stack([errors[0], G_errors, errors[2]])
-
-    SNR = means_RGB / errors_RGB
-
-    # Loop over the RGB responses
-    for j, c in enumerate(plot.rgb):
-        snr = SNR[j]
-
-        # Plot the curve
-        plt.plot(wavelength, snr, c=c, ls=style)
-
-    # Add an invisible line for the legend
-    plt.plot([-1000,-1001], [-1000,-1001], c='k',ls=style, label=camera.name)
-
-# Plot parameters
-plt.grid(True)
-plt.xticks(np.arange(0,1000,50))
-plt.xlim(390, 700)
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Signal-to-noise ratio (SNR)")
-plt.ylim(ymin=0)
-plt.legend(loc="best")
-plt.savefig(save_to_snr)
-plt.close()
+# Plot the signal-to-noise ratio (SNR) in the RGB filters
+SRFs_err_RGB = [spectral.convert_RGBG2_to_RGB_uncertainties(SRF_err_RGBG2) for SRF_err_RGBG2 in SRFs_err_RGBG2]
+SNRs = [SRF/SRF_err for SRF, SRF_err in zip(SRFs_RGB, SRFs_err_RGB)]
+spectral.plot_spectral_responses(wavelengths, SNRs, labels=camera_names, ylabel="Signal-to-noise ratio (SNR)", ylim=(0, None), saveto=save_to_snr)
 print(f"Saved SNR plot to '{save_to_snr}'")

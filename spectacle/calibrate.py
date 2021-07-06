@@ -20,7 +20,7 @@ from .raw import demosaick
 from .spectral import load_spectral_response, load_spectral_bands, convert_RGBG2_to_RGB
 
 
-def correct_bias(root, *data):
+def correct_bias(root, data):
     """
     Perform a bias correction on data using a bias map from
     `root`/calibration/
@@ -37,7 +37,7 @@ def correct_bias(root, *data):
         print(f"Using bias map from '{origin}'")
 
     # Correct each given array
-    data_corrected = bias_readnoise.correct_bias_from_map(bias, *data)
+    data_corrected = bias_readnoise.correct_bias_from_map(bias, data)
 
     return data_corrected
 

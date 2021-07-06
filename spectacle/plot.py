@@ -13,7 +13,15 @@ cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.G
          "r": plt.cm.Reds, "g": plt.cm.Greens, "b": plt.cm.Blues, "g2": plt.cm.Greens,
          "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r, "G2r": plt.cm.Greens_r,
          "rr": plt.cm.Reds_r, "gr": plt.cm.Greens_r, "br": plt.cm.Blues_r, "g2r": plt.cm.Greens_r,
-         None: plt.cm.viridis}
+         None: plt.cm.cividis}
+
+
+# Colour-blind friendly RGB colours, adapted from Okabe-Ito
+RGB_OkabeIto = [[213/255, 94/255,  0],
+                [0,       158/255, 115/255],
+                [0/255,   114/255, 178/255]]
+
+RGBG_OkabeIto = RGB_OkabeIto + [RGB_OkabeIto[1]]  # Just duplicate the G element
 
 
 # Constants for easy iteration
@@ -46,13 +54,13 @@ def _saveshow(saveto=None, close=True, **kwargs):
 
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
-    for j in range(3):
-        func(x, y[j], c=rgb[j], **kwargs)
+    for y_c, c in zip(y, RGB_OkabeIto):
+        func(x, y_c, c=c, **kwargs)
 
 
 def _rgbgplot(x, y, func=plt.plot, **kwargs):
-    for j in range(4):
-        func(x, y[j], c=rgby[j], **kwargs)
+    for y_c, c in zip(y, RGBG_OkabeIto):
+        func(x, y_c, c=c, **kwargs)
 
 
 def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kwargs):
@@ -123,7 +131,7 @@ def colorbar(mappable, location="bottom", label=""):
 
 
 def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
-    cmap = cmaps[colour+"r"] if colour else plt.cm.viridis
+    cmap = cmaps[colour+"r"] if colour else plt.cm.cividis
     plt.figure(figsize=(3.3,3*data.shape[0]/data.shape[1]), tight_layout=True)
     img = plt.imshow(data, cmap=cmap, **kwargs)
     plt.xticks([])

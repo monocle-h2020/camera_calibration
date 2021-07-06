@@ -13,7 +13,7 @@ TO DO:
 
 import numpy as np
 from sys import argv
-from spectacle import io, plot
+from spectacle import io, spectral
 from spectacle.general import RMS
 
 # Get the data folder from the command line
@@ -21,7 +21,7 @@ files = io.path_from_input(argv)
 save_to = io.results_folder/"spectrum_difference.pdf"
 
 # Load the data
-curves = [np.load(f) for f in files]
+curves = [np.loadtxt(f, delimiter=",", unpack=True) for f in files]
 print("Loaded data")
 
 # Wavelength grid to interpolate the curves to
@@ -47,7 +47,8 @@ new_curves = np.array([interpolate_curve(curve, wavelength_grid) for curve in cu
 diffs = new_curves[0,1:5] - new_curves[1,1:5]
 
 # Plot the difference
-plot.plot_spectrum(wavelength_grid, diffs, ylabel="Difference in relative sensitivity", saveto=save_to)
+ylim = 1.05*np.nanmin(diffs), 1.05*np.nanmax(diffs)
+spectral.plot_spectral_responses([wavelength_grid], [diffs], labels=[None], ylabel="Difference in relative sensitivity", ylim=ylim, saveto=save_to)
 print(f"Saved plot to '{save_to}'")
 
 # Calculate the RMS difference in total and per band

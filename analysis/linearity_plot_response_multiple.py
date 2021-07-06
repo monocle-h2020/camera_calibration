@@ -107,8 +107,8 @@ for j, c in enumerate(plot.rgbg2):
         line_raw = np.clip(np.polyval(fit_raw, x), 0, camera.saturation)
 
         non_saturated_indices_jpeg = np.where(mean_jpeg_c < 240)
-        fit_jpeg, pc = lin.curve_fit(lin.sRGB_generic, intensities[non_saturated_indices_jpeg], mean_jpeg_c[non_saturated_indices_jpeg], p0=[1, 2.2])
-        line_jpeg = lin.sRGB_generic(x, *fit_jpeg)
+        fit_jpeg, pc = lin.curve_fit(lin.sRGB, intensities[non_saturated_indices_jpeg], mean_jpeg_c[non_saturated_indices_jpeg], p0=[1, 2.2])
+        line_jpeg = lin.sRGB(x, *fit_jpeg)
 
         # Calculate the residuals of the RAW/JPEG response compared to the
         # linear/sRGB fit, and relative to the dynamic range
@@ -116,7 +116,7 @@ for j, c in enumerate(plot.rgbg2):
         residuals_raw = mean_raw_c - y_raw
         residuals_raw_percentage = 100 * (residuals_raw / camera.saturation)
 
-        y_jpeg = lin.sRGB_generic(intensities, *fit_jpeg)
+        y_jpeg = lin.sRGB(intensities, *fit_jpeg)
         residuals_jpeg = mean_jpeg_c - y_jpeg
         residuals_jpeg_percentage = 100 * (residuals_jpeg / 255)
 

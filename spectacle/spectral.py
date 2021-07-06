@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from . import io, plot
 from .general import return_with_filename, apply_to_multiple_args, deprecation
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
+from ._spectral_convolution import convolve, convolve_multi
 
 try:
     from colorio._tools import plot_flat_gamut
@@ -13,6 +14,9 @@ except ImportError:
 wavelengths_interpolated = np.arange(390, 701, 1)
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
+    """
+    Calculate the effective bandwidth of a spectral band.
+    """
     response_normalised = response / response.max(axis=axis)
     return np.trapz(response_normalised, x=wavelengths, axis=axis, **kwargs)
 
@@ -155,6 +159,31 @@ def load_spectral_response(root, return_filename=False):
     return return_with_filename(spectral_response, filename, return_filename)
 
 
+def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":", "-."], xlim=(390, 700), ylim=(0,1.02), ylabel="Relative sensitivity", saveto=None):
+    """
+    Plot spectral responses (`SRFs`) together in one panel.
+    """
+    # Create a figure to hold the plot
+    plt.figure(figsize=(7,3), tight_layout=True)
+
+    # Loop over the response curves
+    for wavelength, SRF, label, style in zip(wavelengths, SRFs, labels, linestyles):
+        plot._rgbgplot(wavelength, SRF, ls=style)
+
+        # Add an invisible line for the legend
+        plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label)
+
+    # Plot parameters
+    plt.grid(True)
+    plt.xticks(np.arange(0,1000,50))
+    plt.xlim(*xlim)
+    plt.xlabel("Wavelength [nm]")
+    plt.ylabel(ylabel)
+    plt.ylim(*ylim)
+    plt.legend(loc="best")
+    plot._saveshow(saveto, bbox_inches="tight")
+
+
 def load_spectral_bands(root, return_filename=False):
     """
     Load the effective spectral bandwidths located at
@@ -192,20 +221,29 @@ def convert_RGBG2_to_RGB(RGBG2_data):
     channels.
 
     Assumes the `RGBG2_data` have the shape (4, number_of_wavelengths)
-
-    To do:
-        - Error propagation
     """
-    # Split the channels
-    R, G, B, G2 = RGBG2_data
+    # Make a new array containing only the RGB data
+    RGB_data = RGBG2_data.copy()[:3]
 
-    # Take the average of the G and G2 channels
-    G_combined = np.mean([G, G2], axis=0)
-
-    # Stack the new RGB responses together and return the result
-    RGB_data = np.stack([R, G_combined, B])
+    # Replace the G axis with the average of G and G2
+    RGB_data[1] = np.mean(RGBG2_data[1::2], axis=0)
 
     return RGB_data
+
+
+def convert_RGBG2_to_RGB_uncertainties(uncertainties_RGBG2):
+    """
+    Convert uncertainties from RGBG2 to RGB.
+
+    Assumes the `uncertainties_RGBG2` have the shape (4, number_of_wavelengths)
+    """
+    # Make a new array containing only the RGB data
+    uncertainties_RGB = uncertainties_RGBG2.copy()[:3]
+
+    # Replace the G axis with the average of G and G2
+    uncertainties_RGB[1] = 0.5 * np.sqrt(uncertainties_RGBG2[1]**2 + uncertainties_RGBG2[3]**2)
+
+    return uncertainties_RGB
 
 
 def _correct_for_srf(data_element, spectral_response_interpolated, wavelengths):
