@@ -13,7 +13,7 @@ cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.G
          "r": plt.cm.Reds, "g": plt.cm.Greens, "b": plt.cm.Blues, "g2": plt.cm.Greens,
          "Rr": plt.cm.Reds_r, "Gr": plt.cm.Greens_r, "Br": plt.cm.Blues_r, "G2r": plt.cm.Greens_r,
          "rr": plt.cm.Reds_r, "gr": plt.cm.Greens_r, "br": plt.cm.Blues_r, "g2r": plt.cm.Greens_r,
-         None: plt.cm.viridis}
+         None: plt.cm.cividis}
 
 
 # Colour-blind friendly RGB colours, adapted from Okabe-Ito
@@ -131,7 +131,7 @@ def colorbar(mappable, location="bottom", label=""):
 
 
 def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
-    cmap = cmaps[colour+"r"] if colour else plt.cm.viridis
+    cmap = cmaps[colour+"r"] if colour else plt.cm.cividis
     plt.figure(figsize=(3.3,3*data.shape[0]/data.shape[1]), tight_layout=True)
     img = plt.imshow(data, cmap=cmap, **kwargs)
     plt.xticks([])
