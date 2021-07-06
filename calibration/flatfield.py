@@ -14,7 +14,8 @@ To do:
 import numpy as np
 from sys import argv
 from spectacle import io, flat
-from spectacle.general import gaussMd
+from spectacle.general import gaussMd, correlation_from_covariance, uncertainty_from_covariance
+from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
 meanfile = io.path_from_input(argv)
@@ -69,15 +70,27 @@ correction_raw_clipped = flat.clip_data(correction_raw)
 
 # Fit a radial vignetting model
 print("Fitting...")
-parameters, standard_errors = flat.fit_vignette_radial(correction_clipped)
+parameters, covariance = flat.fit_vignette_radial(correction_clipped)
+uncertainties = uncertainty_from_covariance(covariance)
+correlation = correlation_from_covariance(covariance)
 
 # Output the best-fitting model parameters and errors
-print("Parameter +- Error    ; Relative error")
-for p, s in zip(parameters, standard_errors):
-    print(f"{p:+.6f} +- {s:.6f} ; {abs(100*s/p):.3f} %")
+print("Parameter +- Uncertainty ; Relative uncertainty")
+for p, s in zip(parameters, uncertainties):
+    print(f"{p:+.6f} +- {s:.6f}    ; {abs(100*s/p):.3f} %")
+
+# Plot the correlation matrix
+plt.imshow(correlation, cmap=plt.cm.get_cmap("cividis", 8), aspect="equal", origin="lower", vmin=-1, vmax=1)
+plt.colorbar()
+plt.xlabel("Parameters") ; plt.ylabel("Parameters")
+plt.xticks(np.arange(7), flat.parameter_labels_latex)
+plt.yticks(np.arange(7), flat.parameter_labels_latex)
+plt.title("Correlation matrix")
+plt.show()
+plt.close()
 
 # Save the best-fitting model parameters
-result_array = np.array([*parameters, *standard_errors])[:,np.newaxis].T
+result_array = np.array([*parameters, *uncertainties])[:,np.newaxis].T
 save_locations = [save_to_parameters_intermediary, save_to_parameters_calibration] if overwrite_calibration else [save_to_parameters_intermediary]
 for saveto in save_locations:
     np.savetxt(saveto, result_array, header=", ".join(flat.parameter_labels + flat.parameter_error_labels), delimiter=",")

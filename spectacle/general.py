@@ -137,6 +137,26 @@ def RMS(x, **kwargs):
     return np.sqrt(np.mean(x**2, **kwargs))
 
 
+def uncertainty_from_covariance(covariance):
+    """
+    Calculate a naive uncertainty estimate from a covariance matrix.
+    This is just the square root of the diagonal.
+    """
+    return np.sqrt(np.diag(covariance))
+
+
+def correlation_from_covariance(covariance):
+    """
+    Convert a covariance matrix into a correlation matrix
+    https://gist.github.com/wiso/ce2a9919ded228838703c1c7c7dad13b
+    """
+    v = uncertainty_from_covariance(covariance)
+    outer_v = np.outer(v, v)
+    correlation = covariance / outer_v
+    correlation[covariance == 0] = 0
+    return correlation
+
+
 def generate_XY(shape):
     """
     Given a `shape`, generate a meshgrid of index values in both directions as

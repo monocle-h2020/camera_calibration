@@ -7,6 +7,7 @@ from .general import gaussMd, curve_fit, generate_XY, return_with_filename, appl
 from . import raw, io
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
+parameter_labels_latex = ["$k_0$", "$k_1$", "$k_2$", "$k_3$", "$k_4$", r"$\hat{c}_x$", r"$\hat{c}_y$"]
 parameter_error_labels = ["k0_err", "k1_err", "k2_err", "k3_err", "k4_err", "cx_err", "cy_err"]
 
 _clip_border = np.s_[250:-250, 250:-250]
@@ -90,9 +91,8 @@ def fit_vignette_radial(correction_observed, **kwargs):
 
     # Fit a vignette profile
     popt, pcov = curve_fit(vignette_radial_fixed_shape, XY, correction_flattened, p0=[1, 2, -5, 5, -2, 0.5, 0.5], **kwargs)
-    standard_errors = np.sqrt(np.diag(pcov))
 
-    return popt, standard_errors
+    return popt, pcov
 
 
 def apply_vignette_radial(shape, parameters):
