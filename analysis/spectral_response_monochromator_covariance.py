@@ -43,7 +43,8 @@ midx, midy = np.array(mean0.shape)//2
 center = np.s_[midx-blocksize:midx+blocksize, midy-blocksize:midy+blocksize]
 
 # Load all files
-wvls, means = io.load_means(folder, selection=center)
+splitter = lambda p: float(p.stem.split("_")[0])
+wvls, means = io.load_means(folder, selection=center, retrieve_value=splitter)
 
 # NaN if a channel's mean value is near saturation
 means[means >= 0.95 * camera.saturation] = np.nan
@@ -55,19 +56,23 @@ means = camera.correct_bias(means, selection=center)
 means = camera.correct_flatfield(means, selection=center)
 
 # Demosaick the data
-mean_RGBG = np.array(camera.demosaick(*means, selection=center))
+means_RGBG2 = np.array(camera.demosaick(*means, selection=center))
 
-# Reshape array: sort by filter first, then by wavelength
-# First len(wvls) elements are R, then G, then B, then G2
-means_RGBG2 = np.concatenate([means[:,0], means[:,1], means[:,2], means[:,3]])
+# Reshape array
+# First remove the spatial information
+means_flattened = np.reshape(means_RGBG2, (len(wvls), 4, -1))
+# Then swap the wavelength and filter axes
+means_flattened = np.swapaxes(means_flattened, 0, 1)
+# Finally, flatten the array further
+means_flattened = np.reshape(means_flattened, (4*len(wvls), -1))
 
 # Indices to select R, G, B, and G2
 R, G, B, G2 = [np.s_[len(wvls)*j : len(wvls)*(j+1)] for j in range(4)]
 RGBG2 = [R, G, B, G2]
 
 # Calculate mean SRF and covariance between all elements
-srf = np.nanmean(means_RGBG2, axis=1)
-srf_cov = np.cov(means_RGBG2)
+srf = np.nanmean(means_flattened, axis=1)
+srf_cov = np.cov(means_flattened)
 
 # Calculate the variance (ignoring covariance) from the diagonal elements
 diag = np.where(np.eye(len(wvls) * 4))
