@@ -75,8 +75,7 @@ srf = np.nanmean(means_flattened, axis=1)
 srf_cov = np.cov(means_flattened)
 
 # Calculate the variance (ignoring covariance) from the diagonal elements
-diag = np.where(np.eye(len(wvls) * 4))
-srf_var = srf_cov[diag]
+srf_var = np.diag(srf_cov)
 srf_std = np.sqrt(srf_var)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
@@ -138,8 +137,7 @@ M_G_G2[G,G2] = 0.5*I
 srf_G = M_G_G2 @ srf
 srf_G_cov = M_G_G2 @ srf_cov @ M_G_G2.T
 
-diag = np.where(np.eye(len(wvls) * 3))
-srf_G_var = srf_G_cov[diag]
+srf_G_var = np.diag(srf_G_cov)
 srf_G_std = np.sqrt(srf_G_var)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
