@@ -11,7 +11,7 @@ Command line arguments:
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
-from spectacle import io, spectral
+from spectacle import io, spectral, plot
 from spectacle.general import correlation_from_covariance
 
 # Get the data folder from the command line
@@ -108,28 +108,12 @@ plt.close()
 ticks = [(ind.start + ind.stop) / 2 for ind in RGBG2]
 ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
 
-plt.figure(figsize=(5,5))
-plt.imshow(srf_cov, cmap="cividis", origin="lower")
-plt.colorbar(label="Covariance")
-plt.xticks(ticks, ticklabels)
-plt.yticks(ticks, ticklabels)
-plt.title(f"Covariances in {folder.stem}")
-plt.savefig(save_to_cov, bbox_inches="tight")
-plt.show()
-plt.close()
+plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {folder.stem}", ticks=ticks, ticklabels=ticklabels, saveto=save_to_cov)
 
 # Plot the correlations
 srf_correlation = correlation_from_covariance(srf_cov)
 
-plt.figure(figsize=(5,5))
-plt.imshow(srf_correlation, cmap=plt.cm.get_cmap("cividis", 8), vmin=-1, vmax=1, origin="lower")
-plt.colorbar(label="Correlation")
-plt.xticks(ticks, ticklabels)
-plt.yticks(ticks, ticklabels)
-plt.title(f"Correlations in {folder.stem}")
-plt.savefig(save_to_corr, bbox_inches="tight")
-plt.show()
-plt.close()
+plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {folder.stem}", nr_bins=8, vmin=-1, vmax=1, ticks=ticks, ticklabels=ticklabels, saveto=save_to_corr)
 
 # Plot an example
 for c, ind in zip("rgby", RGBG2):
@@ -182,12 +166,4 @@ plt.close()
 # Plot the covariances
 ticks, ticklabels = ticks[:3], ticklabels[:3]
 
-plt.figure(figsize=(5,5))
-plt.imshow(srf_G_cov, cmap="cividis")
-plt.colorbar(label="Covariance")
-plt.xticks(ticks, ticklabels)
-plt.yticks(ticks, ticklabels)
-plt.title(f"Covariances in {folder.stem} (mean $G, G_2$)")
-plt.savefig(save_to_cov_G, bbox_inches="tight")
-plt.show()
-plt.close()
+plot.plot_covariance_matrix(srf_G_cov, title=f"Covariances in {folder.stem} (mean $G, G_2$)", ticks=ticks, ticklabels=ticklabels, saveto=save_to_cov_G)

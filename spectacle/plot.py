@@ -295,3 +295,25 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
 
+
+def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, ticks=None, ticklabels=None, saveto=None, **kwargs):
+    """
+    Plot a covariance (or correlation) matrix.
+    """
+    # Get a segmented colourmap if wanted
+    cmap = plt.cm.get_cmap("cividis", nr_bins)
+
+    # Make a figure
+    plt.figure(figsize=(5,5))
+
+    # Plot the data
+    plt.imshow(matrix, cmap=cmap, origin="lower", **kwargs)
+
+    # Labels on the axes and colour bar
+    plt.colorbar(label=label)
+    plt.xticks(ticks, ticklabels)
+    plt.yticks(ticks, ticklabels)
+    plt.title(title)
+
+    # Save/show result
+    _saveshow(saveto)
