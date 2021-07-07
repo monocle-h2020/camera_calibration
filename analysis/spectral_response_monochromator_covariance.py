@@ -42,6 +42,7 @@ mean0 = np.load(mean_files[0])
 midx, midy = np.array(mean0.shape)//2
 center = np.s_[midx-blocksize:midx+blocksize, midy-blocksize:midy+blocksize]
 
+# Load all data
 wvls, means = io.load_means(folder, selection=center)
 
 # Bias correction
@@ -51,7 +52,7 @@ means = camera.correct_bias(means, selection=center)
 means = camera.correct_flatfield(means, selection=center)
 
 # Demosaick the data
-mean_RGBG = camera.demosaick(means, selection=center)
+mean_RGBG = np.array(camera.demosaick(*means, selection=center))
 
 # NaN if a channel's mean value is near saturation
 sub[sub >= 0.95 * camera.saturation] = np.nan

@@ -14,6 +14,10 @@ from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
 from .general import return_with_filename, find_matching_file
 
 
+# Empty slice that just selects all data - used as default argument
+all_data = np.s_[:]
+
+
 def find_root_folder(input_path):
     """
     For a given `input_path`, find the root folder, containing the standard
@@ -399,7 +403,7 @@ class Camera(object):
         data_available = [data_type for data_type in data_available if getattr(self, data_type) is not None]
         return data_available
 
-    def correct_bias(self, data, **kwargs):
+    def correct_bias(self, data, selection=all_data):
         """
         Correct data for bias using this sensor's data.
         Bias data are loaded from the root folder or from the camera information.
@@ -408,8 +412,11 @@ class Camera(object):
         if not hasattr(self, "bias_map"):
             self._load_bias_map()
 
+        # Select the relevant data
+        bias_map = self.bias_map[selection]
+
         # Apply the bias correction
-        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, data, **kwargs)
+        data_corrected = bias_readnoise.correct_bias_from_map(bias_map, data)
         return data_corrected
 
     def correct_dark_current(self, exposure_time, *data, **kwargs):
@@ -455,7 +462,7 @@ class Camera(object):
         data_converted = gain.convert_to_photoelectrons_from_map(self.gain_map, *data)
         return data_converted
 
-    def correct_flatfield(self, *data, **kwargs):
+    def correct_flatfield(self, *data, selection=all_data, **kwargs):
         """
         Correct data for flatfield using this sensor's flatfield data.
         The flatfield data are loaded from the root folder.
@@ -467,8 +474,11 @@ class Camera(object):
         # Assert that a flatfield map was loaded
         assert self.flatfield_map is not None, "Flatfield map unavailable"
 
+        # Select the relevant data
+        flatfield_map = self.flatfield_map[selection]
+
         # If a flatfield map was available, apply it
-        data_corrected = flat.correct_flatfield_from_map(self.flatfield_map, *data, **kwargs)
+        data_corrected = flat.correct_flatfield_from_map(flatfield_map, *data, **kwargs)
         return data_corrected
 
     def correct_spectral_response(self, data_wavelengths, *data):
@@ -556,11 +566,15 @@ class Camera(object):
 
         return colour_space
 
-    def demosaick(self, *data, **kwargs):
+    def demosaick(self, *data, selection=all_data, **kwargs):
         """
         Demosaick data using this camera's Bayer pattern.
         """
-        RGBG_data = raw.demosaick(self.bayer_map, *data, color_desc=self.bands, **kwargs)
+        # Select the relevant data
+        bayer_map = self.bayer_map[selection]
+
+        # Demosaick the data
+        RGBG_data = raw.demosaick(bayer_map, *data, color_desc=self.bands, **kwargs)
         return RGBG_data
 
     def plot_spectral_response(self, saveto=None):
