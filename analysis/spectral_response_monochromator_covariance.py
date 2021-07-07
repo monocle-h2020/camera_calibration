@@ -133,11 +133,11 @@ plt.close()
 
 # Plot an example
 for c, ind in zip("rgby", RGBG2):
-    plt.plot(wvls, srf_cov[G,ind][0], c=c)
+    plt.plot(wvls, srf_correlation[G,ind][0], c=c)
 plt.xlabel("Wavelength [nm]")
-plt.ylabel("Covariance")
-plt.ylim(ymin=0)
+plt.ylabel("Correlation")
 plt.xlim(wvls[0], wvls[-1])
+plt.grid(ls="--")
 plt.show()
 plt.close()
 
@@ -191,4 +191,3 @@ plt.title(f"Covariances in {folder.stem} (mean $G, G_2$)")
 plt.savefig(save_to_cov_G, bbox_inches="tight")
 plt.show()
 plt.close()
-
