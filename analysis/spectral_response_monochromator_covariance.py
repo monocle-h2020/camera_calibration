@@ -12,6 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
 from spectacle import io, spectral
+from spectacle.general import correlation_from_covariance
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -26,6 +27,7 @@ print(f"Loaded Camera object: {camera}")
 savefolder = camera.filename_analysis("spectral_response", makefolders=True)
 save_to_SNR = savefolder/f"monochromator_{label}_SNR_cov.pdf"
 save_to_cov = savefolder/f"monochromator_{label}_covariance.pdf"
+save_to_corr = savefolder/f"monochromator_{label}_correlation.pdf"
 save_to_SNR_G = savefolder/f"monochromator_{label}_SNR_cov_G_mean.pdf"
 save_to_cov_G = savefolder/f"monochromator_{label}_covariance_G_mean.pdf"
 
@@ -107,12 +109,25 @@ ticks = [(ind.start + ind.stop) / 2 for ind in RGBG2]
 ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
 
 plt.figure(figsize=(5,5))
-plt.imshow(srf_cov, cmap="cividis")
+plt.imshow(srf_cov, cmap="cividis", origin="lower")
 plt.colorbar(label="Covariance")
 plt.xticks(ticks, ticklabels)
 plt.yticks(ticks, ticklabels)
 plt.title(f"Covariances in {folder.stem}")
 plt.savefig(save_to_cov, bbox_inches="tight")
+plt.show()
+plt.close()
+
+# Plot the correlations
+srf_correlation = correlation_from_covariance(srf_cov)
+
+plt.figure(figsize=(5,5))
+plt.imshow(srf_correlation, cmap=plt.cm.get_cmap("cividis", 8), vmin=-1, vmax=1, origin="lower")
+plt.colorbar(label="Correlation")
+plt.xticks(ticks, ticklabels)
+plt.yticks(ticks, ticklabels)
+plt.title(f"Correlations in {folder.stem}")
+plt.savefig(save_to_corr, bbox_inches="tight")
 plt.show()
 plt.close()
 
