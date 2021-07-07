@@ -46,7 +46,7 @@ center = np.s_[midx-blocksize:midx+blocksize, midy-blocksize:midy+blocksize]
 
 # Load all files
 splitter = lambda p: float(p.stem.split("_")[0])
-wvls, means = io.load_means(folder, selection=center, retrieve_value=splitter)
+wavelengths, means = io.load_means(folder, selection=center, retrieve_value=splitter)
 
 # NaN if a channel's mean value is near saturation
 means[means >= 0.95 * camera.saturation] = np.nan
@@ -62,15 +62,22 @@ means_RGBG2 = np.array(camera.demosaick(*means, selection=center))
 
 # Reshape array
 # First remove the spatial information
-means_flattened = np.reshape(means_RGBG2, (len(wvls), 4, -1))
+means_flattened = np.reshape(means_RGBG2, (len(wavelengths), 4, -1))
 # Then swap the wavelength and filter axes
 means_flattened = np.swapaxes(means_flattened, 0, 1)
 # Finally, flatten the array further
-means_flattened = np.reshape(means_flattened, (4*len(wvls), -1))
+means_flattened = np.reshape(means_flattened, (4*len(wavelengths), -1))
 
 # Indices to select R, G, B, and G2
-R, G, B, G2 = [np.s_[len(wvls)*j : len(wvls)*(j+1)] for j in range(4)]
+R, G, B, G2 = [np.s_[len(wavelengths)*j : len(wavelengths)*(j+1)] for j in range(4)]
 RGBG2 = [R, G, B, G2]
+
+def cast_back_to_RGBG2(data, indices):
+    """
+    Cast flattened data back into a (4, N) array.
+    """
+    data_RGBG2 = [data[ind] for ind in indices]
+    return data_RGBG2
 
 # Calculate mean SRF and covariance between all elements
 srf = np.nanmean(means_flattened, axis=1)
@@ -78,31 +85,12 @@ srf_cov = np.cov(means_flattened)
 
 # Calculate the variance (ignoring covariance) from the diagonal elements
 srf_var = np.diag(srf_cov)
-srf_std = np.sqrt(srf_var)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
-labels = ["Response\n[ADU]", "Variance\n[ADU$^2$]", "SNR"]
-fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
-for ind, c in zip(RGBG2, "rybg"):
-    axs[0].plot(wvls, srf[ind], c=c)
-    axs[0].fill_between(wvls, srf[ind]-srf_std[ind], srf[ind]+srf_std[ind], color=c, alpha=0.3)
+means_plot = cast_back_to_RGBG2(srf, RGBG2)
+variance_plot = cast_back_to_RGBG2(srf_var, RGBG2)
 
-    axs[1].plot(wvls, srf_var[ind], c=c)
-
-    axs[2].plot(wvls, srf[ind]/srf_std[ind], c=c)
-
-for ax, label in zip(axs, labels):
-    ax.set_ylabel(label)
-    ax.set_ylim(ymin=0)
-
-axs[-1].set_xlim(wvls[0], wvls[-1])
-axs[-1].set_xlabel("Wavelength [nm]")
-
-axs[0].set_title(folder.stem)
-
-plt.savefig(save_to_SNR, bbox_inches="tight")
-plt.show()
-plt.close()
+spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_SNR)
 
 # Plot the covariances
 ticks = [(ind.start + ind.stop) / 2 for ind in RGBG2]
@@ -117,17 +105,17 @@ plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {folder.ste
 
 # Plot an example
 for c, ind in zip("rgby", RGBG2):
-    plt.plot(wvls, srf_correlation[G,ind][0], c=c)
+    plt.plot(wavelengths, srf_correlation[G,ind][0], c=c)
 plt.xlabel("Wavelength [nm]")
 plt.ylabel("Correlation")
-plt.xlim(wvls[0], wvls[-1])
+plt.xlim(wavelengths[0], wavelengths[-1])
 plt.grid(ls="--")
 plt.show()
 plt.close()
 
 # Calculate mean of G and G2
-I = np.eye(len(wvls))
-M_G_G2 = np.zeros((len(wvls)*3, len(wvls)*4))
+I = np.eye(len(wavelengths))
+M_G_G2 = np.zeros((len(wavelengths)*3, len(wavelengths)*4))
 M_G_G2[R,R] = I
 M_G_G2[B,B] = I
 M_G_G2[G,G] = 0.5*I
@@ -137,31 +125,13 @@ srf_G = M_G_G2 @ srf
 srf_G_cov = M_G_G2 @ srf_cov @ M_G_G2.T
 
 srf_G_var = np.diag(srf_G_cov)
-srf_G_std = np.sqrt(srf_G_var)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
-labels = ["Response\n[ADU]", "Variance\n[ADU$^2$]", "SNR"]
-fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
-for ind, c in zip(RGBG2[:3], "rgb"):
-    axs[0].plot(wvls, srf_G[ind], c=c)
-    axs[0].fill_between(wvls, srf_G[ind]-srf_G_std[ind], srf_G[ind]+srf_G_std[ind], color=c, alpha=0.3)
+RGB = RGBG2[:3]
+means_plot = cast_back_to_RGBG2(srf_G, RGB)
+variance_plot = cast_back_to_RGBG2(srf_G_var, RGB)
 
-    axs[1].plot(wvls, srf_G_var[ind], c=c)
-
-    axs[2].plot(wvls, srf_G[ind]/srf_G_std[ind], c=c)
-
-for ax, label in zip(axs, labels):
-    ax.set_ylabel(label)
-    ax.set_ylim(ymin=0)
-
-axs[-1].set_xlim(wvls[0], wvls[-1])
-axs[-1].set_xlabel("Wavelength [nm]")
-
-axs[0].set_title(folder.stem)
-
-plt.savefig(save_to_SNR_G, bbox_inches="tight")
-plt.show()
-plt.close()
+spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_SNR_G)
 
 # Plot the covariances
 ticks, ticklabels = ticks[:3], ticklabels[:3]

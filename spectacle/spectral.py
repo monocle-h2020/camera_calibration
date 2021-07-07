@@ -102,27 +102,37 @@ def load_monochromator_data(root, folder, blocksize=100):
     return spectrum
 
 
-def plot_monochromator_curves(wavelength, mean, std, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
-    plt.figure(figsize=(10,5))
-    # Loop over the provided spectra
-    for m, s in zip(mean, std):
-        # Loop over the RGBG2 channels
-        for j, c in enumerate("rybg"):
-            # Plot the mean response per wavelength
-            plt.plot(wavelength, m[:,j], c=c)
+def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
+    """
+    Plot spectral response curves as measured by monochromator.
+    Plots three panels, namely mean response, variance, and signal-to-noise ratio.
+    """
+    # Labels for the plots
+    labels = [f"Response\n[{unit}]", f"Variance\n[{unit}$^2$]", "SNR"]
 
-            # Plot the error per wavelength as a shaded area around the mean
-            plt.fill_between(wavelength, m[:,j]-s[:,j], m[:,j]+s[:,j], color=c, alpha=0.3)
+    # Make the figure
+    fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
+
+    # Plot the mean and variance
+    plot._rgbgplot(wavelengths, mean, axs[0].plot)
+    plot._rgbgplot(wavelengths, variance, axs[1].plot)
+
+    # Calculate and plot the signal-to-noise ratio
+    SNR = mean/np.sqrt(variance)
+    plot._rgbgplot(wavelengths, SNR, axs[2].plot)
 
     # Plot parameters
-    plt.xticks(np.arange(0, 1000, 50))
-    plt.xlim(wavelength_min, wavelength_max)
-    plt.xlabel("Wavelength (nm)")
-    plt.ylabel(f"Spectral response ({unit})")
-    plt.ylim(ymin=0)
-    plt.title(title)
-    plt.grid(True)
-    plot._saveshow(saveto)
+    axs[0].set_xlim(wavelength_min, wavelength_max)
+    axs[0].set_ylim(ymin=0)
+    axs[0].set_title(title)
+    axs[-1].set_xlabel("Wavelength (nm)")
+
+    for ax, label in zip(axs, labels):
+        ax.grid(ls="--")
+        ax.set_ylabel(label)
+
+    # Save/show result
+    plot._saveshow(saveto, bbox_inches="tight")
 
 
 def load_spectral_response(root, return_filename=False):
