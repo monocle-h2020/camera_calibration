@@ -38,11 +38,7 @@ mean_files = sorted(folder.glob("*_mean.npy"))
 # This is the block size for RGBG2 data, meaning the mosaicked data will have
 # twice this size.
 blocksize = 100
-
-# Load first file to make a slice object
-mean0 = np.load(mean_files[0])
-midx, midy = np.array(mean0.shape)//2
-center = np.s_[midx-blocksize:midx+blocksize, midy-blocksize:midy+blocksize]
+center = camera.central_slice(blocksize, blocksize)
 
 # Load all files
 splitter = lambda p: float(p.stem.split("_")[0])

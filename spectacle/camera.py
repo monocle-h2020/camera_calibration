@@ -192,6 +192,15 @@ class Camera(object):
         bayer_map[1::2, 1::2] = self.bayer_pattern[1][1]
         return bayer_map
 
+    def central_slice(self, dx, dy):
+        """
+        Generate a numpy slice object around the center of an image, with widths
+        dx and dy.
+        """
+        midx, midy = np.array(self.image_shape)//2
+        center = np.s_[midx-dx:midx+dx, midy-dy:midy+dy]
+        return center
+
     def load_settings(self):
         """
         Load a settings file
