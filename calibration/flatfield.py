@@ -13,7 +13,7 @@ To do:
 
 import numpy as np
 from sys import argv
-from spectacle import io, flat
+from spectacle import io, flat, plot
 from spectacle.general import gaussMd, correlation_from_covariance, uncertainty_from_covariance
 from matplotlib import pyplot as plt
 
@@ -80,14 +80,7 @@ for p, s in zip(parameters, uncertainties):
     print(f"{p:+.6f} +- {s:.6f}    ; {abs(100*s/p):.3f} %")
 
 # Plot the correlation matrix
-plt.imshow(correlation, cmap=plt.cm.get_cmap("cividis", 8), aspect="equal", origin="lower", vmin=-1, vmax=1)
-plt.colorbar()
-plt.xlabel("Parameters") ; plt.ylabel("Parameters")
-plt.xticks(np.arange(7), flat.parameter_labels_latex)
-plt.yticks(np.arange(7), flat.parameter_labels_latex)
-plt.title("Correlation matrix")
-plt.show()
-plt.close()
+plot.plot_covariance_matrix(correlation, title="Correlation matrix", label="Correlation", nr_bins=8, vmin=-1, minorticks=np.arange(0.5,7),  ticklabels=flat.parameter_labels_latex)
 
 # Save the best-fitting model parameters
 result_array = np.array([*parameters, *uncertainties])[:,np.newaxis].T
