@@ -304,7 +304,7 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, t
     cmap = plt.cm.get_cmap("cividis", nr_bins)
 
     # Make a figure
-    plt.figure(figsize=(5,5))
+    plt.figure(figsize=(6,6))
 
     # Plot the data
     plt.imshow(matrix, cmap=cmap, origin="lower", **kwargs)
