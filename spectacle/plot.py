@@ -296,7 +296,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         print(f"Plotted pixel {j} ({label})")
 
 
-def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, ticks=None, ticklabels=None, saveto=None, **kwargs):
+def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, majorticks=None, minorticks=None, ticklabels=None, saveto=None, **kwargs):
     """
     Plot a covariance (or correlation) matrix.
     """
@@ -311,9 +311,18 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, t
 
     # Labels on the axes and colour bar
     plt.colorbar(label=label)
-    plt.xticks(ticks, ticklabels)
-    plt.yticks(ticks, ticklabels)
     plt.title(title)
+
+    ax = plt.gca()
+    for axis in [ax.xaxis, ax.yaxis]:
+        if majorticks:
+            axis.set_ticks(majorticks)
+        if minorticks:
+            axis.set_ticks(minorticks, minor=True)
+        if ticklabels:
+            axis.set_ticklabels(ticklabels, minor=True)
+        axis.set_tick_params(which="major", labelleft=False, labelbottom=False)
+        axis.set_tick_params(which="minor", left=False, bottom=False)
 
     # Save/show result
     _saveshow(saveto)
