@@ -63,8 +63,8 @@ cals = [spectral.load_cal_NERC(file) for file in cal_files]
 print("Loaded calibration data")
 
 # Combine the spectral data from each folder into the same format
-all_wvl = np.unique(np.concatenate(wavelengths))
-all_means = np.tile(np.nan, (len(wavelengths), len(all_wvl), 4))
+all_wavelengths = np.unique(np.concatenate(wavelengths))
+all_means = np.tile(np.nan, (len(wavelengths), len(all_wavelengths), 4))
 all_stds = all_means.copy()
 
 # Add the data from the separate spectra into one big array
@@ -73,13 +73,13 @@ all_stds = all_means.copy()
 # spectrum itself. This is TO DO.
 for i, (wvl, mean, std) in enumerate(zip(wavelengths, means, stds)):
     min_wvl, max_wvl = wvl.min(), wvl.max()
-    min_in_all = np.where(all_wvl == min_wvl)[0][0]
-    max_in_all = np.where(all_wvl == max_wvl)[0][0]
+    min_in_all = np.where(all_wavelengths == min_wvl)[0][0]
+    max_in_all = np.where(all_wavelengths == max_wvl)[0][0]
     all_means[i][min_in_all:max_in_all+1] = mean
     all_stds[i][min_in_all:max_in_all+1] = std
 
 # Save the raw curves to file
-np.save(save_to_wavelengths, all_wvl)
+np.save(save_to_wavelengths, all_wavelengths)
 np.save(save_to_means, all_means)
 np.save(save_to_stds, all_stds)
 print(f"Saved raw curves to {savefolder}")
@@ -96,16 +96,16 @@ for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     calibrated = mean.copy() ; calibrated[:] = np.nan
 
     # Find the overlapping wavelengths between calibration and data
-    overlap, cal_indices, all_wvl_indices = np.intersect1d(cal[0], all_wvl, return_indices=True)
+    overlap, cal_indices, all_wavelengths_indices = np.intersect1d(cal[0], all_wavelengths, return_indices=True)
 
     # Calibrate the data and store it in the main array
-    calibrated[all_wvl_indices] = mean[all_wvl_indices] / cal[1, cal_indices, np.newaxis]
+    calibrated[all_wavelengths_indices] = mean[all_wavelengths_indices] / cal[1, cal_indices, np.newaxis]
     all_means_calibrated[i] = calibrated
 
     # Assume the error in the result is dominated by the error in the data,
     # not in the calibration (strong assumption!) and propagate the error
     calibrated_std = std.copy() ; calibrated_std[:] = np.nan
-    calibrated_std[all_wvl_indices] = std[all_wvl_indices] / cal[1, cal_indices, np.newaxis]
+    calibrated_std[all_wavelengths_indices] = std[all_wavelengths_indices] / cal[1, cal_indices, np.newaxis]
     all_stds_calibrated[i] = calibrated_std
 
 # Save the calibrated curves to file
@@ -158,8 +158,8 @@ for i in normalise_order:
     # Fit a parabolic function to the ratio between the spectra where they
     # overlap
     ind = ~np.isnan(ratios[:,0])
-    fits = np.polyfit(all_wvl[ind], ratios[ind], 2)
-    fit_norms = np.array([np.polyval(f, all_wvl) for f in fits.T]).T
+    fits = np.polyfit(all_wavelengths[ind], ratios[ind], 2)
+    fit_norms = np.array([np.polyval(f, all_wavelengths) for f in fits.T]).T
 
     # Normalise by dividing the spectrum by this parabola
     all_means_normalised[i] = all_means_calibrated[i] / fit_norms
@@ -194,7 +194,7 @@ response_normalised = (flat_means_mask / flat_means_mask.max()).data
 errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
 
 # Combine the result into one big array and save it
-result = np.array(np.stack([all_wvl, *response_normalised.T, *errors_normalised.T]))
+result = np.array(np.stack([all_wavelengths, *response_normalised.T, *errors_normalised.T]))
 np.save(save_to_final_curve, result)
 print(f"Saved final curves to {savefolder}")
 
@@ -202,14 +202,14 @@ np.savetxt(save_to_SRF, result.T, delimiter=",", header="Wavelength, R, G, B, G2
 print(f"Saved spectral response curves to '{save_to_SRF}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
-bandwidths = spectral.effective_bandwidth(all_wvl, response_normalised, axis=0)
+bandwidths = spectral.effective_bandwidth(all_wavelengths, response_normalised, axis=0)
 np.savetxt(save_to_bands, bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
 for band, width in zip(plot.RGBG2, bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")
 
 # Calculate the RGB-to-XYZ matrix
-M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(all_wvl, response_normalised.T)
+M_RGB_to_XYZ = spectral.calculate_XYZ_matrix(all_wavelengths, response_normalised.T)
 
 # Save the conversion matrix
 header = f"Matrix for converting {camera.name} RGB data to CIE XYZ, with an equal-energy illuminant (E).\n\
