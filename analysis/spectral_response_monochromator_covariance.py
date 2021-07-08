@@ -31,30 +31,8 @@ save_to_corr = savefolder/f"monochromator_{label}_correlation.pdf"
 save_to_SNR_G = savefolder/f"monochromator_{label}_SNR_cov_G_mean.pdf"
 save_to_cov_G = savefolder/f"monochromator_{label}_covariance_G_mean.pdf"
 
-# Find the filenames
-mean_files = sorted(folder.glob("*_mean.npy"))
-
-# Blocksize, to slice the arrays with
-# This is the block size for RGBG2 data, meaning the mosaicked data will have
-# twice this size.
-blocksize = 100
-center = camera.central_slice(blocksize, blocksize)
-
-# Load all files
-splitter = lambda p: float(p.stem.split("_")[0])
-wavelengths, means = io.load_means(folder, selection=center, retrieve_value=splitter)
-
-# NaN if a channel's mean value is near saturation
-means[means >= 0.95 * camera.saturation] = np.nan
-
-# Bias correction
-means = camera.correct_bias(means, selection=center)
-
-# Flat-field correction
-means = camera.correct_flatfield(means, selection=center)
-
-# Demosaick the data
-means_RGBG2 = np.array(camera.demosaick(*means, selection=center))
+# Load the data
+wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, flatfield=True)
 
 # Reshape array
 # First remove the spatial information

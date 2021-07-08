@@ -27,13 +27,12 @@ savefolder = camera.filename_analysis("spectral_response", makefolders=True)
 save_to_data = savefolder/f"monochromator_{label}_data.pdf"
 
 # Load the data
-spectrum = spectral.load_monochromator_data(root, folder)
+wavelengths, mean, stds, _ = spectral.load_monochromator_data(camera, folder)
 print("Loaded data")
 
-# Split the spectrum into its constituents
-wavelengths = spectrum[:,0]
-mean = spectrum[:,1:5].T
-stds = spectrum[:,5:].T
+# Transpose for the plotting function
+mean = mean.T
+stds = stds.T
 variance = stds**2
 
 # Plot the raw spectrum

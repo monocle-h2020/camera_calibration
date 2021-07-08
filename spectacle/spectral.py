@@ -42,64 +42,47 @@ def load_cal_NERC(filename, norm=True):
     return arr
 
 
-def load_monochromator_data(root, folder, blocksize=100):
+def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
     """
     Load monochromator data, stored as a stack (mean/std) per wavelength in
     `folder`. For each wavelength, load the data, apply a bias correction, and
     take the mean and std of the central `blocksize`x`blocksize` pixels.
+    The `blocksize` is for the mosaicked image - when demosaicked, the RGBG2
+    channels will be half its size each.
+
+    Apply a bias correction and optionally a flat-field correction.
+
     Return the wavelengths with assorted mean values and standard deviations.
     """
     print(f"Loading monochromator data from `{folder}`...")
 
-    # Find the filenames
-    mean_files = sorted(folder.glob("*_mean.npy"))
-    stds_files = sorted(folder.glob("*_stds.npy"))
-    assert len(mean_files) == len(stds_files)
+    # Central slice
+    center = camera.central_slice(blocksize, blocksize)
 
-    # Load Camera object
-    camera = io.load_camera(root)
+    # Load all files
+    splitter = lambda p: float(p.stem.split("_")[0])
+    wavelengths, means = io.load_means(folder, selection=center, retrieve_value=splitter)
 
-    # Half-blocksize, to slice the arrays with
-    d = blocksize//2
+    # NaN if a channel's mean value is near saturation
+    saturated = np.where(means >= 0.95 * camera.saturation)
+    means[saturated] = np.nan
 
-    # Empty arrays to hold the output
-    wvls  = np.zeros((len(mean_files)))
-    means = np.zeros((len(mean_files), 4))
-    stds  = means.copy()
+    # Bias correction
+    means = camera.correct_bias(means, selection=center)
 
-    # Loop over all files
-    print("Wavelengths [nm]:", end=" ", flush=True)
-    for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
-        # Load the mean data
-        m = np.load(mean_file)
+    # Flat-field correction
+    if flatfield:
+        means = camera.correct_flatfield(means, selection=center)
 
-        # Bias correction
-        m = camera.correct_bias(m)
+    # Demosaick the data
+    means_RGBG2 = np.array(camera.demosaick(*means, selection=center))
 
-        # Demosaick the data
-        mean_RGBG = camera.demosaick(m)
-
-        # Select the central blocksize x blocksize pixels
-        midx, midy = np.array(mean_RGBG.shape[1:])//2
-        sub = mean_RGBG[:,midx-d:midx+d+1,midy-d:midy+d+1]
-
-        # Take the mean value per Bayer channel
-        m = sub.mean(axis=(1,2))
-
-        # NaN if a channel's mean value is near saturation
-        m[m >= 0.95 * camera.saturation] = np.nan
-
-        # Store results
-        means[j] = m
-        stds[j] = sub.std(axis=(1,2))
-        wvls[j] = mean_file.stem.split("_")[0]
-
-        print(wvls[j], end=" ", flush=True)
-
+    # Get the mean per wavelength per channel and the standard deviations
+    means_final = np.nanmean(means_RGBG2, axis=(2,3))
+    stds_final = np.nanstd(means_RGBG2, axis=(2,3))
     print("\n...Finished!")
 
-    spectrum = np.stack([wvls, *means.T, *stds.T]).T
-    return spectrum
+    return wavelengths, means_final, stds_final, means_RGBG2
 
 
 def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):

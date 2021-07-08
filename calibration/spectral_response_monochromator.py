@@ -54,7 +54,7 @@ save_to_final_curve = savefolder/"monochromator_curve.npy"
 folders = io.find_subfolders(folder)
 
 # Load the data from each subfolder
-spectra = [spectral.load_monochromator_data(root, subfolder) for subfolder in folders]
+spectra = [spectral.load_monochromator_data(camera, subfolder) for subfolder in folders]
 print("Loaded data")
 
 # Find and load the calibration data
