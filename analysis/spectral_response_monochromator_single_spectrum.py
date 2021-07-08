@@ -30,6 +30,7 @@ save_to_cov = savefolder/f"monochromator_{label}_covariance.pdf"
 save_to_corr = savefolder/f"monochromator_{label}_correlation.pdf"
 save_to_SNR_G = savefolder/f"monochromator_{label}_SNR_cov_G_mean.pdf"
 save_to_cov_G = savefolder/f"monochromator_{label}_covariance_G_mean.pdf"
+save_to_corr_G = savefolder/f"monochromator_{label}_correlation_G_mean.pdf"
 
 # Load the data
 wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, flatfield=True)
@@ -111,3 +112,8 @@ spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title
 ticks, ticklabels = ticks[:3], ticklabels[:3]
 
 plot.plot_covariance_matrix(srf_G_cov, title=f"Covariances in {folder.stem} (mean $G, G_2$)", ticks=ticks, ticklabels=ticklabels, saveto=save_to_cov_G)
+
+# Plot the correlations
+srf_correlation_G = correlation_from_covariance(srf_G_cov)
+
+plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {folder.stem} (mean $G, G_2$)", nr_bins=8, vmin=-1, vmax=1, ticks=ticks, ticklabels=ticklabels, saveto=save_to_corr_G)
