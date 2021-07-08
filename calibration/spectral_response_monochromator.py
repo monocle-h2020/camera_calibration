@@ -82,14 +82,14 @@ print(f"Saved raw curves to {savefolder}")
 
 # Calibrate the data
 # First, create a copy of the array to put the calibrated data into
-all_means_calibrated = all_means.copy()
-all_means_calibrated[:] = np.nan
+all_means_calibrated = np.full(all_means.shape, np.nan)
 all_stds_calibrated = all_means_calibrated.copy()
 
 # Loop over the spectra
 for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     # Create an empty (NaN) copy of the data, to store the result in
-    calibrated = mean.copy() ; calibrated[:] = np.nan
+    calibrated = np.full(mean.shape, np.nan)
+    calibrated_std = calibrated.copy()
 
     # Find the overlapping wavelengths between calibration and data
     overlap, cal_indices, all_wavelengths_indices = np.intersect1d(cal[0], all_wavelengths, return_indices=True)
@@ -100,7 +100,6 @@ for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
 
     # Assume the error in the result is dominated by the error in the data,
     # not in the calibration (strong assumption!) and propagate the error
-    calibrated_std = std.copy() ; calibrated_std[:] = np.nan
     calibrated_std[all_wavelengths_indices] = std[all_wavelengths_indices] / cal[1, cal_indices, np.newaxis]
     all_stds_calibrated[i] = calibrated_std
 
