@@ -92,7 +92,7 @@ for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
     calibrated_std = calibrated.copy()
 
     # Find the overlapping wavelengths between calibration and data
-    overlap, cal_indices, all_wavelengths_indices = np.intersect1d(cal[0], all_wavelengths, return_indices=True)
+    _, cal_indices, all_wavelengths_indices = np.intersect1d(cal[0], all_wavelengths, return_indices=True)
 
     # Calibrate the data and store it in the main array
     calibrated[all_wavelengths_indices] = mean[all_wavelengths_indices] / cal[1, cal_indices, np.newaxis]
