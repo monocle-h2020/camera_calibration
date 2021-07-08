@@ -49,7 +49,7 @@ def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
         plt.show()
     else:
-        plt.savefig(saveto, **kwargs)
+        plt.savefig(saveto, bbox_inches="tight", **kwargs)
     if close:
         plt.close()
 

@@ -115,7 +115,7 @@ def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, w
         ax.set_ylabel(label)
 
     # Save/show result
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)
 
 
 def load_spectral_response(root, return_filename=False):
@@ -174,7 +174,7 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
     plt.ylabel(ylabel)
     plt.ylim(*ylim)
     plt.legend(loc="best")
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)
 
 
 def load_spectral_bands(root, return_filename=False):
@@ -475,7 +475,7 @@ def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
 
     plt.legend(loc="upper right")
 
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)
 
 
 def plot_xyz_and_rgb_single(ax, wavelengths, responses, label="", legend_labels="rgb"):
@@ -519,4 +519,4 @@ def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
         plot_xyz_and_rgb_single(ax, wavelengths, responses, label=label_single)
     axs[-1].set_xlabel("Wavelength [nm]")
 
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)
