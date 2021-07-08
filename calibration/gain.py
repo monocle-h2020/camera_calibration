@@ -12,7 +12,7 @@ Command line arguments:
 
 import numpy as np
 from sys import argv
-from spectacle import io
+from spectacle import io, symmetric_percentiles
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -34,31 +34,41 @@ names, means = io.load_means(folder)
 names, stds = io.load_stds(folder)
 print("Loaded data")
 
+# Find pixels near saturation to mask later
+fit_max = 0.95 * camera.saturation
+mask = (means >= fit_max)
+
 # Bias correction
 means = camera.correct_bias(means)
 
 # Use variance instead of standard deviation
 variance = stds**2
 
-# Empty arrays to hold the result
-gain_map = np.tile(np.nan, means.shape[1:])
-readnoise_map = gain_map.copy()
+# Make masked arrays that don't include non-linear values (near saturation)
+means = np.ma.array(means, mask=mask)
+variance = np.ma.array(variance, mask=mask)
+weights = 1/means
 
-# Loop over the pixels in the array and fit each response individually
-fit_max = 0.95 * camera.saturation
-for i in range(means.shape[1]):
-    for j in range(means.shape[2]):
-        m = means[:,i,j] ; v = variance[:,i,j]
-        ind = np.where(m < fit_max)
-        try:
-            gain_map[i,j], readnoise_map[i,j] = np.polyfit(m[ind], v[ind], 1, w=1/m[ind])
-        except:
-            # Keep a NaN value if fitting is not possible for whatever reason
-            pass
+# Perform weighted-least-squares
+# https://stats.stackexchange.com/a/489949
+mean_mean = np.ma.average(means, weights=weights, axis=0)
+variance_mean = np.ma.average(variance, weights=weights, axis=0)
 
-    # Progress counter: give percentage done every 42nd row
-    if i % 42 == 0:
-        print(f"{100 * i / means.shape[1]:.1f}%", end=" ", flush=True)
+gain_map = np.ma.sum(weights * (means - mean_mean) * (variance - variance_mean), axis=0) / np.ma.sum(weights * (means - mean_mean)**2, axis=0)
+readnoise_map = variance_mean - gain_map * mean_mean
+print("Finished fitting gain map")
+
+# Mask off
+gain_map = gain_map.data
+readnoise_map = readnoise_map.data
+
+# Filter out bad pixels (outside a wide percentile)
+percentage = 0.05
+gain_min, gain_max = symmetric_percentiles(gain_map, percent=percentage)
+readnoise_min, readnoise_max = symmetric_percentiles(readnoise_map, percent=percentage)
+filter_indices = np.where((gain_map < gain_min) | (gain_map > gain_max) | (readnoise_map < readnoise_min) | (readnoise_map > readnoise_max))
+gain_map[filter_indices] = np.nan
+readnoise_map[filter_indices] = np.nan
 
 # Save the gain map
 np.save(save_to_original_map, gain_map)
