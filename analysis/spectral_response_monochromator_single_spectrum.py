@@ -1,6 +1,6 @@
 """
-Analyse the covariances between spectral response data at different wavelengths
-in a single monochromator run.
+Analyse a single set of spectral response data from a monochromator,
+e.g. from a single grating/filter setting.
 
 Command line arguments:
     * `folder`: folder containing monochromator data. This should contain NPY
