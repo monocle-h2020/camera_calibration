@@ -132,8 +132,7 @@ baseline = np.diag(all_overlaps).argmax()
 # -2 because there is no point in normalising the baseline (-1) by itself
 normalise_order = np.argsort(all_overlaps[baseline])[-2::-1]
 
-# Loop over the spectra and normalise them by the data set with the largest
-# overlap
+# Loop over the spectra and normalise them by the data set with the largest overlap
 for i in normalise_order:
     # If there is any overlap with the baseline, normalise to that
     if all_overlaps[i,baseline]:
@@ -145,13 +144,11 @@ for i in normalise_order:
         # Alternately do two iterations?
         comparison = np.argsort(all_overlaps[i])[-2]
 
-    # Calculate the ratio between this spectrum and the comparison one at each
-    # wavelength
+    # Calculate the ratio between this spectrum and the comparison one at each wavelength
     ratios = all_means_calibrated[i] / all_means_normalised[comparison]
     print(f"Normalising spectrum {i} to spectrum {comparison}")
 
-    # Fit a parabolic function to the ratio between the spectra where they
-    # overlap
+    # Fit a parabolic function to the ratio between the spectra where they overlap
     ind = ~np.isnan(ratios[:,0])
     fits = np.polyfit(all_wavelengths[ind], ratios[ind], 2)
     fit_norms = np.array([np.polyval(f, all_wavelengths) for f in fits.T]).T
