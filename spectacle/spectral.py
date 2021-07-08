@@ -72,7 +72,10 @@ def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
 
     # Flat-field correction
     if flatfield:
-        means = camera.correct_flatfield(means, selection=center)
+        try:
+            means = camera.correct_flatfield(means, selection=center)
+        except AssertionError as e:
+            print("Could not do flat-field correction, see below for error", e, sep="\n")
 
     # Demosaick the data
     means_RGBG2 = np.array(camera.demosaick(*means, selection=center))
