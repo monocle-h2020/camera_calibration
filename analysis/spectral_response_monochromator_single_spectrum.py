@@ -118,10 +118,10 @@ plot.plot_covariance_matrix(srf_cov_G, title=f"Covariances in {folder.stem} (mea
 # Plot the correlations
 srf_correlation_G = correlation_from_covariance(srf_cov_G)
 
-plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {folder.stem} (mean $G, G_2$)", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr_G)
+plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {folder.stem} (mean $G, G_2$)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr_G)
 
 # Analyse the difference in correlations between the RGBG2 and RGB data
 srf_correlation_without_G2 = srf_correlation[:len(srf_correlation_G),:len(srf_correlation_G)]
 srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 
-plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {folder.stem}\nDifferences between RGBG$_2$ and RGB", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr_diff)
+plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {folder.stem}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr_diff)
