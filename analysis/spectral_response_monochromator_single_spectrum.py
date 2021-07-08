@@ -48,13 +48,6 @@ means_flattened = np.reshape(means_flattened, (4*len(wavelengths), -1))
 R, G, B, G2 = [np.s_[len(wavelengths)*j : len(wavelengths)*(j+1)] for j in range(4)]
 RGBG2 = [R, G, B, G2]
 
-def cast_back_to_RGBG2(data, indices):
-    """
-    Cast flattened data back into a (4, N) array.
-    """
-    data_RGBG2 = [data[ind] for ind in indices]
-    return data_RGBG2
-
 # Calculate mean SRF and covariance between all elements
 srf = np.nanmean(means_flattened, axis=1)
 srf_cov = np.cov(means_flattened)
@@ -63,8 +56,8 @@ srf_cov = np.cov(means_flattened)
 srf_var = np.diag(srf_cov)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
-means_plot = cast_back_to_RGBG2(srf, RGBG2)
-variance_plot = cast_back_to_RGBG2(srf_var, RGBG2)
+means_plot = np.reshape(srf, (4,-1))
+variance_plot = np.reshape(srf_var, (4,-1))
 
 spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_spectrum)
 
@@ -105,8 +98,8 @@ srf_var_G = np.diag(srf_cov_G)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
 RGB = RGBG2[:3]
-means_plot = cast_back_to_RGBG2(srf_G, RGB)
-variance_plot = cast_back_to_RGBG2(srf_var_G, RGB)
+means_plot = np.reshape(srf_G, (3,-1))
+variance_plot = np.reshape(srf_var_G, (3,-1))
 
 spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_spectrum_G)
 
