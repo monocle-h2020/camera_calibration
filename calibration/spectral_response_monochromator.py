@@ -69,14 +69,10 @@ all_stds = all_means.copy()
 
 # Add the data from the separate spectra into one big array
 # If a spectrum is missing a wavelength, keep that value NaN
-# Note: data may be missing at lower or higher wavelengths, but not within the
-# spectrum itself. This is TO DO.
 for i, (wvl, mean, std) in enumerate(zip(wavelengths, means, stds)):
-    min_wvl, max_wvl = wvl.min(), wvl.max()
-    min_in_all = np.where(all_wavelengths == min_wvl)[0][0]
-    max_in_all = np.where(all_wavelengths == max_wvl)[0][0]
-    all_means[i][min_in_all:max_in_all+1] = mean
-    all_stds[i][min_in_all:max_in_all+1] = std
+    indices = np.searchsorted(all_wavelengths, wvl)
+    all_means[i][indices] = mean
+    all_stds[i][indices] = std
 
 # Save the raw curves to file
 np.save(save_to_wavelengths, all_wavelengths)
