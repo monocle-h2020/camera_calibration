@@ -91,7 +91,7 @@ def fit_sRGB_generic(intensities, jmeans):
     Returns the best-fitting normalization and gamma, as well as the respective
     R^2 for this fit, for each pixel.
     """
-    normalizations = np.tile(np.nan, jmeans.shape[1:])
+    normalizations = np.full(jmeans.shape[1:], np.nan)
     gammas = normalizations.copy()
     Rsquares = normalizations.copy()
     try:
@@ -117,7 +117,7 @@ def sRGB_compare_gamma(intensities, jmeans, gamma):
     `intensities` and responsese `jmeans`. Calculate the RMS difference between
     the best-fitting model with `gamma` and the data.
     """
-    normalizations = np.tile(np.nan, jmeans.shape[1:])
+    normalizations = np.full(jmeans.shape[1:], np.nan)
     Rsquares = normalizations.copy()
     RMSes = normalizations.copy()
     RMSes_relative = normalizations.copy()

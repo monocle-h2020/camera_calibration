@@ -64,7 +64,7 @@ print("Loaded calibration data")
 
 # Combine the spectral data from each folder into the same format
 all_wavelengths = np.unique(np.concatenate(wavelengths))
-all_means = np.tile(np.nan, (len(wavelengths), len(all_wavelengths), 4))
+all_means = np.full((len(wavelengths), len(all_wavelengths), 4), np.nan)
 all_stds = all_means.copy()
 
 # Add the data from the separate spectra into one big array

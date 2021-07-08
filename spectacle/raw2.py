@@ -4,7 +4,7 @@ import numpy as np
 def pull_apart2(raw_img, color_pattern, color_desc="RGBG", remove=True):
     unique_colours = np.unique(color_pattern)
 
-    stack = np.tile(np.nan, (*unique_colours.shape, *raw_img.shape))
+    stack = np.full((*unique_colours.shape, *raw_img.shape), np.nan)
     for j in range(len(unique_colours)):
         indices = np.where(color_pattern == j)
         stack[j][indices] = raw_img[indices]

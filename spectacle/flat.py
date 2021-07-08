@@ -22,7 +22,7 @@ def clip_data(data, borders=_clip_border):
         * Use camera-dependent default borders.
     """
     # Create an empty array
-    data_with_nan = np.tile(np.nan, data.shape)
+    data_with_nan = np.full(data.shape, np.nan)
 
     # Add the data within the borders to the empty array
     data_with_nan[borders] = data[borders]

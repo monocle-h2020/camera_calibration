@@ -41,7 +41,7 @@ means = camera.correct_bias(means)
 variance = stds**2
 
 # Empty arrays to hold the result
-gain_map = np.tile(np.nan, means.shape[1:])
+gain_map = np.full(means.shape[1:], np.nan)
 readnoise_map = gain_map.copy()
 
 # Loop over the pixels in the array and fit each response individually
