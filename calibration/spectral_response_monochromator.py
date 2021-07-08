@@ -54,7 +54,7 @@ save_to_final_curve = savefolder/"monochromator_curve.npy"
 folders = io.find_subfolders(folder)
 
 # Load the data from each subfolder
-spectra = [spectral.load_monochromator_data(camera, subfolder) for subfolder in folders]
+wavelengths, means, stds, _ = spectral.load_monochromator_data_multiple(camera, folders)
 print("Loaded data")
 
 # Find and load the calibration data
@@ -63,20 +63,20 @@ cals = [spectral.load_cal_NERC(file) for file in cal_files]
 print("Loaded calibration data")
 
 # Combine the spectral data from each folder into the same format
-all_wvl = np.unique(np.concatenate([spec[:,0] for spec in spectra]))
-all_means = np.tile(np.nan, (len(spectra), len(all_wvl), 4))
+all_wvl = np.unique(np.concatenate(wavelengths))
+all_means = np.tile(np.nan, (len(wavelengths), len(all_wvl), 4))
 all_stds = all_means.copy()
 
 # Add the data from the separate spectra into one big array
 # If a spectrum is missing a wavelength, keep that value NaN
 # Note: data may be missing at lower or higher wavelengths, but not within the
 # spectrum itself. This is TO DO.
-for i, spec in enumerate(spectra):
-    min_wvl, max_wvl = spec[:,0].min(), spec[:,0].max()
+for i, (wvl, mean, std) in enumerate(zip(wavelengths, means, stds)):
+    min_wvl, max_wvl = wvl.min(), wvl.max()
     min_in_all = np.where(all_wvl == min_wvl)[0][0]
     max_in_all = np.where(all_wvl == max_wvl)[0][0]
-    all_means[i][min_in_all:max_in_all+1] = spec[:,1:5]
-    all_stds[i][min_in_all:max_in_all+1] = spec[:,5:]
+    all_means[i][min_in_all:max_in_all+1] = mean
+    all_stds[i][min_in_all:max_in_all+1] = std
 
 # Save the raw curves to file
 np.save(save_to_wavelengths, all_wvl)

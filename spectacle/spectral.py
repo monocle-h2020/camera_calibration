@@ -88,6 +88,21 @@ def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
     return wavelengths, means_final, stds_final, means_RGBG2
 
 
+def load_monochromator_data_multiple(camera, folders, **kwargs):
+    """
+    Wrapper around `load_monochromator_data` that does multiple files. Ensures
+    the outputs are in a convenient format.
+    """
+    # First, load all the data
+    data = [load_monochromator_data(camera, folder, **kwargs) for folder in folders]
+
+    # Then split out all the constituents
+    wavelengths, means, stds, means_RGBG2 = zip(*data)
+
+    # Now return everything
+    return wavelengths, means, stds, means_RGBG2
+
+
 def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
     """
     Plot spectral response curves as measured by monochromator.
