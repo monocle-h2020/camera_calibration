@@ -25,13 +25,13 @@ print(f"Loaded Camera object: {camera}")
 
 # Save locations
 savefolder = camera.filename_analysis("spectral_response", makefolders=True)
-save_to_SNR = savefolder/f"monochromator_{label}_SNR_cov.pdf"
-save_to_cov = savefolder/f"monochromator_{label}_covariance.pdf"
-save_to_corr = savefolder/f"monochromator_{label}_correlation.pdf"
-save_to_SNR_G = savefolder/f"monochromator_{label}_SNR_cov_G_mean.pdf"
-save_to_cov_G = savefolder/f"monochromator_{label}_covariance_G_mean.pdf"
-save_to_corr_G = savefolder/f"monochromator_{label}_correlation_G_mean.pdf"
-save_to_corr_diff = savefolder/f"monochromator_{label}_correlation_difference.pdf"
+save_to_spectrum = savefolder/f"monochromator_{label}_spectrum.pdf"
+save_to_covariance = savefolder/f"monochromator_{label}_covariance.pdf"
+save_to_correlation = savefolder/f"monochromator_{label}_correlation.pdf"
+save_to_spectrum_G = savefolder/f"monochromator_{label}_spectrum_RGB.pdf"
+save_to_covariance_G = savefolder/f"monochromator_{label}_covariance_RGB.pdf"
+save_to_correlation_G = savefolder/f"monochromator_{label}_correlation_RGB.pdf"
+save_to_correlation_diff = savefolder/f"monochromator_{label}_correlation_difference.pdf"
 
 # Load the data
 wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, flatfield=True)
@@ -66,19 +66,19 @@ srf_var = np.diag(srf_cov)
 means_plot = cast_back_to_RGBG2(srf, RGBG2)
 variance_plot = cast_back_to_RGBG2(srf_var, RGBG2)
 
-spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_SNR)
+spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_spectrum)
 
 # Plot the covariances
 ticks_major = [ind.start for ind in RGBG2] + [RGBG2[-1].stop]
 ticks_minor = [(ind.start + ind.stop) / 2 for ind in RGBG2]
 ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
 
-plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {folder.stem}", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_cov)
+plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {folder.stem}", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_covariance)
 
 # Plot the correlations
 srf_correlation = correlation_from_covariance(srf_cov)
 
-plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {folder.stem}", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr)
+plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {folder.stem}", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation)
 
 # Plot an example
 for c, ind in zip("rgby", RGBG2):
@@ -108,20 +108,20 @@ RGB = RGBG2[:3]
 means_plot = cast_back_to_RGBG2(srf_G, RGB)
 variance_plot = cast_back_to_RGBG2(srf_var_G, RGB)
 
-spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_SNR_G)
+spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({folder.stem})", unit="ADU", saveto=save_to_spectrum_G)
 
 # Plot the covariances
 ticks_major, ticks_minor, ticklabels = ticks_major[:-1], ticks_minor[:3], ticklabels[:3]
 
-plot.plot_covariance_matrix(srf_cov_G, title=f"Covariances in {folder.stem} (mean $G, G_2$)", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_cov_G)
+plot.plot_covariance_matrix(srf_cov_G, title=f"Covariances in {folder.stem} (mean $G, G_2$)", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_covariance_G)
 
 # Plot the correlations
 srf_correlation_G = correlation_from_covariance(srf_cov_G)
 
-plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {folder.stem} (mean $G, G_2$)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr_G)
+plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {folder.stem} (mean $G, G_2$)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_G)
 
 # Analyse the difference in correlations between the RGBG2 and RGB data
 srf_correlation_without_G2 = srf_correlation[:len(srf_correlation_G),:len(srf_correlation_G)]
 srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 
-plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {folder.stem}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_corr_diff)
+plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {folder.stem}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_diff)
