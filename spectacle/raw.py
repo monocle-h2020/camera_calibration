@@ -6,30 +6,28 @@ def _find_offset(color_pattern, colour):
     return pos
 
 
-def demosaick(bayer_map, data, **kwargs):
+def demosaick(bayer_map, data, color_desc="RGBG"):
     """
-    Simplified demosaicking method for RGBG data.
     Uses a Bayer map `bayer_map` (RGBG channel for each pixel) and any number
-    of input arrays `data`. Any additional **kwargs are passed to pull_apart.
+    of input arrays `data`.
     """
-    # Try to simply demosaick the data, assuming it is a single 2D image
-    try:
-        data_RGBG = pull_apart(data, bayer_map, **kwargs)[0]
-    # Else, assume this is a list of images and iterate over them
-    except:
-        data_RGBG = [pull_apart(image, bayer_map, **kwargs)[0] for image in data]
+    # Check that we are dealing with RGBG2 data, as only these are supported right now.
+    assert color_desc in ("RGBG", b"RGBG"), f"Unknown colour description `{color_desc}"
 
-    return data_RGBG
+    # Check that the data and Bayer pattern have similar shapes
+    assert data.shape[-2:] == bayer_map.shape, f"The data ({data.shape}) and Bayer map ({bayer_map.shape}) have incompatible shapes"
 
-
-def pull_apart(raw_img, color_pattern, color_desc="RGBG"):
-    if color_desc not in ("RGBG", b"RGBG"):
-        raise ValueError(f"Unknown colour description `{color_desc}")
-    offsets = np.array([_find_offset(color_pattern, i) for i in range(4)])
+    # Find the offsets describing the Bayer pattern
+    offsets = np.array([_find_offset(bayer_map, i) for i in range(4)])
     offX, offY = offsets.T
-    R, G, B, G2 = [raw_img[x::2, y::2] for x, y in zip(offX, offY)]
-    RGBG = np.stack((R, G, B, G2))
-    return RGBG, offsets
+
+    # Demosaick the data along their last two axes
+    R, G, B, G2 = [data[..., x::2, y::2] for x, y in zip(offX, offY)]
+
+    # Combine the data back into one array of shape [..., 4, x/2, y/2]
+    RGBG = np.stack((R, G, B, G2), axis=-3)
+
+    return RGBG
 
 
 def put_together_from_offsets(R, G, B, G2, offsets):
