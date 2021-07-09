@@ -30,6 +30,9 @@ print(f"Loaded Camera objects: {cameras}")
 # Find the ISO speed for each gain map, to include in the plot titles
 isos = [io.split_iso(file) for file in files]
 
+# Labels for the plots, based on camera and ISO
+labels = [f"{camera.name} (ISO {iso})" for camera, iso in zip(cameras, isos)]
+
 # Load the data
 data_arrays = [np.load(file) for file in files]
 print("Loaded data")
@@ -48,7 +51,7 @@ for j, c in enumerate(plot.rgbg2):
     # Create a figure to plot into
     fig, axs = plt.subplots(ncols=len(files), figsize=(3*len(files), 2.3), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     # Loop over the demosaicked/gaussed gain maps and plot them into the figure
-    for camera, iso, ax, data_RGBG, data_RGBG_gauss in zip(cameras, isos, axs, data_RGBG_arrays, data_RGBG_gauss_arrays):
+    for label, ax, data_RGBG, data_RGBG_gauss in zip(labels, axs, data_RGBG_arrays, data_RGBG_gauss_arrays):
         # Uppercase label for colour
         c_label = c.upper()
 
@@ -58,7 +61,7 @@ for j, c in enumerate(plot.rgbg2):
         # Plot parameters
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.set_title(f"{camera.name} (ISO {iso})")
+        ax.set_title(label)
 
         # Include a colorbar
         # Left-most map has a colorbar on the left
@@ -74,7 +77,7 @@ for j, c in enumerate(plot.rgbg2):
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
-        print(f"{camera.name:<10}: ISO {iso:>4}")
+        print(label)
         print(f"{c_label:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
@@ -88,7 +91,7 @@ bins = np.linspace(0.4, 2.8, 250)
 fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(3*len(files), 2.3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
 
 # Loop over the cameras
-for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays):
+for label, ax_arr, data_RGBG in zip(labels, axs.T, data_RGBG_arrays):
 
     # Combine the G and G2 channels and remove NaN values
     R = data_RGBG[0].ravel()    ; R = R[~np.isnan(R)]
@@ -109,7 +112,7 @@ for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays
             ax.tick_params(right=True, labelright=True)
 
     # Add a title to the top plot in each column
-    ax_arr[0].set_title(f"{camera.name} (ISO {iso})")
+    ax_arr[0].set_title(label)
 
     # Add a label to the x-axis of the bottom plot in each column
     ax_arr[-1].set_xlabel("Gain (ADU/e$^-$)")
