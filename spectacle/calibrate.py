@@ -42,7 +42,7 @@ def correct_bias(root, data):
     return data_corrected
 
 
-def correct_dark_current(root, exposure_time, *data):
+def correct_dark_current(root, exposure_time, data):
     """
     Perform a dark current correction on data using a dark current map from
     `root`/calibration/
@@ -55,7 +55,7 @@ def correct_dark_current(root, exposure_time, *data):
     print(f"Using dark current map from '{origin}'")
 
     # Correct each given array
-    data_corrected = dark.correct_dark_current_from_map(dark_current, exposure_time, *data)
+    data_corrected = dark.correct_dark_current_from_map(dark_current, exposure_time, data)
 
     return data_corrected
 

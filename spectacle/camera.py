@@ -428,7 +428,7 @@ class Camera(object):
         data_corrected = bias_readnoise.correct_bias_from_map(bias_map, data)
         return data_corrected
 
-    def correct_dark_current(self, exposure_time, *data, **kwargs):
+    def correct_dark_current(self, exposure_time, data, **kwargs):
         """
         Calibrate data for dark current using this sensor's data.
         Dark current data are loaded from the root folder or estimated 0 in all pixels,
@@ -439,7 +439,7 @@ class Camera(object):
             self._load_dark_current_map()
 
         # Apply the dark current correction
-        data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, *data, **kwargs)
+        data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, data, **kwargs)
         return data_corrected
 
     def normalise_iso(self, iso_values, *data):
