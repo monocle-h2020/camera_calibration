@@ -458,7 +458,7 @@ class Camera(object):
         data_corrected = iso.normalise_iso(self.iso_lookup_table, iso_values, data)
         return data_corrected
 
-    def convert_to_photoelectrons(self, *data, selection=all_data):
+    def convert_to_photoelectrons(self, data, selection=all_data):
         """
         Convert data from ADU to photoelectrons using this sensor's gain data.
         The gain data are loaded from the root folder.
@@ -474,7 +474,7 @@ class Camera(object):
         gain_map = self.gain_map[selection]
 
         # If a gain map was available, apply it
-        data_converted = gain.convert_to_photoelectrons_from_map(gain_map, *data)
+        data_converted = gain.convert_to_photoelectrons_from_map(gain_map, data)
         return data_converted
 
     def correct_flatfield(self, *data, selection=all_data, **kwargs):
