@@ -145,27 +145,11 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     return mean_remosaicked, stds_remosaicked
 
 
-def _correct_flatfield(data_element, flatfield, clip=False):
-    """
-    Correct a `data_element` for flatfield using a map `flatfield`
-
-    If `clip`, clip the data (make the outer borders NaN).
-    """
-    if clip:
-        data_to_correct = clip_data(data_element)
-    else:
-        data_to_correct = data_element
-
-    return data_to_correct * flatfield
-
-
-def correct_flatfield_from_map(flatfield, *data, clip=False):
+def correct_flatfield_from_map(flatfield, data):
     """
     Apply a flat-field correction from a flat-field map `flatfield` to an
-    array `data`.
-
-    If `clip`, clip the data (make the outer borders NaN).
+    array or iterable of arrays `data`.
     """
-    data_corrected = apply_to_multiple_args(_correct_flatfield, data, flatfield, clip=clip)
+    data_corrected = data * flatfield
 
     return data_corrected

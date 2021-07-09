@@ -477,7 +477,7 @@ class Camera(object):
         data_converted = gain.convert_to_photoelectrons_from_map(gain_map, data)
         return data_converted
 
-    def correct_flatfield(self, *data, selection=all_data, **kwargs):
+    def correct_flatfield(self, data, selection=all_data, **kwargs):
         """
         Correct data for flatfield using this sensor's flatfield data.
         The flatfield data are loaded from the root folder.
@@ -493,7 +493,7 @@ class Camera(object):
         flatfield_map = self.flatfield_map[selection]
 
         # If a flatfield map was available, apply it
-        data_corrected = flat.correct_flatfield_from_map(flatfield_map, *data, **kwargs)
+        data_corrected = flat.correct_flatfield_from_map(flatfield_map, data, **kwargs)
         return data_corrected
 
     def correct_spectral_response(self, data_wavelengths, *data):
