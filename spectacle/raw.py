@@ -1,9 +1,17 @@
 import numpy as np
 
 
-def _find_offset(color_pattern, colour):
-    pos = np.array(np.where(color_pattern == colour)).T[0]
-    return pos
+def _generate_bayer_slices(color_pattern, colours=range(4)):
+    """
+    Generate the slices used to demosaick data.
+    """
+    # Find the positions of the first element corresponding to each colour
+    positions = [np.array(np.where(color_pattern == colour)).T[0] for colour in colours]
+
+    # Make a slice for each colour
+    slices = [np.s_[..., x::2, y::2] for x, y in positions]
+
+    return slices
 
 
 def demosaick(bayer_map, data, color_desc="RGBG"):
@@ -20,26 +28,15 @@ def demosaick(bayer_map, data, color_desc="RGBG"):
     # Check that the data and Bayer pattern have similar shapes
     assert data.shape[-2:] == bayer_map.shape, f"The data ({data.shape}) and Bayer map ({bayer_map.shape}) have incompatible shapes"
 
-    # Find the offsets describing the Bayer pattern
-    offsets = np.array([_find_offset(bayer_map, i) for i in range(4)])
-    offX, offY = offsets.T
-
     # Demosaick the data along their last two axes
-    R, G, B, G2 = [data[..., x::2, y::2] for x, y in zip(offX, offY)]
+    bayer_pattern = bayer_map[:2, :2]
+    slices = _generate_bayer_slices(bayer_pattern)
+    R, G, B, G2 = [data[s] for s in slices]
 
     # Combine the data back into one array of shape [..., 4, x/2, y/2]
     RGBG = np.stack((R, G, B, G2), axis=-3)
 
     return RGBG
-
-
-def put_together_from_offsets(R, G, B, G2, offsets):
-    result = np.zeros((R.shape[0]*2, R.shape[1]*2))
-    for colour, offset in zip([R,G,B,G2], offsets):
-        x, y = offset
-        result[x::2, y::2] = colour
-    result = result.astype(R.dtype)
-    return result
 
 
 def put_together_from_colours(RGBG, colours):
