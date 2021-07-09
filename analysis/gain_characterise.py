@@ -42,23 +42,12 @@ print("Made histogram")
 camera.plot_gauss_maps(gains, colorbar_label="Gain (ADU/e$^-$)", saveto=save_to_map)
 print("Made maps")
 
-# Demosaick data by splitting the RGBG2 channels into separate arrays
-gains_RGBG = camera.demosaick(gains)
-
 # Plot a miniature RGB histogram
 xmin, xmax = 0, 3.5
-data_RGB = [gains_RGBG[0].ravel(), gains_RGBG[1::2].ravel(), gains_RGBG[2].ravel()]
-fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), gridspec_kw={"wspace": 0, "hspace": 0})
-for ax, data, c in zip(axs, data_RGB, plot.RGB_OkabeIto):
-    ax.hist(data, color=c, edgecolor=c, bins=np.linspace(xmin, xmax, 250), density=True)
-for ax in axs[:2]:
-    ax.tick_params(bottom=False, labelbottom=False)
-for ax in axs:
-    ax.grid(ls="--")
-axs[0].set_xlim(xmin, xmax)
+fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,3), gridspec_kw={"wspace": 0, "hspace": 0})
+camera.plot_histogram_RGB(gains, axs=axs, xmin=xmin, xmax=xmax, nrbins=250, xlabel="Gain (ADU/e$^-$)")
 axs[0].set_ylim(0, 2.5)
 axs[0].set_yticks([0,1,2])
-axs[2].set_xlabel("Gain (ADU/e-)")
 axs[1].set_ylabel("Frequency")
 plot._saveshow(save_to_histogram_miniature)
 print("Made RGB histogram")
