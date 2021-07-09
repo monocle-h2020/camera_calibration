@@ -428,7 +428,7 @@ class Camera(object):
         data_corrected = bias_readnoise.correct_bias_from_map(bias_map, data)
         return data_corrected
 
-    def correct_dark_current(self, exposure_time, data, **kwargs):
+    def correct_dark_current(self, exposure_time, data, selection=all_data):
         """
         Calibrate data for dark current using this sensor's data.
         Dark current data are loaded from the root folder or estimated 0 in all pixels,
@@ -438,8 +438,11 @@ class Camera(object):
         if not hasattr(self, "dark_current"):
             self._load_dark_current_map()
 
+        # Select the relevant data
+        dark_current = self.dark_current[selection]
+
         # Apply the dark current correction
-        data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, data, **kwargs)
+        data_corrected = dark.correct_dark_current_from_map(dark_current, exposure_time, data)
         return data_corrected
 
     def normalise_iso(self, iso_values, *data):
@@ -455,7 +458,7 @@ class Camera(object):
         data_corrected = iso.normalise_iso_general(self.iso_lookup_table, iso_values, *data)
         return data_corrected
 
-    def convert_to_photoelectrons(self, *data):
+    def convert_to_photoelectrons(self, *data, selection=all_data):
         """
         Convert data from ADU to photoelectrons using this sensor's gain data.
         The gain data are loaded from the root folder.
@@ -467,8 +470,11 @@ class Camera(object):
         # Assert that a gain map was loaded
         assert self.gain_map is not None, "Gain map unavailable"
 
+        # Select the relevant data
+        gain_map = self.gain_map[selection]
+
         # If a gain map was available, apply it
-        data_converted = gain.convert_to_photoelectrons_from_map(self.gain_map, *data)
+        data_converted = gain.convert_to_photoelectrons_from_map(gain_map, *data)
         return data_converted
 
     def correct_flatfield(self, *data, selection=all_data, **kwargs):
