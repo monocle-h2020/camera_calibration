@@ -581,7 +581,7 @@ class Camera(object):
 
         return colour_space
 
-    def demosaick(self, *data, selection=all_data, **kwargs):
+    def demosaick(self, data, selection=all_data, **kwargs):
         """
         Demosaick data using this camera's Bayer pattern.
         """
@@ -589,7 +589,7 @@ class Camera(object):
         bayer_map = self.bayer_map[selection]
 
         # Demosaick the data
-        RGBG_data = raw.demosaick(bayer_map, *data, color_desc=self.bands, **kwargs)
+        RGBG_data = raw.demosaick(bayer_map, data, color_desc=self.bands, **kwargs)
         return RGBG_data
 
     def plot_spectral_response(self, saveto=None):

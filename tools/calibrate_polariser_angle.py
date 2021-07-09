@@ -29,7 +29,7 @@ X, Y = np.meshgrid(x, y)
 (x0, y0) = (len(x) / 2, len(y) / 2)
 D = np.sqrt((X - x0)**2 + (Y - y0)**2)
 
-meanRGBG, stdsRGBG, D_split = raw.demosaick(colours, mean_reshaped, stds_reshaped, D)
+meanRGBG, stdsRGBG, D_split = raw.demosaick(colours, [mean_reshaped, stds_reshaped, D])
 
 outer_radii = np.arange(1000, 2000, 75)
 

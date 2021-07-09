@@ -78,7 +78,7 @@ def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
             print("Could not do flat-field correction, see below for error", e, sep="\n")
 
     # Demosaick the data
-    means_RGBG2 = np.array(camera.demosaick(*means, selection=center))
+    means_RGBG2 = np.array(camera.demosaick(means, selection=center))
 
     # Get the mean per wavelength per channel and the standard deviations
     means_final = np.nanmean(means_RGBG2, axis=(2,3))
