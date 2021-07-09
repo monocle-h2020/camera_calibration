@@ -11,6 +11,9 @@ def demosaick(bayer_map, data, color_desc="RGBG"):
     Uses a Bayer map `bayer_map` (RGBG channel for each pixel) and any number
     of input arrays `data`.
     """
+    # Cast the data to a numpy array for the following indexing tricks to work
+    data = np.array(data)
+
     # Check that we are dealing with RGBG2 data, as only these are supported right now.
     assert color_desc in ("RGBG", b"RGBG"), f"Unknown colour description `{color_desc}"
 
