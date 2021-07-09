@@ -89,35 +89,24 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
     return model_type, model, R2, parameters, errors
 
 
-def _normalise_iso_single(data_element, iso, lookup_table):
+def normalise_iso(lookup_table, isos, data):
     """
-    Normalise one `data_element` for one `iso` value using the `lookup_table`
+    Normalise data for ISO speed. `isos` can be an iterable of the same length as
+    `data` or a single value, which is then used for all data elements.
     """
-    return data_element / lookup_table[1][iso]
+    # Get the normalisation from the lookup table
+    normalisation = lookup_table[1, isos]
 
-
-def _normalise_iso_multiple(data_element, isos, lookup_table):
-    """
-    Normalise one `data_element` for multiple iso speeds `isos`, each of which
-    corresponds to one element in `data_element`, using the `lookup_table`.
-    `data_element` and `isos` are assumed to have the same length, i.e. each element
-    of `data_element` has one associated ISO speed in `isos`.
-    """
-    assert len(data_element) == len(isos), f"data_element ({len(data_element)}) and isos ({len(isos)}) have different lengths."
-    as_list = [_normalise_iso_single(data_subelement, ISO, lookup_table) for data_subelement, ISO in zip(data_element, isos)]
-    as_array = np.array(as_list)
-    return as_array
-
-
-def normalise_iso_general(lookup_table, isos, *data):
-    """
-    Normalise data for ISO speed in general. Uses either `normalise_single_iso`
-    or `normalise_multiple_iso` based on the number of isos given.
-    """
-    if isinstance(isos, (int, float)):
-        data_normalised = apply_to_multiple_args(_normalise_iso_single, data, isos, lookup_table)
-    else:
-        data_normalised = apply_to_multiple_args(_normalise_iso_multiple, data, isos, lookup_table)
+    # If `normalisation` is a single value, simply divide
+    try:
+        data_normalised = data / normalisation
+    # If this does not work, assume `normalisation` is iterable
+    except ValueError:
+        # Numpy's broadcasting works when the first axis of `data`, which has
+        # the same length as `normalisation`, is at the end
+        data_normalised = np.moveaxis(data.copy(), 0, -1)
+        data_normalised /= normalisation
+        data_normalised = np.moveaxis(data_normalised, -1, 0)
 
     return data_normalised
 

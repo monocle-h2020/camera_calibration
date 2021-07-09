@@ -60,7 +60,7 @@ def correct_dark_current(root, exposure_time, data):
     return data_corrected
 
 
-def normalise_iso(root, iso_values, *data):
+def normalise_iso(root, iso_values, data):
     """
     Normalise data using an ISO normalisation look-up table from
     `root`/calibration/
@@ -72,7 +72,7 @@ def normalise_iso(root, iso_values, *data):
     print(f"Using ISO speed normalisation look-up table from '{origin}'")
 
     # Correct each given array
-    data_corrected = iso.normalise_iso_general(lookup_table, iso_values, *data)
+    data_corrected = iso.normalise_iso(lookup_table, iso_values, data)
 
     return data_corrected
 

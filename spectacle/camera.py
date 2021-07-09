@@ -445,7 +445,7 @@ class Camera(object):
         data_corrected = dark.correct_dark_current_from_map(dark_current, exposure_time, data)
         return data_corrected
 
-    def normalise_iso(self, iso_values, *data):
+    def normalise_iso(self, iso_values, data):
         """
         Normalise data for their ISO speed using this sensor's lookup table.
         The ISO lookup table is loaded from the root folder.
@@ -455,7 +455,7 @@ class Camera(object):
             self._load_iso_normalisation()
 
         # Apply the ISO normalisation
-        data_corrected = iso.normalise_iso_general(self.iso_lookup_table, iso_values, *data)
+        data_corrected = iso.normalise_iso(self.iso_lookup_table, iso_values, data)
         return data_corrected
 
     def convert_to_photoelectrons(self, *data, selection=all_data):
