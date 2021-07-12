@@ -176,7 +176,7 @@ def load_spectral_response(root, return_filename=False):
     return return_with_filename(spectral_response, filename, return_filename)
 
 
-def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":", "-."], xlim=(390, 700), ylim=(0,1.02), ylabel="Relative sensitivity", saveto=None):
+def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":", "-."], xlim=(390, 700), ylim=(0,1.02), ylabel="Relative sensitivity", saveto=None, **kwargs):
     """
     Plot spectral responses (`SRFs`) together in one panel.
     """
@@ -185,13 +185,13 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
 
     # Loop over the response curves
     for wavelength, SRF, label, style in zip(wavelengths, SRFs, labels, linestyles):
-        plot._rgbgplot(wavelength, SRF, ls=style)
+        plot._rgbgplot(wavelength, SRF, ls=style, **kwargs)
 
         # Add an invisible line for the legend
-        plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label)
+        plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label, **kwargs)
 
     # Plot parameters
-    plt.grid(True)
+    plt.grid(ls="--")
     plt.xticks(np.arange(0,1000,50))
     plt.xlim(*xlim)
     plt.xlabel("Wavelength [nm]")
