@@ -6,11 +6,6 @@ from .general import return_with_filename, apply_to_multiple_args, deprecation
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
 
-try:
-    from colorio._tools import plot_flat_gamut
-except ImportError:
-    print("Could not import colorio, using simple gamut plot.")
-
 wavelengths_interpolated = np.arange(390, 701, 1)
 
 # Matrix for converting RGBG2 to RGB
@@ -455,14 +450,17 @@ def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
     saveto = plot._convert_to_path(saveto)
 
     try:
-        plot_flat_gamut()
-    except NameError:
+        from colorio._tools import plot_xy_gamut
+    except ImportError:
+        print("Could not import colorio, using simple gamut plot.")
         plt.xlim(0, 0.8)
         plt.ylim(0, 0.8)
         plt.xlabel("x")
         plt.ylabel("y")
         sRGB_triangle = plt.Polygon([[0.64,0.33], [0.30, 0.60], [0.15, 0.06]], fill=True, linestyle="-", label="sRGB")
         plt.gca().add_patch(sRGB_triangle)
+    else:
+        plot_xy_gamut()
 
     # Check if a single set of base vectors was given or multiple
     if len(xy_base_vectors[0]) != 3:  # A single set of base vectors
