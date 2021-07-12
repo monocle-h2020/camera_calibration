@@ -31,10 +31,12 @@ def demosaick(bayer_map, data, color_desc="RGBG"):
     # Demosaick the data along their last two axes
     bayer_pattern = bayer_map[:2, :2]
     slices = _generate_bayer_slices(bayer_pattern)
-    R, G, B, G2 = [data[s] for s in slices]
 
     # Combine the data back into one array of shape [..., 4, x/2, y/2]
-    RGBG = np.stack((R, G, B, G2), axis=-3)
+    newshape = list(data.shape[:-2]) + [4, data.shape[-2]//2, data.shape[-1]//2]
+    RGBG = np.empty(newshape)
+    for i, s in enumerate(slices):
+        RGBG[..., i, :, :] = data[s]
 
     return RGBG
 
