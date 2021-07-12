@@ -226,18 +226,34 @@ def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwar
     return interpolated_data
 
 
-def convert_RGBG2_to_RGB(RGBG2_data):
+def array_slice(a, axis, start, end, step=1):
+    """
+    Slice an array along an arbitrary axis.
+    Adapted from https://stackoverflow.com/a/64436208/2229219
+    """
+    return (slice(None),) * (axis % a.ndim) + (slice(start, end, step),)
+
+
+def convert_RGBG2_to_RGB(RGBG2_data, axis=0):
     """
     Convert data in Bayer RGBG2 format to RGB format, by averaging the G and G2
     channels.
 
-    Assumes the `RGBG2_data` have the shape (4, number_of_wavelengths)
-    """
-    # Make a new array containing only the RGB data
-    RGB_data = RGBG2_data.copy()[:3]
+    The RGBG2 data are assumed to have their colour axis on `axis`. For example,
+    if `axis=0`, then the data are assumed to have a shape of (4, ...).
+    If `axis=2`, then the data are assumed to be (:, :, 4, ...). Et cetera.
 
-    # Replace the G axis with the average of G and G2
-    RGB_data[1] = np.mean(RGBG2_data[1::2], axis=0)
+    The resulting array has the same shape but with the given axis changed from
+    4 to 3.
+    """
+    # Matrix for converting RGBG2 to RGB
+    M_RGBG2_to_RGB = np.array([[1, 0  , 0, 0  ],
+                               [0, 0.5, 0, 0.5],
+                               [0, 0  , 1, 0  ]])
+
+    # Use tensor multiplication to multiply along an arbitrary axis
+    RGB_data = np.tensordot(M_RGBG2_to_RGB, RGBG2_data, axes=((1), (axis)))
+    RGB_data = np.moveaxis(RGB_data, 0, axis)
 
     return RGB_data
 
@@ -394,7 +410,7 @@ def _einsum_arbitrary_axis(matrix, data, axis):
     return result
 
 
-def _convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
+def convert_to_XYZ(RGB_to_XYZ_matrix, RGB_data, axis=None):
     """
     Convert RGB data to XYZ. The RGB data can be multi-dimensional, for example a
     spectrum (3, L) with L the number of wavelengths or an image (3, X, Y) with
@@ -402,7 +418,7 @@ def _convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
     If the axis is not specified by the user, an axis with a length of 3 is searched for.
     If 0 or >=2 such axes are found, an error is raised.
 
-    This could possibly be replaced by np.tensordot.
+    Does not support RGBG2 arrays.
     """
     if axis is None:  # If no axis is supplied, look for one
         axis = _find_matching_axis(RGB_data, 3)
@@ -410,21 +426,10 @@ def _convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
         assert RGB_data.shape[axis] == 3, f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
 
     # Perform the matrix multiplication
-    XYZ_data = _einsum_arbitrary_axis(RGB_to_XYZ_matrix, RGB_data, axis)
+    XYZ_data = np.tensordot(RGB_to_XYZ_matrix, RGB_data, axes=((1), (axis)))
+    XYZ_data = np.moveaxis(XYZ_data, 0, axis)
 
     return XYZ_data
-
-
-def convert_to_XYZ(RGB_to_XYZ_matrix, *RGB_data, axis=None):
-    """
-    Apply the RGB to XYZ conversion to any number of RGB data arrays.
-    `axis` must be the same for all data elements (or None everywhere).
-
-    Does not support RGBG2 arrays.
-    """
-    data_XYZ = apply_to_multiple_args(_convert_RGB_to_XYZ, RGB_data, RGB_to_XYZ_matrix, axis=axis)
-
-    return data_XYZ
 
 
 def load_XYZ_matrix(root, return_filename=False):

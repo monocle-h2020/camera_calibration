@@ -546,13 +546,11 @@ class Camera(object):
         data_convolved = np.array([spectral.convolve_multi(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
         return data_convolved
 
-    def convert_to_XYZ(self, *data, axis=None):
+    def convert_to_XYZ(self, data, axis=None):
         """
         Convert RGB data to XYZ using the sensor's conversion matrix.
         The conversion matrix is loaded from the root folder.
         `axis` is the RGB axis. If None is provided, one is automatically looked for.
-        Any number of arrays can be passed as *data, though all must have the same
-        (or None) axis.
         """
         # If the XYZ conversion matrix has not been loaded yet, do so
         if not hasattr(self, "XYZ_matrix"):
@@ -562,7 +560,7 @@ class Camera(object):
         assert self.XYZ_matrix is not None, "RGB to XYZ conversion matrix unavailable"
 
         # If a conversion matrix was available, use it in the conversion
-        data_XYZ = spectral.convert_to_XYZ(self.XYZ_matrix, *data, axis=axis)
+        data_XYZ = spectral.convert_to_XYZ(self.XYZ_matrix, data, axis=axis)
         return data_XYZ
 
     def colour_space(self):
