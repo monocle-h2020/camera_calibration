@@ -385,17 +385,11 @@ class Camera(object):
         # If a matrix cannot be found, do not use one, and warn the user
         except (FileNotFoundError, OSError, TypeError):
             XYZ_matrix = None
-            RGBG2_to_XYZ_matrix = None
             print(f"No RGB->XYZ matrix found for {self.name}.")
-
-        # If a matrix was found, also generate a 3x4 RGBG2 -> XYZ matrix
-        else:
-            RGBG2_to_XYZ_matrix = spectral.convert_matrix_to_RGBG2(XYZ_matrix)
 
         # If an XYZ matrix was found, save it to this object so it need not be looked up again
         # Else, save the None object to warn the user
         self.XYZ_matrix = XYZ_matrix
-        self.RGBG2_to_XYZ_matrix = RGBG2_to_XYZ_matrix
 
     def load_all_calibrations(self):
         """
@@ -552,7 +546,7 @@ class Camera(object):
 
     def convert_to_XYZ(self, data, axis=None):
         """
-        Convert RGB data to XYZ using the sensor's conversion matrix.
+        Convert RGB or RGBG2 data to XYZ using the sensor's conversion matrix.
         The conversion matrix is loaded from the root folder.
         `axis` is the RGB axis. If None is provided, one is automatically looked for.
         """

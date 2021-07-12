@@ -378,16 +378,6 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     return M_RGB_to_XYZ
 
 
-def convert_matrix_to_RGBG2(RGB_to_XYZ_matrix):
-    """
-    Convert a 3x3 matrix (RGB -> XYZ) to a 3x4 matrix (RGBG2 -> XYZ) for ease of use.
-    The G and G2 columns are half the original G column, to preserve normalisation.
-    """
-    matrix_new = np.hstack([RGB_to_XYZ_matrix, RGB_to_XYZ_matrix[:,1][:,np.newaxis]])
-    matrix_new[:,1::2] /= 2.  # Divide G columns by 2 to preserve normalisation
-    return matrix_new
-
-
 def _find_matching_axis(data, axis_length):
     """
     Find an axis in `data` that has the given length `axis_length`.
@@ -412,12 +402,20 @@ def convert_to_XYZ(RGB_to_XYZ_matrix, RGB_data, axis=None):
     If the axis is not specified by the user, an axis with a length of 3 is searched for.
     If 0 or >=2 such axes are found, an error is raised.
 
-    Does not support RGBG2 arrays.
+    RGBG2 data can also be passed, in which case an axis with length 4 must be given or
+    will be looked for. The data will then first be converted to RGB which adds computation time.
     """
     if axis is None:  # If no axis is supplied, look for one
-        axis = _find_matching_axis(RGB_data, 3)
+        try:  # First see if the data are RGB
+            axis = _find_matching_axis(RGB_data, 3)
+        except ValueError:  # If not, try RGBG2
+            axis = _find_matching_axis(RGB_data, 4)
     else:  # If an axis was supplied, check that is has the correct length
-        assert RGB_data.shape[axis] == 3, f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
+        assert RGB_data.shape[axis] in (3,4), f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3 or 4."
+
+    # If RGBG2 data were given, first convert the data to RGB
+    if RGB_data.shape[axis] == 4:
+        RGB_data = convert_RGBG2_to_RGB(RGB_data, axis=axis)
 
     # Perform the matrix multiplication
     XYZ_data = convert_between_colourspaces(RGB_data, RGB_to_XYZ_matrix, axis=axis)
