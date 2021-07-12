@@ -29,7 +29,7 @@ def gauss_filter(D, sigma=5, **kwargs):
     return gauss1d(D.astype(float), sigma, axis=1, **kwargs)
 
 
-def gauss_nan(D, sigma=5, **kwargs):
+def _gauss_nan(D, sigma=5, **kwargs):
     """
     Apply a multidimensional Gaussian kernel, accounting for NaN values.
     Reference: https://stackoverflow.com/a/36307291/2229219
@@ -51,10 +51,10 @@ def gauss_filter_multidimensional(data, sigma=5, **kwargs):
     Apply a multidimensional Gaussian kernel, accounting for NaN values
     if necessary.
 
-    Select `gaussMd` or `gauss_nan` depending on if NaN data are present
+    Select `gaussMd` or `_gauss_nan` depending on if NaN data are present
     in the given `data_element`.
     """
-    func = gauss_nan if np.isnan(data).any() else gaussMd
+    func = _gauss_nan if np.isnan(data).any() else gaussMd
     data_gauss = func(data, sigma=sigma, **kwargs)
 
     return data_gauss

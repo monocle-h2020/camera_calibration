@@ -55,7 +55,7 @@ plot.show_RGBG(RGB)
 
 # Convolve the data with a Gaussian kernel on the wavelength axis to remove
 # noise and fill in the gaps
-RGB_gauss = general.gauss_nan(RGB, sigma=(0,0,10))
+RGB_gauss = general.gauss_filter_multidimensional(RGB, sigma=(0,0,10))
 
 # Show the Gaussed image
 plot.show_RGBG(RGB_gauss)

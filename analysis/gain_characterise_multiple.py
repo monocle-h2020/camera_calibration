@@ -16,7 +16,7 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from spectacle import io, plot, analyse
-from spectacle.general import gauss_nan
+from spectacle.general import gauss_filter_multidimensional
 
 # Get the data folder from the command line
 files = io.path_from_input(argv)
@@ -42,7 +42,7 @@ data_RGBG_arrays = [camera.demosaick(data) for data, camera in zip(data_arrays, 
 print("Demosaicked data")
 
 # Convolve the RGBG2 data with a Gaussian kernel
-data_RGBG_gauss_arrays = [gauss_nan(RGBG, sigma=(0,5,5)) for RGBG in data_RGBG_arrays]
+data_RGBG_gauss_arrays = [gauss_filter_multidimensional(RGBG, sigma=(0,5,5)) for RGBG in data_RGBG_arrays]
 print("Gaussed data")
 
 # Plot a Gaussed map for each channel
