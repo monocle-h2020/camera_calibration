@@ -546,6 +546,10 @@ class Camera(object):
         data_convolved = np.array([spectral.convolve_multi(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
         return data_convolved
 
+    # Convert RGBG2 to RGB data - does not require any camera-specific data,
+    # but useful to have as a class method
+    convert_RGBG2_to_RGB = staticmethod(spectral.convert_RGBG2_to_RGB)
+
     def convert_to_XYZ(self, data, axis=None):
         """
         Convert RGB data to XYZ using the sensor's conversion matrix.
