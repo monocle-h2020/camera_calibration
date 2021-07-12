@@ -149,24 +149,7 @@ def load_spectral_response(root, return_filename=False):
     """
     # Try to use a CSV file
     filename = io.find_matching_file(root/"calibration", "spectral_response.csv")
-    try:
-        spectral_response = np.loadtxt(filename, delimiter=",").T
-
-    # If no CSV file is available, check for an NPY file (deprecated)
-    except IOError:
-        try:
-            filename = root/"calibration/spectral_response.npy"
-            spectral_response = np.load(filename)
-
-        # If still no luck - don't load anything, return an error
-        except FileNotFoundError:
-            raise IOError(f"Could not load CSV or NPY spectral response file from {root/'calibration/'}.")
-
-        # If an NPY file was used instead of a CSV file, raise a warning about deprecation
-        else:
-            deprecation("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.")
-
-    print(f"Using spectral response curves from '{filename}'")
+    spectral_response = np.loadtxt(filename, delimiter=",").T
 
     return return_with_filename(spectral_response, filename, return_filename)
 
