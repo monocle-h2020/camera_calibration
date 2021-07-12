@@ -12,7 +12,7 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from spectacle import plot, io, analyse
-from spectacle.general import gaussMd
+from spectacle.general import gauss_filter_multidimensional
 
 # Get the data folder from the command line
 files = io.path_from_input(argv)
@@ -33,7 +33,7 @@ data_all = [np.load(path) for path in files]
 RGBGs_all = [camera.demosaick(data) for data, camera in zip(data_all, cameras)]
 
 # Convolve the data with a Gaussian kernel
-gauss_all = [gaussMd(RGBG, sigma=(0,5,5)) for RGBG in RGBGs_all]
+gauss_all = [gauss_filter_multidimensional(RGBG, sigma=(0,5,5)) for RGBG in RGBGs_all]
 
 # Minimum and maximum of colourbars
 vmin, vmax = analyse.symmetric_percentiles(gauss_all)

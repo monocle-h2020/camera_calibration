@@ -46,23 +46,16 @@ def gauss_nan(D, sigma=5, **kwargs):
     return Z
 
 
-def _gauss_generic(data_element, **kwargs):
+def gauss_filter_multidimensional(data, sigma=5, **kwargs):
     """
     Apply a multidimensional Gaussian kernel, accounting for NaN values
     if necessary.
+
     Select `gaussMd` or `gauss_nan` depending on if NaN data are present
     in the given `data_element`.
     """
-    func = gauss_nan if np.isnan(data_element).any() else gaussMd
-    return func(data_element, **kwargs)
-
-
-def gauss_filter_multidimensional(*data, sigma=5, **kwargs):
-    """
-    Apply a Gaussian convolution to any number of data elements in `data`,
-    accounting for NaN values if they are present.
-    """
-    data_gauss = apply_to_multiple_args(_gauss_generic, data, sigma=sigma, **kwargs)
+    func = gauss_nan if np.isnan(data).any() else gaussMd
+    data_gauss = func(data, sigma=sigma, **kwargs)
 
     return data_gauss
 

@@ -14,7 +14,7 @@ To do:
 import numpy as np
 from sys import argv
 from spectacle import io, flat, plot
-from spectacle.general import gaussMd, correlation_from_covariance, uncertainty_from_covariance
+from spectacle.general import gauss_filter_multidimensional, correlation_from_covariance, uncertainty_from_covariance
 from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
@@ -53,7 +53,7 @@ mean_normalised, stds_normalised = flat.normalise_RGBG2(mean, stds, camera.bayer
 print("Normalised data")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
-flatfield_gauss = gaussMd(mean_normalised, 10)
+flatfield_gauss = gauss_filter_multidimensional(mean_normalised, 10)
 
 # Calculate the correction factor
 correction = 1 / flatfield_gauss

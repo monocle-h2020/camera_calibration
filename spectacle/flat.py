@@ -3,7 +3,7 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 """
 
 import numpy as np
-from .general import gaussMd, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
+from .general import gauss_filter_multidimensional, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
 from . import raw, io
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
@@ -127,7 +127,7 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
 
     # Convolve with a Gaussian kernel to find the maxima without being
     # sensitive to outliers
-    mean_RGBG_gauss = gaussMd(mean_RGBG, sigma=(0,5,5))
+    mean_RGBG_gauss = gauss_filter_multidimensional(mean_RGBG, sigma=(0,5,5))
 
     # Find the maximum per channel and cast these into an array of the same
     # shape as the data
