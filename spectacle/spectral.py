@@ -13,6 +13,12 @@ except ImportError:
 
 wavelengths_interpolated = np.arange(390, 701, 1)
 
+# Matrix for converting RGBG2 to RGB
+M_RGBG2_to_RGB = np.array([[1, 0  , 0, 0  ],
+                           [0, 0.5, 0, 0.5],
+                           [0, 0  , 1, 0  ]])
+
+
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     """
     Calculate the effective bandwidth of a spectral band.
@@ -234,6 +240,19 @@ def array_slice(a, axis, start, end, step=1):
     return (slice(None),) * (axis % a.ndim) + (slice(start, end, step),)
 
 
+def convert_between_colourspaces(data, conversion_matrix, axis=0):
+    """
+    Convert data from one colour space to another, using the given conversion matrix.
+    Matrix multiplication can be done on an arbitrary axis in the data, using np.tensordot.
+    Example uses include converting from RGBG2 to RGB and from RGB to XYZ.
+    """
+    # Use tensor multiplication to multiply along an arbitrary axis
+    new_data = np.tensordot(conversion_matrix, data, axes=((1), (axis)))
+    new_data = np.moveaxis(new_data, 0, axis)
+
+    return new_data
+
+
 def convert_RGBG2_to_RGB(RGBG2_data, axis=0):
     """
     Convert data in Bayer RGBG2 format to RGB format, by averaging the G and G2
@@ -246,14 +265,7 @@ def convert_RGBG2_to_RGB(RGBG2_data, axis=0):
     The resulting array has the same shape but with the given axis changed from
     4 to 3.
     """
-    # Matrix for converting RGBG2 to RGB
-    M_RGBG2_to_RGB = np.array([[1, 0  , 0, 0  ],
-                               [0, 0.5, 0, 0.5],
-                               [0, 0  , 1, 0  ]])
-
-    # Use tensor multiplication to multiply along an arbitrary axis
-    RGB_data = np.tensordot(M_RGBG2_to_RGB, RGBG2_data, axes=((1), (axis)))
-    RGB_data = np.moveaxis(RGB_data, 0, axis)
+    RGB_data = convert_between_colourspaces(RGBG2_data, M_RGBG2_to_RGB, axis=axis)
 
     return RGB_data
 
@@ -408,8 +420,7 @@ def convert_to_XYZ(RGB_to_XYZ_matrix, RGB_data, axis=None):
         assert RGB_data.shape[axis] == 3, f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
 
     # Perform the matrix multiplication
-    XYZ_data = np.tensordot(RGB_to_XYZ_matrix, RGB_data, axes=((1), (axis)))
-    XYZ_data = np.moveaxis(XYZ_data, 0, axis)
+    XYZ_data = convert_between_colourspaces(RGB_data, RGB_to_XYZ_matrix, axis=axis)
 
     return XYZ_data
 
