@@ -142,9 +142,6 @@ def load_spectral_response(root, return_filename=False):
     Load the spectral response curves located at
     `root`/calibration/spectral_response.csv.
 
-    If no CSV is available, try an NPY file for backwards compatibility.
-    This is deprecated and will no longer be supported in future releases.
-
     If `return_filename` is True, also return the exact filename used.
     """
     # Try to use a CSV file
