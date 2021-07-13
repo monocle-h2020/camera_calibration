@@ -29,7 +29,7 @@ The resulting settings file is required for some calibrations, such as ISO speed
 
 A bias map is generated using [bias.py](bias.py).
 This map has the mean bias value per pixel at the lowest ISO speed given.
-This is corrected using the `spectacle` function `spectacle.calibrate.correct_bias`.
+This is corrected using the `spectacle` function `spectacle.camera.correct_bias`.
 
 The bias map depends on ISO speed and is unique to each camera.
 Even two cameras of the same model do not share a bias map.
@@ -52,7 +52,7 @@ In this case, a mean value may be used, which is derived from measurements.
 ## ISO speed normalisation
 
 An ISO speed normalisation look-up table is generated using [iso_normalisation.py](iso_normalisation.py), based on image stacks taken at different ISO speeds.
-This is used to normalise data using the `spectacle` function `spectacle.calibrate.normalise_iso`.
+This is used to normalise data using the `spectacle` function `spectacle.camera.normalise_iso`.
 
 The ISO speed normalisation calibration requires a bias correction and camera settings file.
 If no measured bias map is available, one is generated from the camera information file.
@@ -61,7 +61,7 @@ If no measured bias map is available, one is generated from the camera informati
 
 A dark current map is generated using [dark_current.py](dark_current.py).
 This map has the mean dark current per second in each pixel, normalised for ISO speed.
-This can be corrected using the `spectacle` function `spectacle.calibrate.correct_dark_current`.
+This can be corrected using the `spectacle` function `spectacle.camera.correct_dark_current`.
 
 The dark current calibration requires an ISO speed normalisation look-up table.
 
@@ -69,7 +69,7 @@ The dark current calibration requires an ISO speed normalisation look-up table.
 
 A gain map is generated using [gain.py](gain.py).
 This map has the gain (in normalised ADU/photoelectron) in each pixel.
-This is not used in further calibration, but can be used to convert a signal to photoelectrons with the `spectacle` function `spectacle.calibrate.convert_to_photoelectrons`.
+This is not used in further calibration, but can be used to convert a signal to photoelectrons with the `spectacle` function `spectacle.camera.convert_to_photoelectrons`.
 
 The gain calibration requires a bias correction.
 If no measured bias map is available, one is generated from the camera information file.
@@ -80,7 +80,7 @@ The gain calibration requires an ISO speed normalisation look-up table.
 
 A flat-field model is generated using [flatfield.py](flatfield.py).
 This model describes the flat-field response (sensivity) in each pixel with seven parameters, as described in the SPECTACLE paper.
-The flat-field response is corrected for using the `spectacle` function `spectacle.calibrate.correct_flatfield`.
+The flat-field response is corrected for using the `spectacle` function `spectacle.camera.correct_flatfield`.
 
 The flat-field calibration requires a bias correction.
 If no measured bias map is available, one is generated from the camera information file.
@@ -91,11 +91,11 @@ Two methods for characterising the spectral response of a camera are currently i
 These are the use of a monochromator and the use of a spectrometer such as iSPEX.
 
 In either case, the spectral response curves are saved, in CSV format, to `root/calibration/spectral_response.csv`.
-The `spectacle` method `spectacle.calibrate.correct_spectral_response` may then be used to correct spectral data (e.g. from iSPEX) by dividing out the spectral response of the camera.
+The `spectacle` method `spectacle.camera.correct_spectral_response` may then be used to correct spectral data (e.g. from iSPEX) by dividing out the spectral response of the camera.
 
 A matrix for converting data from the camera RGB space to CIE XYZ is calculated and saved to `root/calibration/RGB_to_XYZ_matrix.csv`.
 
-The effective spectral bandwidths are saved to `root/calibration/spectral_bands.csv` and may be loaded with the `spectacle` method `spectacle.calibrate.load_spectral_bands`.
+The effective spectral bandwidths are saved to `root/calibration/spectral_bands.csv` and may be loaded with the `spectacle` method `spectacle.camera.load_spectral_bands`.
 
 ### Monochromator
 
