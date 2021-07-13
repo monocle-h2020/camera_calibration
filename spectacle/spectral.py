@@ -373,8 +373,6 @@ def _find_matching_axis(data, axis_length):
     """
     Find an axis in `data` that has the given length `axis_length`.
     """
-    assert len(data.shape) <= 26, f"Data with more than 26 dimensions are currently not supported. This data array has {len(data.shape)} dimensions."
-
     matching_axes = [i for i, length in enumerate(data.shape) if length == axis_length]
 
     if len(matching_axes) == 0:
