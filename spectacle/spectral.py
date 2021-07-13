@@ -310,11 +310,12 @@ def correct_spectra(spectral_response_wavelengths, spectral_response, data_wavel
         spectral_response_final = spectral_response_interpolated
 
     # Correct the spectra
-    # Numpy's broadcasting works when the first axis of `data`, which has
-    # the same length as `spectral_response_final`, is at the end
-    data_normalised = np.moveaxis(data.copy(), axis_wavelengths, -1)
+    # Numpy's broadcasting works when the matching axes are at the end.
+    sources = (axis_RGBG2, axis_wavelengths)
+    destinations = (-2, -1)
+    data_normalised = np.moveaxis(data.copy(), sources, destinations)
     data_normalised /= spectral_response_final
-    data_normalised = np.moveaxis(data_normalised, -1, axis_wavelengths)
+    data_normalised = np.moveaxis(data_normalised, destinations, sources)
 
     return data_normalised
 
