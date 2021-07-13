@@ -490,7 +490,7 @@ class Camera(object):
         data_corrected = flat.correct_flatfield_from_map(flatfield_map, data, **kwargs)
         return data_corrected
 
-    def correct_spectral_response(self, data_wavelengths, *data):
+    def correct_spectral_response(self, data_wavelengths, data, **kwargs):
         """
         Correct data for the sensor's spectral response functions.
         The spectral response data are loaded from the root folder.
@@ -502,8 +502,12 @@ class Camera(object):
         # Assert that SRFs were loaded
         assert self.spectral_response is not None, "Spectral response functions unavailable"
 
+        # Get the wavelengths and SRFs from the data
+        wavelengths = self.spectral_response[0]
+        SRFs = self.spectral_response[1:5]
+
         # If SRFs were available, correct for them
-        data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
+        data_normalised = spectral.correct_spectra(wavelengths, SRFs, data_wavelengths, data, **kwargs)
         return data_normalised
 
     def convolve(self, data_wavelengths, data):

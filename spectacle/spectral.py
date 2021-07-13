@@ -283,27 +283,39 @@ def _correct_for_srf(data_element, spectral_response_interpolated, wavelengths):
     return data_normalised
 
 
-def correct_spectra(spectral_response, data_wavelengths, *data):
+def correct_spectra(spectral_response_wavelengths, spectral_response, data_wavelengths, data, axis_RGBG2=0, axis_wavelengths=-1):
     """
-    Correct any number of spectra `*data` for the `spectral response` interpolated to
-    the data wavelengths. Note that the arrays in *data must share the same wavelengths.
+    Correct any number of spectra `data` for the `spectral response` interpolated to
+    the data wavelengths. Note that the arrays in data must share the same wavelengths.
 
     The spectral responses are interpolated to the wavelengths given by the
     user. Spectral responses outside the range of the calibration data are
     assumed to be 0.
 
-    The data are assumed to consist of 3 (RGB) or 4 (RGBG2) rows and a column
-    for every wavelength. If not, an error is thrown.
+    The correction can be done on any axes given by the keywords `axis_RGBG2` and `axis_wavelengths`.
+    The default `axis_RGBG2` is 0, corresponding to an array of shape (3, ...) or (4, ...).
+    The default `axis_wavelengths` is 1, corresponding to an array of shape (:, L, ...) with L the length of `data_wavelengths`.
     """
-    # Pick out the wavelengths and RGBG2 channels of the spectral response curves
-    spectral_response_wavelengths = spectral_response[0]
-    spectral_response_RGBG2 = spectral_response[1:5]
+    # Check that the data are the right shape
+    assert data.shape[axis_wavelengths] == data_wavelengths.shape[0], f"Wavelengths ({data_wavelengths.shape[0]}) and data ({data.shape[axis_wavelengths]}) have different numbers of wavelength values."
+    assert data.shape[axis_RGBG2] in (3, 4), f"Incorrect number of channels ({data.shape[axis_RGBG2]}) in data; expected 3 (RGB) or 4 (RGBG2)."
 
     # Convert the spectral response to the same shape as the input data
-    spectral_response_interpolated = interpolate_spectral_data(spectral_response_wavelengths, spectral_response_RGBG2, data_wavelengths, left=0, right=0)
+    spectral_response_interpolated = interpolate_spectral_data(spectral_response_wavelengths, spectral_response, data_wavelengths, left=0, right=0)
+
+    # Convert the spectral response into the correct channels (RGB or RGBG2)
+    if data.shape[axis_RGBG2] == 3:  # RGB data
+        spectral_response_final = convert_RGBG2_to_RGB(spectral_response_interpolated, axis=0)
+    else:  # RGBG2 data
+        spectral_response_final = spectral_response_interpolated
 
     # Correct the spectra
-    data_normalised = apply_to_multiple_args(_correct_for_srf, data, spectral_response_interpolated, data_wavelengths)
+    # Numpy's broadcasting works when the first axis of `data`, which has
+    # the same length as `spectral_response_final`, is at the end
+    data_normalised = np.moveaxis(data.copy(), axis_wavelengths, -1)
+    data_normalised /= spectral_response_final
+    data_normalised = np.moveaxis(data_normalised, -1, axis_wavelengths)
+
     return data_normalised
 
 
