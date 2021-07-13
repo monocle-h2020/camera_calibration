@@ -260,26 +260,6 @@ def convert_RGBG2_to_RGB_uncertainties(uncertainties_RGBG2):
     return uncertainties_RGB
 
 
-def _correct_for_srf(data_element, spectral_response_interpolated, wavelengths):
-    """
-    Correct a `data_element` for the SRF
-    Helper function
-    """
-    # Check that the data are the right shape
-    assert data_element.shape[1] == wavelengths.shape[0], f"Wavelengths ({wavelengths.shape[0]}) and data ({data_element.shape[1]}) have different numbers of wavelength values."
-    assert data_element.shape[0] in (3, 4), f"Incorrect number of channels ({data_element.shape[0]}) in data; expected 3 (RGB) or 4 (RGBG2)."
-
-    # Convert the spectral response into the correct channels (RGB or RGBG2)
-    if data_element.shape[0] == 3:  # RGB data
-        spectral_response_final = convert_RGBG2_to_RGB(spectral_response_interpolated)
-    else:  # RGBG2 data
-        spectral_response_final = spectral_response_interpolated
-
-    # Normalise the input data by the spectral response and return the result
-    data_normalised = data_element / spectral_response_final
-    return data_normalised
-
-
 def correct_spectra(spectral_response_wavelengths, spectral_response, data_wavelengths, data, axis_RGBG2=0, axis_wavelengths=-1):
     """
     Correct any number of spectra `data` for the `spectral response` interpolated to
