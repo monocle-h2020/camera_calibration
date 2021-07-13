@@ -31,7 +31,7 @@ def interpolate_curve(curve, wavelengths):
     """
     Interpolate RGBG2 spectral responses to a given `wavelengths` grid
     """
-    new_curve = np.tile(np.nan, (len(curve), len(wavelengths)))
+    new_curve = np.full((len(curve), len(wavelengths)), np.nan)
     for j, row in enumerate(curve):
         if j == 0:
             continue

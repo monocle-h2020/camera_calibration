@@ -3,7 +3,7 @@ Module for common functions in analysing camera data or calibration data.
 """
 
 from . import plot, raw
-from .general import gaussMd, gauss_nan, symmetric_percentiles
+from .general import symmetric_percentiles, gauss_filter_multidimensional
 
 import numpy as np
 from astropy.table import Table
@@ -54,15 +54,6 @@ def plot_gauss_maps(data, bayer_data, kernel_width_RGBG2=5, **kwargs):
     Any additional **kwargs are passed to both `plot.show_image` and
     `plot.show_image_RGBG2`.
     """
-
-    # Determine which Gauss function to use
-    if np.isnan(data).any():
-        # Use gauss_nan if NaN values are present, since it can handle them
-        gauss_function = gauss_nan
-    else:
-        # Use the faster gaussMd function if NaN values are not present
-        gauss_function = gaussMd
-
     # Demosaick data by splitting the RGBG2 channels into separate arrays
     data_RGBG2 = raw.demosaick(bayer_data, data)
 
@@ -71,8 +62,8 @@ def plot_gauss_maps(data, bayer_data, kernel_width_RGBG2=5, **kwargs):
     # The three-dimensional demosaicked RGBG2 data are convolved over the two
     # spatial axes (1, 2), not the colour axis (0)
     kernel_width_mosaic = 2 * kernel_width_RGBG2
-    data_gaussed = gauss_function(data, kernel_width_mosaic)
-    data_RGBG2_gaussed = gauss_function(data_RGBG2, (0, kernel_width_RGBG2, kernel_width_RGBG2))
+    data_gaussed = gauss_filter_multidimensional(data, kernel_width_mosaic)
+    data_RGBG2_gaussed = gauss_filter_multidimensional(data_RGBG2, (0, kernel_width_RGBG2, kernel_width_RGBG2))
 
     plot.show_image(data_gaussed, **kwargs)
     plot.show_image_RGBG2(data_RGBG2_gaussed, **kwargs)

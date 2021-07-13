@@ -13,7 +13,7 @@ To do:
 import numpy as np
 from sys import argv
 from spectacle import io, flat, analyse
-from spectacle.general import gaussMd
+from spectacle.general import gauss_filter_multidimensional
 from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
@@ -70,7 +70,7 @@ camera.plot_gauss_maps(SNR, colorbar_label="Signal-to-noise ratio", saveto=save_
 print(f"Saved maps of signal-to-noise ratio to '{save_to_maps_SNR}'")
 
 # Convolve the flat-field data with a Gaussian kernel to remove small-scale variations
-flatfield_gauss = gaussMd(mean_normalised, 10)
+flatfield_gauss = gauss_filter_multidimensional(mean_normalised, 10)
 
 # Make histograms of the raw, bias-corrected, normalised, and Gaussed data
 data_sets = [mean_raw, mean_normalised, mean_bias_corrected, flatfield_gauss]

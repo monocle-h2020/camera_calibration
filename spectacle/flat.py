@@ -3,7 +3,7 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 """
 
 import numpy as np
-from .general import gaussMd, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
+from .general import gauss_filter_multidimensional, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
 from . import raw, io
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]
@@ -22,7 +22,7 @@ def clip_data(data, borders=_clip_border):
         * Use camera-dependent default borders.
     """
     # Create an empty array
-    data_with_nan = np.tile(np.nan, data.shape)
+    data_with_nan = np.full(data.shape, np.nan)
 
     # Add the data within the borders to the empty array
     data_with_nan[borders] = data[borders]
@@ -127,7 +127,7 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
 
     # Convolve with a Gaussian kernel to find the maxima without being
     # sensitive to outliers
-    mean_RGBG_gauss = gaussMd(mean_RGBG, sigma=(0,5,5))
+    mean_RGBG_gauss = gauss_filter_multidimensional(mean_RGBG, sigma=(0,5,5))
 
     # Find the maximum per channel and cast these into an array of the same
     # shape as the data
@@ -145,27 +145,11 @@ def normalise_RGBG2(mean, stds, bayer_pattern):
     return mean_remosaicked, stds_remosaicked
 
 
-def _correct_flatfield(data_element, flatfield, clip=False):
-    """
-    Correct a `data_element` for flatfield using a map `flatfield`
-
-    If `clip`, clip the data (make the outer borders NaN).
-    """
-    if clip:
-        data_to_correct = clip_data(data_element)
-    else:
-        data_to_correct = data_element
-
-    return data_to_correct * flatfield
-
-
-def correct_flatfield_from_map(flatfield, *data, clip=False):
+def correct_flatfield_from_map(flatfield, data):
     """
     Apply a flat-field correction from a flat-field map `flatfield` to an
-    array `data`.
-
-    If `clip`, clip the data (make the outer borders NaN).
+    array or iterable of arrays `data`.
     """
-    data_corrected = apply_to_multiple_args(_correct_flatfield, data, flatfield, clip=clip)
+    data_corrected = data * flatfield
 
     return data_corrected

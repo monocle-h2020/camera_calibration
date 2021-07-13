@@ -49,7 +49,7 @@ def _saveshow(saveto=None, close=True, **kwargs):
     if saveto is None:
         plt.show()
     else:
-        plt.savefig(saveto, **kwargs)
+        plt.savefig(saveto, bbox_inches="tight", **kwargs)
     if close:
         plt.close()
 
@@ -185,10 +185,12 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     _saveshow(saveto)
 
 
-def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", saveto=None):
+def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", axs=None, saveto=None):
     """
     Make a histogram of RGBG data with panels in black (all combined), red, green
     (G + G2 combined), and blue.
+
+    Can be done on existing Axes if `axs` are passed.
     """
     # Get upper and lower bounds for the axes
     if xmin == "auto":
@@ -199,24 +201,31 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
     # Unravel the data
     data_KRGB = [data_RGBG.ravel(), data_RGBG[0].ravel(), data_RGBG[1::2].ravel(), data_RGBG[2].ravel()]
 
-    # Make the figure
-    fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+    # If no axs were passed, make a new figure
+    if axs is None:
+        fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+        newfig = True
+    else:
+        newfig = False
 
     # Loop over the different channels and plot them
     for data, colour, ax in zip(data_KRGB, kRGB_OkabeIto, axs):
-        ax.hist(data.ravel(), bins=np.linspace(xmin, xmax, nrbins), color=colour, edgecolor=colour, density=True)
+        ax.hist(data, bins=np.linspace(xmin, xmax, nrbins), color=colour, edgecolor=colour, density=True)
         ax.grid(ls="--")
 
     # Plot settings
     for ax in axs[:3]:
         ax.xaxis.set_ticks_position("none")
     axs[0].set_xlim(xmin, xmax)
-    axs[3].set_xlabel(xlabel)
+    axs[-1].set_xlabel(xlabel)
     axs[0].set_yscale(yscale)
-    axs[2].set_ylabel(25*" "+"Probability density")
 
-    # Save or show the result
-    _saveshow(saveto)
+    # Only include a ylabel if a new figure was made
+    if newfig:
+        axs[2].set_ylabel(25*" "+"Probability density")
+
+        # Save or show the result
+        _saveshow(saveto)
 
 
 def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
@@ -295,3 +304,37 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
 
+
+def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, majorticks=None, minorticks=None, ticklabels=None, saveto=None, **kwargs):
+    """
+    Plot a covariance (or correlation) matrix.
+    """
+    # Get a segmented colourmap if wanted
+    cmap = plt.cm.get_cmap("cividis", nr_bins)
+
+    # Make a figure
+    plt.figure(figsize=(6,6))
+
+    # Plot the data
+    plt.imshow(matrix, cmap=cmap, origin="lower", extent=(0, *matrix.shape, 0), **kwargs)
+
+    # Labels on the axes and colour bar
+    plt.colorbar(label=label)
+    plt.title(title)
+
+    ax = plt.gca()
+    for axis in [ax.xaxis, ax.yaxis]:
+        if majorticks is not None:
+            axis.set_ticks(majorticks)
+        if minorticks is not None:
+            axis.set_ticks(minorticks, minor=True)
+        axis.set_tick_params(which="major", labelleft=False, labelbottom=False)
+        axis.set_tick_params(which="minor", left=False, bottom=False)
+
+    # Set the ticklabels normally on x and in reverse on y
+    if ticklabels is not None:
+        ax.set_xticklabels(ticklabels, minor=True)
+        ax.set_yticklabels(ticklabels[::-1], minor=True)
+
+    # Save/show result
+    _saveshow(saveto)

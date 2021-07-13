@@ -41,7 +41,7 @@ for tup in walk(folder):
         continue
 
     arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
-    mean = np.tile(np.nan, arrs.shape[1:])
+    mean = np.full(arrs.shape[1:], np.nan)
     stds = mean.copy()
     for i, row in enumerate(mean):
         mean[i] = arrs[:,i].mean(axis=0, dtype=np.float32)

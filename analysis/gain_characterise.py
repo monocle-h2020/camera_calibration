@@ -12,7 +12,7 @@ Command line arguments:
 import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
-from spectacle import io, analyse
+from spectacle import io, plot, symmetric_percentiles
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
@@ -34,7 +34,7 @@ gains = np.load(file)
 print("Loaded data")
 
 # Plot an RGB histogram of the data
-xmin, xmax = 0, analyse.symmetric_percentiles(gains, percent=0.001)[1]
+xmin, xmax = 0, symmetric_percentiles(gains, percent=0.001)[1]
 camera.plot_histogram_RGB(gains, xmin=xmin, xmax=xmax, xlabel="Gain (ADU/e$^-$)", saveto=save_to_histogram)
 print("Made histogram")
 
@@ -42,24 +42,12 @@ print("Made histogram")
 camera.plot_gauss_maps(gains, colorbar_label="Gain (ADU/e$^-$)", saveto=save_to_map)
 print("Made maps")
 
-# Demosaick data by splitting the RGBG2 channels into separate arrays
-gains_RGBG = camera.demosaick(gains)
-
 # Plot a miniature RGB histogram
-fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(3.3,2.4), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-shared_kwargs = {"bins": np.linspace(0, 3.5, 250), "density": True}
-axs[0].hist(gains_RGBG[0]   .ravel(), color="r", edgecolor="r", **shared_kwargs)
-axs[1].hist(gains_RGBG[1::2].ravel(), color="g", edgecolor="g", **shared_kwargs)
-axs[2].hist(gains_RGBG[2]   .ravel(), color="b", edgecolor="b", **shared_kwargs)
-for ax in axs[:2]:
-    ax.xaxis.set_ticks_position("none")
-for ax in axs:
-    ax.grid(True)
-    ax.set_yticks([0,1,2])
-axs[0].set_xlim(0, 3.5)
+xmin, xmax = 0, 3.5
+fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,3), gridspec_kw={"wspace": 0, "hspace": 0})
+camera.plot_histogram_RGB(gains, axs=axs, xmin=xmin, xmax=xmax, nrbins=250, xlabel="Gain (ADU/e$^-$)")
 axs[0].set_ylim(0, 2.5)
-axs[2].set_xlabel("Gain (ADU/e-)")
+axs[0].set_yticks([0,1,2])
 axs[1].set_ylabel("Frequency")
-plt.savefig(save_to_histogram_miniature)
-plt.close()
+plot._saveshow(save_to_histogram_miniature)
 print("Made RGB histogram")

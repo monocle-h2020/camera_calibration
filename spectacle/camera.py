@@ -14,6 +14,10 @@ from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
 from .general import return_with_filename, find_matching_file
 
 
+# Empty slice that just selects all data - used as default argument
+all_data = np.s_[:]
+
+
 def find_root_folder(input_path):
     """
     For a given `input_path`, find the root folder, containing the standard
@@ -187,6 +191,15 @@ class Camera(object):
         bayer_map[1::2, 0::2] = self.bayer_pattern[1][0]
         bayer_map[1::2, 1::2] = self.bayer_pattern[1][1]
         return bayer_map
+
+    def central_slice(self, dx, dy):
+        """
+        Generate a numpy slice object around the center of an image, with widths
+        dx and dy.
+        """
+        midx, midy = np.array(self.image_shape)//2
+        center = np.s_[midx-dx:midx+dx, midy-dy:midy+dy]
+        return center
 
     def load_settings(self):
         """
@@ -372,17 +385,11 @@ class Camera(object):
         # If a matrix cannot be found, do not use one, and warn the user
         except (FileNotFoundError, OSError, TypeError):
             XYZ_matrix = None
-            RGBG2_to_XYZ_matrix = None
             print(f"No RGB->XYZ matrix found for {self.name}.")
-
-        # If a matrix was found, also generate a 3x4 RGBG2 -> XYZ matrix
-        else:
-            RGBG2_to_XYZ_matrix = spectral.convert_matrix_to_RGBG2(XYZ_matrix)
 
         # If an XYZ matrix was found, save it to this object so it need not be looked up again
         # Else, save the None object to warn the user
         self.XYZ_matrix = XYZ_matrix
-        self.RGBG2_to_XYZ_matrix = RGBG2_to_XYZ_matrix
 
     def load_all_calibrations(self):
         """
@@ -399,7 +406,7 @@ class Camera(object):
         data_available = [data_type for data_type in data_available if getattr(self, data_type) is not None]
         return data_available
 
-    def correct_bias(self, *data, **kwargs):
+    def correct_bias(self, data, selection=all_data):
         """
         Correct data for bias using this sensor's data.
         Bias data are loaded from the root folder or from the camera information.
@@ -408,11 +415,14 @@ class Camera(object):
         if not hasattr(self, "bias_map"):
             self._load_bias_map()
 
+        # Select the relevant data
+        bias_map = self.bias_map[selection]
+
         # Apply the bias correction
-        data_corrected = bias_readnoise.correct_bias_from_map(self.bias_map, *data, **kwargs)
+        data_corrected = bias_readnoise.correct_bias_from_map(bias_map, data)
         return data_corrected
 
-    def correct_dark_current(self, exposure_time, *data, **kwargs):
+    def correct_dark_current(self, exposure_time, data, selection=all_data):
         """
         Calibrate data for dark current using this sensor's data.
         Dark current data are loaded from the root folder or estimated 0 in all pixels,
@@ -422,11 +432,14 @@ class Camera(object):
         if not hasattr(self, "dark_current"):
             self._load_dark_current_map()
 
+        # Select the relevant data
+        dark_current = self.dark_current[selection]
+
         # Apply the dark current correction
-        data_corrected = dark.correct_dark_current_from_map(self.dark_current, exposure_time, *data, **kwargs)
+        data_corrected = dark.correct_dark_current_from_map(dark_current, exposure_time, data)
         return data_corrected
 
-    def normalise_iso(self, iso_values, *data):
+    def normalise_iso(self, iso_values, data):
         """
         Normalise data for their ISO speed using this sensor's lookup table.
         The ISO lookup table is loaded from the root folder.
@@ -436,10 +449,10 @@ class Camera(object):
             self._load_iso_normalisation()
 
         # Apply the ISO normalisation
-        data_corrected = iso.normalise_iso_general(self.iso_lookup_table, iso_values, *data)
+        data_corrected = iso.normalise_iso(self.iso_lookup_table, iso_values, data)
         return data_corrected
 
-    def convert_to_photoelectrons(self, *data):
+    def convert_to_photoelectrons(self, data, selection=all_data):
         """
         Convert data from ADU to photoelectrons using this sensor's gain data.
         The gain data are loaded from the root folder.
@@ -451,11 +464,14 @@ class Camera(object):
         # Assert that a gain map was loaded
         assert self.gain_map is not None, "Gain map unavailable"
 
+        # Select the relevant data
+        gain_map = self.gain_map[selection]
+
         # If a gain map was available, apply it
-        data_converted = gain.convert_to_photoelectrons_from_map(self.gain_map, *data)
+        data_converted = gain.convert_to_photoelectrons_from_map(gain_map, data)
         return data_converted
 
-    def correct_flatfield(self, *data, **kwargs):
+    def correct_flatfield(self, data, selection=all_data, **kwargs):
         """
         Correct data for flatfield using this sensor's flatfield data.
         The flatfield data are loaded from the root folder.
@@ -467,11 +483,14 @@ class Camera(object):
         # Assert that a flatfield map was loaded
         assert self.flatfield_map is not None, "Flatfield map unavailable"
 
+        # Select the relevant data
+        flatfield_map = self.flatfield_map[selection]
+
         # If a flatfield map was available, apply it
-        data_corrected = flat.correct_flatfield_from_map(self.flatfield_map, *data, **kwargs)
+        data_corrected = flat.correct_flatfield_from_map(flatfield_map, data, **kwargs)
         return data_corrected
 
-    def correct_spectral_response(self, data_wavelengths, *data):
+    def correct_spectral_response(self, data_wavelengths, data, **kwargs):
         """
         Correct data for the sensor's spectral response functions.
         The spectral response data are loaded from the root folder.
@@ -483,8 +502,12 @@ class Camera(object):
         # Assert that SRFs were loaded
         assert self.spectral_response is not None, "Spectral response functions unavailable"
 
+        # Get the wavelengths and SRFs from the data
+        wavelengths = self.spectral_response[0]
+        SRFs = self.spectral_response[1:5]
+
         # If SRFs were available, correct for them
-        data_normalised = spectral.correct_spectra(self.spectral_response, data_wavelengths, *data)
+        data_normalised = spectral.correct_spectra(wavelengths, SRFs, data_wavelengths, data, **kwargs)
         return data_normalised
 
     def convolve(self, data_wavelengths, data):
@@ -521,13 +544,15 @@ class Camera(object):
         data_convolved = np.array([spectral.convolve_multi(self.spectral_response[0], SRF, data_wavelengths, data) for SRF in self.spectral_response[1:5]])  # Loop over the RGBG2 spectral response functions
         return data_convolved
 
-    def convert_to_XYZ(self, *data, axis=None):
+    # Convert RGBG2 to RGB data - does not require any camera-specific data,
+    # but useful to have as a class method
+    convert_RGBG2_to_RGB = staticmethod(spectral.convert_RGBG2_to_RGB)
+
+    def convert_to_XYZ(self, data, axis=None):
         """
-        Convert RGB data to XYZ using the sensor's conversion matrix.
+        Convert RGB or RGBG2 data to XYZ using the sensor's conversion matrix.
         The conversion matrix is loaded from the root folder.
         `axis` is the RGB axis. If None is provided, one is automatically looked for.
-        Any number of arrays can be passed as *data, though all must have the same
-        (or None) axis.
         """
         # If the XYZ conversion matrix has not been loaded yet, do so
         if not hasattr(self, "XYZ_matrix"):
@@ -537,7 +562,7 @@ class Camera(object):
         assert self.XYZ_matrix is not None, "RGB to XYZ conversion matrix unavailable"
 
         # If a conversion matrix was available, use it in the conversion
-        data_XYZ = spectral.convert_to_XYZ(self.XYZ_matrix, *data, axis=axis)
+        data_XYZ = spectral.convert_to_XYZ(self.XYZ_matrix, data, axis=axis)
         return data_XYZ
 
     def colour_space(self):
@@ -556,14 +581,18 @@ class Camera(object):
 
         return colour_space
 
-    def demosaick(self, *data, **kwargs):
+    def demosaick(self, data, selection=all_data, **kwargs):
         """
         Demosaick data using this camera's Bayer pattern.
         """
-        RGBG_data = raw.demosaick(self.bayer_map, *data, color_desc=self.bands, **kwargs)
+        # Select the relevant data
+        bayer_map = self.bayer_map[selection]
+
+        # Demosaick the data
+        RGBG_data = raw.demosaick(bayer_map, data, color_desc=self.bands, **kwargs)
         return RGBG_data
 
-    def plot_spectral_response(self, saveto=None):
+    def plot_spectral_response(self, **kwargs):
         """
         Plot the camera's spectral response function.
         """
@@ -571,7 +600,7 @@ class Camera(object):
         if not hasattr(self, "spectral_response"):
             self._load_spectral_response()
 
-        spectral.plot_spectral_responses([self.spectral_response[0]], [self.spectral_response[1:5]], labels=[self.name], saveto=saveto)
+        spectral.plot_spectral_responses([self.spectral_response[0]], [self.spectral_response[1:5]], labels=[self.name], **kwargs)
 
     def plot_gauss_maps(self, data, **kwargs):
         """

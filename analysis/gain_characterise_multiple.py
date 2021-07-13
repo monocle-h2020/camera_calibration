@@ -16,7 +16,7 @@ import numpy as np
 from sys import argv
 from matplotlib import pyplot as plt
 from spectacle import io, plot, analyse
-from spectacle.general import gauss_nan
+from spectacle.general import gauss_filter_multidimensional
 
 # Get the data folder from the command line
 files = io.path_from_input(argv)
@@ -30,6 +30,9 @@ print(f"Loaded Camera objects: {cameras}")
 # Find the ISO speed for each gain map, to include in the plot titles
 isos = [io.split_iso(file) for file in files]
 
+# Labels for the plots, based on camera and ISO
+labels = [f"{camera.name} (ISO {iso})" for camera, iso in zip(cameras, isos)]
+
 # Load the data
 data_arrays = [np.load(file) for file in files]
 print("Loaded data")
@@ -39,7 +42,7 @@ data_RGBG_arrays = [camera.demosaick(data) for data, camera in zip(data_arrays, 
 print("Demosaicked data")
 
 # Convolve the RGBG2 data with a Gaussian kernel
-data_RGBG_gauss_arrays = [gauss_nan(RGBG, sigma=(0,5,5)) for RGBG in data_RGBG_arrays]
+data_RGBG_gauss_arrays = [gauss_filter_multidimensional(RGBG, sigma=(0,5,5)) for RGBG in data_RGBG_arrays]
 print("Gaussed data")
 
 # Plot a Gaussed map for each channel
@@ -48,7 +51,7 @@ for j, c in enumerate(plot.rgbg2):
     # Create a figure to plot into
     fig, axs = plt.subplots(ncols=len(files), figsize=(3*len(files), 2.3), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
     # Loop over the demosaicked/gaussed gain maps and plot them into the figure
-    for camera, iso, ax, data_RGBG, data_RGBG_gauss in zip(cameras, isos, axs, data_RGBG_arrays, data_RGBG_gauss_arrays):
+    for label, ax, data_RGBG, data_RGBG_gauss in zip(labels, axs, data_RGBG_arrays, data_RGBG_gauss_arrays):
         # Uppercase label for colour
         c_label = c.upper()
 
@@ -58,7 +61,7 @@ for j, c in enumerate(plot.rgbg2):
         # Plot parameters
         ax.set_xticks([])
         ax.set_yticks([])
-        ax.set_title(f"{camera.name} (ISO {iso})")
+        ax.set_title(label)
 
         # Include a colorbar
         # Left-most map has a colorbar on the left
@@ -74,7 +77,7 @@ for j, c in enumerate(plot.rgbg2):
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
-        print(f"{camera.name:<10}: ISO {iso:>4}")
+        print(label)
         print(f"{c_label:>2}: {percentile_low:.2f} -- {percentile_high:.2f}")
 
     # Save the figure
@@ -84,35 +87,23 @@ for j, c in enumerate(plot.rgbg2):
     print(f"Saved gain map for the {c_label} channel to '{save_to_map_c}'")
 
 # Plot a histogram
-bins = np.linspace(0.4, 2.8, 250)
-fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(3*len(files), 2.3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(files), nrows=4, figsize=(3*len(files), 3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
 
 # Loop over the cameras
-for camera, iso, ax_arr, data_RGBG in zip(cameras, isos, axs.T, data_RGBG_arrays):
-
-    # Combine the G and G2 channels and remove NaN values
-    R = data_RGBG[0].ravel()    ; R = R[~np.isnan(R)]
-    G = data_RGBG[1::2].ravel() ; G = G[~np.isnan(G)]
-    B = data_RGBG[2].ravel()    ; B = B[~np.isnan(B)]
-
+for label, ax_arr, data_RGBG in zip(labels, axs.T, data_RGBG_arrays):
     # Plot the RGB data
-    for ax, D, c in zip(ax_arr, [R, G, B], plot.rgb):
-        ax.hist(D, bins=bins, color=c, edgecolor=c, density=True)
-        ax.grid(True)
-
-        # Remove ticks from the left y-axis of all plots except the left-most
-        if ax not in axs[:,0]:
-            ax.tick_params(left=False)
-
-        # Add ticks to the right y-axis of the right-most plot
-        if ax in axs[:,-1]:
-            ax.tick_params(right=True, labelright=True)
+    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain (ADU/e$^-$)")
 
     # Add a title to the top plot in each column
-    ax_arr[0].set_title(f"{camera.name} (ISO {iso})")
+    ax_arr[0].set_title(label)
 
-    # Add a label to the x-axis of the bottom plot in each column
-    ax_arr[-1].set_xlabel("Gain (ADU/e$^-$)")
+# Remove ticks from the left y-axis of all plots except the left-most
+for ax in axs[:,1:].ravel():
+    ax.tick_params(left=False)
+
+# Add ticks to the right y-axis of the right-most plot
+for ax in axs[:,-1].ravel():
+    ax.tick_params(right=True, labelright=True)
 
 # Add a label to y-axis of the left-most and right-most, middle plots
 axs[1,0].set_ylabel("Frequency")
@@ -120,12 +111,10 @@ axs[1,-1].yaxis.set_label_position("right")
 axs[1,-1].set_ylabel("Frequency")
 
 # Plot parameters (shared)
-axs[0,0].set_xlim(bins[0], bins[-1])
 axs[0,0].set_yticks([0.5, 1.5])
 axs[0,0].set_xticks(np.arange(0.5, 3, 0.5))
 
 # Save the figure
 save_to_histogram = save_folder/"gain_histogram.pdf"
-fig.savefig(save_to_histogram)
-plt.close()
+plot._saveshow(save_to_histogram)
 print(f"Saved RGB histogram to '{save_to_histogram}'")

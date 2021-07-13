@@ -1,44 +1,44 @@
 import numpy as np
 
 
-def _find_offset(color_pattern, colour):
-    pos = np.array(np.where(color_pattern == colour)).T[0]
-    return pos
-
-
-def demosaick(bayer_map, *data, **kwargs):
+def _generate_bayer_slices(color_pattern, colours=range(4)):
     """
-    Simplified demosaicking method for RGBG data.
+    Generate the slices used to demosaick data.
+    """
+    # Find the positions of the first element corresponding to each colour
+    positions = [np.array(np.where(color_pattern == colour)).T[0] for colour in colours]
+
+    # Make a slice for each colour
+    slices = [np.s_[..., x::2, y::2] for x, y in positions]
+
+    return slices
+
+
+def demosaick(bayer_map, data, color_desc="RGBG"):
+    """
     Uses a Bayer map `bayer_map` (RGBG channel for each pixel) and any number
-    of input arrays `data`. Any additional **kwargs are passed to pull_apart.
+    of input arrays `data`.
     """
-    # Demosaick the data
-    data_RGBG = [pull_apart(data_array, bayer_map, **kwargs)[0] for data_array in data]
+    # Cast the data to a numpy array for the following indexing tricks to work
+    data = np.array(data)
 
-    # If only a single array was given, don't return a list
-    if len(data_RGBG) == 1:
-        data_RGBG = data_RGBG[0]
+    # Check that we are dealing with RGBG2 data, as only these are supported right now.
+    assert color_desc in ("RGBG", b"RGBG"), f"Unknown colour description `{color_desc}"
 
-    return data_RGBG
+    # Check that the data and Bayer pattern have similar shapes
+    assert data.shape[-2:] == bayer_map.shape, f"The data ({data.shape}) and Bayer map ({bayer_map.shape}) have incompatible shapes"
 
+    # Demosaick the data along their last two axes
+    bayer_pattern = bayer_map[:2, :2]
+    slices = _generate_bayer_slices(bayer_pattern)
 
-def pull_apart(raw_img, color_pattern, color_desc="RGBG"):
-    if color_desc not in ("RGBG", b"RGBG"):
-        raise ValueError(f"Unknown colour description `{color_desc}")
-    offsets = np.array([_find_offset(color_pattern, i) for i in range(4)])
-    offX, offY = offsets.T
-    R, G, B, G2 = [raw_img[x::2, y::2] for x, y in zip(offX, offY)]
-    RGBG = np.stack((R, G, B, G2))
-    return RGBG, offsets
+    # Combine the data back into one array of shape [..., 4, x/2, y/2]
+    newshape = list(data.shape[:-2]) + [4, data.shape[-2]//2, data.shape[-1]//2]
+    RGBG = np.empty(newshape)
+    for i, s in enumerate(slices):
+        RGBG[..., i, :, :] = data[s]
 
-
-def put_together_from_offsets(R, G, B, G2, offsets):
-    result = np.zeros((R.shape[0]*2, R.shape[1]*2))
-    for colour, offset in zip([R,G,B,G2], offsets):
-        x, y = offset
-        result[x::2, y::2] = colour
-    result = result.astype(R.dtype)
-    return result
+    return RGBG
 
 
 def put_together_from_colours(RGBG, colours):

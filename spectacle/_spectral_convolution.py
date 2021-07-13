@@ -67,7 +67,7 @@ def nan_values(x):
     """
     Return an array of the same length as the input `x`, filled with `np.nan`.
     """
-    return np.tile(np.nan, len(x))
+    return np.full(len(x), np.nan)
 
 
 def adjust_band_wavelengths(band_wavelengths, band_response, data_wavelengths):

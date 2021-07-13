@@ -41,19 +41,11 @@ def load_readnoise_map(root, return_filename=False):
     return return_with_filename(readnoise_map, filename, return_filename)
 
 
-def _correct_bias(data_element, bias):
-    """
-    Apply a bias correction with value `bias` to the `data_element`
-    Helper function
-    """
-    return data_element - bias
-
-
-def correct_bias_from_map(bias_map, *data):
+def correct_bias_from_map(bias_map, data):
     """
     Apply a bias correction from a bias map `bias_map` to any number of
     elements in `data`
     """
-    data_corrected = apply_to_multiple_args(_correct_bias, data, bias_map)
+    data_corrected = data - bias_map
 
     return data_corrected

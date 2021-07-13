@@ -44,7 +44,7 @@ def fit_fluorescent_lines(lines, y):
     return lines_fit
 
 def fit_many_wavelength_relations(y, lines):
-    coeffarr = np.tile(np.nan, (y.shape[0], degree_of_wavelength_fit+1))
+    coeffarr = np.full((y.shape[0], degree_of_wavelength_fit+1), np.nan)
     for i, col in enumerate(y):
         coeffarr[i] = np.polyfit(lines[:,i], fluorescent_lines, degree_of_wavelength_fit)
     return coeffarr

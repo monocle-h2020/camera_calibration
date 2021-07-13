@@ -28,11 +28,12 @@ They are as follows:
 
 ## Application
 
-There are two interfaces for applying calibrations to new data, namely through a `spectacle.Camera` object or through the [`spectacle.calibrate`](spectacle/calibrate.py) submodule.
+Calibrations are applied to existing data using the `spectacle.Camera` interface.
+In short, a Python object is created that represents a camera (for example the iPhone SE or Nikon D5300) and holds all the relevant information.
+This object has methods (functions, subroutines) corresponding to the different calibrations that can be done.
+When called, these methods automatically retrieve the appropriate calibration data.
+Each method comes with detailed documentation on its usage, which can be found in the individual scripts or from within Python (using Python's `help` function or iPython's `?` and `??` shortcuts).
 
-### spectacle.Camera interface
-
-The `spectacle.Camera` interface is the easiest to use. 
 A camera information file is generated using the [generate_camera.py](calibration/generate_camera.py) script.
 This camera information file can be loaded in any script using the `spectacle.load_camera` function, which takes one argument, namely the `root` folder that contains all calibration data for a certain camera.
 
@@ -53,13 +54,6 @@ data_corrected = camera.correct_bias(raw_data)
 ```
 This code snippet loads the iPhone SE camera data and a RAW image file (`/home/img_0001.dng`), then corrects the RAW image data for the iPhone SE camera bias.
 
-
-
-### spectacle.calibrate interface
-
-To use the `spectacle.calibrate` interface, simply load the [`spectacle.calibrate`](spectacle/calibrate.py) submodule (`from spectacle import calibrate`) and apply the methods contained therein.
-For example, to correct for the camera bias, one would use the `correct_bias` method from this submodule.
-Each method comes with detailed documentation on its usage, which can be found [here](spectacle/calibrate.py) or from within Python (using Python's `help` function or iPython's `?` and `??` shortcuts).
 
 ## Analysis
 

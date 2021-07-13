@@ -19,7 +19,7 @@ s[s < 0.001] = -1  # prevent infinities
 
 SNR = m/s
 
-m_RGBG, s_RGBG, SNR_RGBG = camera.demosaick(m, s, SNR)
+m_RGBG, s_RGBG, SNR_RGBG = camera.demosaick([m, s, SNR])
 
 mean_stack = m_RGBG.mean(axis=(1,2))
 std_stack  = m_RGBG.std (axis=(1,2))

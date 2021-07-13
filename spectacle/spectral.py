@@ -6,12 +6,13 @@ from .general import return_with_filename, apply_to_multiple_args, deprecation
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
 
-try:
-    from colorio._tools import plot_flat_gamut
-except ImportError:
-    print("Could not import colorio, using simple gamut plot.")
-
 wavelengths_interpolated = np.arange(390, 701, 1)
+
+# Matrix for converting RGBG2 to RGB
+M_RGBG2_to_RGB = np.array([[1, 0  , 0, 0  ],
+                           [0, 0.5, 0, 0.5],
+                           [0, 0  , 1, 0  ]])
+
 
 def effective_bandwidth(wavelengths, response, axis=0, **kwargs):
     """
@@ -42,86 +43,97 @@ def load_cal_NERC(filename, norm=True):
     return arr
 
 
-def load_monochromator_data(root, folder, blocksize=100):
+def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
     """
     Load monochromator data, stored as a stack (mean/std) per wavelength in
     `folder`. For each wavelength, load the data, apply a bias correction, and
     take the mean and std of the central `blocksize`x`blocksize` pixels.
+    The `blocksize` is for the mosaicked image - when demosaicked, the RGBG2
+    channels will be half its size each.
+
+    Apply a bias correction and optionally a flat-field correction.
+
     Return the wavelengths with assorted mean values and standard deviations.
     """
     print(f"Loading monochromator data from `{folder}`...")
 
-    # Find the filenames
-    mean_files = sorted(folder.glob("*_mean.npy"))
-    stds_files = sorted(folder.glob("*_stds.npy"))
-    assert len(mean_files) == len(stds_files)
+    # Central slice
+    center = camera.central_slice(blocksize, blocksize)
 
-    # Load Camera object
-    camera = io.load_camera(root)
+    # Load all files
+    splitter = lambda p: float(p.stem.split("_")[0])
+    wavelengths, means = io.load_means(folder, selection=center, retrieve_value=splitter)
 
-    # Half-blocksize, to slice the arrays with
-    d = blocksize//2
+    # NaN if a channel's mean value is near saturation
+    saturated = np.where(means >= 0.95 * camera.saturation)
+    means[saturated] = np.nan
 
-    # Empty arrays to hold the output
-    wvls  = np.zeros((len(mean_files)))
-    means = np.zeros((len(mean_files), 4))
-    stds  = means.copy()
+    # Bias correction
+    means = camera.correct_bias(means, selection=center)
 
-    # Loop over all files
-    print("Wavelengths [nm]:", end=" ", flush=True)
-    for j, (mean_file, stds_file) in enumerate(zip(mean_files, stds_files)):
-        # Load the mean data
-        m = np.load(mean_file)
+    # Flat-field correction
+    if flatfield:
+        try:
+            means = camera.correct_flatfield(means, selection=center)
+        except AssertionError as e:
+            print("Could not do flat-field correction, see below for error", e, sep="\n")
 
-        # Bias correction
-        m = camera.correct_bias(m)
+    # Demosaick the data
+    means_RGBG2 = np.array(camera.demosaick(means, selection=center))
 
-        # Demosaick the data
-        mean_RGBG = camera.demosaick(m)
-
-        # Select the central blocksize x blocksize pixels
-        midx, midy = np.array(mean_RGBG.shape[1:])//2
-        sub = mean_RGBG[:,midx-d:midx+d+1,midy-d:midy+d+1]
-
-        # Take the mean value per Bayer channel
-        m = sub.mean(axis=(1,2))
-
-        # NaN if a channel's mean value is near saturation
-        m[m >= 0.95 * camera.saturation] = np.nan
-
-        # Store results
-        means[j] = m
-        stds[j] = sub.std(axis=(1,2))
-        wvls[j] = mean_file.stem.split("_")[0]
-
-        print(wvls[j], end=" ", flush=True)
-
+    # Get the mean per wavelength per channel and the standard deviations
+    means_final = np.nanmean(means_RGBG2, axis=(2,3))
+    stds_final = np.nanstd(means_RGBG2, axis=(2,3))
     print("\n...Finished!")
 
-    spectrum = np.stack([wvls, *means.T, *stds.T]).T
-    return spectrum
+    return wavelengths, means_final, stds_final, means_RGBG2
 
 
-def plot_monochromator_curves(wavelength, mean, std, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
-    plt.figure(figsize=(10,5))
-    # Loop over the provided spectra
-    for m, s in zip(mean, std):
-        # Loop over the RGBG2 channels
-        for j, c in enumerate("rybg"):
-            # Plot the mean response per wavelength
-            plt.plot(wavelength, m[:,j], c=c)
+def load_monochromator_data_multiple(camera, folders, **kwargs):
+    """
+    Wrapper around `load_monochromator_data` that does multiple files. Ensures
+    the outputs are in a convenient format.
+    """
+    # First, load all the data
+    data = [load_monochromator_data(camera, folder, **kwargs) for folder in folders]
 
-            # Plot the error per wavelength as a shaded area around the mean
-            plt.fill_between(wavelength, m[:,j]-s[:,j], m[:,j]+s[:,j], color=c, alpha=0.3)
+    # Then split out all the constituents
+    wavelengths, means, stds, means_RGBG2 = zip(*data)
+
+    # Now return everything
+    return wavelengths, means, stds, means_RGBG2
+
+
+def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
+    """
+    Plot spectral response curves as measured by monochromator.
+    Plots three panels, namely mean response, variance, and signal-to-noise ratio.
+    """
+    # Labels for the plots
+    labels = [f"Response\n[{unit}]", f"Variance\n[{unit}$^2$]", "SNR"]
+
+    # Make the figure
+    fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
+
+    # Plot the mean and variance
+    plot._rgbgplot(wavelengths, mean, axs[0].plot)
+    plot._rgbgplot(wavelengths, variance, axs[1].plot)
+
+    # Calculate and plot the signal-to-noise ratio
+    SNR = mean/np.sqrt(variance)
+    plot._rgbgplot(wavelengths, SNR, axs[2].plot)
 
     # Plot parameters
-    plt.xticks(np.arange(0, 1000, 50))
-    plt.xlim(wavelength_min, wavelength_max)
-    plt.xlabel("Wavelength (nm)")
-    plt.ylabel(f"Spectral response ({unit})")
-    plt.ylim(ymin=0)
-    plt.title(title)
-    plt.grid(True)
+    axs[0].set_xlim(wavelength_min, wavelength_max)
+    axs[0].set_ylim(ymin=0)
+    axs[0].set_title(title)
+    axs[-1].set_xlabel("Wavelength (nm)")
+
+    for ax, label in zip(axs, labels):
+        ax.grid(ls="--")
+        ax.set_ylabel(label)
+
+    # Save/show result
     plot._saveshow(saveto)
 
 
@@ -130,36 +142,16 @@ def load_spectral_response(root, return_filename=False):
     Load the spectral response curves located at
     `root`/calibration/spectral_response.csv.
 
-    If no CSV is available, try an NPY file for backwards compatibility.
-    This is deprecated and will no longer be supported in future releases.
-
     If `return_filename` is True, also return the exact filename used.
     """
     # Try to use a CSV file
     filename = io.find_matching_file(root/"calibration", "spectral_response.csv")
-    try:
-        spectral_response = np.loadtxt(filename, delimiter=",").T
-
-    # If no CSV file is available, check for an NPY file (deprecated)
-    except IOError:
-        try:
-            filename = root/"calibration/spectral_response.npy"
-            spectral_response = np.load(filename)
-
-        # If still no luck - don't load anything, return an error
-        except FileNotFoundError:
-            raise IOError(f"Could not load CSV or NPY spectral response file from {root/'calibration/'}.")
-
-        # If an NPY file was used instead of a CSV file, raise a warning about deprecation
-        else:
-            deprecation("NPY-format spectral response curves are deprecated and will no longer be supported in future releases.")
-
-    print(f"Using spectral response curves from '{filename}'")
+    spectral_response = np.loadtxt(filename, delimiter=",").T
 
     return return_with_filename(spectral_response, filename, return_filename)
 
 
-def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":", "-."], xlim=(390, 700), ylim=(0,1.02), ylabel="Relative sensitivity", saveto=None):
+def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":", "-."], xlim=(390, 700), ylim=(0,1.02), ylabel="Relative sensitivity", saveto=None, **kwargs):
     """
     Plot spectral responses (`SRFs`) together in one panel.
     """
@@ -168,20 +160,20 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
 
     # Loop over the response curves
     for wavelength, SRF, label, style in zip(wavelengths, SRFs, labels, linestyles):
-        plot._rgbgplot(wavelength, SRF, ls=style)
+        plot._rgbgplot(wavelength, SRF, ls=style, **kwargs)
 
         # Add an invisible line for the legend
-        plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label)
+        plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label, **kwargs)
 
     # Plot parameters
-    plt.grid(True)
+    plt.grid(ls="--")
     plt.xticks(np.arange(0,1000,50))
     plt.xlim(*xlim)
     plt.xlabel("Wavelength [nm]")
     plt.ylabel(ylabel)
     plt.ylim(*ylim)
     plt.legend(loc="best")
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)
 
 
 def load_spectral_bands(root, return_filename=False):
@@ -215,18 +207,40 @@ def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwar
     return interpolated_data
 
 
-def convert_RGBG2_to_RGB(RGBG2_data):
+def array_slice(a, axis, start, end, step=1):
+    """
+    Slice an array along an arbitrary axis.
+    Adapted from https://stackoverflow.com/a/64436208/2229219
+    """
+    return (slice(None),) * (axis % a.ndim) + (slice(start, end, step),)
+
+
+def convert_between_colourspaces(data, conversion_matrix, axis=0):
+    """
+    Convert data from one colour space to another, using the given conversion matrix.
+    Matrix multiplication can be done on an arbitrary axis in the data, using np.tensordot.
+    Example uses include converting from RGBG2 to RGB and from RGB to XYZ.
+    """
+    # Use tensor multiplication to multiply along an arbitrary axis
+    new_data = np.tensordot(conversion_matrix, data, axes=((1), (axis)))
+    new_data = np.moveaxis(new_data, 0, axis)
+
+    return new_data
+
+
+def convert_RGBG2_to_RGB(RGBG2_data, axis=0):
     """
     Convert data in Bayer RGBG2 format to RGB format, by averaging the G and G2
     channels.
 
-    Assumes the `RGBG2_data` have the shape (4, number_of_wavelengths)
-    """
-    # Make a new array containing only the RGB data
-    RGB_data = RGBG2_data.copy()[:3]
+    The RGBG2 data are assumed to have their colour axis on `axis`. For example,
+    if `axis=0`, then the data are assumed to have a shape of (4, ...).
+    If `axis=2`, then the data are assumed to be (:, :, 4, ...). Et cetera.
 
-    # Replace the G axis with the average of G and G2
-    RGB_data[1] = np.mean(RGBG2_data[1::2], axis=0)
+    The resulting array has the same shape but with the given axis changed from
+    4 to 3.
+    """
+    RGB_data = convert_between_colourspaces(RGBG2_data, M_RGBG2_to_RGB, axis=axis)
 
     return RGB_data
 
@@ -246,47 +260,40 @@ def convert_RGBG2_to_RGB_uncertainties(uncertainties_RGBG2):
     return uncertainties_RGB
 
 
-def _correct_for_srf(data_element, spectral_response_interpolated, wavelengths):
+def correct_spectra(spectral_response_wavelengths, spectral_response, data_wavelengths, data, axis_RGBG2=0, axis_wavelengths=-1):
     """
-    Correct a `data_element` for the SRF
-    Helper function
-    """
-    # Check that the data are the right shape
-    assert data_element.shape[1] == wavelengths.shape[0], f"Wavelengths ({wavelengths.shape[0]}) and data ({data_element.shape[1]}) have different numbers of wavelength values."
-    assert data_element.shape[0] in (3, 4), f"Incorrect number of channels ({data_element.shape[0]}) in data; expected 3 (RGB) or 4 (RGBG2)."
-
-    # Convert the spectral response into the correct channels (RGB or RGBG2)
-    if data_element.shape[0] == 3:  # RGB data
-        spectral_response_final = convert_RGBG2_to_RGB(spectral_response_interpolated)
-    else:  # RGBG2 data
-        spectral_response_final = spectral_response_interpolated
-
-    # Normalise the input data by the spectral response and return the result
-    data_normalised = data_element / spectral_response_final
-    return data_normalised
-
-
-def correct_spectra(spectral_response, data_wavelengths, *data):
-    """
-    Correct any number of spectra `*data` for the `spectral response` interpolated to
-    the data wavelengths. Note that the arrays in *data must share the same wavelengths.
+    Correct any number of spectra `data` for the `spectral response` interpolated to
+    the data wavelengths. Note that the arrays in data must share the same wavelengths.
 
     The spectral responses are interpolated to the wavelengths given by the
     user. Spectral responses outside the range of the calibration data are
     assumed to be 0.
 
-    The data are assumed to consist of 3 (RGB) or 4 (RGBG2) rows and a column
-    for every wavelength. If not, an error is thrown.
+    The correction can be done on any axes given by the keywords `axis_RGBG2` and `axis_wavelengths`.
+    The default `axis_RGBG2` is 0, corresponding to an array of shape (3, ...) or (4, ...).
+    The default `axis_wavelengths` is 1, corresponding to an array of shape (:, L, ...) with L the length of `data_wavelengths`.
     """
-    # Pick out the wavelengths and RGBG2 channels of the spectral response curves
-    spectral_response_wavelengths = spectral_response[0]
-    spectral_response_RGBG2 = spectral_response[1:5]
+    # Check that the data are the right shape
+    assert data.shape[axis_wavelengths] == data_wavelengths.shape[0], f"Wavelengths ({data_wavelengths.shape[0]}) and data ({data.shape[axis_wavelengths]}) have different numbers of wavelength values."
+    assert data.shape[axis_RGBG2] in (3, 4), f"Incorrect number of channels ({data.shape[axis_RGBG2]}) in data; expected 3 (RGB) or 4 (RGBG2)."
 
     # Convert the spectral response to the same shape as the input data
-    spectral_response_interpolated = interpolate_spectral_data(spectral_response_wavelengths, spectral_response_RGBG2, data_wavelengths, left=0, right=0)
+    spectral_response_interpolated = interpolate_spectral_data(spectral_response_wavelengths, spectral_response, data_wavelengths, left=0, right=0)
+
+    # Convert the spectral response into the correct channels (RGB or RGBG2)
+    if data.shape[axis_RGBG2] == 3:  # RGB data
+        spectral_response_final = convert_RGBG2_to_RGB(spectral_response_interpolated, axis=0)
+    else:  # RGBG2 data
+        spectral_response_final = spectral_response_interpolated
 
     # Correct the spectra
-    data_normalised = apply_to_multiple_args(_correct_for_srf, data, spectral_response_interpolated, data_wavelengths)
+    # Numpy's broadcasting works when the matching axes are at the end.
+    sources = (axis_RGBG2, axis_wavelengths)
+    destinations = (-2, -1)
+    data_normalised = np.moveaxis(data.copy(), sources, destinations)
+    data_normalised /= spectral_response_final
+    data_normalised = np.moveaxis(data_normalised, destinations, sources)
+
     return data_normalised
 
 
@@ -339,22 +346,10 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     return M_RGB_to_XYZ
 
 
-def convert_matrix_to_RGBG2(RGB_to_XYZ_matrix):
-    """
-    Convert a 3x3 matrix (RGB -> XYZ) to a 3x4 matrix (RGBG2 -> XYZ) for ease of use.
-    The G and G2 columns are half the original G column, to preserve normalisation.
-    """
-    matrix_new = np.hstack([RGB_to_XYZ_matrix, RGB_to_XYZ_matrix[:,1][:,np.newaxis]])
-    matrix_new[:,1::2] /= 2.  # Divide G columns by 2 to preserve normalisation
-    return matrix_new
-
-
 def _find_matching_axis(data, axis_length):
     """
     Find an axis in `data` that has the given length `axis_length`.
     """
-    assert len(data.shape) <= 26, f"Data with more than 26 dimensions are currently not supported. This data array has {len(data.shape)} dimensions."
-
     matching_axes = [i for i, length in enumerate(data.shape) if length == axis_length]
 
     if len(matching_axes) == 0:
@@ -365,25 +360,7 @@ def _find_matching_axis(data, axis_length):
         return matching_axes[0]
 
 
-def _einsum_arbitrary_axis(matrix, data, axis):
-    """
-    Perform Einstein summation for a 2-dimension matrix and an N-dimensional array data
-    over an arbitrary given axis.
-    """
-    alphabet = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuopasdfghklzxcvbnm"
-    nr_dimensions = len(data.shape)
-    assert nr_dimensions <= len(alphabet), f"Data with more than {len(alphabet)} dimensions are currently not supported (given data array has {nr_dimensions} dimensions."
-
-    # Create index strings for Einstein notation, with i and j in the correct places and arbitrary letters elsewhere
-    shape_original = alphabet[:axis] + "j" + alphabet[axis+1:nr_dimensions]
-    shape_goal = shape_original.replace("j", "i")
-
-    # Perform the matrix multiplication
-    result = np.einsum(f"ij,{shape_original}->{shape_goal}", matrix, data)
-    return result
-
-
-def _convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
+def convert_to_XYZ(RGB_to_XYZ_matrix, RGB_data, axis=None):
     """
     Convert RGB data to XYZ. The RGB data can be multi-dimensional, for example a
     spectrum (3, L) with L the number of wavelengths or an image (3, X, Y) with
@@ -391,29 +368,25 @@ def _convert_RGB_to_XYZ(RGB_data, RGB_to_XYZ_matrix, axis=None):
     If the axis is not specified by the user, an axis with a length of 3 is searched for.
     If 0 or >=2 such axes are found, an error is raised.
 
-    This could possibly be replaced by np.tensordot.
+    RGBG2 data can also be passed, in which case an axis with length 4 must be given or
+    will be looked for. The data will then first be converted to RGB which adds computation time.
     """
     if axis is None:  # If no axis is supplied, look for one
-        axis = _find_matching_axis(RGB_data, 3)
+        try:  # First see if the data are RGB
+            axis = _find_matching_axis(RGB_data, 3)
+        except ValueError:  # If not, try RGBG2
+            axis = _find_matching_axis(RGB_data, 4)
     else:  # If an axis was supplied, check that is has the correct length
-        assert RGB_data.shape[axis] == 3, f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3."
+        assert RGB_data.shape[axis] in (3,4), f"The given axis ({axis}) in the data array has a length ({RGB_data.shape[axis]}) that is not 3 or 4."
+
+    # If RGBG2 data were given, first convert the data to RGB
+    if RGB_data.shape[axis] == 4:
+        RGB_data = convert_RGBG2_to_RGB(RGB_data, axis=axis)
 
     # Perform the matrix multiplication
-    XYZ_data = _einsum_arbitrary_axis(RGB_to_XYZ_matrix, RGB_data, axis)
+    XYZ_data = convert_between_colourspaces(RGB_data, RGB_to_XYZ_matrix, axis=axis)
 
     return XYZ_data
-
-
-def convert_to_XYZ(RGB_to_XYZ_matrix, *RGB_data, axis=None):
-    """
-    Apply the RGB to XYZ conversion to any number of RGB data arrays.
-    `axis` must be the same for all data elements (or None everywhere).
-
-    Does not support RGBG2 arrays.
-    """
-    data_XYZ = apply_to_multiple_args(_convert_RGB_to_XYZ, RGB_data, RGB_to_XYZ_matrix, axis=axis)
-
-    return data_XYZ
 
 
 def load_XYZ_matrix(root, return_filename=False):
@@ -448,14 +421,17 @@ def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
     saveto = plot._convert_to_path(saveto)
 
     try:
-        plot_flat_gamut()
-    except NameError:
+        from colorio._tools import plot_xy_gamut
+    except ImportError:
+        print("Could not import colorio, using simple gamut plot.")
         plt.xlim(0, 0.8)
         plt.ylim(0, 0.8)
         plt.xlabel("x")
         plt.ylabel("y")
         sRGB_triangle = plt.Polygon([[0.64,0.33], [0.30, 0.60], [0.15, 0.06]], fill=True, linestyle="-", label="sRGB")
         plt.gca().add_patch(sRGB_triangle)
+    else:
+        plot_xy_gamut()
 
     # Check if a single set of base vectors was given or multiple
     if len(xy_base_vectors[0]) != 3:  # A single set of base vectors
@@ -482,7 +458,7 @@ def plot_xy_on_gamut(xy_base_vectors, label="", saveto=None):
 
     plt.legend(loc="upper right")
 
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)
 
 
 def plot_xyz_and_rgb_single(ax, wavelengths, responses, label="", legend_labels="rgb"):
@@ -526,4 +502,4 @@ def plot_xyz_and_rgb(RGB_wavelengths, RGB_responses, label="", saveto=None):
         plot_xyz_and_rgb_single(ax, wavelengths, responses, label=label_single)
     axs[-1].set_xlabel("Wavelength [nm]")
 
-    plot._saveshow(saveto, bbox_inches="tight")
+    plot._saveshow(saveto)

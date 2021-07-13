@@ -39,19 +39,27 @@ def load_dark_current_map(root, return_filename=False):
     return return_with_filename(dark_current_map, filename, return_filename)
 
 
-def _correct_dark_current(data_element, dark_current, exposure_time):
-    """
-    Apply a dark current correction with value `dark_current` times the
-    `exposure_time` to an element data_element
-    """
-    return data_element - dark_current * exposure_time
-
-
-def correct_dark_current_from_map(dark_current_map, exposure_time, *data):
+def correct_dark_current_from_map(dark_current_map, exposure_time, data):
     """
     Apply a dark current correction from a dark current map `dark_current_map`,
     multiplied by an `exposure_time`, to any number of elements in `data`.
+
+    `exposure_time` can be an iterable (list or array) of exposure times, in which
+    case it must be the same length as `data`.
     """
-    data_corrected = apply_to_multiple_args(_correct_dark_current, data, dark_current_map, exposure_time)
+    # Check if `exposure_time` is iterable
+    try:
+        _ = iter(exposure_time)
+    # If `exposure_time` was not iterable, assume it is a constant value
+    except TypeError:
+        dark_current = exposure_time * dark_current_map
+    # If `exposure time` was an iterable, check that it has the same number of
+    # elements as `data` and calculate the effective dark current for each
+    else:
+        assert len(exposure_time) == len(data), f"Exposure time is an iterable but has a different length ({len(exposure_time)}) than the data ({len(data)})."
+        dark_current = exposure_time[:, np.newaxis, np.newaxis] * dark_current_map
+    # In any case, correct the data
+    finally:
+        data_corrected = data - dark_current
 
     return data_corrected
