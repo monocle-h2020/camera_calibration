@@ -3,7 +3,7 @@ Code relating to flat-fielding, such as fitting or applying a vignetting model.
 """
 
 import numpy as np
-from .general import gauss_filter_multidimensional, curve_fit, generate_XY, return_with_filename, apply_to_multiple_args
+from .general import gauss_filter_multidimensional, curve_fit, generate_XY, return_with_filename
 from . import raw, io
 
 parameter_labels = ["k0", "k1", "k2", "k3", "k4", "cx", "cy"]

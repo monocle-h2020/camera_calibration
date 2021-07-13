@@ -5,7 +5,7 @@ look-up tables.
 
 import numpy as np
 from scipy.optimize import curve_fit
-from .general import Rsquare, return_with_filename, apply_to_multiple_args
+from .general import Rsquare, return_with_filename
 from . import io
 
 

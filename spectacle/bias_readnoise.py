@@ -4,7 +4,7 @@ Code relating to bias and read noise, such as loading maps of either.
 
 import numpy as np
 from . import io
-from .general import return_with_filename, apply_to_multiple_args
+from .general import return_with_filename
 
 
 def load_bias_map(root, return_filename=False):

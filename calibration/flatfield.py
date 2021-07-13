@@ -15,7 +15,6 @@ import numpy as np
 from sys import argv
 from spectacle import io, flat, plot
 from spectacle.general import gauss_filter_multidimensional, correlation_from_covariance, uncertainty_from_covariance
-from matplotlib import pyplot as plt
 
 # Get the data folder from the command line
 meanfile = io.path_from_input(argv)

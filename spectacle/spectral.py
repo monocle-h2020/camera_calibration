@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from . import io, plot
-from .general import return_with_filename, apply_to_multiple_args, deprecation
+from .general import return_with_filename
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
 

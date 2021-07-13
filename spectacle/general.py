@@ -4,24 +4,6 @@ import numpy as np
 import warnings
 
 
-def apply_to_multiple_args(func, data, *args, **kwargs):
-    """
-    Apply `func` to any number of elements in `data`
-    Return the result, as a list if `data` had multiple elements, or as a single
-    element if `data` had only one element.
-
-    Any *args and **kwargs are passed to `func` on every call.
-    """
-    # Apply func to each element
-    results = [func(data_element, *args, **kwargs) for data_element in data]
-
-    # If only a single element was given, don't return a list
-    if len(results) == 1:
-        results = results[0]
-
-    return results
-
-
 def gauss_filter(D, sigma=5, **kwargs):
     """
     Apply a 1-D Gaussian kernel along one axis.
