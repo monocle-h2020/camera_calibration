@@ -5,7 +5,6 @@ This is a to-do list for the `spectacle` module.
 - [ ] Remove AstroPy dependencies for simplicity
 - [ ] Fix silent deprecation warnings
 - [ ] Fix silent error when trying to load calibration data if multiple files exist
-- [ ] Make [load_monochromator_data](https://github.com/monocle-h2020/camera_calibration/blob/cb9a358e7b965816440831b77a4e49a5760d90cc/spectacle/spectral.py#L41) use a `Camera` object from args, rather than `root`
 - [ ] Save and load spectral bandwidths and effective wavelengths together
 
 ## Scripts
@@ -18,7 +17,8 @@ This is a to-do list for the `spectacle` module.
 
 #### New scripts
 - [ ] Analyse the deviations between ISO normalisation look-up tables and the expected behaviour (normalisation of 1/ISO).
-- [ ] More intuitive `Camera` creation, for example using just a folder name (so the user never sees `root`)
+- [ ] More intuitive `Camera` creation, for example using just a folder name (so the user never sees `root`).
+- [ ] `Camera` creation from Parse data.
 
 ## Documentation
 
