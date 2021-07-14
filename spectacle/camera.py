@@ -112,7 +112,7 @@ class Camera(object):
     """
     # Properties a Camera can have
     property_list = ["name", "manufacturer", "name_internal", "image_shape", "raw_extension", "bias", "bayer_pattern", "bit_depth", "colour_description"]
-    Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
+    _Settings = namedtuple("Settings", ["ISO_min", "ISO_max", "exposure_min", "exposure_max"])
 
     calibration_data_all = ["settings", "bias_map", "readnoise", "dark_current", "iso_lookup_table", "gain_map", "flatfield_map", "spectral_response", "spectral_bands", "XYZ_matrix"]
 
@@ -213,7 +213,7 @@ class Camera(object):
         settings["exposure_max"] = _convert_exposure_time(settings["exposure_max"])
 
         # Add settings to the camera
-        self.settings = self.Settings(**settings)
+        self.settings = self._Settings(**settings)
 
     def generate_bias_map(self):
         """
