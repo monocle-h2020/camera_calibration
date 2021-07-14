@@ -371,6 +371,9 @@ def convert_to_XYZ(RGB_to_XYZ_matrix, RGB_data, axis=None):
     RGBG2 data can also be passed, in which case an axis with length 4 must be given or
     will be looked for. The data will then first be converted to RGB which adds computation time.
     """
+    # Convert the data to a numpy array
+    RGB_data = np.array(RGB_data)
+
     if axis is None:  # If no axis is supplied, look for one
         try:  # First see if the data are RGB
             axis = _find_matching_axis(RGB_data, 3)
