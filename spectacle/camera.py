@@ -198,7 +198,7 @@ class Camera(object):
         dx and dy.
         """
         midx, midy = np.array(self.image_shape)//2
-        center = np.s_[midx-dx:midx+dx, midy-dy:midy+dy]
+        center = np.s_[..., midx-dx:midx+dx, midy-dy:midy+dy]
         return center
 
     def load_settings(self):
