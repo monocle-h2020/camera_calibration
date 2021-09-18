@@ -122,7 +122,8 @@ srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_diff)
 
 # Linear interpolation
-wavelengths_new = np.arange(wavelengths[0], wavelengths[-1]+0.5, 0.5)
+step = 0.5
+wavelengths_new = np.arange(wavelengths[0], wavelengths[-1]+step, step)
 ind_new = np.arange(len(wavelengths_new))
 
 # Empty array for now
