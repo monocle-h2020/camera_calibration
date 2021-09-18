@@ -122,7 +122,7 @@ srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_diff)
 
 # Linear interpolation
-step = 0.5
+step = 0.1
 wavelengths_new = np.arange(wavelengths[0], wavelengths[-1]+step, step)
 ind_new = np.arange(len(wavelengths_new))
 
@@ -131,11 +131,12 @@ M = np.zeros((wavelengths_new.shape[0], wavelengths.shape[0]))
 
 # Locations with interpolation
 i1 = np.searchsorted(wavelengths, wavelengths_new, side="left")  # index to the left of our interpolated x
+i1 = np.clip(i1, 0, len(wavelengths)-1)  # Ensure nothing goes wrong at the edges
 i0 = i1 - 1
 
 # Run this to check if the i0, i1 indices are correct
 # for i, w_new in enumerate(wavelengths_new):
-    # print(f"New index {i:>3} \t Old index {i0[i]:>3} \t {wavelengths[i0[i]]:.1f} -- {w_new} -- {wavelengths[i1[i]]:.1f}")
+#     print(f"New index {i:>3} \t Old index {i0[i]:>3} \t {wavelengths[i0[i]]:.1f} -- {w_new:.1f} -- {wavelengths[i1[i]]:.1f}")
 
 # Calculate the weighting terms corresponding to i0 and i1
 x0 = wavelengths[i0]
