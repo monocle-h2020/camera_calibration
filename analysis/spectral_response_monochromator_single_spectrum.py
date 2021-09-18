@@ -11,6 +11,7 @@ Command line arguments:
 import numpy as np
 from matplotlib import pyplot as plt
 from sys import argv
+from scipy.linalg import block_diag
 from spectacle import io, spectral, plot
 from spectacle.general import correlation_from_covariance
 
@@ -32,6 +33,7 @@ save_to_spectrum_G = savefolder/f"monochromator_{label}_spectrum_RGB.pdf"
 save_to_covariance_G = savefolder/f"monochromator_{label}_covariance_RGB.pdf"
 save_to_correlation_G = savefolder/f"monochromator_{label}_correlation_RGB.pdf"
 save_to_correlation_diff = savefolder/f"monochromator_{label}_correlation_difference.pdf"
+save_to_correlation_interp = savefolder/f"monochromator_{label}_correlation_interpolated.pdf"
 
 # Load the data
 wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, flatfield=True)
@@ -118,3 +120,48 @@ srf_correlation_without_G2 = srf_correlation[:len(srf_correlation_G),:len(srf_co
 srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 
 plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_diff)
+
+# Linear interpolation
+wavelengths_new = np.arange(wavelengths[0], wavelengths[-1]+0.5, 0.5)
+ind_new = np.arange(len(wavelengths_new))
+
+# Empty array for now
+M = np.zeros((wavelengths_new.shape[0], wavelengths.shape[0]))
+
+# Locations with interpolation
+i1 = np.searchsorted(wavelengths, wavelengths_new, side="left")  # index to the left of our interpolated x
+i0 = i1 - 1
+
+# Run this to check if the i0, i1 indices are correct
+# for i, w_new in enumerate(wavelengths_new):
+    # print(f"New index {i:>3} \t Old index {i0[i]:>3} \t {wavelengths[i0[i]]:.1f} -- {w_new} -- {wavelengths[i1[i]]:.1f}")
+
+# Calculate the weighting terms corresponding to i0 and i1
+x0 = wavelengths[i0]
+x1 = wavelengths[i1]
+fraction = (wavelengths_new - x0)/(x1 - x0)
+y0_terms = 1 - fraction
+y1_terms = fraction
+
+# Insert the weighting terms into the matrix
+M[ind_new,i0] = y0_terms
+M[ind_new,i1] = y1_terms
+
+# Stack copies of B to match the spectral bands
+nr_bands = len(RGBG2)
+M = block_diag(*[M]*nr_bands)
+
+# Perform the interpolation
+srf_interp = M @ srf
+covariance_interp = M @ srf_cov @ M.T
+correlation_interp = correlation_from_covariance(covariance_interp)
+
+# Plot the results
+# Indices to select R, G, B, and G2
+R, G, B, G2 = [np.s_[len(wavelengths_new)*j : len(wavelengths_new)*(j+1)] for j in range(4)]
+RGBG2 = [R, G, B, G2]
+ticks_major = [ind.start for ind in RGBG2] + [RGBG2[-1].stop]
+ticks_minor = [(ind.start + ind.stop) / 2 for ind in RGBG2]
+ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
+
+plot.plot_covariance_matrix(correlation_interp, title=f"Correlations in {label} (after interpolation)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_interp)
