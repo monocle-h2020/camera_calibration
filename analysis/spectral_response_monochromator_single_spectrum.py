@@ -73,7 +73,7 @@ plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {label}", majorticks
 # Plot the correlations
 srf_correlation = correlation_from_covariance(srf_cov)
 
-plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {label}", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation)
+plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {label}", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation)
 
 # Plot an example
 for c, ind in zip("rgby", RGBG2):
