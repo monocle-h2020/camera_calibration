@@ -1,6 +1,6 @@
 from pathlib import Path
 import numpy as np
-from matplotlib import pyplot as plt, patheffects as pe, ticker
+from matplotlib import pyplot as plt, patheffects as pe, ticker, colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from . import raw
 from .wavelength import fluorescent_lines
@@ -318,12 +318,16 @@ def get_tick_locations_from_slices(slices):
     return ticks_major, ticks_minor
 
 
-def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, majorticks=None, minorticks=None, ticklabels=None, saveto=None, **kwargs):
+def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, majorticks=None, minorticks=None, ticklabels=None, saveto=None, cmap="cividis", **kwargs):
     """
     Plot a covariance (or correlation) matrix.
     """
-    # Get a segmented colourmap if wanted
-    cmap = plt.cm.get_cmap("cividis", nr_bins)
+    # Get a segmented colourmap if desired
+    if isinstance(cmap, str):  # If a matplotlib cmap label was given
+        cmap = plt.cm.get_cmap("cividis")
+
+    if nr_bins is not None:
+        cmap = cmap._resample(nr_bins)
 
     # Make a figure
     plt.figure(figsize=(6,6))
