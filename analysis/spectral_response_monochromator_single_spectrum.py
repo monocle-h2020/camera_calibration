@@ -104,7 +104,6 @@ plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in 
 # Linear interpolation
 step = 0.5
 wavelengths_new = np.arange(wavelengths[0], wavelengths[-1]+step, step)
-ind_new = np.arange(len(wavelengths_new))
 
 # Empty array for now
 M = spectral.linear_interpolation_matrix(wavelengths_new, wavelengths)
