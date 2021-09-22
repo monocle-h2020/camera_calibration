@@ -40,32 +40,32 @@ wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, 
 
 # Reshape array
 means_flattened, RGBG2_slices = spectral.flatten_monochromator_image_data(means_RGBG2)
-R, G, B, G2 = RGBG2_slices
 
 # Calculate mean SRF and covariance between all elements
 srf = np.nanmean(means_flattened, axis=1)
-srf_cov = np.cov(means_flattened)
+srf_covariance = np.cov(means_flattened)
 
 # Calculate the variance (ignoring covariance) from the diagonal elements
-srf_var = np.diag(srf_cov)
+srf_variance = np.diag(srf_covariance)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
 means_plot = np.reshape(srf, (4,-1))
-variance_plot = np.reshape(srf_var, (4,-1))
+variance_plot = np.reshape(srf_variance, (4,-1))
 
 spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({label})", unit="ADU", saveto=save_to_spectrum)
 
 # Plot the covariances
 ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
 
-plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {label}", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_covariance)
+plot.plot_covariance_matrix(srf_covariance, title=f"Covariances in {label}", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_covariance)
 
 # Plot the correlations
-srf_correlation = correlation_from_covariance(srf_cov)
+srf_correlation = correlation_from_covariance(srf_covariance)
 
 plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {label}", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation)
 
 # Calculate mean of G and G2
+R, G, B, G2 = RGBG2_slices
 I = np.eye(len(wavelengths))
 M_G_G2 = np.zeros((len(wavelengths)*3, len(wavelengths)*4))
 M_G_G2[R,R] = I
@@ -74,13 +74,13 @@ M_G_G2[G,G] = 0.5*I
 M_G_G2[G,G2] = 0.5*I
 
 srf_G = M_G_G2 @ srf
-srf_cov_G = M_G_G2 @ srf_cov @ M_G_G2.T
+srf_covariance_G = M_G_G2 @ srf_covariance @ M_G_G2.T
 
-srf_var_G = np.diag(srf_cov_G)
+srf_variance_G = np.diag(srf_covariance_G)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
 means_plot = np.reshape(srf_G, (3,-1))
-variance_plot = np.reshape(srf_var_G, (3,-1))
+variance_plot = np.reshape(srf_variance_G, (3,-1))
 
 spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({label})", unit="ADU", saveto=save_to_spectrum_G)
 
@@ -88,10 +88,10 @@ spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title
 RGB_slices = RGBG2_slices[:3]
 ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGB_slices)
 
-plot.plot_covariance_matrix(srf_cov_G, title=f"Covariances in {label} (mean $G, G_2$)", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_covariance_G)
+plot.plot_covariance_matrix(srf_covariance_G, title=f"Covariances in {label} (mean $G, G_2$)", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_covariance_G)
 
 # Plot the correlations
-srf_correlation_G = correlation_from_covariance(srf_cov_G)
+srf_correlation_G = correlation_from_covariance(srf_covariance_G)
 
 plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {label} (mean $G, G_2$)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_G)
 
@@ -112,11 +112,10 @@ M = spectral.linear_interpolation_matrix(wavelengths_new, wavelengths)
 M = spectral.repeat_matrix(M, 4)
 
 # Perform the interpolation
-srf_interpolated, covariance_interpolated = spectral.apply_interpolation_matrix(M, srf, srf_cov)
+srf_interpolated, covariance_interpolated = spectral.apply_interpolation_matrix(M, srf, srf_covariance)
 correlation_interpolated = correlation_from_covariance(covariance_interpolated)
 
 # Plot the results
-# Indices to select R, G, B, and G2
 RGBG2_slices = spectral.generate_slices_for_RGBG2_bands(len(wavelengths_new), 4)
 ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
 
