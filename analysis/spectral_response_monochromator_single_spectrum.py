@@ -34,6 +34,7 @@ save_to_covariance_G = savefolder/f"monochromator_{label}_covariance_RGB.pdf"
 save_to_correlation_G = savefolder/f"monochromator_{label}_correlation_RGB.pdf"
 save_to_correlation_diff = savefolder/f"monochromator_{label}_correlation_difference.pdf"
 save_to_correlation_interp = savefolder/f"monochromator_{label}_correlation_interpolated.pdf"
+save_to_spectrum_interp = savefolder/f"monochromator_{label}_spectrum_interpolated.pdf"
 
 # Load the data
 wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, flatfield=True)
@@ -120,3 +121,12 @@ RGBG2_slices = spectral.generate_slices_for_RGBG2_bands(len(wavelengths_new), 4)
 ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
 
 plot.plot_covariance_matrix(correlation_interpolated, title=f"Correlations in {label} (after interpolation)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation_interp)
+
+# Calculate the variance (ignoring covariance) from the diagonal elements
+variance_interpolated = np.diag(covariance_interpolated)
+
+# Plot the SRFs with their standard deviations, variance, and SNR
+means_plot = np.reshape(srf_interpolated, (4,-1))
+variance_plot = np.reshape(variance_interpolated, (4,-1))
+
+spectral.plot_monochromator_curves(wavelengths_new, means_plot, variance_plot, title=f"{camera.name}: Interpolated spectral curve ({label})", unit="ADU", saveto=save_to_spectrum_interp)
