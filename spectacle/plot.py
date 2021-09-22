@@ -32,7 +32,8 @@ rgbg = "rgbg"
 rgby = "rgby"
 rgbg2 = ["r", "g", "b", "g2"]
 RGBG2 = ["R", "G", "B", "G2"]
-
+RGBG2_latex = [f"${c}$" for c in [*RGB, "G_2"]]
+RGB_latex = RGBG2_latex[:3]
 
 def _convert_to_path(path):
     # Convert to a Path-type object
@@ -303,6 +304,18 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         ax.set_title(f"{r_jpg_str} = {r_jpeg:.3f}$    {r_dng_str} = {r_dng:.3f}$")
         _saveshow(saveto)
         print(f"Plotted pixel {j} ({label})")
+
+
+def get_tick_locations_from_slices(slices):
+    """
+    From a list of slices, get the corresponding major and minor ticks.
+    Major ticks are located at the start of each slice and the end of the final slice.
+    Minor ticks are located halfway between the start and end of each slice.
+    """
+    ticks_major = [s.start for s in slices] + [slices[-1].stop]
+    ticks_minor = [(s.start + s.stop) / 2 for s in slices]
+
+    return ticks_major, ticks_minor
 
 
 def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, majorticks=None, minorticks=None, ticklabels=None, saveto=None, **kwargs):

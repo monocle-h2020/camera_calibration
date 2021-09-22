@@ -39,16 +39,8 @@ save_to_correlation_interp = savefolder/f"monochromator_{label}_correlation_inte
 wavelengths, *_, means_RGBG2 = spectral.load_monochromator_data(camera, folder, flatfield=True)
 
 # Reshape array
-# First remove the spatial information
-means_flattened = np.reshape(means_RGBG2, (len(wavelengths), 4, -1))
-# Then swap the wavelength and filter axes
-means_flattened = np.swapaxes(means_flattened, 0, 1)
-# Finally, flatten the array further
-means_flattened = np.reshape(means_flattened, (4*len(wavelengths), -1))
-
-# Indices to select R, G, B, and G2
-R, G, B, G2 = [np.s_[len(wavelengths)*j : len(wavelengths)*(j+1)] for j in range(4)]
-RGBG2 = [R, G, B, G2]
+means_flattened, RGBG2_slices = spectral.flatten_monochromator_image_data(means_RGBG2)
+R, G, B, G2 = RGBG2_slices
 
 # Calculate mean SRF and covariance between all elements
 srf = np.nanmean(means_flattened, axis=1)
@@ -64,26 +56,14 @@ variance_plot = np.reshape(srf_var, (4,-1))
 spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({label})", unit="ADU", saveto=save_to_spectrum)
 
 # Plot the covariances
-ticks_major = [ind.start for ind in RGBG2] + [RGBG2[-1].stop]
-ticks_minor = [(ind.start + ind.stop) / 2 for ind in RGBG2]
-ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
+ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
 
-plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {label}", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_covariance)
+plot.plot_covariance_matrix(srf_cov, title=f"Covariances in {label}", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_covariance)
 
 # Plot the correlations
 srf_correlation = correlation_from_covariance(srf_cov)
 
-plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {label}", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation)
-
-# Plot an example
-for c, ind in zip("rgby", RGBG2):
-    plt.plot(wavelengths, srf_correlation[G,ind][0], c=c)
-plt.xlabel("Wavelength [nm]")
-plt.ylabel("Correlation")
-plt.xlim(wavelengths[0], wavelengths[-1])
-plt.grid(ls="--")
-plt.show()
-plt.close()
+plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {label}", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation)
 
 # Calculate mean of G and G2
 I = np.eye(len(wavelengths))
@@ -99,27 +79,27 @@ srf_cov_G = M_G_G2 @ srf_cov @ M_G_G2.T
 srf_var_G = np.diag(srf_cov_G)
 
 # Plot the SRFs with their standard deviations, variance, and SNR
-RGB = RGBG2[:3]
 means_plot = np.reshape(srf_G, (3,-1))
 variance_plot = np.reshape(srf_var_G, (3,-1))
 
 spectral.plot_monochromator_curves(wavelengths, means_plot, variance_plot, title=f"{camera.name}: Raw spectral curve ({label})", unit="ADU", saveto=save_to_spectrum_G)
 
 # Plot the covariances
-ticks_major, ticks_minor, ticklabels = ticks_major[:-1], ticks_minor[:3], ticklabels[:3]
+RGB_slices = RGBG2_slices[:3]
+ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGB_slices)
 
-plot.plot_covariance_matrix(srf_cov_G, title=f"Covariances in {label} (mean $G, G_2$)", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_covariance_G)
+plot.plot_covariance_matrix(srf_cov_G, title=f"Covariances in {label} (mean $G, G_2$)", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_covariance_G)
 
 # Plot the correlations
 srf_correlation_G = correlation_from_covariance(srf_cov_G)
 
-plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {label} (mean $G, G_2$)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_G)
+plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {label} (mean $G, G_2$)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_G)
 
 # Analyse the difference in correlations between the RGBG2 and RGB data
 srf_correlation_without_G2 = srf_correlation[:len(srf_correlation_G),:len(srf_correlation_G)]
 srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 
-plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_diff)
+plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_diff)
 
 # Linear interpolation
 step = 0.5
@@ -127,43 +107,18 @@ wavelengths_new = np.arange(wavelengths[0], wavelengths[-1]+step, step)
 ind_new = np.arange(len(wavelengths_new))
 
 # Empty array for now
-M = np.zeros((wavelengths_new.shape[0], wavelengths.shape[0]))
-
-# Locations with interpolation
-i1 = np.searchsorted(wavelengths, wavelengths_new, side="left")  # index to the left of our interpolated x
-i1 = np.clip(i1, 0, len(wavelengths)-1)  # Ensure nothing goes wrong at the edges
-i0 = i1 - 1
-
-# Run this to check if the i0, i1 indices are correct
-# for i, w_new in enumerate(wavelengths_new):
-#     print(f"New index {i:>3} \t Old index {i0[i]:>3} \t {wavelengths[i0[i]]:.1f} -- {w_new:.1f} -- {wavelengths[i1[i]]:.1f}")
-
-# Calculate the weighting terms corresponding to i0 and i1
-x0 = wavelengths[i0]
-x1 = wavelengths[i1]
-fraction = (wavelengths_new - x0)/(x1 - x0)
-y0_terms = 1 - fraction
-y1_terms = fraction
-
-# Insert the weighting terms into the matrix
-M[ind_new,i0] = y0_terms
-M[ind_new,i1] = y1_terms
+M = spectral.linear_interpolation_matrix(wavelengths_new, wavelengths)
 
 # Stack copies of B to match the spectral bands
-nr_bands = len(RGBG2)
-M = block_diag(*[M]*nr_bands)
+M = spectral.repeat_matrix(M, 4)
 
 # Perform the interpolation
-srf_interp = M @ srf
-covariance_interp = M @ srf_cov @ M.T
-correlation_interp = correlation_from_covariance(covariance_interp)
+srf_interpolated, covariance_interpolated = spectral.apply_interpolation_matrix(M, srf, srf_cov)
+correlation_interpolated = correlation_from_covariance(covariance_interpolated)
 
 # Plot the results
 # Indices to select R, G, B, and G2
-R, G, B, G2 = [np.s_[len(wavelengths_new)*j : len(wavelengths_new)*(j+1)] for j in range(4)]
-RGBG2 = [R, G, B, G2]
-ticks_major = [ind.start for ind in RGBG2] + [RGBG2[-1].stop]
-ticks_minor = [(ind.start + ind.stop) / 2 for ind in RGBG2]
-ticklabels = [f"${c}$" for c in ["R", "G", "B", "G_2"]]
+RGBG2_slices = spectral.generate_slices_for_RGBG2_bands(len(wavelengths_new), 4)
+ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
 
-plot.plot_covariance_matrix(correlation_interp, title=f"Correlations in {label} (after interpolation)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=ticklabels, saveto=save_to_correlation_interp)
+plot.plot_covariance_matrix(correlation_interpolated, title=f"Correlations in {label} (after interpolation)", label="Correlation", nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation_interp)

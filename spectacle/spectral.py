@@ -1,10 +1,17 @@
+"""
+This submodule contains functions related to spectral response functions and
+colour analysis.
+"""
+
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.linalg import block_diag
 
 from . import io, plot
 from .general import return_with_filename
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
+from ._interpolation import interpolation_functions, apply_interpolation_matrix, linear_interpolation, linear_interpolation_matrix
 
 wavelengths_interpolated = np.arange(390, 701, 1)
 
@@ -102,6 +109,56 @@ def load_monochromator_data_multiple(camera, folders, **kwargs):
 
     # Now return everything
     return wavelengths, means, stds, means_RGBG2
+
+
+def generate_slices_for_RGBG2_bands(slice_length, nr_bands=4):
+    """
+    Generate slices for data that have been flattened along the RGBG2 (band) axis.
+    Mostly to be used as a helper for flatten_monochromator_image_data.
+    """
+    slices = [np.s_[slice_length*j:slice_length*(j+1)] for j in range(nr_bands)]
+
+    return slices
+
+
+def flatten_monochromator_image_data(means_RGBG2):
+    """
+    Flatten the mean image data from a monochromator.
+    Original data typically have the shape
+    [nr wavelengths, nr bands, size x, size y]
+    This function flattens them to
+    [nr wavelengths * nr bands, all pixels]
+    Note that the axis is band-first, then wavelength. This means the data look
+    like (R1, R2, R3, ..., G1, G2, ...).
+
+    Additional output includes slices to select the individual bands.
+    """
+    # Get the size of the first two axes and their product
+    nr_wavelengths, nr_bands = means_RGBG2.shape[:2]
+    spectral_axis_length = nr_wavelengths * nr_bands
+
+    # First remove the spatial information
+    means_flattened = np.reshape(means_RGBG2, (nr_wavelengths, nr_bands, -1))
+    # Then swap the wavelength and filter axes
+    means_flattened = np.swapaxes(means_flattened, 0, 1)
+    # Finally, flatten the array further
+    means_flattened = np.reshape(means_flattened, (spectral_axis_length, -1))
+
+    # Slices to select R, G, B, and G2
+    RGBG2_slices = generate_slices_for_RGBG2_bands(nr_wavelengths, nr_bands)
+
+    return means_flattened, RGBG2_slices
+
+
+def repeat_matrix(M, nr_bands=4):
+    """
+    Repeat a matrix nr_bands times along the diagonal.
+    For example, repeat an interpolation matrix generated for a single band
+    4 times, to extend it to RGBG2.
+    """
+    M_repeated = block_diag(*[M]*nr_bands)
+
+    return M_repeated
 
 
 def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, wavelength_max=700, unit="ADU", title="", saveto=None):
