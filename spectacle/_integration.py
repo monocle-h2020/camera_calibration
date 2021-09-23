@@ -23,3 +23,26 @@ def trapezoid_matrix(x):
     combined = np.concatenate([start, middle, end])
 
     return combined
+
+
+def simpson_matrix(x):
+    """
+    Generate the transformation matrix using Simpson's rule.
+    This is a column vector.
+    This method assumes regular spacing in x.
+    """
+    # Check if x is regularly spaced
+    assert len(np.unique(np.diff(x))) == 1, "Input is not regularly spaced."
+
+    # Normalisation factor
+    h = np.diff(x)[0]
+
+    # Generate a vector of all ones, then populate it with 2s and 4s, except the edges
+    M = np.ones_like(x, dtype=np.float64)
+    M[1:-1:2] = 4.
+    M[2:-1:2] = 2.
+
+    # Normalisation
+    M *= (h/3)
+
+    return M
