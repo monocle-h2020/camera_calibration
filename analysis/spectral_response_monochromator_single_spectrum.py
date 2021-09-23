@@ -14,7 +14,6 @@ from sys import argv
 from scipy.linalg import block_diag
 from spectacle import io, spectral, plot
 from spectacle.general import correlation_from_covariance
-from cmcrameri import cm
 
 # Get the data folder from the command line
 folder = io.path_from_input(argv)
@@ -64,7 +63,7 @@ plot.plot_covariance_matrix(srf_covariance, title=f"Covariances in {label}", maj
 # Plot the correlations
 srf_correlation = correlation_from_covariance(srf_covariance)
 
-plot.plot_covariance_matrix(srf_correlation, title=f"Correlations in {label}", label="Correlation", cmap=cm.lisbon, nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation)
+plot.plot_correlation_matrix(srf_correlation, title=f"Correlations in {label}", nr_bins=8, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation)
 
 # Calculate mean of G and G2
 R, G, B, G2 = RGBG2_slices
@@ -95,13 +94,13 @@ plot.plot_covariance_matrix(srf_covariance_G, title=f"Covariances in {label} (me
 # Plot the correlations
 srf_correlation_G = correlation_from_covariance(srf_covariance_G)
 
-plot.plot_covariance_matrix(srf_correlation_G, title=f"Correlations in {label} (mean $G, G_2$)", label="Correlation", cmap=cm.lisbon, nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_G)
+plot.plot_correlation_matrix(srf_correlation_G, title=f"Correlations in {label} (mean $G, G_2$)", nr_bins=8, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_G)
 
 # Analyse the difference in correlations between the RGBG2 and RGB data
 srf_correlation_without_G2 = srf_correlation[:len(srf_correlation_G),:len(srf_correlation_G)]
 srf_correlation_difference = srf_correlation_without_G2 - srf_correlation_G
 
-plot.plot_covariance_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", label="Correlation", cmap=cm.lisbon, nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_diff)
+plot.plot_correlation_matrix(srf_correlation_difference, title=f"Correlations in {label}\nDifferences between RGBG$_2$ and RGB", nr_bins=8, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGB_latex, saveto=save_to_correlation_diff)
 
 # Linear interpolation
 step = 0.5
@@ -119,7 +118,7 @@ correlation_interpolated = correlation_from_covariance(covariance_interpolated)
 RGBG2_slices = spectral.generate_slices_for_RGBG2_bands(len(wavelengths_new), 4)
 ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
 
-plot.plot_covariance_matrix(correlation_interpolated, title=f"Correlations in {label} (after interpolation)", label="Correlation", cmap=cm.lisbon, nr_bins=8, vmin=-1, vmax=1, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation_interp)
+plot.plot_correlation_matrix(correlation_interpolated, title=f"Correlations in {label} (after interpolation)", nr_bins=8, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=plot.RGBG2_latex, saveto=save_to_correlation_interp)
 
 # Calculate the variance (ignoring covariance) from the diagonal elements
 variance_interpolated = np.diag(covariance_interpolated)

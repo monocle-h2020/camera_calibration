@@ -1,7 +1,10 @@
 from pathlib import Path
+from functools import partial
 import numpy as np
 from matplotlib import pyplot as plt, patheffects as pe, ticker, colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from cmcrameri import cm
+
 from . import raw
 from .wavelength import fluorescent_lines
 from .linearity import pearson_r_single
@@ -355,3 +358,7 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, m
 
     # Save/show result
     _saveshow(saveto)
+
+
+# Variant of plot_covariance_matrix with pre-filled kwargs for correlation matrices
+plot_correlation_matrix = partial(plot_covariance_matrix, label="Correlation", cmap=cm.lisbon, vmin=-1, vmax=1)
