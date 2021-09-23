@@ -22,6 +22,8 @@ def apply_interpolation_matrix(M, y, covariance=None):
 def linear_interpolation_matrix(x_new, x, debug=False):
     """
     Calculate the transformation matrix for a linear interpolation.
+    For x_new values outside the range of x, we extrapolate with the first/last
+    values of x.
     """
     # Start with an array of all zeros
     M = np.zeros((x_new.shape[0], x.shape[0]))
@@ -48,6 +50,14 @@ def linear_interpolation_matrix(x_new, x, debug=False):
     # Insert the weighting terms into the matrix
     M[indices_new,i0] = y0_terms
     M[indices_new,i1] = y1_terms
+
+    # Override the previous calculation for points in x_new that fall outside the range of x
+    outside_left = np.where(x_new < np.nanmin(x))
+    outside_right = np.where(x_new > np.nanmax(x))
+    M[outside_left] = 0.
+    M[outside_right] = 0.
+    M[outside_left,0] = 1.
+    M[outside_right,-1] = 1.
 
     return M
 
