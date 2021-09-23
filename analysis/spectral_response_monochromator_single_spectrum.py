@@ -131,3 +131,10 @@ means_plot = np.reshape(srf_interpolated, (4,-1))
 variance_plot = np.reshape(variance_interpolated, (4,-1))
 
 spectral.plot_monochromator_curves(wavelengths_new, means_plot, variance_plot, title=f"{camera.name}: Interpolated spectral curve ({label})", unit="ADU", saveto=save_to_spectrum_interp)
+
+# Integrate the result
+M_integration = spectral.trapezoid_matrix(wavelengths)
+M_integration = spectral.repeat_matrix(M_integration, 4)
+
+srf_integral, covariance_integral = spectral.apply_interpolation_matrix(M_integration, srf, srf_covariance)
+correlation_integral = correlation_from_covariance(covariance_integral)

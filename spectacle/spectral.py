@@ -12,6 +12,7 @@ from .general import return_with_filename
 from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
 from ._interpolation import interpolation_functions, apply_interpolation_matrix, linear_interpolation, linear_interpolation_matrix
+from ._integration import trapezoid_matrix
 
 wavelengths_interpolated = np.arange(390, 701, 1)
 
