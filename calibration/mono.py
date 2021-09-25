@@ -83,7 +83,7 @@ plot.plot_covariance_matrix(srf_covariance, title="Covariances", majorticks=tick
 # Plot the correlations
 srf_correlation = correlation_from_covariance(srf_covariance)
 
-plot.plot_correlation_matrix(srf_correlation, title="Correlations", nr_bins=8, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
+plot.plot_correlation_matrix(srf_correlation, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 raise Exception
 
