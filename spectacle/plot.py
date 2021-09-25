@@ -337,7 +337,7 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, m
     plt.figure(figsize=(6,6))
 
     # Plot the data
-    plt.imshow(matrix, cmap=cmap, origin="lower", extent=(0, *matrix.shape, 0), **kwargs)
+    plt.imshow(matrix, cmap=cmap, origin="lower", extent=(0, matrix.shape[0], 0, matrix.shape[1]), **kwargs)
 
     # Labels on the axes and colour bar
     plt.colorbar(label=label)
@@ -352,10 +352,10 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, m
         axis.set_tick_params(which="major", labelleft=False, labelbottom=False)
         axis.set_tick_params(which="minor", left=False, bottom=False)
 
-    # Set the ticklabels normally on x and in reverse on y
+    # Set the ticklabels
     if ticklabels is not None:
         ax.set_xticklabels(ticklabels, minor=True)
-        ax.set_yticklabels(ticklabels[::-1], minor=True)
+        ax.set_yticklabels(ticklabels, minor=True)
 
     # Save/show result
     _saveshow(saveto)
