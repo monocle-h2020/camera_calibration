@@ -63,6 +63,10 @@ cal_files = [sorted(subfolder.glob("*.cal"))[0] for subfolder in folders]
 cals = [spectral.load_cal_NERC(file) for file in cal_files]
 print("Loaded calibration data")
 
+# Apply the calibration
+means_RGBG2 = spectral.apply_calibration_NERC_multiple(cals, wavelengths, means_RGBG2)
+print("Applied calibration to data")
+
 # Reshape array
 means_flattened, RGBG2_slices, wavelengths, labels = spectral.flatten_monochromator_image_data_multiple(means_RGBG2, wavelengths, labels)
 RGBG2_labels = np.tile(plot.RGBG2_latex, len(RGBG2_slices))
@@ -82,46 +86,6 @@ srf_correlation = correlation_from_covariance(srf_covariance)
 plot.plot_correlation_matrix(srf_correlation, title="Correlations", nr_bins=8, majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 raise Exception
-
-# Combine the spectral data from each folder into the same format
-all_wavelengths = np.unique(np.concatenate(wavelengths))
-all_means = np.full((len(wavelengths), len(all_wavelengths), 4), np.nan)
-all_stds = all_means.copy()
-
-# Add the data from the separate spectra into one big array
-# If a spectrum is missing a wavelength, keep that value NaN
-for i, (wvl, mean, std) in enumerate(zip(wavelengths, means, stds)):
-    indices = np.searchsorted(all_wavelengths, wvl)
-    all_means[i][indices] = mean
-    all_stds[i][indices] = std
-
-# Save the raw curves to file
-np.save(save_to_wavelengths, all_wavelengths)
-np.save(save_to_means, all_means)
-np.save(save_to_stds, all_stds)
-print(f"Saved raw curves to {savefolder}")
-
-# Calibrate the data
-# First, create a copy of the array to put the calibrated data into
-all_means_calibrated = np.full(all_means.shape, np.nan)
-all_stds_calibrated = all_means_calibrated.copy()
-
-# Loop over the spectra
-for i, (mean, std, cal) in enumerate(zip(all_means, all_stds, cals)):
-    # Find the overlapping wavelengths between calibration and data
-    _, cal_indices, all_wavelengths_indices = np.intersect1d(cal[0], all_wavelengths, return_indices=True)
-
-    # Calibrate the data and store it in the main array
-    all_means_calibrated[i, all_wavelengths_indices] = mean[all_wavelengths_indices] / cal[1, cal_indices, np.newaxis]
-
-    # Assume the error in the result is dominated by the error in the data,
-    # not in the calibration (strong assumption!) and propagate the error
-    all_stds_calibrated[i, all_wavelengths_indices] = std[all_wavelengths_indices] / cal[1, cal_indices, np.newaxis]
-
-# Save the calibrated curves to file
-np.save(save_to_means_calibrated, all_means_calibrated)
-np.save(save_to_stds_calibrated, all_stds_calibrated)
-print(f"Saved calibrated curves to {savefolder}")
 
 # Normalise the calibrated data
 # Create a copy of the array to put the normalised data into

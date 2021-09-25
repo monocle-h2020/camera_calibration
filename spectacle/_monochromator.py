@@ -22,6 +22,35 @@ def load_cal_NERC(filename, norm=True):
     return arr
 
 
+def apply_calibration_NERC(calibration_data, data_wavelengths, data):
+    """
+    Divide the given data by the calibration data along matching wavelengths.
+    """
+    # Find the matching wavelengths and corresponding indices
+    _, calibration_indices, _ = np.intersect1d(calibration_data[0], data_wavelengths, return_indices=True)
+
+    # Get the corresponding calibration values
+    calibration = calibration_data[1, calibration_indices]
+
+    # Move the matching axis to the end so numpy can do broadcasting, divide, then move it back
+    data_calibrated = np.moveaxis(data, 0, -1)
+    data_calibrated = data_calibrated / calibration
+    data_calibrated = np.moveaxis(data_calibrated, -1, 0)
+
+    return data_calibrated
+
+
+def apply_calibration_NERC_multiple(calibration_data, data_wavelengths, data):
+    """
+    Loop over the input arguments and apply apply_calibration_NERC to each.
+    """
+    # This could be made a lot shorter using splats but now it's easier to understand
+    data_calibrated = [apply_calibration_NERC(cal, wvl, dat) for cal, wvl, dat in zip(calibration_data, data_wavelengths, data)]
+
+    return data_calibrated
+
+
+
 def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
     """
     Load monochromator data, stored as a stack (mean/std) per wavelength in
