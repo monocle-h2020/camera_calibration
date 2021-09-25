@@ -79,8 +79,11 @@ def load_monochromator_data_multiple(camera, folders, **kwargs):
     # Then split out all the constituents
     wavelengths, means, stds, means_RGBG2 = zip(*data)
 
+    # Make labels for each data set
+    labels = [j*np.ones_like(wvl).astype(np.uint8) for j, wvl in enumerate(wavelengths)]
+
     # Now return everything
-    return wavelengths, means, stds, means_RGBG2
+    return wavelengths, means, stds, means_RGBG2, labels
 
 
 def generate_slices_for_RGBG2_bands(slice_length, nr_bands=4):
@@ -120,3 +123,32 @@ def flatten_monochromator_image_data(means_RGBG2):
     RGBG2_slices = generate_slices_for_RGBG2_bands(nr_wavelengths, nr_bands)
 
     return means_flattened, RGBG2_slices
+
+
+def flatten_monochromator_image_data_multiple(means_RGBG2, *properties, nr_bands=4):
+    """
+    Flatten the mean image data from a monochromator.
+    Handles multiple data sets.
+
+    Other properties, such as wavelengths or labels, may also be passed.
+    These will then be sorted and reshaped similarly.
+    """
+    # Flatten the main data first
+    means_flattened, RGBG2_slices = zip(*[flatten_monochromator_image_data(means) for means in means_RGBG2])
+    means_flattened = np.concatenate(means_flattened)
+
+    # Because the slices are generated individually for each array, we need to update them
+    # The slices for each data set should start at the end of the previous data set, rather than 0
+    RGBG2_slices = np.array(RGBG2_slices)
+    for j, _ in enumerate(RGBG2_slices[1:], start=1):
+        offset = RGBG2_slices[j-1,-1].stop
+        for i in range(nr_bands):
+            old = RGBG2_slices[j,i]
+            RGBG2_slices[j,i] = slice(old.start+offset, old.stop+offset, None)
+
+    # Generate slices for data sets based on len(means)?
+
+    # Now flatten the other properties
+    properties = [np.concatenate([np.tile(p, nr_bands) for p in prop]) for prop in properties]
+
+    return means_flattened, RGBG2_slices, *properties

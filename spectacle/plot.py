@@ -315,6 +315,7 @@ def get_tick_locations_from_slices(slices):
     Major ticks are located at the start of each slice and the end of the final slice.
     Minor ticks are located halfway between the start and end of each slice.
     """
+    slices = np.ravel(slices)
     ticks_major = [s.start for s in slices] + [slices[-1].stop]
     ticks_minor = [(s.start + s.stop) / 2 for s in slices]
 
