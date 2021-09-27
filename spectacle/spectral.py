@@ -132,6 +132,15 @@ def load_spectral_bands(root, return_filename=False):
     return return_with_filename(spectral_bands, filename, return_filename)
 
 
+def wavelength_overlap(spectrum_a, spectrum_b):
+    """
+    Find the number of overlapping wavelengths between two spectra.
+    """
+    intersection = np.intersect1d(spectrum_a, spectrum_b)
+    length = len(intersection)
+    return length
+
+
 def interpolate_spectral_data(old_wavelengths, old_data, new_wavelengths, **kwargs):
     """
     Interpolate spectral data `old_data` at `old_wavelengths` to a set of

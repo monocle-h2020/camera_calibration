@@ -67,8 +67,15 @@ print("Loaded calibration data")
 means_RGBG2 = spectral.apply_calibration_NERC_multiple(cals, wavelengths, means_RGBG2)
 print("Applied calibration to data")
 
+# Sort data: longest first, then by amount of overlap with the longest
+longest = np.argmax([len(wvl) for wvl in wavelengths])
+overlaps = [spectral.wavelength_overlap(wvl, wavelengths[longest]) for wvl in wavelengths]
+order = np.argsort(overlaps)[::-1]
+means_RGBG2 = [means_RGBG2[i] for i in order]  # Can't do [order] with lists :(
+wavelengths = [wavelengths[i] for i in order]
+
 # Reshape array
-means_flattened, RGBG2_slices, wavelengths, labels = spectral.flatten_monochromator_image_data_multiple(means_RGBG2, wavelengths, labels)
+means_flattened, RGBG2_slices, wavelengths_flattened, labels_flattened = spectral.flatten_monochromator_image_data_multiple(means_RGBG2, wavelengths, labels)
 RGBG2_labels = np.tile(plot.RGBG2_latex, len(RGBG2_slices))
 
 # Calculate mean SRF and covariance between all elements
@@ -92,31 +99,8 @@ raise Exception
 all_means_normalised = all_means_calibrated.copy()
 all_stds_normalised = all_stds_calibrated.copy()
 
-def overlap(spectrum_a, spectrum_b):
-    """
-    Find the number of overlapping wavelengths between two spectra
-    """
-    summed = spectrum_a + spectrum_b
-    length = len(np.where(~np.isnan(summed))[0])
-    return length
-
-# Find the number of overlapping wavelengths
-all_overlaps = np.array([[overlap(mean1, mean2) for mean1 in all_means_calibrated] for mean2 in all_means_calibrated])
-
-# Use the spectrum with the most overlap with itself (i.e. most data) as the
-# baseline to normalise others to
-baseline = np.diag(all_overlaps).argmax()
-
-# The order to normalise in, based on the amount of overlap with the baseline
-# -2 because there is no point in normalising the baseline (-1) by itself
-normalise_order = np.argsort(all_overlaps[baseline])[-2::-1]
-
 # Loop over the spectra and normalise them by the data set with the largest overlap
 for i in normalise_order:
-    # If there is any overlap with the baseline, normalise to that
-    if all_overlaps[i,baseline]:
-        comparison = baseline
-    # If not, normalise to another spectrum
     else:
         # NB should add a check to make sure the `comparison` is one that has
         # previously been normalised itself
