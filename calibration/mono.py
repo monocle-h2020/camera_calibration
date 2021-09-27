@@ -101,12 +101,6 @@ all_stds_normalised = all_stds_calibrated.copy()
 
 # Loop over the spectra and normalise them by the data set with the largest overlap
 for i in normalise_order:
-    else:
-        # NB should add a check to make sure the `comparison` is one that has
-        # previously been normalised itself
-        # Alternately do two iterations?
-        comparison = np.argsort(all_overlaps[i])[-2]
-
     # Calculate the ratio between this spectrum and the comparison one at each wavelength
     ratios = all_means_calibrated[i] / all_means_normalised[comparison]
     print(f"Normalising spectrum {i} to spectrum {comparison}")
