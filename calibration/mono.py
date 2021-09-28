@@ -92,6 +92,27 @@ srf_correlation = correlation_from_covariance(srf_covariance)
 
 plot.plot_correlation_matrix(srf_correlation, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
+nr_bands=4
+# Normalise the spectra to each other, then add them all up
+while len(wavelengths) > 1:  # As long as multiple data sets are present
+    # Find the overlapping wavelengths between this data set and the main one
+    wavelengths_overlap, indices_original, indices_new = np.intersect1d(wavelengths[0], wavelengths[1], return_indices=True)
+
+    # Make slices for the appropriate RGBG2 data
+    indices_original_RGBG2 = indices_original + (np.arange(nr_bands) * len(wavelengths[0]))[:,np.newaxis]
+    indices_new_RGBG2 = nr_bands*len(wavelengths[0]) + indices_new + (np.arange(nr_bands) * len(wavelengths[1]))[:,np.newaxis]
+
+    # Divide the overlapping data element-wise
+    ratio = srf[indices_original_RGBG2] / srf[indices_new_RGBG2]
+
+    # Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
+    Lambda = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
+    # Make all-zero array and then put Lambda into it
+
+    # Take the weighted average of the main data set and this new, normalised one
+
+    # Bookkeeping: remove and rename elements for the next iteration
+
 raise Exception
 
 # Normalise the calibrated data
