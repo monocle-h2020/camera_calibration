@@ -93,6 +93,7 @@ srf_correlation = correlation_from_covariance(srf_covariance)
 plot.plot_correlation_matrix(srf_correlation, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 nr_bands=4
+polynomial_degree=2
 # Normalise the spectra to each other, then add them all up
 while len(wavelengths) > 1:  # As long as multiple data sets are present
     # Find the overlapping wavelengths between this data set and the main one
@@ -104,10 +105,30 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     # Divide the overlapping data element-wise
     ratio = srf[indices_original_RGBG2] / srf[indices_new_RGBG2]
+    ratio_flattened = np.ravel(ratio)
 
     # Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
-    Lambda = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
-    # Make all-zero array and then put Lambda into it
+    Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
+    Lambda_bands = np.vstack([Lambda_single]*nr_bands)
+    # For simlpicity, we put nr_bands copies of Lambda_single into an otherwise all-zero array so it can be multiplied directly with srf and the covariance.
+    # This could also be done using clever indexing, but appending zeros makes it easier to read.
+    Lambda = np.zeros((len(srf), polynomial_degree+1))
+    beta = np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T @ ratio_flattened
+    Lambda_b = np.stack([np.ones_like(wavelengths[1]), wavelengths[1], wavelengths[1]**2], axis=1)
+    Lambda_term = Lambda_b @ np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T
+    transfer_diagonal = Lambda_b @ beta
+    transfer_matrix = transfer_diagonal * np.eye(len(wavelengths[1]))
+
+    # Make the full transfer matrix, which is 1 everywhere outside band 1
+    start_band1 = len(wavelengths[0]) * nr_bands
+    edges_band1_RGBG2 = start_band1 + np.arange(5) * len(wavelengths[1])
+    slices_band1_RGBG2 = [slice(start, stop) for start, stop in zip(edges_band1_RGBG2, edges_band1_RGBG2[1:])]
+    M = np.eye(len(srf))
+    for s in slices_band1_RGBG2:
+        M[s,s] = transfer_matrix
+
+    srf_normalised = M @ srf
+    srf_normalised_covariance = M @ srf_covariance @ M.T
 
     # Take the weighted average of the main data set and this new, normalised one
 
