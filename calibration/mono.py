@@ -96,16 +96,43 @@ nr_bands=4
 polynomial_degree=2
 # Normalise the spectra to each other, then add them all up
 while len(wavelengths) > 1:  # As long as multiple data sets are present
+    # Transfer matrix: 1 everywhere for now. Parts will be changed as we go.
+    M = np.eye(len(srf))
+
+    # Slices corresponding to the band being normalised
+    start_band1 = len(wavelengths[0]) * nr_bands
+    edges_band1_RGBG2 = start_band1 + np.arange(5) * len(wavelengths[1])
+    slices_band1_RGBG2 = [slice(start, stop) for start, stop in zip(edges_band1_RGBG2, edges_band1_RGBG2[1:])]
+
     # Find the overlapping wavelengths between this data set and the main one
     wavelengths_overlap, indices_original, indices_new = np.intersect1d(wavelengths[0], wavelengths[1], return_indices=True)
+    single_overlap_length = len(wavelengths_overlap)
+    full_overlap_length = nr_bands * single_overlap_length
 
-    # Make slices for the appropriate RGBG2 data
+    # Make index lists for the appropriate RGBG2 data
     indices_original_RGBG2 = indices_original + (np.arange(nr_bands) * len(wavelengths[0]))[:,np.newaxis]
     indices_new_RGBG2 = nr_bands*len(wavelengths[0]) + indices_new + (np.arange(nr_bands) * len(wavelengths[1]))[:,np.newaxis]
 
     # Divide the overlapping data element-wise
     ratio = srf[indices_original_RGBG2] / srf[indices_new_RGBG2]
     ratio_flattened = np.ravel(ratio)
+
+    # Approximation of M using the Jacobian matrix; for propagating the covariance.
+    M_J = np.zeros((M.shape[0] + full_overlap_length, M.shape[0]))
+    M_J[:-full_overlap_length] = np.eye(len(srf))
+
+    # Ratios for the Jacobian matrix
+    dr_dyA = 1 / srf[indices_new_RGBG2]
+    dr_dyB = -ratio / srf[indices_new_RGBG2]
+
+    # Indices for the Jacobian matrix
+    indices_goal = M.shape[0] + np.arange(nr_bands+1) * single_overlap_length
+    slices_goal = [slice(start, stop) for start, stop in zip(indices_goal, indices_goal[1:])]
+
+    # Insert these elements into M_J
+    for s_goal, ind_original, ind_new, JA, JB in zip(slices_goal, indices_original_RGBG2, indices_new_RGBG2, dr_dyA, dr_dyB):
+        M_J[s_goal,ind_original] = JA * np.eye(single_overlap_length)
+        M_J[s_goal,ind_new] = JB * np.eye(single_overlap_length)
 
     # Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
     Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
@@ -119,11 +146,16 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     transfer_diagonal = Lambda_b @ beta
     transfer_matrix = transfer_diagonal * np.eye(len(wavelengths[1]))
 
+    # Lambda terms for Jacobian matrix
+    Lambda_full = np.zeros((len(srf), 3))
+    Lambda_b_full = Lambda_full.copy()
+    for ind in indices_new_RGBG2:
+        Lambda_full[ind] = Lambda_single
+    for s in slices_band1_RGBG2:
+        Lambda_b_full[s] = Lambda_b
+    Lambda_term_full = Lambda_b_full @ np.linalg.inv(Lambda_full.T @ Lambda_full) @ Lambda_full.T
+
     # Make the full transfer matrix, which is 1 everywhere outside band 1
-    start_band1 = len(wavelengths[0]) * nr_bands
-    edges_band1_RGBG2 = start_band1 + np.arange(5) * len(wavelengths[1])
-    slices_band1_RGBG2 = [slice(start, stop) for start, stop in zip(edges_band1_RGBG2, edges_band1_RGBG2[1:])]
-    M = np.eye(len(srf))
     for s in slices_band1_RGBG2:
         M[s,s] = transfer_matrix
 
