@@ -134,6 +134,8 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
         M_J[s_goal,ind_original] = JA * np.eye(single_overlap_length)
         M_J[s_goal,ind_new] = JB * np.eye(single_overlap_length)
 
+    srf_covariance_with_ratio = M_J @ srf_covariance @ M_J.T
+
     # Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
     Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
     Lambda_bands = np.vstack([Lambda_single]*nr_bands)
