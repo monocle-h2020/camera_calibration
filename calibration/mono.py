@@ -113,13 +113,13 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     indices_original_RGBG2 = indices_original + (np.arange(nr_bands) * len(wavelengths[0]))[:,np.newaxis]
     indices_new_RGBG2 = nr_bands*len(wavelengths[0]) + indices_new + (np.arange(nr_bands) * len(wavelengths[1]))[:,np.newaxis]
 
-    # Divide the overlapping data element-wise
+    ### Divide the overlapping data element-wise
     ratio = srf[indices_original_RGBG2] / srf[indices_new_RGBG2]
     ratio_flattened = np.ravel(ratio)
 
-    # Approximation of M using the Jacobian matrix; for propagating the covariance.
-    M_J = np.zeros((M.shape[0] + full_overlap_length, M.shape[0]))
-    M_J[:-full_overlap_length] = np.eye(len(srf))
+    # Approximation of division using the Jacobian matrix; for propagating the covariance.
+    J_ratio = np.zeros((M.shape[0] + full_overlap_length, M.shape[0]))
+    J_ratio[:-full_overlap_length] = np.eye(len(srf))
 
     # Ratios for the Jacobian matrix
     dr_dyA = 1 / srf[indices_new_RGBG2]
@@ -129,14 +129,14 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     indices_goal = M.shape[0] + np.arange(nr_bands+1) * single_overlap_length
     slices_goal = [slice(start, stop) for start, stop in zip(indices_goal, indices_goal[1:])]
 
-    # Insert these elements into M_J
+    # Insert these elements into J_ratio
     for s_goal, ind_original, ind_new, JA, JB in zip(slices_goal, indices_original_RGBG2, indices_new_RGBG2, dr_dyA, dr_dyB):
-        M_J[s_goal,ind_original] = JA * np.eye(single_overlap_length)
-        M_J[s_goal,ind_new] = JB * np.eye(single_overlap_length)
+        J_ratio[s_goal,ind_original] = JA * np.eye(single_overlap_length)
+        J_ratio[s_goal,ind_new] = JB * np.eye(single_overlap_length)
 
-    srf_covariance_with_ratio = M_J @ srf_covariance @ M_J.T
+    srf_covariance_with_ratio = J_ratio @ srf_covariance @ J_ratio.T
 
-    # Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
+    ### Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
     Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
     Lambda_bands = np.vstack([Lambda_single]*nr_bands)
     # For simlpicity, we put nr_bands copies of Lambda_single into an otherwise all-zero array so it can be multiplied directly with srf and the covariance.
@@ -162,7 +162,6 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
         M[s,s] = transfer_matrix
 
     srf_normalised = M @ srf
-    srf_normalised_covariance = M @ srf_covariance @ M.T
 
     # Take the weighted average of the main data set and this new, normalised one
 
