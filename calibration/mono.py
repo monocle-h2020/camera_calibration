@@ -138,28 +138,34 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     # Plot the resulting correlation matrix, just to be sure
     srf_correlation_with_ratio = correlation_from_covariance(srf_covariance_with_ratio)
-    plot.plot_correlation_matrix(srf_correlation_with_ratio, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None)
+    plot.plot_correlation_matrix(srf_correlation_with_ratio, title="Correlations -- Ratio between data sets", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
 
     ### Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
-    Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
-    Lambda_bands = np.vstack([Lambda_single]*nr_bands)
-    # For simlpicity, we put nr_bands copies of Lambda_single into an otherwise all-zero array so it can be multiplied directly with srf and the covariance.
+    Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)  # Polynomial base array, for the overlap in one band
+    Lambda_bands = np.vstack([Lambda_single]*nr_bands)  # Polynomial base array, for the overlap in all bands
+
+    # For simplicity, we put nr_bands copies of Lambda_single into an otherwise all-zero array so it can be multiplied directly with srf and the covariance.
     # This could also be done using clever indexing, but appending zeros makes it easier to read.
-    Lambda = np.zeros((len(srf), polynomial_degree+1))
     beta = np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T @ ratio_flattened
     Lambda_b = np.stack([np.ones_like(wavelengths[1]), wavelengths[1], wavelengths[1]**2], axis=1)
     Lambda_term = Lambda_b @ np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T
     transfer_diagonal = Lambda_b @ beta
     transfer_matrix = transfer_diagonal * np.eye(len(wavelengths[1]))
 
-    # Lambda terms for Jacobian matrix
-    Lambda_full = np.zeros((len(srf), 3))
-    Lambda_b_full = Lambda_full.copy()
-    for ind in indices_new_RGBG2:
-        Lambda_full[ind] = Lambda_single
-    for s in slices_band1_RGBG2:
-        Lambda_b_full[s] = Lambda_b
-    Lambda_term_full = Lambda_b_full @ np.linalg.inv(Lambda_full.T @ Lambda_full) @ Lambda_full.T
+    # Jacobian matrix for fitting the ratio
+    J_ratio_fit = np.zeros((M.shape[0] + len(wavelengths[1]), srf_covariance_with_ratio.shape[0]))
+    J_ratio_fit[:M.shape[0], :M.shape[0]] = np.eye(len(srf))
+    J_ratio_fit[M.shape[0]:, M.shape[0]:] = Lambda_term
+
+    srf_covariance_with_ratio_fit = J_ratio_fit @ srf_covariance_with_ratio @ J_ratio_fit.T
+
+    # Plot the resulting correlation matrix, just to be sure
+    srf_correlation_with_ratio_fit = correlation_from_covariance(srf_covariance_with_ratio_fit)
+    plot.plot_correlation_matrix(srf_correlation_with_ratio_fit, title="Correlations -- Fitted ratio", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
+
+    ### Apply the fitted ratio to the original data
+
+    ### Weighted average of the two data sets
 
     # Make the full transfer matrix, which is 1 everywhere outside band 1
     for s in slices_band1_RGBG2:
@@ -167,9 +173,8 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     srf_normalised = M @ srf
 
-    # Take the weighted average of the main data set and this new, normalised one
-
-    # Bookkeeping: remove and rename elements for the next iteration
+    ### Bookkeeping: remove and rename elements for the next iteration
+    break
 
 raise Exception
 
