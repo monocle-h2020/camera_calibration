@@ -163,14 +163,28 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     plot.plot_correlation_matrix(srf_correlation_with_ratio_fit, title="Correlations -- Fitted ratio", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
 
     ### Apply the fitted ratio to the original data
-
-    ### Weighted average of the two data sets
-
     # Make the full transfer matrix, which is 1 everywhere outside band 1
     for s in slices_band1_RGBG2:
         M[s,s] = transfer_matrix
-
     srf_normalised = M @ srf
+
+    # Jacobian matrix for applying the fitted ratio
+    slice_ratio_fitted = slice(len(srf), len(srf)+len(ratio_fitted))
+    J_normalise = np.zeros((len(srf), srf_covariance_with_ratio_fit.shape[0]))
+    J_normalise[:len(srf), :len(srf)] = np.eye(len(srf))  # 1 everywhere except ratios
+    for s in slices_band1_RGBG2:
+        J_normalise[s,s] = np.diag(ratio_fitted)  # dynew / dy_old = ratio_fitted
+        J_normalise[s,slice_ratio_fitted] = np.diag(srf[s])  # dynew / dr = y_old
+
+    srf_covariance_normalised = J_normalise @ srf_covariance_with_ratio_fit @ J_normalise.T
+
+    # Plot the resulting correlation matrix, just to be sure
+    srf_correlation_normalised = correlation_from_covariance(srf_covariance_normalised)
+    plot.plot_correlation_matrix(srf_correlation_normalised, title="Correlations -- Normalised", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
+
+    ### Weighted average of the two data sets
+
+
 
     ### Bookkeeping: remove and rename elements for the next iteration
     break
