@@ -131,8 +131,8 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     # Insert these elements into J_ratio
     for s_goal, ind_original, ind_new, JA, JB in zip(slices_goal, indices_original_RGBG2, indices_new_RGBG2, dr_dyA, dr_dyB):
-        J_ratio[s_goal,ind_original] = JA * np.eye(single_overlap_length)
-        J_ratio[s_goal,ind_new] = JB * np.eye(single_overlap_length)
+        J_ratio[s_goal,ind_original] = np.diag(JA)
+        J_ratio[s_goal,ind_new] = np.diag(JB)
 
     srf_covariance_with_ratio = J_ratio @ srf_covariance @ J_ratio.T
 
@@ -149,7 +149,6 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     Lambda_output = np.stack([np.ones_like(wavelengths[1]), wavelengths[1], wavelengths[1]**2], axis=1)  # Polynomial coefficients corresponding to all wavelengths in wavelengths[1] - for applying the fit
     Lambda_term = Lambda_output @ np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T
     ratio_fitted = Lambda_term @ ratio_flattened
-    transfer_matrix = ratio_fitted * np.eye(len(wavelengths[1]))
 
     # Jacobian matrix for fitting the ratio
     J_ratio_fit = np.zeros((M.shape[0] + len(wavelengths[1]), srf_covariance_with_ratio.shape[0]))
@@ -165,7 +164,7 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     ### Apply the fitted ratio to the original data
     # Make the full transfer matrix, which is 1 everywhere outside band 1
     for s in slices_band1_RGBG2:
-        M[s,s] = transfer_matrix
+        M[s,s] = np.diag(ratio_fitted)
     srf_normalised = M @ srf
 
     # Jacobian matrix for applying the fitted ratio
