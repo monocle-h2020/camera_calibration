@@ -142,15 +142,14 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     ### Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
     Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)  # Polynomial base array, for the overlap in one band
-    Lambda_bands = np.vstack([Lambda_single]*nr_bands)  # Polynomial base array, for the overlap in all bands
+    Lambda_bands = np.vstack([Lambda_single]*nr_bands)  # Polynomial coefficients for the overlap, repeated for each band
 
     # For simplicity, we put nr_bands copies of Lambda_single into an otherwise all-zero array so it can be multiplied directly with srf and the covariance.
     # This could also be done using clever indexing, but appending zeros makes it easier to read.
-    beta = np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T @ ratio_flattened
-    Lambda_b = np.stack([np.ones_like(wavelengths[1]), wavelengths[1], wavelengths[1]**2], axis=1)
-    Lambda_term = Lambda_b @ np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T
-    transfer_diagonal = Lambda_b @ beta
-    transfer_matrix = transfer_diagonal * np.eye(len(wavelengths[1]))
+    Lambda_output = np.stack([np.ones_like(wavelengths[1]), wavelengths[1], wavelengths[1]**2], axis=1)  # Polynomial coefficients corresponding to all wavelengths in wavelengths[1] - for applying the fit
+    Lambda_term = Lambda_output @ np.linalg.inv(Lambda_bands.T @ Lambda_bands) @ Lambda_bands.T
+    ratio_fitted = Lambda_term @ ratio_flattened
+    transfer_matrix = ratio_fitted * np.eye(len(wavelengths[1]))
 
     # Jacobian matrix for fitting the ratio
     J_ratio_fit = np.zeros((M.shape[0] + len(wavelengths[1]), srf_covariance_with_ratio.shape[0]))
