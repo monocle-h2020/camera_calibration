@@ -136,6 +136,10 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     srf_covariance_with_ratio = J_ratio @ srf_covariance @ J_ratio.T
 
+    # Plot the resulting correlation matrix, just to be sure
+    srf_correlation_with_ratio = correlation_from_covariance(srf_covariance_with_ratio)
+    plot.plot_correlation_matrix(srf_correlation_with_ratio, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None)
+
     ### Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
     Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)
     Lambda_bands = np.vstack([Lambda_single]*nr_bands)
