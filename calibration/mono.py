@@ -181,6 +181,12 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     srf_correlation_normalised = correlation_from_covariance(srf_covariance_normalised)
     plot.plot_correlation_matrix(srf_correlation_normalised, title="Correlations -- Normalised", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
+    ### Weighted average of the two data sets
+    wavelengths_combined = np.unique([*wavelengths[0], *wavelengths[1]])
+    size_combined = len(wavelengths_flattened) - nr_bands * (len(wavelengths[0]) + len(wavelengths[1])) + nr_bands * len(wavelengths_combined)
+
+    M_weighted_average = np.zeros((size_combined, len(srf_normalised)))
+    M_weighted_average[:size_combined, :size_combined] = np.eye(size_combined)
 
 
     ### Bookkeeping: remove and rename elements for the next iteration
