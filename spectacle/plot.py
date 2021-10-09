@@ -362,4 +362,4 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, m
 
 
 # Variant of plot_covariance_matrix with pre-filled kwargs for correlation matrices
-plot_correlation_matrix = partial(plot_covariance_matrix, label="Correlation", cmap=cm.lisbon, vmin=-1, vmax=1, nr_bins=8)
+plot_correlation_matrix = partial(plot_covariance_matrix, label="Correlation", cmap=cm.lisbon, vmin=-1, vmax=1)
