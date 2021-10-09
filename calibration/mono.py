@@ -138,7 +138,7 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     # Plot the resulting correlation matrix, just to be sure
     srf_correlation_with_ratio = correlation_from_covariance(srf_covariance_with_ratio)
-    plot.plot_correlation_matrix(srf_correlation_with_ratio, title="Correlations -- Ratio between data sets", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
+    plot.plot_correlation_matrix(srf_correlation_with_ratio, title="Correlations -- Ratio between data sets", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, vmin=-0.25, vmax=0.25)
 
     ### Fit a polynomial to those ratios, and apply the same polynomial to the entire data set
     Lambda_single = np.stack([np.ones_like(wavelengths_overlap), wavelengths_overlap, wavelengths_overlap**2], axis=1)  # Polynomial base array, for the overlap in one band
@@ -159,7 +159,7 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     # Plot the resulting correlation matrix, just to be sure
     srf_correlation_with_ratio_fit = correlation_from_covariance(srf_covariance_with_ratio_fit)
-    plot.plot_correlation_matrix(srf_correlation_with_ratio_fit, title="Correlations -- Fitted ratio", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
+    plot.plot_correlation_matrix(srf_correlation_with_ratio_fit, title="Correlations -- Fitted ratio", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, vmin=-0.25, vmax=0.25)
 
     ### Apply the fitted ratio to the original data
     # Make the full transfer matrix, which is 1 everywhere outside band 1
@@ -179,9 +179,7 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 
     # Plot the resulting correlation matrix, just to be sure
     srf_correlation_normalised = correlation_from_covariance(srf_covariance_normalised)
-    plot.plot_correlation_matrix(srf_correlation_normalised, title="Correlations -- Normalised", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels, nr_bins=None, vmin=-0.1, vmax=0.1)
-
-    ### Weighted average of the two data sets
+    plot.plot_correlation_matrix(srf_correlation_normalised, title="Correlations -- Normalised", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 
 
