@@ -363,3 +363,61 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, m
 
 # Variant of plot_covariance_matrix with pre-filled kwargs for correlation matrices
 plot_correlation_matrix = partial(plot_covariance_matrix, label="Correlation", cmap=cm.lisbon, vmin=-1, vmax=1)
+
+
+def plot_correlation_matrix_diagonal(correlation, slices, wavelengths, xlim=(390, 700), offset=1, xlabel="Wavelength/nm", ax=None, saveto=None):
+    """
+    Plot diagonal lines in correlation matrices. By default this plots the diagonal with offset 1,
+    i.e. the correlation between elements (n, n+1).
+    A full correlation matrix should be provided, with appropriate slices corresponding to the different bands.
+
+    If an Axes object is given for `ax`, plot into that. Otherwise, make a new plot.
+    """
+    # Check if we are making a new plot or plotting into an existing object
+    if ax is None:
+        plt.figure(figsize=(5,3))
+        ax = plt.gca()
+        newplot = True
+    else:
+        newplot = False
+
+    # Get the correlation between subsequent elements for each band
+    correlation_with_next = np.array([np.diagonal(correlation[s,s], offset=1) for s in slices])
+
+    # Plot the correlation diagonals in a single pane
+    _rgbplot(wavelengths[:-offset], correlation_with_next, func=ax.plot)
+
+    # Figure settings
+    ax.set_xlim(xlim)
+    ax.set_ylim(0, 1)
+    ax.set_ylabel("Correlation with\nnext element")
+    ax.grid(ls="--")
+
+    # Optional figure settings if this is a new (stand-alone) plot
+    if newplot:
+        ax.set_xlabel(xlabel)
+        _saveshow(saveto)
+
+
+def plot_correlation_matrix_diagonal_multi(correlation, slices, wavelengths, xlabel="Wavelength/nm", saveto=None, **kwargs):
+    """
+    Plot diagonal lines in correlation matrices. By default this plots the diagonal with offset 1,
+    i.e. the correlation between elements (n, n+1).
+    A full correlation matrix should be provided, with appropriate slices corresponding to the different bands.
+
+    This function plots the correlations in each data set within the correlation matrix in a separate panel.
+    **kwargs are passed to plot_correlation_matrix_diagonal.
+    """
+    # Create a figure to hold the panels
+    nr_panels = len(slices)
+    fig, axs = plt.subplots(nrows=nr_panels, sharex=True, sharey=True, figsize=(5, 3*nr_panels))
+
+    # Loop over the data and plot each
+    for ax, slice_list, wavelength_list in zip(axs, slices, wavelengths):
+        plot_correlation_matrix_diagonal(correlation, slice_list, wavelength_list, ax=ax, **kwargs)
+
+    # Figure settings
+    axs[-1].set_xlabel(xlabel)
+
+    # Save or show the result
+    _saveshow(saveto)

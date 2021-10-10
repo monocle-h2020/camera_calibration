@@ -92,6 +92,8 @@ srf_correlation = correlation_from_covariance(srf_covariance)
 
 plot.plot_correlation_matrix(srf_correlation, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
+plot.plot_correlation_matrix_diagonal_multi(srf_correlation, RGBG2_slices, wavelengths)
+
 nr_bands=4
 polynomial_degree=2
 # Normalise the spectra to each other, then add them all up
