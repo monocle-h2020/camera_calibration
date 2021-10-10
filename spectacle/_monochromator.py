@@ -127,6 +127,24 @@ def generate_slices_for_RGBG2_bands(slice_length, nr_bands=4):
     return slices
 
 
+def adjust_slices_for_RGBG2_bands_multi(RGBG2_slices, nr_bands=4):
+    """
+    Adjust slices for data that have been flattened along the RGBG2 (band) axis.
+    Make the slices for each data set start at the end of the previous data set, rather than 0.
+    """
+    # Generate the slices with 0 as the start
+    RGBG2_slices = np.array(RGBG2_slices)
+
+    # Loop over the slices and add the end of the previous set to the start of the next one
+    for j, _ in enumerate(RGBG2_slices[1:], start=1):
+        offset = RGBG2_slices[j-1,-1].stop
+        for i in range(nr_bands):
+            old = RGBG2_slices[j,i]
+            RGBG2_slices[j,i] = slice(old.start+offset, old.stop+offset, None)
+
+    return RGBG2_slices
+
+
 def flatten_monochromator_image_data(means_RGBG2):
     """
     Flatten the mean image data from a monochromator.
@@ -170,14 +188,7 @@ def flatten_monochromator_image_data_multiple(means_RGBG2, *properties, nr_bands
 
     # Because the slices are generated individually for each array, we need to update them
     # The slices for each data set should start at the end of the previous data set, rather than 0
-    RGBG2_slices = np.array(RGBG2_slices)
-    for j, _ in enumerate(RGBG2_slices[1:], start=1):
-        offset = RGBG2_slices[j-1,-1].stop
-        for i in range(nr_bands):
-            old = RGBG2_slices[j,i]
-            RGBG2_slices[j,i] = slice(old.start+offset, old.stop+offset, None)
-
-    # Generate slices for data sets based on len(means)?
+    RGBG2_slices = adjust_slices_for_RGBG2_bands_multi(RGBG2_slices)
 
     # Now flatten the other properties
     properties = [np.concatenate([np.tile(p, nr_bands) for p in prop]) for prop in properties]

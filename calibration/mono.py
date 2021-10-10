@@ -183,15 +183,59 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     srf_correlation_normalised = correlation_from_covariance(srf_covariance_normalised)
     plot.plot_correlation_matrix(srf_correlation_normalised, title="Correlations -- Normalised", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
-    ### Weighted average of the two data sets
+    ### Average of the two data sets
     wavelengths_combined = np.unique([*wavelengths[0], *wavelengths[1]])
-    size_combined = len(wavelengths_flattened) - nr_bands * (len(wavelengths[0]) + len(wavelengths[1])) + nr_bands * len(wavelengths_combined)
+    size_new_and_old = nr_bands * (len(wavelengths[0]) + len(wavelengths[1]))
+    size_combined = nr_bands * len(wavelengths_combined)
+    size_full = len(wavelengths_flattened) - nr_bands * (len(wavelengths[0]) + len(wavelengths[1])) + size_combined
+    size_remaining = size_full - size_combined
 
-    M_weighted_average = np.zeros((size_combined, len(srf_normalised)))
-    M_weighted_average[:size_combined, :size_combined] = np.eye(size_combined)
+    # Get the overlap between the new data and the old data 0, old data 1, and overlap
+    _, indices_goal_original, indices_original_goal = np.intersect1d(wavelengths_combined, wavelengths[0], return_indices=True)
+    _, indices_goal_new, indices_new_goal = np.intersect1d(wavelengths_combined, wavelengths[1], return_indices=True)
+    indices_new_goal += nr_bands*len(wavelengths[0])
+    _, indices_goal_overlap, _ = np.intersect1d(wavelengths_combined, wavelengths_overlap, return_indices=True)
 
+    indices_goal_original_RGBG2 = indices_goal_original + (np.arange(nr_bands) * len(wavelengths_combined))[:,np.newaxis]
+    indices_original_goal_RGBG2 = indices_original_goal + (np.arange(nr_bands) * len(wavelengths[0]))[:,np.newaxis]
+
+    indices_goal_new_RGBG2 = indices_goal_new + (np.arange(nr_bands) * len(wavelengths_combined))[:,np.newaxis]
+    indices_new_goal_RGBG2 = indices_new_goal + (np.arange(nr_bands) * len(wavelengths[1]))[:,np.newaxis]
+
+    indices_goal_overlap_RGBG2 = indices_goal_overlap + (np.arange(nr_bands) * len(wavelengths_combined))[:,np.newaxis]
+
+    # Start with an empty array
+    M_weighted_average = np.zeros((size_full, len(srf_normalised)))
+
+    # Fill with 1s for the overlap between the old/new and combined data
+    M_weighted_average[indices_goal_original_RGBG2, indices_original_goal_RGBG2] = 1.
+    M_weighted_average[indices_goal_new_RGBG2, indices_new_goal_RGBG2] = 1.
+
+    # Put 1/2 (averaging) where both old and new data are used; this overwrites some 1s
+    M_weighted_average[indices_goal_overlap_RGBG2,indices_original_RGBG2] = 0.5
+    M_weighted_average[indices_goal_overlap_RGBG2,indices_new_RGBG2] = 0.5
+
+    # The rest of the matrix, corresponding to the other data sets, should be kept as the identity
+    M_weighted_average[-size_remaining:, -size_remaining:] = np.eye(size_remaining)
+
+    # Finally, apply the weighted average to the SRF and covariance
+    srf_averaged = M_weighted_average @ srf_normalised
+    srf_covariance_averaged = M_weighted_average @ srf_covariance_normalised @ M_weighted_average.T
 
     ### Bookkeeping: remove and rename elements for the next iteration
+    _ = wavelengths.pop(1)  # Remove the wavelengths for the new data set
+    wavelengths[0] = wavelengths_combined  # Replace the wavelengths for the old data set with the combined data set
+    srf = srf_averaged
+    srf_covariance = srf_covariance_averaged
+
+    RGBG2_slices = [spectral.generate_slices_for_RGBG2_bands(len(w)) for w in wavelengths]
+    RGBG2_slices = spectral.adjust_slices_for_RGBG2_bands_multi(RGBG2_slices)
+    RGBG2_labels = np.tile(plot.RGBG2_latex, len(RGBG2_slices))
+    ticks_major, ticks_minor = plot.get_tick_locations_from_slices(RGBG2_slices)
+
+    # Plot the result
+    srf_correlation = correlation_from_covariance(srf_covariance)
+    plot.plot_correlation_matrix(srf_correlation, title="Correlations -- Averaged", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
     break
 
 raise Exception
