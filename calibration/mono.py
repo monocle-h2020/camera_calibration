@@ -216,7 +216,8 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     M_weighted_average[indices_goal_overlap_RGBG2,indices_new_RGBG2] = 0.5
 
     # The rest of the matrix, corresponding to the other data sets, should be kept as the identity
-    M_weighted_average[-size_remaining:, -size_remaining:] = np.eye(size_remaining)
+    if size_remaining:
+        M_weighted_average[-size_remaining:, -size_remaining:] = np.eye(size_remaining)
 
     # Finally, apply the weighted average to the SRF and covariance
     srf_averaged = M_weighted_average @ srf_normalised
@@ -225,6 +226,7 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     ### Bookkeeping: remove and rename elements for the next iteration
     _ = wavelengths.pop(1)  # Remove the wavelengths for the new data set
     wavelengths[0] = wavelengths_combined  # Replace the wavelengths for the old data set with the combined data set
+    wavelengths_flattened = spectral.flatten_image_properties(wavelengths)[0]
     srf = srf_averaged
     srf_covariance = srf_covariance_averaged
 
@@ -236,7 +238,6 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     # Plot the result
     srf_correlation = correlation_from_covariance(srf_covariance)
     plot.plot_correlation_matrix(srf_correlation, title="Correlations -- Averaged", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
-    break
 
 raise Exception
 

@@ -174,6 +174,16 @@ def flatten_monochromator_image_data(means_RGBG2):
     return means_flattened, RGBG2_slices
 
 
+def flatten_image_properties(*properties, nr_bands=4):
+    """
+    Create a flattened list for RGBG2 image properties.
+    Very simple, just tile the properties arrays nr_bands times and concatenate
+    the result.
+    """
+    properties = [np.concatenate([np.tile(p, nr_bands) for p in prop]) for prop in properties]
+    return properties
+
+
 def flatten_monochromator_image_data_multiple(means_RGBG2, *properties, nr_bands=4):
     """
     Flatten the mean image data from a monochromator.
@@ -191,6 +201,6 @@ def flatten_monochromator_image_data_multiple(means_RGBG2, *properties, nr_bands
     RGBG2_slices = adjust_slices_for_RGBG2_bands_multi(RGBG2_slices)
 
     # Now flatten the other properties
-    properties = [np.concatenate([np.tile(p, nr_bands) for p in prop]) for prop in properties]
+    properties = flatten_image_properties(*properties, nr_bands=nr_bands)
 
     return means_flattened, RGBG2_slices, *properties

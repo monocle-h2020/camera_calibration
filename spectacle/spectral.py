@@ -13,7 +13,7 @@ from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
 from ._interpolation import interpolation_functions, apply_interpolation_matrix, linear_interpolation, linear_interpolation_matrix
 from ._integration import trapezoid_matrix, simpson_matrix
-from ._monochromator import load_cal_NERC, apply_calibration_NERC, apply_calibration_NERC_multiple, load_monochromator_data, load_monochromator_data_multiple, generate_slices_for_RGBG2_bands, adjust_slices_for_RGBG2_bands_multi, flatten_monochromator_image_data, flatten_monochromator_image_data_multiple
+from ._monochromator import load_cal_NERC, apply_calibration_NERC, apply_calibration_NERC_multiple, load_monochromator_data, load_monochromator_data_multiple, generate_slices_for_RGBG2_bands, adjust_slices_for_RGBG2_bands_multi, flatten_monochromator_image_data, flatten_monochromator_image_data_multiple, flatten_image_properties
 
 wavelengths_interpolated = np.arange(390, 701, 1)
 
