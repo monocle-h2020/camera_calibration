@@ -72,9 +72,11 @@ def load_monochromator_data(camera, folder, blocksize=100, flatfield=False):
     splitter = lambda p: float(p.stem.split("_")[0])
     wavelengths, means = io.load_means(folder, selection=center, retrieve_value=splitter)
 
-    # NaN if a channel's mean value is near saturation
+    # Remove images with (nearly) saturated pixels
     saturated = np.where(means >= 0.95 * camera.saturation)
-    means[saturated] = np.nan
+    images_with_saturation = np.unique(saturated[0])
+    means = np.delete(means, images_with_saturation, axis=0)
+    wavelengths = np.delete(wavelengths, images_with_saturation)
 
     # Bias correction
     means = camera.correct_bias(means, selection=center)
