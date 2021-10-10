@@ -239,55 +239,16 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
     srf_correlation = correlation_from_covariance(srf_covariance)
     plot.plot_correlation_matrix(srf_correlation, title="Correlations -- Averaged", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
+# Tidy up the result
+wavelengths = wavelengths[0]
+RGBG2_slices = RGBG2_slices[0]
+
+# Plot results
+plot.plot_correlation_matrix(srf_correlation, title="Correlations after combining data", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
+
+plot.plot_correlation_matrix_diagonal(srf_correlation, RGBG2_slices, wavelengths)
+
 raise Exception
-
-# Normalise the calibrated data
-# Create a copy of the array to put the normalised data into
-all_means_normalised = all_means_calibrated.copy()
-all_stds_normalised = all_stds_calibrated.copy()
-
-# Loop over the spectra and normalise them by the data set with the largest overlap
-for i in normalise_order:
-    # Calculate the ratio between this spectrum and the comparison one at each wavelength
-    ratios = all_means_calibrated[i] / all_means_normalised[comparison]
-    print(f"Normalising spectrum {i} to spectrum {comparison}")
-
-    # Fit a parabolic function to the ratio between the spectra where they overlap
-    ind = ~np.isnan(ratios[:,0])
-    fits = np.polyfit(all_wavelengths[ind], ratios[ind], 2)
-    fit_norms = np.array([np.polyval(f, all_wavelengths) for f in fits.T]).T
-
-    # Normalise by dividing the spectrum by this parabola
-    all_means_normalised[i] = all_means_calibrated[i] / fit_norms
-    all_stds_normalised[i] = all_stds_calibrated[i] / fit_norms
-
-# Save the normalised curves to file
-np.save(save_to_means_normalised, all_means_normalised)
-np.save(save_to_stds_normalised, all_stds_normalised)
-print(f"Saved normalised curves to {savefolder}")
-
-# Combine the spectra into one
-# Calculate the signal-to-noise ratio (SNR) at each wavelength in each spectrum
-SNR = all_means_normalised / all_stds_normalised
-
-# Mask NaN data
-mean_mask = np.ma.array(all_means_normalised, mask=np.isnan(all_means_normalised))
-stds_mask = np.ma.array(all_stds_normalised , mask=np.isnan(all_stds_normalised ))
-SNR_mask  = np.ma.array(SNR                 , mask=np.isnan(SNR                 ))
-
-# Calculate the weight of each spectrum at each wavelength, based on the SNR
-weights = SNR_mask**2
-
-# Calculate the weighted average (and its error) per wavelength
-flat_means_mask = np.ma.average(mean_mask, axis=0, weights=weights)
-flat_errs_mask = np.sqrt(np.ma.sum((weights/weights.sum(axis=0) * stds_mask)**2, axis=0))
-
-# Calculate the SNR of the resulting spectrum
-SNR_final = flat_means_mask / flat_errs_mask
-
-# Remove the mask from the final data set
-response_normalised = (flat_means_mask / flat_means_mask.max()).data
-errors_normalised = (flat_errs_mask / flat_means_mask.max()).data
 
 # Combine the result into one big array and save it
 result = np.array(np.stack([all_wavelengths, *response_normalised.T, *errors_normalised.T]))
