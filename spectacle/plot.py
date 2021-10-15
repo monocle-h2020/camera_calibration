@@ -421,3 +421,74 @@ def plot_correlation_matrix_diagonal_multi(correlation, slices, wavelengths, xla
 
     # Save or show the result
     _saveshow(saveto)
+
+
+def plot_correlation_matrix_diagonal_RGBG2(correlation, slices, wavelengths, xlim=(390, 700), xlabel="Wavelength/nm", axs=None, saveto=None):
+    """
+    Plot correlations between equal wavelengths in the RGBG2 bands.
+    For each band, it plots the correlations with the other three bands.
+    A full correlation matrix should be provided, with appropriate slices corresponding to the different bands.
+
+    If an iterable of 4 Axes objects is given for axs, use those. Otherwise, make a new plot.
+    """
+    # Check if we are making a new plot or plotting into an existing object
+    if axs is None:
+        fig, axs = plt.subplots(nrows=4, figsize=(5,6), sharex=True, sharey=True)
+        newplot = True
+    else:
+        newplot = False
+
+    # Get the correlation between corresponding elements of the different bands
+    correlation_between_bands = np.array([[np.diagonal(correlation[s1, s2]) for s2 in slices] for s1 in slices])
+
+    # Plot the correlation diagonals in each band in the different panes
+    for ax, corr in zip(axs, correlation_between_bands):
+        _rgbgplot(wavelengths, corr, func=ax.plot)
+
+    # Figure settings
+    for ax, label in zip(axs, RGBG2_latex):
+        ax.set_xlim(xlim)
+        ax.set_ylim(-1, 1)
+        ax.set_ylabel(f"Correlation\nwith {label}")
+        ax.set_yticks(np.arange(-1, 1.01, 0.5))
+        ax.grid(ls="--")
+
+    # Optional figure settings if this is a new (stand-alone) plot
+    if newplot:
+        ax.set_xlabel(xlabel)
+        _saveshow(saveto)
+
+
+def plot_correlation_matrix_diagonal_RGBG2_multi(correlation, slices, wavelengths, xlabel="Wavelength/nm", saveto=None, **kwargs):
+    """
+    Plot correlations between equal wavelengths in the RGBG2 bands.
+    For each band, it plots the correlations with the other three bands.
+    A full correlation matrix should be provided, with appropriate slices corresponding to the different bands.
+
+    This function plots the correlations in each data set within the correlation matrix in a separate column of panels.
+    **kwargs are passed to plot_correlation_matrix_diagonal_RGBG2.
+    """
+    # Create a figure to hold the panels
+    nr_columns = len(slices)
+    fig, axs = plt.subplots(nrows=4, ncols=nr_columns, sharex=True, sharey=True, figsize=(4*nr_columns, 8))
+    axs = axs.T
+
+    # Loop over the data and plot each
+    for j, (ax_col, slice_list, wavelength_list) in enumerate(zip(axs, slices, wavelengths)):
+        plot_correlation_matrix_diagonal_RGBG2(correlation, slice_list, wavelength_list, axs=ax_col, **kwargs)
+
+        # Figure settings
+        ax_col[0].set_title(f"Data set {j}")
+        ax_col[-1].set_xlabel(xlabel)
+
+    # Remove y-axis labels from columns that are not on the left side
+    for ax in np.ravel(axs[1:]):
+        ax.tick_params(axis="y", left=False, labelleft=False)
+
+    # Add y-axis labels to the right-most column
+    for ax in np.ravel(axs[-1]):
+        ax.yaxis.set_label_position("right")
+        ax.tick_params(axis="y", right=True, labelright=True)
+
+    # Save or show the result
+    _saveshow(saveto)

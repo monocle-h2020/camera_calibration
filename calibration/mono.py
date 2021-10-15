@@ -93,6 +93,7 @@ srf_correlation = correlation_from_covariance(srf_covariance)
 plot.plot_correlation_matrix(srf_correlation, title="Correlations", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 plot.plot_correlation_matrix_diagonal_multi(srf_correlation, RGBG2_slices, wavelengths)
+plot.plot_correlation_matrix_diagonal_RGBG2_multi(srf_correlation, RGBG2_slices, wavelengths)
 
 nr_bands=4
 polynomial_degree=2
@@ -247,6 +248,7 @@ RGBG2_slices = RGBG2_slices[0]
 plot.plot_correlation_matrix(srf_correlation, title="Correlations after combining data", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 plot.plot_correlation_matrix_diagonal(srf_correlation, RGBG2_slices, wavelengths)
+plot.plot_correlation_matrix_diagonal_RGBG2(srf_correlation, RGBG2_slices, wavelengths)
 
 raise Exception
 
