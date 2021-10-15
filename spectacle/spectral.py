@@ -53,17 +53,18 @@ def plot_monochromator_curves(wavelengths, mean, variance, wavelength_min=390, w
     Plots three panels, namely mean response, variance, and signal-to-noise ratio.
     """
     # Labels for the plots
-    labels = [f"Response\n[{unit}]", f"Variance\n[{unit}$^2$]", "SNR"]
+    labels = [f"Response\n[{unit}]", f"Uncertainty\n[{unit}]", "SNR"]
 
     # Make the figure
     fig, axs = plt.subplots(nrows=3, sharex=True, figsize=(4,4))
 
+    # Calculate the standard deviation and signal-to-noise ratio
+    std = np.sqrt(variance)
+    SNR = mean/std
+
     # Plot the mean and variance
     plot._rgbgplot(wavelengths, mean, axs[0].plot)
-    plot._rgbgplot(wavelengths, variance, axs[1].plot)
-
-    # Calculate and plot the signal-to-noise ratio
-    SNR = mean/np.sqrt(variance)
+    plot._rgbgplot(wavelengths, std, axs[1].plot)
     plot._rgbgplot(wavelengths, SNR, axs[2].plot)
 
     # Plot parameters
