@@ -243,12 +243,18 @@ while len(wavelengths) > 1:  # As long as multiple data sets are present
 # Tidy up the result
 wavelengths = wavelengths[0]
 RGBG2_slices = RGBG2_slices[0]
+variance = np.diagonal(srf_covariance)
 
 # Plot results
 plot.plot_correlation_matrix(srf_correlation, title="Correlations after combining data", majorticks=ticks_major, minorticks=ticks_minor, ticklabels=RGBG2_labels)
 
 plot.plot_correlation_matrix_diagonal(srf_correlation, RGBG2_slices, wavelengths)
 plot.plot_correlation_matrix_diagonal_RGBG2(srf_correlation, RGBG2_slices, wavelengths)
+
+# Plot the resulting SRF
+srf_split = np.reshape(srf, (4, -1))
+variance_split = np.reshape(variance, (4, -1))
+spectral.plot_monochromator_curves(wavelengths, srf_split, variance_split, title=f"{camera.name}: Combined spectral curve", unit="ADU")
 
 raise Exception
 
