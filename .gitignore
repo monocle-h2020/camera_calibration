@@ -4,6 +4,7 @@
 *.dng
 *.dat
 *.npy
+*.raw
 *.txt
 *.pdf
 *.csv
