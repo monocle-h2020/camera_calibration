@@ -14,6 +14,7 @@ This is a to-do list for the `spectacle` module.
 - [ ] Merge [stack_mean_std.py](tools/stack_mean_std.py) and [stack_heavy.py](tools/stack_heavy.py).
 - [ ] Make error data optional in [flatfield_characterise_data.py](analysis/flatfield_characterise_data.py).
 - [ ] Add varying apertures to [camera_settings.py](calibration/camera_settings.py).
+- [ ] Use `Camera.central_slice` instead of doing it manually, for example in [linearity_plot_response.py](analysis/linearity_plot_response.py).
 
 #### New scripts
 - [ ] Analyse the deviations between ISO normalisation look-up tables and the expected behaviour (normalisation of 1/ISO).
