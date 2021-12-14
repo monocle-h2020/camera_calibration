@@ -2,6 +2,7 @@ import rawpy
 import exifread
 import numpy as np
 import os
+from string import ascii_letters
 from pathlib import Path
 from matplotlib import pyplot as plt
 from .camera import load_camera, find_root_folder, load_json, write_json
@@ -196,7 +197,7 @@ def split_exposure_time(path):
     For a filename `x.z`, the returned value is `float(x)`.
     For a filename `x_y.z`, the returned value is `float(x/y)`.
     """
-    without_letters = path.stem.strip("t_jmeansd")  # strip underscores, leading t, trailing "mean"/"stds"
+    without_letters = path.stem.strip(ascii_letters+"_")  # strip underscores, leading t, trailing "mean"/"stds"
     if "_" in without_letters:
         numerator, denominator = without_letters.split("_")
         time = float(numerator)/float(denominator)
