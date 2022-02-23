@@ -1,14 +1,15 @@
 """
-Analyse dark current maps (in normalised ADU/s) generated using the calibration
-functions.
+Analyse dark current maps (in normalised ADU/s) generated using the calibration functions.
 
 Command line arguments:
-    * `file`: the location of the dark current map to be analysed. This map
-    should be an NPY file generated using ../calibration/dark_current.py.
-"""
+    * `file`: the location of the dark current map to be analysed.
+    This map should be an NPY file generated using ../calibration/dark_current.py.
 
-import numpy as np
+Example:
+    python analysis/dark_characterise_ADU.py ~/SPECTACLE_data/iPhone_SE/intermediaries/dark_current_iso23.npy
+"""
 from sys import argv
+import numpy as np
 from spectacle import io, analyse
 
 # Get the data file from the command line

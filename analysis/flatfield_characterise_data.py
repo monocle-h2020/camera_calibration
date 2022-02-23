@@ -2,19 +2,20 @@
 Analyse a flat-field data set.
 
 Command line arguments:
-    * `meanfile`: location of an NPY stack of mean flat-field data. It is
-    assumed that for a meanfile "X_mean.npy", a standard deviation stack can be
-    found at "X_stds.npy" in the same folder.
+    * `meanfile`: location of an NPY stack of mean flat-field data.
+    It is assumed that for a meanfile "X_mean.npy", a standard deviation stack can be found at "X_stds.npy" in the same folder.
+
+Example:
+    python analysis/flatfield_characterise_ADU.py ~/SPECTACLE_data/iPhone_SE/stacks/flatfield/iso23_mean.npy
 
 To do:
     * Make stds optional
 """
-
-import numpy as np
 from sys import argv
-from spectacle import io, flat, analyse
-from spectacle.general import gauss_filter_multidimensional
+import numpy as np
 from matplotlib import pyplot as plt
+from spectacle import io, flat
+from spectacle.general import gauss_filter_multidimensional, symmetric_percentiles
 
 # Get the data folder from the command line
 meanfile = io.path_from_input(argv)
@@ -30,7 +31,7 @@ savefolder = camera.filename_analysis("flatfield", makefolders=True)
 save_to_histogram_SNR = savefolder/f"data_histogram_SNR_{label}.pdf"
 save_to_maps_SNR = savefolder/f"data_SNR_{label}.pdf"
 save_to_histogram_data = savefolder/f"data_histogram_{label}.pdf"
-save_to_histogram_difference = savefolder/f"data_gauss_difference.pdf"
+save_to_histogram_difference = savefolder/f"data_gauss_difference_{label}.pdf"
 save_to_maps_normalised = savefolder/f"data_normalised_{label}.pdf"
 save_to_maps_gaussed = savefolder/f"data_gaussed_{label}.pdf"
 save_to_maps_correction_factor = savefolder/f"data_correction_factor_{label}.pdf"
@@ -53,10 +54,10 @@ SNR = mean_normalised / stds_normalised
 print("Calculated signal-to-noise-ratio")
 
 # Make a histogram of the SNR
-SNR_top_percentile = analyse.symmetric_percentiles(SNR)[1]
+SNR_top_percentile = symmetric_percentiles(SNR)[1]
 bins_SNR = np.linspace(0, SNR_top_percentile, 100)
 
-plt.figure(figsize=(4,2), tight_layout=True)
+plt.figure(figsize=(4, 2), tight_layout=True)
 plt.hist(SNR.ravel(), bins=bins_SNR, color='k')
 plt.xlim(bins_SNR[0], bins_SNR[-1])
 plt.xlabel("Signal-to-noise ratio")
@@ -85,19 +86,19 @@ for data, ax, title, bins in zip(data_sets, axs.ravel(), titles, bins_combined):
     ax.set_title(title)
     ax.set_xlim(bins[0], bins[-1])
     ax.set_ylabel("Counts")
-for ax in axs[:,1]:
+for ax in axs[:, 1]:
     ax.tick_params(axis='y', left=False, labelleft=False, right=True, labelright=True)
     ax.yaxis.set_label_position("right")
-axs[1,0].set_xlabel("Digital value (ADU)")
-axs[1,1].set_xlabel("Correction factor")
+axs[1, 0].set_xlabel("Digital value (ADU)")
+axs[1, 1].set_xlabel("Correction factor")
 plt.savefig(save_to_histogram_data)
 plt.close()
 print(f"Saved histograms of data to '{save_to_histogram_data}'")
 
 # Make a histogram of the difference between the normalised and Gaussed data
 difference_normalised_gauss = flatfield_gauss - mean_normalised
-bins = np.linspace(*analyse.symmetric_percentiles(difference_normalised_gauss, percent=0.01), 100)
-plt.figure(figsize=(4,2), tight_layout=True)
+bins = np.linspace(*symmetric_percentiles(difference_normalised_gauss, percent=0.01), 100)
+plt.figure(figsize=(4, 2), tight_layout=True)
 plt.hist(difference_normalised_gauss.ravel(), bins=bins, color='k')
 plt.xlim(bins[0], bins[-1])
 plt.xlabel("Gaussed map $-$ Normalised map")

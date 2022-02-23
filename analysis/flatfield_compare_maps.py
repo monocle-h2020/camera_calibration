@@ -4,18 +4,19 @@ Compare two flat-field correction maps, from data or modelled.
 Command line arguments:
     * `file1`: the location of the first flat-field map.
     * `file2`: the location of the second flat-field map.
-    These flat-field maps should be NPY stacks generated using
-    ../calibration/flatfield.py
+    These flat-field maps should be NPY stacks generated using ../calibration/flatfield.py
+
+Example:
+    python analysis/flatfield_compare_maps.py ~/SPECTACLE_data/iPhone_SE/stacks/flatfield/iso23_mean.npy ~/SPECTACLE_data/iPhone_SE/stacks/flatfield/iso1000_mean.npy
 
 To do:
     * Input labels for plots
 """
-
-import numpy as np
 from sys import argv
-from spectacle import io, analyse, plot
-from spectacle.general import RMS
+import numpy as np
 from matplotlib import pyplot as plt
+from spectacle import io, plot
+from spectacle.general import RMS
 
 # Get the data folder from the command line
 file1, file2 = io.path_from_input(argv)
@@ -49,9 +50,9 @@ print("Calculated difference map")
 print(f"RMS difference: {RMS(difference):.3f}")
 
 # Plot a histogram of the difference between the maps
-plt.figure(figsize=(4,2), tight_layout=True)
+plt.figure(figsize=(4, 2), tight_layout=True)
 plt.hist(difference.ravel(), bins=250, color='k')
-plt.xlabel("Difference in correction factor $\Delta g$")
+plt.xlabel(r"Difference in correction factor $\Delta g$")
 plt.ylabel("Counts")
 plt.grid(True, ls="--")
 plt.savefig(save_to_histogram)
@@ -59,11 +60,11 @@ plt.close()
 print(f"Saved histogram to '{save_to_histogram}'")
 
 # Plot an RGB histogram of the difference between the maps
-camera.plot_histogram_RGB(difference, xlabel="Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
+camera.plot_histogram_RGB(difference, xlabel=r"Difference in correction factor $\Delta g$", saveto=save_to_histogram_RGB)
 print(f"Saved RGB histogram to '{save_to_histogram_RGB}'")
 
 # Make Gaussian maps of the difference between data and model
-camera.plot_gauss_maps(difference, colorbar_label="$\Delta g$", saveto=save_to_maps)
+camera.plot_gauss_maps(difference, colorbar_label=r"$\Delta g$", saveto=save_to_maps)
 print(f"Saved Gaussian maps to '{save_to_maps}'")
 
 # Plot both maps and the difference between them
@@ -72,7 +73,7 @@ shared_max = max([map1.max(), map2.max()])
 vmins = [1, 1, -diff_max]
 vmaxs = [shared_max, shared_max, diff_max]
 clabels = ["$g$ (map 1)", "$g$ (map 2)", "Difference"]
-fig, axs = plt.subplots(ncols=3, figsize=(6,2), sharex=True, sharey=True, squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+fig, axs = plt.subplots(ncols=3, figsize=(6, 2), sharex=True, sharey=True, squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
 for data, ax, vmin, vmax, clabel in zip([map1, map2, difference], axs, vmins, vmaxs, clabels):
     img = ax.imshow(data, vmin=vmin, vmax=vmax)
     ax.set_xticks([])

@@ -2,10 +2,11 @@
 Analyse bias maps (in ADU) generated using the calibration functions.
 
 Command line arguments:
-    * `folder`: folder containing NPY stacks of bias data taken at different
-    ISO speeds.
-"""
+    * `folder`: folder containing NPY stacks of bias data taken at different ISO speeds.
 
+Example:
+    python analysis/bias_characterise.py ~/SPECTACLE_data/iPhone_SE/stacks/bias_readnoise/
+"""
 from sys import argv
 from spectacle import io, analyse
 

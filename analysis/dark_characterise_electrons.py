@@ -1,16 +1,16 @@
 """
-Analyse dark current maps (in normalised ADU/s) generated using the calibration
-functions. The dark current is converted from normalised ADU/s to electrons/s
-using a gain map.
+Analyse dark current maps (in normalised ADU/s) generated using the calibration functions.
+The dark current is converted from normalised ADU/s to electrons/s using a gain map.
 
 Command line arguments:
-    * `file`: the location of the dark current map to be analysed. This map
-    should be an NPY file generated using ../calibration/dark_current.py.
+    * `file`: the location of the dark current map to be analysed.
+    This map should be an NPY file generated using ../calibration/dark_current.py.
+
+Example:
+    python analysis/dark_characterise_electrons.py ~/SPECTACLE_data/iPhone_SE/intermediaries/dark_current_iso23.npy
 """
-
-
-import numpy as np
 from sys import argv
+import numpy as np
 from spectacle import io
 
 # Get the data file from the command line

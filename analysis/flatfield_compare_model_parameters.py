@@ -4,15 +4,16 @@ Compare two flat-field correction models.
 Command line arguments:
     * `file1`: the location of the file containing the first model parameters.
     * `file2`: the location of the file containing the second model parameters.
-    These flat-field models should be in CSV files generated using
-    ../calibration/flatfield.py
+    These flat-field models should be in CSV files generated using ../calibration/flatfield.py
+
+    Example:
+        python analysis/flatfield_compare_model_parameters.py ~/SPECTACLE_data/iPhone_SE/intermediaries/flatfield/flatfield_parameters_iso23.csv ~/SPECTACLE_data/iPhone_SE/intermediaries/flatfield/flatfield_parameters_iso1000.csv
 
 To do:
     * Input labels for plots
 """
-
-import numpy as np
 from sys import argv
+import numpy as np
 from spectacle import io, flat
 
 # Get the data folder from the command line
