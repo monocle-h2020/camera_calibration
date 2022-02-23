@@ -2,17 +2,17 @@
 Create a flat-field map using the mean flat-field images.
 
 Command line arguments:
-    * `meanfile`: location of an NPY stack of mean flat-field data. It is
-    assumed that for a meanfile "X_mean.npy", a standard deviation stack can be
-    found at "X_stds.npy" in the same folder.
+    * `meanfile`: location of an NPY stack of mean flat-field data.
+    It is assumed that for a meanfile "X_mean.npy", a standard deviation stack can be found at "X_stds.npy" in the same folder.
+
+Example:
+    python calibration/flatfield.py ~/SPECTACLE_data/iPhone_SE/flatfield/iso23_mean.npy
 
 To do:
-    * Save map as simply `flat_field.npy` or with a label depending on user
-    input.
+    * Save map as simply `flat_field.npy` or with a label depending on user input.
 """
-
-import numpy as np
 from sys import argv
+import numpy as np
 from spectacle import io, flat, plot
 from spectacle.general import gauss_filter_multidimensional, correlation_from_covariance, uncertainty_from_covariance
 
@@ -79,10 +79,10 @@ for p, s in zip(parameters, uncertainties):
     print(f"{p:+.6f} +- {s:.6f}    ; {abs(100*s/p):.3f} %")
 
 # Plot the correlation matrix
-plot.plot_covariance_matrix(correlation, title="Correlation matrix", label="Correlation", nr_bins=8, vmin=-1, minorticks=np.arange(0.5,7),  ticklabels=flat.parameter_labels_latex)
+plot.plot_covariance_matrix(correlation, title="Correlation matrix", label="Correlation", nr_bins=8, vmin=-1, minorticks=np.arange(0.5, 7), ticklabels=flat.parameter_labels_latex)
 
 # Save the best-fitting model parameters
-result_array = np.array([*parameters, *uncertainties])[:,np.newaxis].T
+result_array = np.array([*parameters, *uncertainties])[:, np.newaxis].T
 save_locations = [save_to_parameters_intermediary, save_to_parameters_calibration] if overwrite_calibration else [save_to_parameters_intermediary]
 for saveto in save_locations:
     np.savetxt(saveto, result_array, header=", ".join(flat.parameter_labels + flat.parameter_error_labels), delimiter=",")

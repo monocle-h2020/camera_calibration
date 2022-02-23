@@ -1,17 +1,16 @@
 """
-Create a look-up table for the ISO-gain normalisation function of a camera,
-using mean images of the same scene taken at various ISO speeds.
+Create a look-up table for the ISO-gain normalisation function of a camera, using mean images of the same scene taken at various ISO speeds.
 
-A camera settings file containing the minimum and maximum ISO speeds is
-necessary for this script to work.
+A camera settings file containing the minimum and maximum ISO speeds is necessary for this script to work.
 
 Command line arguments:
-    * `folder`: folder containing NPY stacks of identical exposures taken at
-    different ISO speeds.
-"""
+    * `folder`: folder containing NPY stacks of identical exposures taken at different ISO speeds.
 
-import numpy as np
+Example:
+    python calibration/iso_normalisation.py ~/SPECTACLE_data/iPhone_SE/stacks/iso_normalisation/
+"""
 from sys import argv
+import numpy as np
 from spectacle import io, iso
 
 # Get the data folder from the command line
@@ -47,8 +46,8 @@ assert isos.min() == camera.settings.ISO_min, f"Lowest ISO speed in the data ({i
 # Convert the mean values at each ISO to normalised units, compared to the
 # lowest ISO speed
 ratios = means / means[isos.argmin()]
-ratios_mean = ratios.mean(axis=(1,2))
-ratios_errs = ratios.std (axis=(1,2))
+ratios_mean = ratios.mean(axis=(1, 2))
+ratios_errs = ratios.std(axis=(1, 2))
 print(f"Normalised data to minimum ISO ({camera.settings.ISO_min})")
 
 # Fit a model to the ISO normalisation curve

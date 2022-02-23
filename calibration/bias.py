@@ -1,18 +1,18 @@
 """
-Create a bias map using the mean bias (zero-light, shortest-exposure images)
-images. Bias data for all ISOs are loaded, but the map is only saved for the
-lowest ISO.
+Create a bias map using the mean bias (zero-light, shortest-exposure images) images.
+Bias data for all ISOs are loaded, but the map is only saved for the lowest ISO.
 
 Command line arguments:
-    * `folder`: folder containing NPY stacks of bias data taken at different
-    ISO speeds.
+    * `folder`: folder containing NPY stacks of bias data taken at different ISO speeds.
+
+Example:
+    python calibration/bias.py ~/SPECTACLE_data/iPhone_SE/stacks/bias_readnoise/
 
 To do:
     * Save maps for all ISOs and use these in the calibration process.
 """
-
-import numpy as np
 from sys import argv
+import numpy as np
 from spectacle import io
 
 # Get the data folder from the command line

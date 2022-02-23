@@ -1,19 +1,18 @@
 """
-Determine the spectral response curves of a camera based on data from a
-monochromator. The data are expected to be in subfolders of a main folder, each
-subfolder corresponding to a monochromator setting (e.g. filter/grating).
+Determine the spectral response curves of a camera based on data from a monochromator.
+The data are expected to be in subfolders of a main folder, each subfolder corresponding to a monochromator setting (e.g. filter/grating).
 
 Command line arguments:
-    * `folder`: folder containing subfolders with monochromator data. The sub-
-    folders correspond to different monochromator settings (e.g. gratings or
-    filters). Each subfolder in turn contains NPY stacks of monochromator data
-    taken at different wavelengths.
+    * `folder`: folder containing subfolders with monochromator data. The sub-folders correspond to different monochromator settings (e.g. gratings or filters).
+    Each subfolder in turn contains NPY stacks of monochromator data taken at different wavelengths.
     * `wvl1`, `wvl2`: the minimum and maximum wavelengths to evaluate at.
     Defaults to 390, 700 nm, respectively, if none are given.
-"""
 
-import numpy as np
+Example:
+    python calibration/spectral_response_monochromator.py ~/SPECTACLE_data/iPhone_SE/stacks/spectral_response_monochromator/
+"""
 from sys import argv
+import numpy as np
 from spectacle import io, spectral, plot
 
 # Get the data folder and minimum and maximum wavelengths from the command line
@@ -129,7 +128,7 @@ normalise_order = np.argsort(all_overlaps[baseline])[-2::-1]
 # Loop over the spectra and normalise them by the data set with the largest overlap
 for i in normalise_order:
     # If there is any overlap with the baseline, normalise to that
-    if all_overlaps[i,baseline]:
+    if all_overlaps[i, baseline]:
         comparison = baseline
     # If not, normalise to another spectrum
     else:
@@ -143,7 +142,7 @@ for i in normalise_order:
     print(f"Normalising spectrum {i} to spectrum {comparison}")
 
     # Fit a parabolic function to the ratio between the spectra where they overlap
-    ind = ~np.isnan(ratios[:,0])
+    ind = ~np.isnan(ratios[:, 0])
     fits = np.polyfit(all_wavelengths[ind], ratios[ind], 2)
     fit_norms = np.array([np.polyval(f, all_wavelengths) for f in fits.T]).T
 
@@ -162,8 +161,8 @@ SNR = all_means_normalised / all_stds_normalised
 
 # Mask NaN data
 mean_mask = np.ma.array(all_means_normalised, mask=np.isnan(all_means_normalised))
-stds_mask = np.ma.array(all_stds_normalised , mask=np.isnan(all_stds_normalised ))
-SNR_mask  = np.ma.array(SNR                 , mask=np.isnan(SNR                 ))
+stds_mask = np.ma.array(all_stds_normalised, mask=np.isnan(all_stds_normalised))
+SNR_mask = np.ma.array(SNR, mask=np.isnan(SNR))
 
 # Calculate the weight of each spectrum at each wavelength, based on the SNR
 weights = SNR_mask**2
@@ -189,7 +188,7 @@ print(f"Saved spectral response curves to '{save_to_SRF}'")
 
 # Calculate the effective spectral bandwidth of each channel and save those too
 bandwidths = spectral.effective_bandwidth(all_wavelengths, response_normalised, axis=0)
-np.savetxt(save_to_bands, bandwidths[:,np.newaxis].T, delimiter=", ", header="R, G, B, G2")
+np.savetxt(save_to_bands, bandwidths[:, np.newaxis].T, delimiter=", ", header="R, G, B, G2")
 print("Effective spectral bandwidths:")
 for band, width in zip(plot.RGBG2, bandwidths):
     print(f"{band:<2}: {width:5.1f} nm")

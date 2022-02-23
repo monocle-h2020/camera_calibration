@@ -1,22 +1,22 @@
 """
 Create a dark current map using dark data (zero light, varying exposure times).
-An intermediary map in ADU/s (at this ISO speed) is generated as well as a
-calibration map in normalised ADU/s.
+An intermediary map in ADU/s (at this ISO speed) is generated as well as a calibration map in normalised ADU/s.
 
-An ISO speed normalisation is applied to the data. This means this script
-requires an ISO speed look-up table to exist.
+An ISO speed normalisation is applied to the data.
+This means this script requires an ISO speed look-up table to exist.
 
 Command line arguments:
-    * `folder`: folder containing NPY stacks of dark-current data taken at
-    different exposure times.
+    * `folder`: folder containing NPY stacks of dark-current data taken at different exposure times.
+
+Example:
+    python calibration/dark_current.py ~/SPECTACLE_data/iPhone_SE/dark_current/iso23/
 
 To do:
     * Save maps for all ISOs and use these in the calibration process.
     * Generic filenames, if data are not labelled by ISO.
 """
-
-import numpy as np
 from sys import argv
+import numpy as np
 from spectacle import io, dark
 
 # Get the data folder from the command line

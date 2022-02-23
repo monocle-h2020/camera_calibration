@@ -1,17 +1,18 @@
 """
-Create a gain map using gain images, fitting the mean and standard deviation
-against each other. Data for a single ISO speed are loaded and fitted.
+Create a gain map using gain images, fitting the mean and standard deviation against each other.
+Data for a single ISO speed are loaded and fitted.
 
-An ISO speed normalisation is applied to the data. This means this script
-requires an ISO speed look-up table to exist.
+An ISO speed normalisation is applied to the data.
+This means this script requires an ISO speed look-up table to exist.
 
 Command line arguments:
-    * `folder`: folder containing NPY stacks of gain data taken at different
-    exposure conditions, all with the same ISO speed.
-"""
+    * `folder`: folder containing NPY stacks of gain data taken at different exposure conditions, all with the same ISO speed.
 
-import numpy as np
+Example:
+    python calibration/gain.py ~/SPECTACLE_data/iPhone_SE/gain/iso23/
+"""
 from sys import argv
+import numpy as np
 from spectacle import io, symmetric_percentiles
 
 # Get the data folder from the command line

@@ -1,20 +1,21 @@
 """
-Generate a camera information file for a camera given a RAW image
-(ideally one with saturated pixels) and user inputs on the command line.
+Generate a camera information file for a camera given a RAW image and user inputs on the command line.
+Ideally, the given image is one with saturated pixels.
 
-Note that if the image does not have at least one saturated pixel, the user
-will be asked to input the bit depth manually.
+Note that if the image does not have at least one saturated pixel, the user will be asked to input the bit depth manually.
 
 Command line arguments:
     * `file`: location of a RAW image from which the data can be extracted.
 
+Example:
+    python calibration/generate_camera.py ~/SPECTACLE_data/iPhone_SE/images/IMG_0001.DNG
+
 To do:
     * Generate entire file structure for camera - or separate script?
 """
-
+from sys import argv
 from spectacle import io
 from spectacle.camera import Camera, name_from_root_folder
-from sys import argv
 
 # Get the data folder from the command line
 file = io.path_from_input(argv)
