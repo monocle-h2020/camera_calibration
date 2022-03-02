@@ -45,13 +45,21 @@ def _convert_to_path(path):
     return path
 
 
-def _saveshow(saveto=None, close=True, **kwargs):
+def save_or_show(saveto=None, close=True, bbox_inches="tight", **kwargs):
+    """
+    If `saveto` is not None, save the figure there; otherwise, show it.
+    If `close` is True, then the figure is closed afterwards.
+    `bbox_inches`="tight" by default, meaning white space is cut out. Setting it to None prevents this.
+    Any additional **kwargs are passed to `plt.savefig` but not to `plt.show`.
+    """
     if saveto is None:
         plt.show()
     else:
-        plt.savefig(saveto, bbox_inches="tight", **kwargs)
+        plt.savefig(saveto, bbox_inches=bbox_inches, **kwargs)
     if close:
         plt.close()
+
+_saveshow = save_or_show  # Alias for backwards compatibility
 
 
 def _rgbplot(x, y, func=plt.plot, **kwargs):
@@ -74,7 +82,7 @@ def plot_spectrum(x, y, saveto=None, ylabel="$C$", xlabel="$\lambda$ (nm)", **kw
         plt.gca().set(**kwargs)
     except:
         pass
-    _saveshow(saveto)
+    save_or_show(saveto)
 
 
 def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital value (ADU)", xlabel="Wavelength (nm)", **kwargs):
@@ -89,7 +97,7 @@ def plot_fluorescent_spectrum(wavelengths, RGB, saveto=None, ylabel="Digital val
         plt.gca().set(**kwargs)
     except:
         pass
-    _saveshow(saveto)
+    save_or_show(saveto)
 
 
 def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
@@ -102,7 +110,7 @@ def plot_fluorescent_lines(y, lines, lines_fit, saveto=None):
     plt.ylabel("Line location ($x$)")
     plt.axis("tight")
     plt.tight_layout()
-    _saveshow(saveto)
+    save_or_show(saveto)
 
 
 def RGBG(RGBG, saveto=None, size=13, **kwargs):
@@ -117,7 +125,7 @@ def RGBG(RGBG, saveto=None, size=13, **kwargs):
     for ax in axs.ravel():
         ax.axis("off")
     fig.subplots_adjust(hspace=.001, wspace=.001)
-    _saveshow(saveto, transparent=True)
+    save_or_show(saveto, transparent=True)
 
 
 def colorbar(mappable, location="bottom", label=""):
@@ -141,7 +149,7 @@ def show_image(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     colorbar_here.set_label(colorbar_label)
     colorbar_here.locator = ticker.MaxNLocator(nbins=5)
     colorbar_here.update_ticks()
-    _saveshow(saveto)
+    save_or_show(saveto)
 
 
 def show_image_RGBG2(data, saveto=None, vmin="auto", vmax="auto", **kwargs):
@@ -182,7 +190,7 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
             colorbar_here.set_label(colorbar_label)
         colorbar_here.locator = ticker.MaxNLocator(nbins=4)
         colorbar_here.update_ticks()
-    _saveshow(saveto)
+    save_or_show(saveto)
 
 
 def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", axs=None, saveto=None):
@@ -225,7 +233,7 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
         axs[2].set_ylabel(25*" "+"Probability density")
 
         # Save or show the result
-        _saveshow(saveto)
+        save_or_show(saveto)
 
 
 def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None, max_value=4095, savefolder=None):
@@ -254,7 +262,7 @@ def plot_linearity_dng(intensities, means, colours_here, intensities_errors=None
         ax2.set_ylabel("RAW value")
         ax2.grid(True)
         ax2.set_title(f"$r = {r:.3f}$")
-        _saveshow(saveto)
+        save_or_show(saveto)
         print(f"Plotted pixel {j} ({label})")
 
 
@@ -301,7 +309,7 @@ def plot_linearity_dng_jpg(intensities, means, jmeans, colours_here, intensities
         ax2.set_ylabel("RAW value")
         ax.set_xlabel("Relative incident intensity")
         ax.set_title(f"{r_jpg_str} = {r_jpeg:.3f}$    {r_dng_str} = {r_dng:.3f}$")
-        _saveshow(saveto)
+        save_or_show(saveto)
         print(f"Plotted pixel {j} ({label})")
 
 
@@ -337,4 +345,4 @@ def plot_covariance_matrix(matrix, label="Covariance", title="", nr_bins=None, m
         ax.set_yticklabels(ticklabels[::-1], minor=True)
 
     # Save/show result
-    _saveshow(saveto)
+    save_or_show(saveto)
