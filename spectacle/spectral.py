@@ -340,7 +340,7 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     SRF_xyz = SRF_XYZ_product / SRF_XYZ_product.sum(axis=0)
     white_E = np.array([1., 1., 1.])  # Equal-energy illuminant E
     normalisation_vector = np.linalg.inv(SRF_xyz) @ white_E
-    normalisation_matrix = np.identity(3) * normalisation_vector
+    normalisation_matrix = np.diag(normalisation_vector)
     M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
 
     return M_RGB_to_XYZ
