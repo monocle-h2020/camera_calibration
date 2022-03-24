@@ -334,7 +334,7 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     # [X_R  X_G  X_B]
     # [Y_R  Y_G  Y_B]
     # [Z_R  Z_G  Z_B]
-    SRF_XYZ_product = np.einsum("xw,rw->xr", cie_xyz, SRF_RGB_interpolated) / len(cie_wavelengths)
+    SRF_XYZ_product = np.einsum("xw,rw->xr", cie_xyz, SRF_RGB_interpolated)
 
     # Normalise by column
     SRF_xyz = SRF_XYZ_product / SRF_XYZ_product.sum(axis=0)
