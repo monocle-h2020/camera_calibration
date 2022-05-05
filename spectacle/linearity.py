@@ -163,7 +163,7 @@ def calculate_pearson_r_values(x, y, **kwargs):
         for j in range(y.shape[2]):
             try:
                 r[i,j] = pearson_r_single(x, y[:,i,j], **kwargs)
-            except TypeError:  # if fully saturated
+            except (TypeError, ValueError):  # if fully saturated
                 r[i,j] = np.nan
                 saturated.append((i,j))
         if i%5 == 0:
