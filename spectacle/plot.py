@@ -34,6 +34,10 @@ rgbg2 = ["r", "g", "b", "g2"]
 RGBG2 = ["R", "G", "B", "G2"]
 
 
+# bbox for text
+bbox_text = {"boxstyle": "round", "facecolor": "white"}
+
+
 def _convert_to_path(path):
     # Convert to a Path-type object
     try:

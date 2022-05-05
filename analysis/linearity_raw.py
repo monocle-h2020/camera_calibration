@@ -30,7 +30,7 @@ print("Loaded data")
 
 # Calculate the Pearson r value for each pixel
 print("Calculating Pearson r...", end=" ", flush=True)
-r, saturated = lin.calculate_pearson_r_values(intensities, means, saturate=camera.saturation)
+r, saturated = lin.calculate_pearson_r_values(intensities, means, saturate=camera.saturation*0.95)
 print("... Done!")
 
 # Save the results
