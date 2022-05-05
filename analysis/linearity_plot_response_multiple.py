@@ -76,10 +76,10 @@ for folder, camera in zip(folders, cameras):
     mean_jpeg_all.append(jmeans)
 
 # Loop over the Bayer RGBG2 channels and plot the response in each
-for j, c in enumerate(plot.rgbg2):
+for j, (colour_label, colour_plot) in enumerate(zip(plot.rgbg2, plot.RGBG_OkabeIto)):
     # Create a figure to hold the scatter plots of response (top row) and
     # residuals (bottom row) for each camera (columns)
-    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(3.3*len(folders), 3.5), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.8})
+    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(3*len(folders), 3.5), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.8})
 
     # Loop over the cameras and their associated data
     for camera, ax_column, intensities, intensity_errors, means_raw, means_jpeg in zip(cameras, axs.T, intensities_all, intensities_error_all, mean_raw_all, mean_jpeg_all):
@@ -121,10 +121,9 @@ for j, c in enumerate(plot.rgbg2):
         residuals_jpeg_percentage = 100 * (residuals_jpeg / 255)
 
         # Plot the JPEG response
-        colour = c[0]  # "r" -> "r", "g" -> "g", "b" -> "b", "g2" -> "g"
         ax_jpeg = ax_column[0]
-        ax_jpeg.errorbar(intensities, mean_jpeg_c, xerr=intensity_errors, fmt=f"{colour}o", ms=3)  # data
-        ax_jpeg.plot(x, line_jpeg, c=colour)  # best-fitting model
+        ax_jpeg.errorbar(intensities, mean_jpeg_c, xerr=intensity_errors, fmt="o", color=colour_plot, ecolor=colour_plot, ms=3)  # data
+        ax_jpeg.plot(x, line_jpeg, c=colour_plot)  # best-fitting model
 
         # JPEG plot parameters
         ax_jpeg.set_xlim(-0.02, 1.02)
@@ -133,14 +132,14 @@ for j, c in enumerate(plot.rgbg2):
         ax_jpeg.set_yticks(np.arange(0, 255, 50))
         ax_jpeg.grid(True, axis="x")
         label_jpeg = ax_jpeg.set_ylabel("JPEG value")
-        label_jpeg.set_color(colour)
-        ax_jpeg.tick_params(axis="y", colors=colour)
+        label_jpeg.set_color(colour_plot)
+        ax_jpeg.tick_params(axis="y", colors=colour_plot)
         ax_jpeg.tick_params(axis="x", bottom=False)
         ax_jpeg.set_title(title)
 
         # Plot the RAW response
         ax_raw = ax_jpeg.twinx()  # plot in the same window
-        ax_raw.errorbar(intensities, mean_raw_c, xerr=intensity_errors, fmt=f"ko", ms=3)  # data
+        ax_raw.errorbar(intensities, mean_raw_c, xerr=intensity_errors, fmt="ko", ms=3)  # data
         ax_raw.plot(x, line_raw, c='k')  # best-fitting model
 
         # RAW plot parameters
@@ -151,15 +150,15 @@ for j, c in enumerate(plot.rgbg2):
 
         # Plot the JPEG residuals
         ax_residual_jpeg = ax_column[1]
-        ax_residual_jpeg.errorbar(intensities, residuals_jpeg_percentage, xerr=intensity_errors, fmt=f"{colour}o", ms=3)
+        ax_residual_jpeg.errorbar(intensities, residuals_jpeg_percentage, xerr=intensity_errors, fmt="o", color=colour_plot, ecolor=colour_plot, ms=3)
 
         # JPEG residual plot parameters
         ax_residual_jpeg.locator_params(axis="y", nbins=5)
         label_jpeg_residual = ax_residual_jpeg.set_ylabel("Norm. res.\n(JPEG, %)")
-        label_jpeg_residual.set_color(colour)
+        label_jpeg_residual.set_color(colour_plot)
         ax_residual_jpeg.grid(True)
         ax_residual_jpeg.set_xlabel("Relative incident intensity")
-        ax_residual_jpeg.tick_params(axis="y", colors=colour)
+        ax_residual_jpeg.tick_params(axis="y", colors=colour_plot)
 
         # Plot the RAW residuals
         ax_residual_raw = ax_residual_jpeg.twinx()  # plot in the same window
@@ -177,7 +176,6 @@ for j, c in enumerate(plot.rgbg2):
         print(f"RMS residual (JPEG): {RMS(residuals_jpeg_percentage[non_saturated_indices_jpeg]):.1f}%")
 
     # Save the figure for this channel
-    save_to_c = save_to/f"linearity_response_multiple_{c}.pdf"
-    plt.savefig(save_to_c)
-    plt.close()
-    print(f"Saved the {c} channel plot to '{save_to_c}'")
+    save_to_c = save_to/f"linearity_response_multiple_{colour_label}.pdf"
+    plot.save_or_show(save_to_c)
+    print(f"Saved the {colour_label} channel plot to '{save_to_c}'")
