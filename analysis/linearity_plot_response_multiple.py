@@ -79,7 +79,7 @@ for folder, camera in zip(folders, cameras):
 for j, (colour_label, colour_plot) in enumerate(zip(plot.rgbg2, plot.RGBG_OkabeIto)):
     # Create a figure to hold the scatter plots of response (top row) and
     # residuals (bottom row) for each camera (columns)
-    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(5.33, 3.5), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.9})
+    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(5.33, 3.1), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.9})
 
     # Loop over the cameras and their associated data
     for camera, ax_column, intensities, intensity_errors, means_raw, means_jpeg in zip(cameras, axs.T, intensities_all, intensities_error_all, mean_raw_all, mean_jpeg_all):
