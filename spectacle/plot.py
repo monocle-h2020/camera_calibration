@@ -199,10 +199,9 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     save_or_show(saveto)
 
 
-def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", axs=None, saveto=None):
+def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", skip_combined=False, axs=None, saveto=None):
     """
-    Make a histogram of RGBG data with panels in black (all combined), red, green
-    (G + G2 combined), and blue.
+    Make a histogram of RGBG data with panels in black (all combined - optional), red, green (G + G2 combined), and blue.
 
     Can be done on existing Axes if `axs` are passed.
     """
@@ -217,18 +216,19 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
 
     # If no axs were passed, make a new figure
     if axs is None:
-        fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+        fig, axs = plt.subplots(nrows=3+plot_combined, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
         newfig = True
     else:
         newfig = False
 
     # Loop over the different channels and plot them
-    for data, colour, ax in zip(data_KRGB, kRGB_OkabeIto, axs):
+    # Starting from plot_combined is an ugly way to skip combined panel if one is not desired
+    for data, colour, ax in zip(data_KRGB[skip_combined:], kRGB_OkabeIto[skip_combined:], axs):
         ax.hist(data, bins=np.linspace(xmin, xmax, nrbins), color=colour, edgecolor=colour, density=True)
         ax.grid(ls="--")
 
     # Plot settings
-    for ax in axs[:3]:
+    for ax in axs[:-1]:
         ax.xaxis.set_ticks_position("none")
     axs[0].set_xlim(xmin, xmax)
     axs[-1].set_xlabel(xlabel)

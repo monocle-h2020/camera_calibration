@@ -87,12 +87,12 @@ for j, c in enumerate(plot.rgbg2):
     print(f"Saved gain map for the {c_label} channel to '{save_to_map_c}'")
 
 # Plot a histogram
-fig, axs = plt.subplots(ncols=len(files), nrows=4, figsize=(3*len(files), 3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(5.1, 2), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
 
 # Loop over the cameras
 for label, ax_arr, data_RGBG in zip(labels, axs.T, data_RGBG_arrays):
     # Plot the RGB data
-    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain (ADU/e$^-$)")
+    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain (ADU/e$^-$)", skip_combined=True)
 
     # Add a title to the top plot in each column
     ax_arr[0].set_title(label)

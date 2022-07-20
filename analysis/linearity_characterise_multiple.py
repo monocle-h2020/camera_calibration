@@ -49,7 +49,7 @@ lower_limit = 0.85
 
 bins = np.linspace(lower_limit, 1.0, 150)
 
-fig, axs = plt.subplots(nrows=len(r_raw), sharex=True, sharey=True, squeeze=True, tight_layout=True, figsize=(5.33,0.9*len(r_raw)), gridspec_kw={"wspace":0, "hspace":0})
+fig, axs = plt.subplots(nrows=len(r_raw), sharex=True, sharey=True, squeeze=True, tight_layout=True, figsize=(5.1,0.9*len(r_raw)), gridspec_kw={"wspace":0, "hspace":0})
 for ax, raw_, jpeg_, camera in zip(axs, r_raw, r_jpeg, cameras):
     # Remove NaN elements
     raw = raw_[~np.isnan(raw_)]
