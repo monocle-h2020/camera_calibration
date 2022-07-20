@@ -4,18 +4,19 @@ Compare two flat-field correction maps, from data or modelled.
 Command line arguments:
     * `file1`: the location of the first flat-field map.
     * `file2`: the location of the second flat-field map.
-    These flat-field maps should be NPY stacks generated using
-    ../calibration/flatfield.py
+    These flat-field maps should be NPY stacks representing data or generated using ../calibration/flatfield.py
 
 To do:
     * Input labels for plots
+    * Individual DNG files as input
+    * Statistics as function of radius from optical centre
+    * Different statistics (e.g. MAD instead of RMS)
 """
-
-import numpy as np
 from sys import argv
-from spectacle import io, analyse, plot
-from spectacle.general import RMS
 from matplotlib import pyplot as plt
+import numpy as np
+from spectacle import io, analyse, flat, plot
+from spectacle.general import RMS
 
 # Get the data folder from the command line
 file1, file2 = io.path_from_input(argv)
@@ -67,20 +68,20 @@ camera.plot_gauss_maps(difference, colorbar_label="$\Delta g$", saveto=save_to_m
 print(f"Saved Gaussian maps to '{save_to_maps}'")
 
 # Plot both maps and the difference between them
-diff_max = max([abs(difference.max()), abs(difference.min())])
-shared_max = max([map1.max(), map2.max()])
+diff_max = np.nanmax(np.abs(flat.clip_data(difference)))
+shared_max = max([np.nanmax(flat.clip_data(m)) for m in (map1, map2)])
 vmins = [1, 1, -diff_max]
 vmaxs = [shared_max, shared_max, diff_max]
-clabels = ["$g$ (map 1)", "$g$ (map 2)", "Difference"]
-fig, axs = plt.subplots(ncols=3, figsize=(6,2), sharex=True, sharey=True, squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+clabels = ["$g$ (Observed)", "$g$ (Best fit)", "Difference"]
+fig, axs = plt.subplots(ncols=3, figsize=(6.5,2), sharex=True, sharey=True, squeeze=True, tight_layout=True, gridspec_kw={"wspace":0.02, "hspace":0})
 for data, ax, vmin, vmax, clabel in zip([map1, map2, difference], axs, vmins, vmaxs, clabels):
-    img = ax.imshow(data, vmin=vmin, vmax=vmax)
+    img = ax.imshow(data, vmin=vmin, vmax=vmax, cmap="cividis")
     ax.set_xticks([])
     ax.set_yticks([])
     colorbar_here = plot.colorbar(img)
     colorbar_here.set_label(clabel)
     colorbar_here.locator = plot.ticker.MaxNLocator(nbins=4)
     colorbar_here.update_ticks()
-plt.savefig(save_to_combined_map)
+plt.savefig(save_to_combined_map, bbox_inches="tight", dpi=400)
 plt.close()
 print(f"Saved combined map to '{save_to_combined_map}'")

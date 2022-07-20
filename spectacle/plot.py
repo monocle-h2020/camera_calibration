@@ -216,7 +216,7 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
 
     # If no axs were passed, make a new figure
     if axs is None:
-        fig, axs = plt.subplots(nrows=3+plot_combined, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+        fig, axs = plt.subplots(nrows=4-skip_combined, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
         newfig = True
     else:
         newfig = False
