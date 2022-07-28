@@ -71,7 +71,7 @@ values = camera.correct_bias(img.raw_image.astype(np.float32))
 
 # Flat-field correction
 values = camera.correct_flatfield(values)
-values = values[250:-250,250:-250]
+values = values[250:-250]
 
 # Spectrum edges
 xmin, xmax = 1900, 3500
