@@ -156,7 +156,7 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
     Plot spectral responses (`SRFs`) together in one panel.
     """
     # Create a figure to hold the plot
-    plt.figure(figsize=(7,3), tight_layout=True)
+    plt.figure(figsize=(7, 3), tight_layout=True)
 
     # Loop over the response curves
     for wavelength, SRF, label, style in zip(wavelengths, SRFs, labels, linestyles):
@@ -166,12 +166,12 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
         plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label, **kwargs)
 
     # Plot parameters
-    plt.grid(ls="--")
+    plt.grid(True)
     plt.xticks(np.arange(0,1000,50))
     plt.xlim(*xlim)
+    plt.ylim(*ylim)
     plt.xlabel("Wavelength [nm]")
     plt.ylabel(ylabel)
-    plt.ylim(*ylim)
     plt.legend(loc="best", facecolor="white", edgecolor='k', framealpha=1)
     plot._saveshow(saveto)
 
