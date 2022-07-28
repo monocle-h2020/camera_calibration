@@ -72,7 +72,9 @@ for j, c in enumerate(plot.rgbg2):
         # Any other maps have a colorbar on the bottom
         else:
             loc = "bottom"
-        cbar = plot.colorbar(im, location=loc, label="Gain (ADU/e$^-$)")
+        cbar = plot.colorbar(im, location=loc, label="Gain [ADU/e$^-$]")
+        cbar.locator = plot.ticker.MaxNLocator(nbins=6 if "SE" in label else 8)
+        cbar.update_ticks()
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
@@ -81,8 +83,7 @@ for j, c in enumerate(plot.rgbg2):
 
     # Save the figure
     save_to_map_c = save_folder/f"gain_map_{c_label}.pdf"
-    fig.savefig(save_to_map_c)
-    plt.close()
+    plot.save_or_show(save_to_map_c, dpi=400)
     print(f"Saved gain map for the {c_label} channel to '{save_to_map_c}'")
 
 # Plot a histogram
@@ -91,7 +92,7 @@ fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(5.1, 2), tight_layou
 # Loop over the cameras
 for label, ax_arr, data_RGBG in zip(labels, axs.T, data_RGBG_arrays):
     # Plot the RGB data
-    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain (ADU/e$^-$)", skip_combined=True)
+    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain [ADU/e$^-$]", skip_combined=True)
 
     # Add a title to the top plot in each column
     ax_arr[0].set_title(label)
