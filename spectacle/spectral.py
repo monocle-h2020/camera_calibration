@@ -172,7 +172,7 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
     plt.xlabel("Wavelength [nm]")
     plt.ylabel(ylabel)
     plt.ylim(*ylim)
-    plt.legend(loc="best")
+    plt.legend(loc="best", facecolor="white", edgecolor='k', framealpha=1)
     plot._saveshow(saveto)
 
 
