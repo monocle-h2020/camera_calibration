@@ -1,20 +1,19 @@
 """
 Analyse gain maps (in ADU/electron) generated using the calibration functions.
-Multiple maps (for example different cameras or different ISO speeds) are
-plotted at once.
+Multiple maps (for example different cameras or different ISO speeds) are plotted at once.
 
-Note: this script currently only looks at raw gain maps (ADU/electron at a
-specific ISO speed), not normalised gain maps (normalised ADU/electron).
+Note: this script currently only looks at raw gain maps (ADU/electron at a specific ISO speed), not normalised gain maps (normalised ADU/electron).
 
 Command line arguments:
-    * `file`: the location of the gain map to be analysed. This should be an
-    NPY file generated using ../calibration/gain.py.
+    * `file`: the location of the gain map to be analysed. This should be an NPY file generated using ../calibration/gain.py.
     (multiple arguments possible)
-"""
 
-import numpy as np
+Example:
+    %run analysis/gain_characterise_multiple.py E:/SPECTACLE_data/iPhone_SE/intermediaries/gain/gain_map_iso88.npy E:/SPECTACLE_data/Galaxy_S8/intermediaries/gain/gain_map_iso200.npy
+"""
 from sys import argv
 from matplotlib import pyplot as plt
+import numpy as np
 from spectacle import io, plot, analyse
 from spectacle.general import gauss_filter_multidimensional
 
