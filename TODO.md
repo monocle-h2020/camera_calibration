@@ -7,6 +7,7 @@ This is a to-do list for the `spectacle` module.
 - [ ] Fix silent error when trying to load calibration data if multiple files exist
 - [ ] Save and load spectral bandwidths and effective wavelengths together
 - [ ] Create Camera objects on the fly from raw image metadata if no file can be found
+- [ ] Fix axis input for gauss_filter function.
 
 ## Scripts
 
