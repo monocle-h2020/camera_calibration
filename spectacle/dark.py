@@ -4,8 +4,10 @@ a map.
 """
 
 import numpy as np
-from .general import return_with_filename
+
 from . import io
+from .general import return_with_filename
+
 
 def fit_dark_current_linear(exposure_times, data):
     """

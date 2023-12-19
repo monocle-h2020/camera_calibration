@@ -1,12 +1,15 @@
 from pathlib import Path
-import numpy as np
-from matplotlib import pyplot as plt, patheffects as pe, ticker
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from . import raw
-from .wavelength import fluorescent_lines
-from .linearity import pearson_r_single
-from .general import symmetric_percentiles
 
+import numpy as np
+from matplotlib import patheffects as pe
+from matplotlib import pyplot as plt
+from matplotlib import ticker
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+from . import raw
+from .general import symmetric_percentiles
+from .linearity import pearson_r_single
+from .wavelength import fluorescent_lines
 
 # Colour maps for red/green/blue
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.Greens,

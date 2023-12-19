@@ -3,8 +3,9 @@ Code relating to gain calibration, such as loading gain maps.
 """
 
 import numpy as np
-from .general import return_with_filename
+
 from . import io
+from .general import return_with_filename
 
 
 def load_gain_map(root, return_filename=False):

@@ -1,7 +1,9 @@
-from scipy.ndimage.filters import gaussian_filter1d as gauss1d, gaussian_filter as gaussMd
-from scipy.optimize import curve_fit
-import numpy as np
 import warnings
+
+import numpy as np
+from scipy.ndimage.filters import gaussian_filter as gaussMd
+from scipy.ndimage.filters import gaussian_filter1d as gauss1d
+from scipy.optimize import curve_fit
 
 
 def gauss_filter(D, sigma=5, **kwargs):

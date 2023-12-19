@@ -1,11 +1,13 @@
-import rawpy
+import os
+from pathlib import Path
+from string import ascii_letters
+
 import exifread
 import numpy as np
-import os
-from string import ascii_letters
-from pathlib import Path
+import rawpy
 from matplotlib import pyplot as plt
-from .camera import load_camera, find_root_folder, load_json, write_json
+
+from .camera import find_root_folder, load_camera, load_json, write_json
 from .general import find_matching_file
 
 # Default save folder for results

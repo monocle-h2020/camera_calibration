@@ -3,6 +3,7 @@ Code relating to bias and read noise, such as loading maps of either.
 """
 
 import numpy as np
+
 from . import io
 from .general import return_with_filename
 

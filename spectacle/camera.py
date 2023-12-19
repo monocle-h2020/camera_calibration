@@ -4,15 +4,15 @@ manufacturer, and RGBG pattern of the camera.
 The Camera object also provides an easy interface for data calibration/correction.
 """
 
-import numpy as np
 import json
 from collections import namedtuple
-from pathlib import Path
 from os import makedirs
+from pathlib import Path
 
-from . import raw, analyse, bias_readnoise, dark, iso, gain, flat, spectral
-from .general import return_with_filename, find_matching_file
+import numpy as np
 
+from . import analyse, bias_readnoise, dark, flat, gain, iso, raw, spectral
+from .general import find_matching_file, return_with_filename
 
 # Empty slice that just selects all data - used as default argument
 all_data = np.s_[:]

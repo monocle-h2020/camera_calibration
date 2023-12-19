@@ -2,9 +2,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from . import io, plot
-from .general import return_with_filename
-from ._xyz import wavelengths as cie_wavelengths, xyz as cie_xyz
 from ._spectral_convolution import convolve, convolve_multi
+from ._xyz import wavelengths as cie_wavelengths
+from ._xyz import xyz as cie_xyz
+from .general import return_with_filename
 
 wavelengths_interpolated = np.arange(390, 701, 1)
 

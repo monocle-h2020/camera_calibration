@@ -1,5 +1,5 @@
-from astropy.stats import sigma_clip
 import numpy as np
+from astropy.stats import sigma_clip
 
 """
 The spectacle.wavelength module will be moved to the ispex2 module, and will not be available in future releases.

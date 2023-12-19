@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.stats import pearsonr
 
-from .general import Rsquare, curve_fit, RMS
 from . import io
+from .general import RMS, Rsquare, curve_fit
 
 # minimum Pearson r value to be considered linear (see SPECTACLE paper)
 linearity_limit = 0.98

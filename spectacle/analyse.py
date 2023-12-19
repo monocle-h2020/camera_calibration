@@ -2,11 +2,12 @@
 Module for common functions in analysing camera data or calibration data.
 """
 
-from . import plot, raw
-from .general import symmetric_percentiles, gauss_filter_multidimensional
-
 import numpy as np
 from astropy.table import Table
+
+from . import plot, raw
+from .general import gauss_filter_multidimensional, symmetric_percentiles
+
 
 def statistics(data, prefix_column=None, prefix_column_header=""):
     """
