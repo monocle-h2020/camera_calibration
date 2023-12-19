@@ -23,7 +23,7 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Save locations
-savefolder = camera.filename_intermediaries("flatfield", makefolders=True)
+savefolder = camera.filename_intermediaries("jpeg", makefolders=True)
 save_to_result = savefolder/"sRGB_model_free.npy"
 
 # Load the data

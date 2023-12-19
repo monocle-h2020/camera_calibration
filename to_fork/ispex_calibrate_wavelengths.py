@@ -37,7 +37,7 @@ values = camera.correct_bias(img.raw_image)
 values = camera.correct_flatfield(values)
 
 # Clip the Bayer map to be the same shape
-bayer_map = flat.clip_data(img.raw_colors)
+bayer_map = img.raw_colors
 
 # Cut out the spectrum
 # Note that these limits are hard-coded
@@ -81,8 +81,8 @@ print(f"Saved wavelength coefficients to '{save_to}'")
 
 # Convert the input spectrum to wavelengths and plot it, as a sanity check
 wavelengths_cut = wavelength.calculate_wavelengths(coefficients, x, y)
-wavelengths_split,_ = raw.pull_apart(wavelengths_cut, colors_cut)
-RGBG,_ = raw.pull_apart(image_cut, colors_cut)
+wavelengths_split = raw.demosaick(colors_cut, wavelengths_cut)
+RGBG = raw.demosaick(colors_cut, image_cut)
 
 lambdarange, all_interpolated = wavelength.interpolate_multi(wavelengths_split, RGBG)
 

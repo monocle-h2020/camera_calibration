@@ -76,10 +76,10 @@ for folder, camera in zip(folders, cameras):
     mean_jpeg_all.append(jmeans)
 
 # Loop over the Bayer RGBG2 channels and plot the response in each
-for j, c in enumerate(plot.rgbg2):
+for j, (colour_label, colour_plot) in enumerate(zip(plot.rgbg2, plot.RGBG_OkabeIto)):
     # Create a figure to hold the scatter plots of response (top row) and
     # residuals (bottom row) for each camera (columns)
-    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(3.3*len(folders), 3.5), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.8})
+    fig, axs = plt.subplots(ncols=len(folders), nrows=2, figsize=(5.33, 3.1), tight_layout=True, sharex=True, gridspec_kw={"hspace":0.1, "wspace":0.9})
 
     # Loop over the cameras and their associated data
     for camera, ax_column, intensities, intensity_errors, means_raw, means_jpeg in zip(cameras, axs.T, intensities_all, intensities_error_all, mean_raw_all, mean_jpeg_all):
@@ -120,52 +120,56 @@ for j, c in enumerate(plot.rgbg2):
         residuals_jpeg = mean_jpeg_c - y_jpeg
         residuals_jpeg_percentage = 100 * (residuals_jpeg / 255)
 
+        # Plot the RAW response
+        ax_raw = ax_column[0]
+        ax_raw.errorbar(intensities, mean_raw_c, xerr=intensity_errors, fmt="ko", ms=3)  # data
+        ax_raw.plot(x, line_raw, c='k')  # best-fitting model
+
         # Plot the JPEG response
-        colour = c[0]  # "r" -> "r", "g" -> "g", "b" -> "b", "g2" -> "g"
-        ax_jpeg = ax_column[0]
-        ax_jpeg.errorbar(intensities, mean_jpeg_c, xerr=intensity_errors, fmt=f"{colour}o", ms=3)  # data
-        ax_jpeg.plot(x, line_jpeg, c=colour)  # best-fitting model
+        ax_jpeg = ax_raw.twinx()  # plot in the same window
+        ax_jpeg.errorbar(intensities, mean_jpeg_c, xerr=intensity_errors, fmt="o", color=colour_plot, ecolor=colour_plot, ms=3)  # data
+        ax_jpeg.plot(x, line_jpeg, c=colour_plot)  # best-fitting model
+
+        # RAW plot parameters
+        ax_raw.set_ylim(0, camera.saturation*1.02)
+        ax_raw.locator_params(axis="y", nbins=5)  # automatic yticks
+        ax_raw.grid(True)
+        ax_raw.tick_params(axis="x", bottom=False)
+        ax_raw.yaxis.tick_right()
+        ax_raw.set_ylabel("RAW value")
+        ax_raw.yaxis.set_label_position("right")
+        ax_raw.set_title(title)
 
         # JPEG plot parameters
         ax_jpeg.set_xlim(-0.02, 1.02)
         ax_jpeg.set_ylim(0, 260)
         ax_jpeg.set_xticks(np.arange(0, 1.2, 0.2))
         ax_jpeg.set_yticks(np.arange(0, 255, 50))
-        ax_jpeg.grid(True, axis="x")
         label_jpeg = ax_jpeg.set_ylabel("JPEG value")
-        label_jpeg.set_color(colour)
-        ax_jpeg.tick_params(axis="y", colors=colour)
-        ax_jpeg.tick_params(axis="x", bottom=False)
-        ax_jpeg.set_title(title)
-
-        # Plot the RAW response
-        ax_raw = ax_jpeg.twinx()  # plot in the same window
-        ax_raw.errorbar(intensities, mean_raw_c, xerr=intensity_errors, fmt=f"ko", ms=3)  # data
-        ax_raw.plot(x, line_raw, c='k')  # best-fitting model
-
-        # RAW plot parameters
-        ax_raw.set_ylim(0, camera.saturation*1.02)
-        ax_raw.locator_params(axis="y", nbins=5)  # automatic yticks
-        ax_raw.grid(True, axis="y")
-        ax_raw.set_ylabel("RAW value")
+        label_jpeg.set_color(colour_plot)
+        ax_jpeg.yaxis.tick_left()
+        ax_jpeg.yaxis.set_label_position("left")
+        ax_jpeg.tick_params(axis="y", colors=colour_plot)
 
         # Plot the JPEG residuals
         ax_residual_jpeg = ax_column[1]
-        ax_residual_jpeg.errorbar(intensities, residuals_jpeg_percentage, xerr=intensity_errors, fmt=f"{colour}o", ms=3)
-
-        # JPEG residual plot parameters
-        ax_residual_jpeg.locator_params(axis="y", nbins=5)
-        label_jpeg_residual = ax_residual_jpeg.set_ylabel("Norm. res.\n(JPEG, %)")
-        label_jpeg_residual.set_color(colour)
-        ax_residual_jpeg.grid(True)
-        ax_residual_jpeg.set_xlabel("Relative incident intensity")
-        ax_residual_jpeg.tick_params(axis="y", colors=colour)
+        ax_residual_jpeg.errorbar(intensities, residuals_jpeg_percentage, xerr=intensity_errors, fmt="o", color=colour_plot, ecolor=colour_plot, ms=3)
 
         # Plot the RAW residuals
         ax_residual_raw = ax_residual_jpeg.twinx()  # plot in the same window
         ax_residual_raw.errorbar(intensities, residuals_raw_percentage, xerr=intensity_errors, fmt=f"ko", ms=3)
         ax_residual_raw.locator_params(axis="y", nbins=5)
-        ax_residual_raw.set_ylabel(f"Norm. res.\n(RAW, %)")
+        ax_residual_raw.set_ylabel(f"Norm. res. (RAW, %)")
+
+        # JPEG residual plot parameters
+        ax_residual_jpeg.locator_params(axis="y", nbins=5)
+        label_jpeg_residual = ax_residual_jpeg.set_ylabel("Norm. res. (JPEG, %)")
+        label_jpeg_residual.set_color(colour_plot)
+        ax_residual_jpeg.grid(True)
+        ax_residual_jpeg.set_xlabel("Relative incident intensity")
+        ax_residual_jpeg.tick_params(axis="y", colors=colour_plot)
+        fig.align_ylabels([ax_jpeg, ax_residual_jpeg])
+        fig.align_ylabels([ax_raw, ax_residual_raw])
 
         # y limits of the residual, making sure all data fit
         ylim = [min([residuals_jpeg_percentage.min(), residuals_raw_percentage.min()])-0.3, max([residuals_jpeg_percentage.max(), residuals_raw_percentage.max()])+0.3]
@@ -177,7 +181,6 @@ for j, c in enumerate(plot.rgbg2):
         print(f"RMS residual (JPEG): {RMS(residuals_jpeg_percentage[non_saturated_indices_jpeg]):.1f}%")
 
     # Save the figure for this channel
-    save_to_c = save_to/f"linearity_response_multiple_{c}.pdf"
-    plt.savefig(save_to_c)
-    plt.close()
-    print(f"Saved the {c} channel plot to '{save_to_c}'")
+    save_to_c = save_to/f"linearity_response_multiple_{colour_label}.pdf"
+    plot.save_or_show(save_to_c)
+    print(f"Saved the {colour_label} channel plot to '{save_to_c}'")

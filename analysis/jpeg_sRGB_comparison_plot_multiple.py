@@ -46,16 +46,12 @@ gammas_all = set(gammas_all)
 bins_gamma = np.linspace(1.75, 2.65, 1000)
 bins_RMS = np.linspace(0, 35, 500)
 
-# Create a figure to hold all subplots
-number_of_rows = len(cameras)
-number_of_columns = 1 + len(gammas_all)
-fig, axs = plt.subplots(nrows=number_of_rows, ncols=number_of_columns, sharex="col", sharey="row", tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
-
-def add_RGB_histogram(data, ax, **kwargs):
-    for j, c in enumerate(plot.rgb):
+# Plotting functions
+def add_RGB_histogram(data, ax, alpha=0.7, density=False, **kwargs):
+    for j, c in enumerate(plot.RGB_OkabeIto):
         data_flat = data[...,j].ravel()
         data_flat = data_flat[~np.isnan(data_flat)]
-        ax.hist(data_flat, color=c, edgecolor="none", **kwargs)
+        ax.hist(data_flat, color=c, edgecolor="none", alpha=alpha, density=density, **kwargs)
 
 def load_and_plot_data(path, index, ax, factor=1., **kwargs):
     try:
@@ -65,6 +61,11 @@ def load_and_plot_data(path, index, ax, factor=1., **kwargs):
     else:
         data_to_plot = factor * data[index]
         add_RGB_histogram(data_to_plot, ax, **kwargs)
+
+# Create a figure to hold all subplots
+number_of_rows = len(cameras)
+number_of_columns = 1 + len(gammas_all)
+fig, axs = plt.subplots(nrows=number_of_rows, ncols=number_of_columns, sharex="col", sharey="row", tight_layout=True, gridspec_kw={"wspace":0.04, "hspace":0.04*5.1/4.5}, figsize=(5.1, 4.5))
 
 # Loop over the folders and rows of subplots
 print("Plotting histogram...")
@@ -83,7 +84,7 @@ for ax_row, folder, camera in zip(axs, folders, cameras):
         pass
     else:
         gamma = data[1]
-        add_RGB_histogram(gamma, ax_row[0], bins=bins_gamma, alpha=0.7)
+        add_RGB_histogram(gamma, ax_row[0], bins=bins_gamma)
 
     # Loop over the fixed-gamma files and plot these if available
     for ax, file in zip(ax_row[1:], gamma_fixed_filenames):
@@ -95,7 +96,7 @@ for ax_row, folder, camera in zip(axs, folders, cameras):
         else:
             # If the file was loaded, plot a histogram
             RMS_relative = 100 * data[3]  # convert to percentages
-            add_RGB_histogram(RMS_relative, ax, bins=bins_RMS, alpha=0.7)
+            add_RGB_histogram(RMS_relative, ax, bins=bins_RMS)
 
     print(camera)
 
@@ -103,18 +104,20 @@ for ax_row, folder, camera in zip(axs, folders, cameras):
 axs[-1,0].set_xlabel("Best fit $\gamma$")
 axs[-1,0].set_xlim(bins_gamma[0], bins_gamma[-1])
 axs[-1,0].set_xticks([1.75, 2.00, 2.25, 2.50])
-for ax in axs[-1,1:]:
-    ax.set_xlabel("RMS diff. (%)")
+for ax in axs[-1,1:]:  # Set xlabels and xticks on bottom row of fixed-gamma RMS panels
+    ax.set_xlabel("RMS diff. [%]")
     ax.set_xlim(bins_RMS[0], bins_RMS[-1])
     ax.set_xticks([0, 10, 20, 30])
-for ax, gamma in zip(axs[0,1:], gammas_all):
+for ax, gamma in zip(axs[0,1:], gammas_all):  # Add gamma to titles of top row of fixed-gamma RMS panels
     ax.set_title(r"$\gamma =" + str(gamma) + "$")
-for ax in axs[:,1:].ravel():
+for ax in axs[:,0].ravel():  # Fix yticks
+    ax.locator_params(axis="y", nbins=4)
+for ax in axs[:,1:].ravel():  # Remove y axis labels on all but the left-most panels
     ax.tick_params(axis="y", left=False)
-for ax in axs[:-1].ravel():
+for ax in axs[:-1].ravel():  # Remove x axis labels on all but the bottom panels
     ax.tick_params(axis="x", bottom=False)
-for ax in axs.ravel():
+for ax in axs.ravel():  # Add a grid everywhere
     ax.grid(True, ls="--", alpha=0.4)
 
-plt.savefig(save_to)
+plt.savefig(save_to, bbox_inches="tight")
 plt.close()

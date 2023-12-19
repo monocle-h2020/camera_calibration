@@ -1,20 +1,19 @@
 """
 Analyse gain maps (in ADU/electron) generated using the calibration functions.
-Multiple maps (for example different cameras or different ISO speeds) are
-plotted at once.
+Multiple maps (for example different cameras or different ISO speeds) are plotted at once.
 
-Note: this script currently only looks at raw gain maps (ADU/electron at a
-specific ISO speed), not normalised gain maps (normalised ADU/electron).
+Note: this script currently only looks at raw gain maps (ADU/electron at a specific ISO speed), not normalised gain maps (normalised ADU/electron).
 
 Command line arguments:
-    * `file`: the location of the gain map to be analysed. This should be an
-    NPY file generated using ../calibration/gain.py.
+    * `file`: the location of the gain map to be analysed. This should be an NPY file generated using ../calibration/gain.py.
     (multiple arguments possible)
-"""
 
-import numpy as np
+Example:
+    %run analysis/gain_characterise_multiple.py E:/SPECTACLE_data/iPhone_SE/intermediaries/gain/gain_map_iso88.npy E:/SPECTACLE_data/Galaxy_S8/intermediaries/gain/gain_map_iso200.npy
+"""
 from sys import argv
 from matplotlib import pyplot as plt
+import numpy as np
 from spectacle import io, plot, analyse
 from spectacle.general import gauss_filter_multidimensional
 
@@ -73,7 +72,9 @@ for j, c in enumerate(plot.rgbg2):
         # Any other maps have a colorbar on the bottom
         else:
             loc = "bottom"
-        cbar = plot.colorbar(im, location=loc, label="Gain (ADU/e$^-$)")
+        cbar = plot.colorbar(im, location=loc, label="Gain [ADU/e$^-$]")
+        cbar.locator = plot.ticker.MaxNLocator(nbins=6 if "SE" in label else 8)
+        cbar.update_ticks()
 
         # Print the range of gain values found in this map
         percentile_low, percentile_high = analyse.symmetric_percentiles(data_RGBG)
@@ -82,17 +83,16 @@ for j, c in enumerate(plot.rgbg2):
 
     # Save the figure
     save_to_map_c = save_folder/f"gain_map_{c_label}.pdf"
-    fig.savefig(save_to_map_c)
-    plt.close()
+    plot.save_or_show(save_to_map_c, dpi=400)
     print(f"Saved gain map for the {c_label} channel to '{save_to_map_c}'")
 
 # Plot a histogram
-fig, axs = plt.subplots(ncols=len(files), nrows=4, figsize=(3*len(files), 3), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
+fig, axs = plt.subplots(ncols=len(files), nrows=3, figsize=(5.1, 2), tight_layout=True, gridspec_kw={"wspace":0, "hspace":0}, sharex=True, sharey=True)
 
 # Loop over the cameras
 for label, ax_arr, data_RGBG in zip(labels, axs.T, data_RGBG_arrays):
     # Plot the RGB data
-    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain (ADU/e$^-$)")
+    plot.histogram_RGB(data_RGBG, axs=ax_arr, xmin=0.4, xmax=2.8, nrbins=250, xlabel="Gain [ADU/e$^-$]", skip_combined=True)
 
     # Add a title to the top plot in each column
     ax_arr[0].set_title(label)

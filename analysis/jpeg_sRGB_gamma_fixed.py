@@ -26,7 +26,7 @@ camera = io.load_camera(root)
 print(f"Loaded Camera object: {camera}")
 
 # Save locations
-savefolder = camera.filename_intermediaries("flatfield", makefolders=True)
+savefolder = camera.filename_intermediaries("jpeg", makefolders=True)
 
 # Load the data
 intensities_with_errors, jmeans = io.load_jmeans(folder, retrieve_value=lin.filename_to_intensity)

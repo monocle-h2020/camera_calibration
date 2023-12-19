@@ -11,6 +11,9 @@ from .general import symmetric_percentiles
 from .linearity import pearson_r_single
 from .wavelength import fluorescent_lines
 
+# Default plot settings
+plt.rcParams["grid.linestyle"] = "--"
+
 # Colour maps for red/green/blue
 cmaps = {"R": plt.cm.Reds, "G": plt.cm.Greens, "B": plt.cm.Blues, "G2": plt.cm.Greens,
          "r": plt.cm.Reds, "g": plt.cm.Greens, "b": plt.cm.Blues, "g2": plt.cm.Greens,
@@ -35,6 +38,10 @@ rgbg = "rgbg"
 rgby = "rgby"
 rgbg2 = ["r", "g", "b", "g2"]
 RGBG2 = ["R", "G", "B", "G2"]
+
+
+# bbox for text
+bbox_text = {"boxstyle": "round", "facecolor": "white"}
 
 
 def _convert_to_path(path):
@@ -196,10 +203,9 @@ def show_RGBG(data, colour=None, colorbar_label="", saveto=None, **kwargs):
     save_or_show(saveto)
 
 
-def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", axs=None, saveto=None):
+def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", yscale="linear", skip_combined=False, axs=None, saveto=None):
     """
-    Make a histogram of RGBG data with panels in black (all combined), red, green
-    (G + G2 combined), and blue.
+    Make a histogram of RGBG data with panels in black (all combined - optional), red, green (G + G2 combined), and blue.
 
     Can be done on existing Axes if `axs` are passed.
     """
@@ -214,18 +220,19 @@ def histogram_RGB(data_RGBG, xmin="auto", xmax="auto", nrbins=500, xlabel="", ys
 
     # If no axs were passed, make a new figure
     if axs is None:
-        fig, axs = plt.subplots(nrows=4, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
+        fig, axs = plt.subplots(nrows=4-skip_combined, sharex=True, sharey=True, figsize=(3.3,5), squeeze=True, tight_layout=True, gridspec_kw={"wspace":0, "hspace":0})
         newfig = True
     else:
         newfig = False
 
     # Loop over the different channels and plot them
-    for data, colour, ax in zip(data_KRGB, kRGB_OkabeIto, axs):
+    # Starting from plot_combined is an ugly way to skip combined panel if one is not desired
+    for data, colour, ax in zip(data_KRGB[skip_combined:], kRGB_OkabeIto[skip_combined:], axs):
         ax.hist(data, bins=np.linspace(xmin, xmax, nrbins), color=colour, edgecolor=colour, density=True)
         ax.grid(ls="--")
 
     # Plot settings
-    for ax in axs[:3]:
+    for ax in axs[:-1]:
         ax.xaxis.set_ticks_position("none")
     axs[0].set_xlim(xmin, xmax)
     axs[-1].set_xlabel(xlabel)

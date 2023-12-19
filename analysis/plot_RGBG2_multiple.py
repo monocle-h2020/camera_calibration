@@ -20,7 +20,7 @@ roots = [io.find_root_folder(path) for path in files]
 
 # Future command line arguments
 save_to = io.results_folder/"RGBG.pdf"
-colorbar_label = 40*" " + "Read noise (ADU)"
+colorbar_label = 40*" " + "Read noise [ADU]"
 
 # Load Camera object
 cameras = [io.load_camera(root) for root in roots]
@@ -54,15 +54,14 @@ for path, gauss, axs_here in zip(files, gauss_all, axs):
         ax.set_xticks([])
         ax.set_yticks([])
 
-        # For the lowest row only, add a colorbar
+        # For the bottom row only, add a colorbar
         if ax is axs[-1,j]:
             colorbar_here = plot.colorbar(img)
             if ax is axs_here[1]:
                 colorbar_here.set_label(colorbar_label)
-            colorbar_here.locator = plot.ticker.MaxNLocator(nbins=3)
+            colorbar_here.locator = plot.ticker.MaxNLocator(nbins=4)
             colorbar_here.update_ticks()
 
 # Save the figure
-fig.savefig(save_to)
-plt.close()
+plot.save_or_show(save_to, dpi=400)
 print(f"Saved figure to '{save_to}'")

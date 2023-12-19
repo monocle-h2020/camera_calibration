@@ -1,3 +1,5 @@
+from functools import partial
+
 import numpy as np
 from scipy.stats import pearsonr
 
@@ -121,12 +123,12 @@ def sRGB_compare_gamma(intensities, jmeans, gamma):
     Rsquares = normalizations.copy()
     RMSes = normalizations.copy()
     RMSes_relative = normalizations.copy()
-    sRGB = lambda I, normalization: sRGB(I, normalization, gamma=gamma)
+    sRGB_here = partial(sRGB, gamma=gamma)
     try:
         for i in range(jmeans.shape[1]):
             for j in range(jmeans.shape[2]):
                 for k in range(jmeans.shape[3]):
-                    popt, pcov = curve_fit(sRGB, intensities, jmeans[:,i,j,k], p0=[1])
+                    popt, pcov = curve_fit(sRGB_here, intensities, jmeans[:,i,j,k], p0=[1])
                     normalizations[i,j,k] = popt[0]
                     ind = np.where(jmeans[:,i,j,k] < 255)
                     jmeans_fit = sRGB(intensities[ind], *popt)
@@ -163,7 +165,7 @@ def calculate_pearson_r_values(x, y, **kwargs):
         for j in range(y.shape[2]):
             try:
                 r[i,j] = pearson_r_single(x, y[:,i,j], **kwargs)
-            except TypeError:  # if fully saturated
+            except (TypeError, ValueError):  # if fully saturated
                 r[i,j] = np.nan
                 saturated.append((i,j))
         if i%5 == 0:

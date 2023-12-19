@@ -157,7 +157,7 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
     Plot spectral responses (`SRFs`) together in one panel.
     """
     # Create a figure to hold the plot
-    plt.figure(figsize=(7,3), tight_layout=True)
+    plt.figure(figsize=(7, 3), tight_layout=True)
 
     # Loop over the response curves
     for wavelength, SRF, label, style in zip(wavelengths, SRFs, labels, linestyles):
@@ -167,13 +167,13 @@ def plot_spectral_responses(wavelengths, SRFs, labels, linestyles=["-", "--", ":
         plt.plot([-1000,-1001], [-1000,-1001], c='k', ls=style, label=label, **kwargs)
 
     # Plot parameters
-    plt.grid(ls="--")
+    plt.grid(True)
     plt.xticks(np.arange(0,1000,50))
     plt.xlim(*xlim)
+    plt.ylim(*ylim)
     plt.xlabel("Wavelength [nm]")
     plt.ylabel(ylabel)
-    plt.ylim(*ylim)
-    plt.legend(loc="best")
+    plt.legend(loc="best", facecolor="white", edgecolor='k', framealpha=1)
     plot._saveshow(saveto)
 
 
@@ -335,13 +335,13 @@ def calculate_XYZ_matrix(wavelengths, spectral_response):
     # [X_R  X_G  X_B]
     # [Y_R  Y_G  Y_B]
     # [Z_R  Z_G  Z_B]
-    SRF_XYZ_product = np.einsum("xw,rw->xr", cie_xyz, SRF_RGB_interpolated) / len(cie_wavelengths)
+    SRF_XYZ_product = np.einsum("xw,rw->xr", cie_xyz, SRF_RGB_interpolated)
 
     # Normalise by column
     SRF_xyz = SRF_XYZ_product / SRF_XYZ_product.sum(axis=0)
     white_E = np.array([1., 1., 1.])  # Equal-energy illuminant E
     normalisation_vector = np.linalg.inv(SRF_xyz) @ white_E
-    normalisation_matrix = np.identity(3) * normalisation_vector
+    normalisation_matrix = np.diag(normalisation_vector)
     M_RGB_to_XYZ = SRF_xyz @ normalisation_matrix
 
     return M_RGB_to_XYZ
