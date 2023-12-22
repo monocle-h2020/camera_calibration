@@ -1,16 +1,18 @@
 This is a to-do list for the `spectacle` module.
 
 ## Module
-- [ ] Remove AstroPy dependencies for simplicity
-- [ ] Fix silent deprecation warnings
-- [ ] Fix silent error when trying to load calibration data if multiple files exist
-- [ ] Save and load spectral bandwidths and effective wavelengths together
-- [ ] Create Camera objects on the fly from raw image metadata if no file can be found
+- [ ] Replace AstroPy with Pandas.
+- [ ] Fix silent deprecation warnings.
+- [ ] Fix silent error when trying to load calibration data if multiple files exist.
+- [ ] Save and load spectral bandwidths and effective wavelengths together.
+- [ ] Create Camera objects on the fly from raw image metadata if no file can be found.
+- [ ] Replace Camera JSON files with YAML, keeping backwards compatibility.
 
 ## Scripts
 
 #### Changes to existing scripts
-- [ ] Convert all command-line inputs to `optparse` format.
+- [ ] Convert all command-line inputs to `argparse` format.
+- [ ] Add `tqdm` progress bars where relevant.
 - [ ] Merge [stack_mean_std.py](tools/stack_mean_std.py) and [stack_heavy.py](tools/stack_heavy.py).
 - [ ] Make error data optional in [flatfield_characterise_data.py](analysis/flatfield_characterise_data.py).
 - [ ] Add varying apertures to [camera_settings.py](calibration/camera_settings.py).
@@ -24,12 +26,16 @@ This is a to-do list for the `spectacle` module.
 
 ## Documentation
 
-- [ ] Add metadata on all calibration files, including origins and quality of data.
+- [ ] Add metadata to all calibration files, including origins and quality of data.
 
 ### READMEs
 
 ### Module
 
-- [ ] Add detailed information on inputs, outputs, and possible errors to all `spectacle` methods.
+- [ ] Add detailed information on inputs, outputs, and possible errors to all `spectacle` methods, including type hints.
 
 ### Scripts
+
+## Data
+
+- [ ] Prepare Zenodo data release.
