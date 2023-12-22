@@ -39,6 +39,9 @@ raw_pattern = None
 for tup in walk(args.folder):
     # The current folder
     folder_here = io.Path(tup[0])
+    if args.verbose:
+        print("\n")
+        print(folder_here)
 
     # The folder to save stacks to
     goal = io.replace_word_in_path(folder_here, "images", "stacks")
@@ -62,23 +65,26 @@ for tup in walk(args.folder):
 
     # Create the goal folder if it does not exist yet
     makedirs(goal.parent, exist_ok=True)
+    savemean, savestds, savejmean, savejstds = [io.Path(f"{goal}_{stack}.npy") for stack in ("mean", "stds", "jmean", "jstds")]
 
     # Load all RAW files
     arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
+    if args.verbose:
+        print(f"Loaded RAW ({raw_pattern}) data")
 
     # Calculate and save the mean per pixel
     mean = arrs.mean(axis=0, dtype=np.float32)
-    np.save(f"{goal}_mean.npy", mean)
-    del mean
+    np.save(savemean, mean)
+    del mean  # Clear up some memory
+    if args.verbose:
+        print(f"    -->  {savemean.absolute()}")
 
     # Calculate and save the standard deviation per pixel
     stds = arrs.std(axis=0, dtype=np.float32)
-    np.save(f"{goal}_stds.npy", stds)
-    del stds, arrs
-
-    # Print the input and output folder as confirmation
+    np.save(savestds, stds)
+    del stds, arrs  # Clear up some memory
     if args.verbose:
-        print(f"{folder_here}  -->  {goal}_x.npy")
+        print(f"    -->  {savestds.absolute()}")
 
     # Find all JPEG files in this folder
     JPGs = list(folder_here.glob("*.jp*g"))
@@ -88,13 +94,19 @@ for tup in walk(args.folder):
 
     # Load all JPEG files
     jarrs = io.load_jpg_multi(folder_here)
+    if args.verbose:
+        print("Loaded JPEG data")
 
     # Calculate and save the mean per pixel
     jmean = jarrs.mean(axis=0, dtype=np.float32)
-    np.save(f"{goal}_jmean.npy", jmean)
-    del jmean
+    np.save(savejmean, jmean)
+    del jmean  # Clear up some memory
+    if args.verbose:
+        print(f"    -->  {savejmean.absolute()}")
 
     # Calculate and save the standard deviation per pixel
     jstds = jarrs.std(axis=0, dtype=np.float32)
-    np.save(f"{goal}_jstds.npy", jstds)
-    del jstds, jarrs
+    np.save(savejstds, jstds)
+    del jstds, jarrs  # Clear up some memory
+    if args.verbose:
+        print(f"    -->  {savejstds.absolute()}")
