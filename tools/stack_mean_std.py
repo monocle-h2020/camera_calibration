@@ -19,21 +19,24 @@ Command line arguments:
 TO DO:
     * Allow input/output folders that are not in `images` or `stacks`
 """
-
-import numpy as np
-from sys import argv
-from spectacle import io
 from os import walk, makedirs
+import numpy as np
+from spectacle import io
 
-# Get the data folder from the command line
-folder = io.path_from_input(argv)
+# Command-line arguments
+import argparse
+parser = argparse.ArgumentParser(description="Walk through a folder and create NPY stacks based on the images found.")
+parser.add_argument("folder", help="Folder containing data and/or subfolders with data.", type=io.Path)
+parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
+args = parser.parse_args()
+# TO DO: Option for heavy data sets - merge with stack_heavy.py (-H flag or similar)
 
 # Common RAW file extensions - try all, then select the one that works
 raw_patterns = ["*.dng", "*.NEF", "*.CR2"]
 raw_pattern = None
 
 # Walk through the folder and all its subfolders
-for tup in walk(folder):
+for tup in walk(args.folder):
     # The current folder
     folder_here = io.Path(tup[0])
 
@@ -74,7 +77,8 @@ for tup in walk(folder):
     del stds, arrs
 
     # Print the input and output folder as confirmation
-    print(f"{folder_here}  -->  {goal}_x.npy")
+    if args.verbose:
+        print(f"{folder_here}  -->  {goal}_x.npy")
 
     # Find all JPEG files in this folder
     JPGs = list(folder_here.glob("*.jp*g"))
