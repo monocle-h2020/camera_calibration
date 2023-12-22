@@ -21,13 +21,13 @@ TO DO:
 """
 from os import walk, makedirs
 import numpy as np
-from spectacle import io
+from spectacle import io, tqdm
 
 # Command-line arguments
 import argparse
 parser = argparse.ArgumentParser(description="Walk through a folder and create NPY stacks based on the images found.")
 parser.add_argument("folder", help="Folder containing data and/or subfolders with data.", type=io.Path)
-parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
+parser.add_argument("-v", "--verbose", help="Enable verbose output (disables progress bar).", action="store_true")
 args = parser.parse_args()
 # TO DO: Option for heavy data sets - merge with stack_heavy.py (-H flag or similar)
 
@@ -35,8 +35,17 @@ args = parser.parse_args()
 raw_patterns = ["*.dng", "*.NEF", "*.CR2"]
 raw_pattern = None
 
+# Iterator
+walker = walk(args.folder)
+
+# Non-verbose: Show a progress bar only
+if not args.verbose:
+    walker = tqdm(list(walker), desc="Walking through folders", unit="folder")
+
+if args.verbose:
+    print("Starting...")
 # Walk through the folder and all its subfolders
-for tup in walk(args.folder):
+for tup in walker:
     # The current folder
     folder_here = io.Path(tup[0])
 

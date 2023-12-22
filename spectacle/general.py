@@ -4,6 +4,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter as gaussMd
 from scipy.ndimage.filters import gaussian_filter1d as gauss1d
 from scipy.optimize import curve_fit
+from tqdm import tqdm
 
 
 def gauss_filter(D, sigma=5, **kwargs):
