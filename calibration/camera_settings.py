@@ -10,19 +10,27 @@ Example:
 To do:
     * Apertures?
 """
-from sys import argv
 from spectacle import load_camera, io
 
+# Command-line arguments
+import argparse
+parser = argparse.ArgumentParser(description="Generate a file with additional information for the camera.")
+parser.add_argument("folder", help="Folder containing camera data.", type=io.Path)
+parser.add_argument("-o", "--output_folder", help="Folder to save settings file to (default: Camera calibration folder).", type=io.Path, default=None)
+parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
+args = parser.parse_args()
+
 # Get the data folder from the command line
-folder = io.path_from_input(argv)
-root = io.find_root_folder(folder)
+root = io.find_root_folder(args.folder)
 
 # Load Camera object
 camera = load_camera(root)
-print(f"Loaded Camera object: {camera}")
+if args.verbose:
+    print(f"Loaded Camera object: {camera}")
 
 # Save locations
-save_to = camera.filename_calibration("settings.json")
+filename_settings = "settings.json"
+save_to = camera.filename_calibration(filename_settings) if args.output_folder is None else args.output_folder/filename_settings
 
 # Get additional data from command line input from the user
 iso_min = int(input("What is the *lowest* ISO speed available on this device? (-1 if unknown)\n"))
@@ -39,7 +47,8 @@ settings = {
         "ISO_max": iso_max,
         "exposure_min": exposure_min,
         "exposure_max": exposure_max}
-print("Camera settings:", settings)
+if args.verbose:
+    print("Camera settings:", settings)
 
 # Combine the settings to file
 io.write_json(settings, save_to)
