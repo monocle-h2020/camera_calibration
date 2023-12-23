@@ -24,7 +24,7 @@ parser.add_argument("-o", "--output_folder", help="Folder to save metadata file 
 parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
 args = parser.parse_args()
 
-# Get the data folder from the command line
+# Get the root data folder
 root = io.find_root_folder(args.filename)
 
 # Get the data
