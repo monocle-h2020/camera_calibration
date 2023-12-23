@@ -66,7 +66,7 @@ def load_raw_image_postprocessed(filename, **kwargs):
     return img_post
 
 
-def load_raw_image_multi(folder: Path | str, pattern="*.dng", progressbar=True) -> np.ndarray[np.uint16]:
+def load_raw_image_multi(folder: Path | str, pattern="*.dng", progressbar=True, leave_progressbar=False) -> np.ndarray[np.uint16]:
     """
     Load many raw files simultaneously and put their image data in a single array.
     Shows a progressbar if desired (default: True).
@@ -88,7 +88,7 @@ def load_raw_image_multi(folder: Path | str, pattern="*.dng", progressbar=True) 
     arrs[0] = file0.raw_image
 
     # Include the image data from the other files in the array
-    for j, file in tqdm(enumerate(files[1:], 1), desc="Loading images", unit="file", total=nfiles, initial=1, disable=not progressbar):
+    for j, file in tqdm(enumerate(files[1:], 1), desc="Loading RAW images", unit="file", total=nfiles, initial=1, disable=not progressbar, leave=leave_progressbar):
         arrs[j] = load_raw_image(file)
 
     return arrs
@@ -103,7 +103,7 @@ def load_jpg_image(filename):
     return img
 
 
-def load_jpg_multi(folder: Path | str, pattern="*.jp*g", progressbar=True) -> np.ndarray[np.uint8]:
+def load_jpg_multi(folder: Path | str, pattern="*.jp*g", progressbar=True, leave_progressbar=False) -> np.ndarray[np.uint8]:
     """
     Load many jpg files simultaneously and put their image data in a single array.
     Shows a progressbar if desired (default: True).
@@ -125,7 +125,7 @@ def load_jpg_multi(folder: Path | str, pattern="*.jp*g", progressbar=True) -> np
     arrs[0] = img0
 
     # Include the image data from the other files in the array
-    for j, file in tqdm(enumerate(files[1:], 1), desc="Loading images", unit="file", total=nfiles, initial=1, disable=not progressbar):
+    for j, file in tqdm(enumerate(files[1:], 1), desc="Loading JPEG images", unit="file", total=nfiles, initial=1, disable=not progressbar, leave=leave_progressbar):
         arrs[j] = load_jpg_image(file)
 
     return arrs
@@ -161,7 +161,7 @@ def expected_array_size(folder, pattern):
     return np.array(array.shape)
 
 
-def load_npy(folder: Path | str, pattern: str, retrieve_value: Callable=absolute_filename, selection: slice=np.s_[:], progressbar=True, **kwargs) -> tuple[np.ndarray, np.ndarray]:
+def load_npy(folder: Path | str, pattern: str, retrieve_value: Callable=absolute_filename, selection: slice=np.s_[:], progressbar=True, leave_progressbar=False, **kwargs) -> tuple[np.ndarray, np.ndarray]:
     """
     Load a series of .npy (NumPy binary) files from `folder` following a pattern `pattern`.
     Returns the contents of the .npy files as well as a list of values based on their parsing their filenames with a function given in the `retrieve_value` keyword.
@@ -172,7 +172,7 @@ def load_npy(folder: Path | str, pattern: str, retrieve_value: Callable=absolute
     folder = Path(folder)
 
     # Load the data
-    filenames = tqdm(sorted(folder.glob(pattern)), desc="Loading .npy files", unit="file", disable=not progressbar)
+    filenames = tqdm(sorted(folder.glob(pattern)), desc="Loading .npy files", unit="file", disable=not progressbar, leave=leave_progressbar)
 
     stacked, values = zip(*[(np.load(f)[selection], retrieve_value(f, **kwargs)) for f in filenames])
     stacked = np.stack(stacked)

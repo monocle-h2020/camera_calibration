@@ -44,12 +44,8 @@ else:
     if args.verbose:
         print(f"Will look for files that look like {raw_pattern}")
 
-# Iterator
-walker = walk(args.folder)
-
-# Non-verbose: Show a progress bar only
-if not args.verbose:
-    walker = tqdm(list(walker), desc="Processing folders", unit="folder")
+# Iterator; shows a general progress bar if not running in verbose mode
+walker = tqdm(list(walk(args.folder)), desc="Processing folders", unit="folder", disable=args.verbose)
 
 if args.verbose:
     print("Starting...")
@@ -92,7 +88,7 @@ for tup in walker:
     savemean, savestds, savejmean, savejstds = [io.Path(f"{goal}_{stack}.npy") for stack in ("mean", "stds", "jmean", "jstds")]
 
     # Load all RAW files
-    arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern)
+    arrs = io.load_raw_image_multi(folder_here, pattern=raw_pattern, leave_progressbar=args.verbose)
     if args.verbose:
         print(f"Loaded RAW ({raw_pattern}) data")
 
@@ -121,7 +117,7 @@ for tup in walker:
         continue
 
     # Load all JPEG files
-    jarrs = io.load_jpg_multi(folder_here)
+    jarrs = io.load_jpg_multi(folder_here, leave_progressbar=args.verbose)
     if args.verbose:
         print("Loaded JPEG data")
 
