@@ -5,6 +5,7 @@ Results from these scripts, such as look-up tables and maps, are then used to ca
 
 This README file contains a brief description of each calibration script.
 For further documentation, please refer to that included in the scripts themselves.
+You can access information about the required and optional inputs for each script using the built-in help function, e.g. by running `python calibration/generate_camera.py --help`.
 
 ## General
 
