@@ -35,7 +35,7 @@ filename = "bias.npy"
 save_to = camera.filename_calibration(filename) if args.output_folder is None else args.output_folder / filename
 
 # Load the mean stacks for each ISO value
-isos, means = io.load_means(args.folder, retrieve_value=io.split_iso)
+isos, means = io.load_means(args.folder, retrieve_value=io.split_iso, leave_progressbar=args.verbose)
 if args.verbose:
     print(f"Loaded bias data for {len(isos)} ISO values from '{args.folder.absolute()}'")
 
@@ -45,4 +45,4 @@ bias_map = means[lowest_iso_index]
 
 # Save the bias map for calibration purposes
 np.save(save_to, bias_map)
-print(f"Saved bias map at ISO {isos[lowest_iso_index]} to '{save_to}'")
+print(f"\nSaved bias map at ISO {isos[lowest_iso_index]} to '{save_to}'")

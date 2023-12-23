@@ -35,7 +35,7 @@ filename = "readnoise.npy"
 save_to = camera.filename_calibration(filename) if args.output_folder is None else args.output_folder / filename
 
 # Load the standard deviation stacks for each ISO value
-isos, stds = io.load_stds(args.folder, retrieve_value=io.split_iso)
+isos, stds = io.load_stds(args.folder, retrieve_value=io.split_iso, leave_progressbar=args.verbose)
 if args.verbose:
     print(f"Loaded bias data for {len(isos)} ISO values from '{args.folder.absolute()}'")
 
@@ -45,4 +45,4 @@ readnoise_map = stds[lowest_iso_index]
 
 # Save the read noise map
 np.save(save_to, readnoise_map)
-print(f"Saved read noise map at ISO {isos[lowest_iso_index]} to '{save_to}'")
+print(f"\nSaved read noise map at ISO {isos[lowest_iso_index]} to '{save_to}'")
