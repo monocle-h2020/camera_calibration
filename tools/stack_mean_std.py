@@ -49,7 +49,7 @@ walker = walk(args.folder)
 
 # Non-verbose: Show a progress bar only
 if not args.verbose:
-    walker = tqdm(list(walker), desc="Walking through folders", unit="folder")
+    walker = tqdm(list(walker), desc="Processing folders", unit="folder")
 
 if args.verbose:
     print("Starting...")
