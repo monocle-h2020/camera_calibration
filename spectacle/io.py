@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
 from string import ascii_letters
+from typing import Callable
 
 import exifread
 import numpy as np
 import rawpy
 from matplotlib import pyplot as plt
+from tqdm import tqdm
 
 from .camera import find_root_folder, load_camera, load_json, write_json
 from .general import find_matching_file
@@ -64,26 +66,29 @@ def load_raw_image_postprocessed(filename, **kwargs):
     return img_post
 
 
-def load_raw_image_multi(folder, pattern="*.dng"):
+def load_raw_image_multi(folder: Path | str, pattern="*.dng", progressbar=True) -> np.ndarray[np.uint16]:
     """
-    Load many raw files simultaneously and put their image data in a single
-    array.
+    Load many raw files simultaneously and put their image data in a single array.
+    Shows a progressbar if desired (default: True).
     """
+    # Ensure the folder is a Path
+    folder = Path(folder)
 
     # Find all files in `folder` matching the given pattern `pattern`
     files = list(folder.glob(pattern))
+    nfiles = len(files)
 
     # Load the first file to get the shape of the images
     file0 = load_raw_file(files[0])
 
     # Create an array to fit the image contained in each file
-    arrs = np.empty((len(files), *file0.raw_image.shape), dtype=np.uint16)
+    arrs = np.empty((nfiles, *file0.raw_image.shape), dtype=np.uint16)
 
     # Include the already loaded first image in the array
     arrs[0] = file0.raw_image
 
     # Include the image data from the other files in the array
-    for j, file in enumerate(files[1:], 1):
+    for j, file in tqdm(enumerate(files[1:], 1), desc="Loading images", unit="file", total=nfiles, initial=1, disable=not progressbar):
         arrs[j] = load_raw_image(file)
 
     return arrs
@@ -91,33 +96,36 @@ def load_raw_image_multi(folder, pattern="*.dng"):
 
 def load_jpg_image(filename):
     """
-    Load a raw file using pyplot's `imread` function. Return only the image
-    data.
+    Load a raw file using pyplot's `imread` function.
+    Return only the image data.
     """
     img = plt.imread(filename)
     return img
 
 
-def load_jpg_multi(folder, pattern="*.jp*g"):
+def load_jpg_multi(folder: Path | str, pattern="*.jp*g", progressbar=True) -> np.ndarray[np.uint8]:
     """
-    Load many jpg files simultaneously and put their image data in a single
-    array.
+    Load many jpg files simultaneously and put their image data in a single array.
+    Shows a progressbar if desired (default: True).
     """
+    # Ensure the folder is a Path
+    folder = Path(folder)
 
     # Find all files in `folder` matching the given pattern `pattern`
     files = list(folder.glob(pattern))
+    nfiles = len(files)
 
     # Load the first file to get the shape of the images
     img0 = load_jpg_image(files[0])
 
     # Create an array to fit the image contained in each file
-    arrs = np.empty((len(files), *img0.shape), dtype=np.uint8)
+    arrs = np.empty((nfiles, *img0.shape), dtype=np.uint8)
 
     # Include the already loaded first image in the array
     arrs[0] = img0
 
     # Include the image data from the other files in the array
-    for j, file in enumerate(files[1:], 1):
+    for j, file in tqdm(enumerate(files[1:], 1), desc="Loading images", unit="file", total=nfiles, initial=1, disable=not progressbar):
         arrs[j] = load_jpg_image(file)
 
     return arrs
@@ -136,6 +144,7 @@ def load_exif(filename):
 def absolute_filename(file):
     """
     Return the absolute filename of a given Path object `file`.
+    This mostly serves as a dummy example function for load_npy.
     """
     return file.absolute()
 
@@ -152,19 +161,23 @@ def expected_array_size(folder, pattern):
     return np.array(array.shape)
 
 
-def load_npy(folder, pattern, retrieve_value=absolute_filename, selection=np.s_[:], **kwargs):
+def load_npy(folder: Path | str, pattern: str, retrieve_value: Callable=absolute_filename, selection: slice=np.s_[:], progressbar=True, **kwargs) -> tuple[np.ndarray, np.ndarray]:
     """
-    Load a series of .npy (NumPy binary) files from `folder` following a
-    pattern `pattern`. Returns the contents of the .npy files as well as a
-    list of values based on their parsing their filenames with a function
-    given in the `retrieve_value` keyword. Only return array elements included
-    in `selection` (default: all).
+    Load a series of .npy (NumPy binary) files from `folder` following a pattern `pattern`.
+    Returns the contents of the .npy files as well as a list of values based on their parsing their filenames with a function given in the `retrieve_value` keyword.
+    Any **kwargs are passed to `retrieve_value`.
+    Only return array elements included in `selection` (default: all).
     """
     # Make sure `folder` is a Path-like object
     folder = Path(folder)
-    files = sorted(folder.glob(pattern))
-    stacked = np.stack([np.load(f)[selection] for f in files])
-    values = np.array([retrieve_value(f, **kwargs) for f in files])
+
+    # Load the data
+    filenames = tqdm(sorted(folder.glob(pattern)), desc="Loading .npy files", unit="file", disable=not progressbar)
+
+    stacked, values = zip(*[(np.load(f)[selection], retrieve_value(f, **kwargs)) for f in filenames])
+    stacked = np.stack(stacked)
+    values = np.array(values)
+
     return values, stacked
 
 
