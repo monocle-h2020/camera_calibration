@@ -4,27 +4,36 @@ Code relating to dark current correction, such as fitting a trend or loading a m
 from typing import Iterable, Optional
 
 import numpy as np
+from tqdm import tqdm
 
 from . import io
 from .general import return_with_filename
 
 
-def fit_dark_current_linear(exposure_times: Iterable[float], data: np.ndarray[float]) -> tuple[np.ndarray[np.float64], np.ndarray[np.float64]]:
+def fit_dark_current_linear(exposure_times: Iterable[float], data: np.ndarray[float], batch_size: int=500000, progressbar=True, leave_progressbar=False) -> tuple[np.ndarray[np.float64], np.ndarray[np.float64]]:
     """
     Fit a linear trend to each pixel in the data set `data` taken at varying `exposure_times`.
+    To account for memory issues, fits are performed in batches, controlled by the batch_size (note that batches may differ in size slightly due to rounding).
+
+    Both a bias (offset) and dark current (slope) are obtained from the linear fit.
+    The bias is treated as a free parameter to account for variations and noise.
     """
     # The data are reshaped to a flat list for each exposure time, fitted, and then reshaped back to the original shape.
     original_shape = data.shape[1:]
     data_reshaped = data.reshape((data.shape[0], -1))
 
-    # Both a bias (offset) and dark current (slope) are obtained from the linear fit.
-    # The bias is treated as a free parameter to account for variations and noise.
-    print("reshaped")
-    dark_fit, bias_fit = np.polyfit(exposure_times, data_reshaped, 1)
-    print("fitted")
+    # Divide the data into batches
+    n_batches = data_reshaped.shape[1] // batch_size + 1
+    data_split = np.array_split(data_reshaped, n_batches, axis=1)
+    batch_size_real = data_reshaped.shape[1] / n_batches
+
+    # Perform the polynomial fitting for each batch, then merge the results
+    dark_fit, bias_fit = zip(*tqdm((np.polynomial.polynomial.polyfit(exposure_times, data_batch, 1) for data_batch in data_split), total=n_batches, desc="Fitting dark current", unit_scale=batch_size_real, unit="pixel", disable=not progressbar, leave=leave_progressbar))
+    dark_fit, bias_fit = np.concatenate(dark_fit), np.concatenate(bias_fit)
+
     dark_reshaped = dark_fit.reshape(original_shape)
     bias_reshaped = bias_fit.reshape(original_shape)
-    print("re-reshaped")
+
     return dark_reshaped, bias_reshaped
 
 

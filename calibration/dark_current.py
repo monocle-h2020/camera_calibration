@@ -25,6 +25,7 @@ import argparse
 parser = argparse.ArgumentParser(description="Create a dark current map using the stacked dark (zero-light, varying exposure) images.")
 parser.add_argument("folder", help="Folder containing .npy stacks of dark current data.", type=io.Path)
 parser.add_argument("-o", "--output_folder", help="Folder to save results files to (default: camera outputs folder).", type=io.Path, default=None)
+parser.add_argument("-b", "--batch_size", help="Number of pixels to fit per iteration. More is faster but requires more memory. Default is 500 000.", type=int, default=500000)
 parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
 args = parser.parse_args()
 
@@ -49,7 +50,7 @@ if args.verbose:
     print(f"Loaded data at {len(times)} exposure times")
 
 # Fit a linear trend to each pixel
-dark_current, bias_fit = dark.fit_dark_current_linear(times, means)
+dark_current, bias_fit = dark.fit_dark_current_linear(times, means, batch_size=args.batch_size, leave_progressbar=args.verbose)
 if args.verbose:
     print("Fitted dark current to each pixel")
 
