@@ -1,7 +1,7 @@
 """
-Code relating to ISO speed normalisation, such as generating or reading
-look-up tables.
+Code relating to ISO speed normalisation, such as generating or reading look-up tables.
 """
+from typing import Callable, Iterable, Optional
 
 import numpy as np
 from scipy.optimize import curve_fit
@@ -9,8 +9,10 @@ from scipy.optimize import curve_fit
 from . import io
 from .general import Rsquare, return_with_filename
 
+# Clearer type hints
+ISOModel = Callable[int | Iterable[int], float]
 
-def generate_linear_model(slope, offset):
+def generate_linear_model(slope: float, offset: float) -> ISOModel:
     """
     Generate a linear ISO speed model, with two parameters: slope and offset.
     A function for applying this model is returned.
@@ -19,17 +21,17 @@ def generate_linear_model(slope, offset):
     return model
 
 
-def knee_model(isos, slope, offset, knee):
+def knee_model(isos: int | Iterable[int], slope: float, offset: float, knee: int) -> np.float64 | np.ndarray[np.float64]:
     """
-    Apply a 'knee' ISO speed model, with three parameters: slope, offset,
-    and knee. The model is linear up to the `knee` ISO speed, then constant.
+    Apply a 'knee' ISO speed model, with three parameters: slope, offset, and knee.
+    The model is linear up to the `knee` ISO speed, then constant.
     """
     linear_model = generate_linear_model(slope, offset)
     values = np.clip(linear_model(isos), a_min=None, a_max=linear_model(knee))
     return values
 
 
-def generate_knee_model(slope, offset, knee):
+def generate_knee_model(slope: float, offset: float, knee: int) -> ISOModel:
     """
     Generate a 'knee' ISO speed model, with three parameters: slope, offset,
     and knee. The model is linear up to the `knee` ISO speed, then constant.
@@ -39,7 +41,7 @@ def generate_knee_model(slope, offset, knee):
     return model
 
 
-def _print_model_parameters(labels, parameters, errors):
+def _print_model_parameters(labels: Iterable[str], parameters: Iterable[float], errors: Iterable[float]) -> None:
     """
     Print the parameters of a normalisation model.
     """
@@ -51,11 +53,11 @@ def _print_model_parameters(labels, parameters, errors):
 model_generator = {"Linear": generate_linear_model, "Knee": generate_knee_model}
 
 
-def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, max_iso=50000):
+def fit_iso_normalisation_relation(isos: Iterable[int], ratios: Iterable[float], ratios_errs: Iterable[float]=None, min_iso: int=50, max_iso: int=50000, verbose=False) -> tuple[str, ISOModel, np.float64, np.ndarray[np.float64], np.ndarray[np.float64]]:
     """
-    Fit a relation between ISO speed and normalisation. Currently two types of
-    model are supported, namely linear and 'knee'-type. Both are fitted and
-    the best is chosen.
+    Fit a relation between ISO speed and normalisation.
+    Currently two types of model are supported, namely linear and 'knee'-type.
+    Both are fitted and the best is chosen.
     """
     # Fit a linear model
     parameters_linear, covariance_linear = np.polyfit(isos, ratios, 1, cov=True)
@@ -75,25 +77,28 @@ def fit_iso_normalisation_relation(isos, ratios, ratios_errs=None, min_iso=50, m
         raise ValueError("Could not find an accurate (R^2 >= 0.9) fit to the iso-normalization relation")
     elif R2_linear >= 0.9:
         model, R2, parameters, errors, labels, model_type = model_linear, R2_linear, parameters_linear, errors_linear, ["Slope", "Offset"], "Linear"
-        print("Found linear model [y = ax + b]")
+        if verbose:
+            print("Found linear model [y = ax + b]")
     elif R2_knee >= 0.9:
         model, R2, parameters, errors, labels, model_type = model_knee, R2_knee, parameters_knee, errors_knee, ["Slope", "Offset", "ISO cap"], "Knee"
-        print(f"Found knee model [y = ax + b, capped at K]")
+        if verbose:
+            print("Found knee model [y = ax + b, capped at K]")
     # space for extra models here
     else:
         raise ValueError("This should never occur -- are all comparisons the right way around?")
 
     # Print and return the model parameters
-    _print_model_parameters(labels, parameters, errors)
-    print(f"(R^2 = {R2:.6f})")
+    if verbose:
+        _print_model_parameters(labels, parameters, errors)
+        print(f"(R^2 = {R2:.6f})")
 
     return model_type, model, R2, parameters, errors
 
 
-def normalise_iso(lookup_table, isos, data):
+def normalise_iso(lookup_table: np.ndarray[float], isos: int | Iterable[int], data: float | Iterable[float]) -> np.ndarray[np.float64]:
     """
-    Normalise data for ISO speed. `isos` can be an iterable of the same length as
-    `data` or a single value, which is then used for all data elements.
+    Normalise data for ISO speed.
+    `isos` can be an iterable of the same length as `data` or a single value, which is then used for all data elements.
     """
     # Get the normalisation from the lookup table
     normalisation = lookup_table[1, isos]
@@ -112,30 +117,28 @@ def normalise_iso(lookup_table, isos, data):
     return data_normalised
 
 
-def load_iso_lookup_table(root, return_filename=False):
+def load_iso_lookup_table(root: io.Path | str, return_filename=False) -> tuple[np.ndarray[float], Optional[io.Path]]:
     """
-    Load the ISO normalization lookup table located at
-    `root`/calibration/iso_normalisation_lookup_table.csv
+    Load the ISO normalization lookup table located at `root`/calibration/iso_normalisation_lookup_table.csv
 
-    If `return_filename` is True, also return the exact filename the table
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename the table was retrieved from.
     """
+    root = io.Path(root)
     filename = io.find_matching_file(root/"calibration", "iso_normalisation_lookup_table.csv")
     table = np.loadtxt(filename, delimiter=",").T
     return return_with_filename(table, filename, return_filename)
 
 
 
-def load_iso_model(root, return_filename=False):
+def load_iso_model(root: io.Path | str, return_filename=False) -> tuple[ISOModel, Optional[io.Path]]:
     """
-    Load the ISO normalization function, the parameters of which are contained
-    in `root`/calibration/iso_normalisation_model.csv
+    Load the ISO normalization function, the parameters of which are contained in `root`/calibration/iso_normalisation_model.csv
 
-    If `return_filename` is True, also return the exact filename the model
-    was retrieved from.
+    If `return_filename` is True, also return the exact filename the model was retrieved from.
 
     To do: include in ISO model object
     """
+    root = io.Path(root)
     filename = io.find_matching_file(root/"calibration", "iso_normalisation_model.csv")
     as_array = np.loadtxt(filename, dtype=str, delimiter=",")
 
@@ -156,13 +159,12 @@ def load_iso_model(root, return_filename=False):
     return return_with_filename(model, filename, return_filename)
 
 
-def save_iso_model(saveto, model_type, parameters, errors):
+def save_iso_model(saveto: io.Path | str, model_type: str, parameters: np.ndarray, errors: np.ndarray) -> None:
     """
     Save the parameters to the ISO normalisation function to `saveto`.
 
     To do: include in ISO model object
     """
-
     model_array = np.array([model_type, *parameters, *errors])
     model_array = model_array[:, np.newaxis].T
 
@@ -176,23 +178,25 @@ def save_iso_model(saveto, model_type, parameters, errors):
     np.savetxt(saveto, model_array, fmt="%s", delimiter=",", header=header)
 
 
-def load_iso_data(root, return_filename=False):
+def load_iso_data(root: io.Path | str, return_filename=False) -> tuple[ISOModel, Optional[io.Path]]:
     """
     Load ISO normalisation data from
     `root`/intermediaries/iso_normalisation/iso_data.npy
 
-    If `return_filename` is True, also return the exact filename the data
-    were retrieved from.
+    If `return_filename` is True, also return the exact filename the data were retrieved from.
     """
+    root = io.Path(root)
     filename = root/"intermediaries/iso_normalisation/iso_data.npy"
     data = np.load(filename)
     return return_with_filename(data, filename, return_filename)
 
 
-def get_max_iso(camera, default=2000):
+def get_max_iso(camera, default: int=2000) -> int:
     """
-    Get the maximum ISO value for a Camera object. If unavailable,
-    return `default` instead.
+    Get the maximum ISO value for a Camera object.
+    If unavailable, return `default` instead.
+
+    TO DO: Remove entirely, this is ugly.
     """
     try:
         isomax = camera.settings.ISO_max * 1.05
