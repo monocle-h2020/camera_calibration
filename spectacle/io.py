@@ -5,6 +5,7 @@ from typing import Callable
 
 import exifread
 import numpy as np
+import PIL
 import rawpy
 from matplotlib import pyplot as plt
 from tqdm import tqdm
@@ -28,9 +29,10 @@ def path_from_input(argv):
         return [Path(a) for a in argv[1:]]
 
 
-def load_raw_file(filename):
+def load_raw_file(filename: Path | str) -> rawpy._rawpy.RawPy:
     """
-    Load a raw file using rawpy's `imread` function. Return the rawpy object.
+    Load a raw file using rawpy's `imread` function.
+    Return the rawpy object.
     """
     # Convert filename to str because rawpy does not support Path
     filename_as_str = str(filename)
@@ -38,25 +40,25 @@ def load_raw_file(filename):
     return img
 
 
-def load_raw_image(filename):
+def load_raw_image(filename: Path | str) -> np.ndarray[np.uint16]:
     """
-    Load a raw file using rawpy's `imread` function. Return only the image
-    data.
+    Load a raw file using rawpy's `imread` function.
+    Return only the image data.
     """
     img = load_raw_file(filename)
     return img.raw_image
 
 
-def load_raw_colors(filename):
+def load_raw_colors(filename: Path | str) -> np.ndarray[np.uint8]:
     """
-    Load a raw file using rawpy's `imread` function. Return only the Bayer
-    colour data.
+    Load a raw file using rawpy's `imread` function.
+    Return only the Bayer colour data.
     """
     img = load_raw_file(filename)
     return img.raw_colors
 
 
-def load_raw_image_postprocessed(filename, **kwargs):
+def load_raw_image_postprocessed(filename: Path | str, **kwargs) -> np.ndarray[np.uint8]:
     """
     Load a raw file using rawpy's `imread` function and post-process it.
     Return the post-processed image data.
@@ -94,25 +96,26 @@ def load_raw_image_multi(folder: Path | str, pattern="*.dng", progressbar=True, 
     return arrs
 
 
-def load_jpg_image(filename):
+def load_jpg_image(filename: Path | str) -> np.ndarray[np.uint8]:
     """
-    Load a raw file using pyplot's `imread` function.
+    Load a JPEG file using Pillow (PIL).
     Return only the image data.
     """
-    img = plt.imread(filename)
+    img = np.asarray(PIL.Image.open(filename))
     return img
 
 
 def load_jpg_multi(folder: Path | str, pattern="*.jp*g", progressbar=True, leave_progressbar=False) -> np.ndarray[np.uint8]:
     """
-    Load many jpg files simultaneously and put their image data in a single array.
+    Load many JPEG files simultaneously and put their image data in a single array.
     Shows a progressbar if desired (default: True).
     """
     # Ensure the folder is a Path
     folder = Path(folder)
 
     # Find all files in `folder` matching the given pattern `pattern`
-    files = list(folder.glob(pattern))
+    # Also looks for the upper-case variant (this matters on Linux)
+    files = list(folder.glob(pattern)) + list(folder.glob(pattern.upper()))
     nfiles = len(files)
 
     # Load the first file to get the shape of the images
@@ -131,7 +134,7 @@ def load_jpg_multi(folder: Path | str, pattern="*.jp*g", progressbar=True, leave
     return arrs
 
 
-def load_exif(filename):
+def load_exif(filename: Path | str) -> dict:
     """
     Load the EXIF data in an image using exifread's `process_file` function.
     Return all EXIF data.
@@ -141,7 +144,7 @@ def load_exif(filename):
     return exif
 
 
-def absolute_filename(file):
+def absolute_filename(file: Path) -> Path:
     """
     Return the absolute filename of a given Path object `file`.
     This mostly serves as a dummy example function for load_npy.
@@ -149,10 +152,11 @@ def absolute_filename(file):
     return file.absolute()
 
 
-def expected_array_size(folder, pattern):
+def expected_array_size(folder: Path | str, pattern: str) -> np.ndarray[np.int64]:
     """
-    Find the required array size when loading files from `folder` that follow
-    the pattern `pattern`, e.g. all .DNG files.
+    Find the required array size when loading files from `folder` that follow the pattern `pattern`, e.g. all .DNG files.
+
+    TO DO: only actually works for NPY files - need to fix.
     """
     # Make sure `folder` is a Path-like object
     folder = Path(folder)
@@ -181,12 +185,11 @@ def load_npy(folder: Path | str, pattern: str, retrieve_value: Callable=absolute
     return values, stacked
 
 
-def split_path(path, split_on):
+def split_path(path: Path | str, split_on: str) -> str:
     """
     Split a pathlib Path object `path` on a string `split_on`.
 
-    Input `path` is converted to a Path-type object, but
-    output `split_underscore` is (and must be) a str object
+    Input `path` is converted to a Path-type object, but output `split_underscore` is (and must be) a str object.
     """
     # Make sure `path` is a Path-type object
     path = Path(path)
@@ -195,7 +198,7 @@ def split_path(path, split_on):
     return split_underscore
 
 
-def split_pol_angle(path):
+def split_pol_angle(path: Path | str) -> float:
     """
     Retrieve a polariser angle from a path `path`. Expects the path to contain
     a string `polX` with X the polariser angle.
@@ -205,7 +208,7 @@ def split_pol_angle(path):
     return val
 
 
-def split_exposure_time(path):
+def split_exposure_time(path: Path | str) -> float:
     """
     Retrieve an exposure time from a path `path`. Handles inverted exposure
     times, e.g. 1/1000 seconds.
@@ -221,7 +224,7 @@ def split_exposure_time(path):
     return time
 
 
-def split_iso(path):
+def split_iso(path: Path | str) -> int:
     """
     Retrieve an ISO speed from a path `path`. Expects the path to contain
     a string `isoX` with X the ISO speed.
