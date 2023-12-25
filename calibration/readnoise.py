@@ -16,7 +16,7 @@ from spectacle import io
 
 # Command-line arguments
 import argparse
-parser = argparse.ArgumentParser(description="Create a read noise map using the stacked bias (zero-light, shortest-exposure images) images.")
+parser = argparse.ArgumentParser(description="Create a read noise map using the stacked bias (zero-light, shortest-exposure) images.")
 parser.add_argument("folder", help="Folder containing .npy stacks of bias data.", type=io.Path)
 parser.add_argument("-o", "--output_folder", help="Folder to save results files to (default: camera outputs folder).", type=io.Path, default=None)
 parser.add_argument("-v", "--verbose", help="Enable verbose output.", action="store_true")
