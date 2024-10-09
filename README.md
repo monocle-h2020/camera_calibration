@@ -1,7 +1,8 @@
 # SPECTACLE
 
 SPECTACLE (Standardised Photographic Equipment Calibration Technique And CataLoguE) is a standardised methodology for the spectral and radiometric calibration of consumer camera data.
-More information on the SPECTACLE methodology, including results from applying it to several cameras, can be found in our paper: https://doi.org/10.1364/OE.27.019075
+More information on the SPECTACLE methodology, including results from applying it to several cameras, can be found in our paper: https://doi.org/10.1364/OE.27.019075.
+A real-world application using two smartphone cameras for above-water radiometry can be found in https://doi.org/10.3389/frsen.2022.940096.
 
 The camera calibration data described in the paper are available from [this link.](https://drive.google.com/drive/folders/1acKQBolfL1gsyeGRGuOHT8UDONjBTdhU?usp=sharing)
 
